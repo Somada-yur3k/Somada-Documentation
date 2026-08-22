@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Current System — SOMADA</title>
+<meta name="description" content="The current, manual paper-based process of the Physics and Circuits Laboratory at NU Fairview — the as-is system SOMADA is designed to replace." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%84%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f1efe9; --paper:#ffffff; --ink:#26211c; --ink-soft:#665e53; --ink-faint:#948a7c;
+    --line:#e8e1d5; --line-strong:#d8cdb9;
+    --accent:#b5652b; --accent-ink:#8f4d1e; --accent-soft:#faeadb;
+    --sidebar-bg:#fbfaf7; --head-bg:#f6f1e8;
+    --shadow:0 1px 2px rgba(40,30,15,.05), 0 10px 30px rgba(40,30,15,.08);
+    --radius:12px;
+    --chrome-h:99px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{font-family:'Source Serif 4',Georgia,'Times New Roman',serif;color:var(--ink);line-height:1.25;margin:0;}
+  p{margin:0 0 12px;}
+  ul,ol{margin:0 0 12px;padding-left:22px;}
+  li{margin-bottom:6px;}
+  a{color:var(--accent-ink);}
+  button{font-family:inherit;}
+  ::selection{background:#f0d3ae;}
+
+  /* ---------- chrome ---------- */
+  .progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),#e0a15c);width:0%;z-index:70;transition:width .1s linear;}
+  .topbar{position:fixed;top:3px;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:60;gap:12px;}
+  .topbar-left{display:flex;align-items:center;gap:10px;min-width:0;}
+  .page-tabs{position:fixed;top:59px;left:0;right:0;height:40px;background:#fbfaf7;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:4px;padding:0 16px;z-index:59;overflow-x:auto;}
+  .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink-soft);white-space:nowrap;flex:0 0 auto;}
+  .page-tab:hover{background:#f1ede6;color:var(--ink);}
+  .page-tab.active{background:var(--accent-soft);color:var(--accent-ink);}
+  .topbar-right{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+  .brand{display:flex;align-items:center;gap:8px;min-width:0;}
+  .brand-badge{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto;}
+  .brand-text{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
+  .brand-title{font-weight:700;font-size:14px;color:var(--ink);white-space:nowrap;}
+  .brand-sub{font-size:11.5px;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:8px;height:36px;padding:0 12px;cursor:pointer;font-size:13px;font-weight:600;text-decoration:none;}
+  .icon-btn:hover{background:var(--head-bg);color:var(--ink);}
+  .icon-btn svg{width:16px;height:16px;}
+  .icon-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .icon-btn.primary:hover{background:var(--accent-ink);}
+  .menu-toggle{display:none;width:36px;padding:0;}
+  .menu-toggle svg{width:18px;height:18px;}
+
+  /* ---------- layout ---------- */
+  .shell{display:flex;}
+  .sidebar-scrim{display:none;position:fixed;inset:0;background:rgba(30,22,10,.35);z-index:45;}
+  .sidebar{position:fixed;top:var(--chrome-h);left:0;bottom:0;width:280px;background:var(--sidebar-bg);border-right:1px solid var(--line);overflow-y:auto;z-index:50;padding:14px 10px 40px;}
+  .doc-chip{display:flex;align-items:center;gap:8px;margin:0 4px 12px;padding:8px 10px;border-radius:9px;background:#fff;border:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);font-weight:600;}
+  .doc-chip span.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
+  .nav-list{list-style:none;margin:0;padding:0;}
+  .nav-row{display:flex;align-items:stretch;border-left:3px solid transparent;border-radius:0 8px 8px 0;margin:1px 0;}
+  .nav-row.active{border-left-color:var(--accent);background:var(--accent-soft);}
+  .nav-row.active>.nav-label .nav-text{color:var(--accent-ink);font-weight:700;}
+  .nav-label{flex:1;display:flex;align-items:center;gap:7px;min-width:0;background:none;border:none;text-align:left;padding:7px 8px;font-size:13px;color:var(--ink-soft);cursor:pointer;border-radius:8px;}
+  .nav-label:hover{background:#f1ece0;color:var(--ink);}
+  .nav-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .content-wrap{flex:1;margin-left:280px;margin-top:var(--chrome-h);min-width:0;padding:32px 20px 120px;}
+  .paper{max-width:860px;margin:0 auto;background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:56px 64px;}
+  .doc-section{scroll-margin-top:75px;padding-top:6px;}
+  .doc-section + .doc-section{margin-top:46px;padding-top:32px;border-top:1px solid var(--line);}
+  .doc-section.sub{margin-top:34px;padding-top:0;border-top:none;}
+
+  /* ---------- headings ---------- */
+  .section-heading{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .section-heading h2{font-size:26px;}
+  .section-heading h3{font-size:20px;}
+  .kicker{font-family:'Inter',sans-serif;font-weight:700;font-size:12px;letter-spacing:.03em;color:#fff;background:var(--accent);border-radius:6px;padding:2px 7px;vertical-align:middle;margin-right:8px;}
+  .anchor-link{opacity:0;text-decoration:none;color:var(--ink-faint);font-family:'Inter',sans-serif;font-weight:400;font-size:14px;transition:opacity .1s;}
+  .section-heading:hover .anchor-link{opacity:1;}
+  .lede{font-family:'Source Serif 4',serif;font-size:16px;line-height:1.7;color:var(--ink);}
+  .lede p{margin:0 0 15px;}
+
+  /* ---------- intro banner ---------- */
+  .intro-banner{background:linear-gradient(135deg,var(--accent-soft),#fff);border:1px solid var(--line);border-radius:14px;padding:30px 34px;margin-bottom:8px;}
+  .intro-eyebrow{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:10px;}
+  .intro-banner h1{font-size:28px;margin-bottom:10px;}
+  .intro-banner .lede{font-size:15px;}
+  .intro-links{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+
+  /* ---------- PHSN grid ---------- */
+  .phsn-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;}
+  .phsn-card{border:1px solid var(--line);border-radius:11px;padding:16px 18px;background:#fcfbf8;}
+  .phsn-card .label{font-family:'Inter',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent-ink);margin-bottom:6px;}
+  .phsn-card p{font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.6;margin:0;color:var(--ink);}
+
+  /* ---------- process tables ---------- */
+  .process-group{margin-bottom:14px;}
+  .process-group-title{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .process-group-title h4{font-size:17px;}
+  .process-tag{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--accent-ink);background:var(--accent-soft);padding:2px 8px;border-radius:6px;}
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:0 0 6px;}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13.3px;font-family:'Inter',sans-serif;min-width:560px;}
+  table.tbl th{background:var(--head-bg);text-align:left;padding:10px 12px;border-bottom:2px solid var(--line-strong);font-weight:700;color:var(--ink-soft);font-size:11px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
+  table.tbl td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink);}
+  table.tbl tr:last-child td{border-bottom:none;}
+  table.tbl tr:hover td{background:#fdfcfa;}
+  .pid{font-family:'Inter',sans-serif;font-weight:700;font-size:12px;background:#fff;border:1px solid var(--line-strong);color:var(--accent-ink);padding:2px 8px;border-radius:6px;white-space:nowrap;}
+  td.details{font-family:'Source Serif 4',serif;font-size:14.5px;line-height:1.55;}
+  td.details ol{margin:0;padding-left:19px;}
+  td.details ol.alpha{list-style-type:lower-alpha;margin-top:4px;margin-bottom:6px;}
+  td.details li{margin-bottom:6px;}
+  td.details li:last-child{margin-bottom:0;}
+
+  .doc-footer{margin-top:50px;padding-top:22px;border-top:1px solid var(--line);font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-faint);line-height:1.7;}
+  .back-to-top{position:fixed;right:26px;bottom:26px;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid var(--line-strong);box-shadow:var(--shadow);color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:40;opacity:0;pointer-events:none;transition:opacity .15s, transform .15s;}
+  .back-to-top.show{opacity:1;pointer-events:auto;}
+  .back-to-top:hover{color:var(--accent-ink);transform:translateY(-2px);}
+  .back-to-top svg{width:18px;height:18px;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:980px){
+    .menu-toggle{display:inline-flex;}
+    .sidebar{left:-300px;transition:left .22s ease;box-shadow:0 0 40px rgba(0,0,0,.15);}
+    .sidebar.open{left:0;}
+    .sidebar-scrim.show{display:block;}
+    .content-wrap{margin-left:0;padding:24px 14px 100px;}
+    .paper{padding:30px 20px;}
+    .brand-sub{display:none;}
+    .topbar-right .icon-btn span{display:none;}
+    .topbar-right .icon-btn{width:36px;padding:0;justify-content:center;}
+    .phsn-grid{grid-template-columns:1fr;}
+    .intro-banner{padding:22px 20px;}
+  }
+
+  /* ---------- print ---------- */
+  @page{
+    size: A4;
+    margin: 20mm 18mm;
+    @bottom-center{ content: counter(page); font-family:'Inter',sans-serif; font-size:9pt; color:#9a9082; }
+  }
+  @media print{
+    html,body{background:#fff;}
+    .progress-bar,.topbar,.page-tabs,.sidebar,.sidebar-scrim,.anchor-link,.back-to-top,.intro-links{display:none !important;}
+    .content-wrap{margin:0 !important;padding:0 !important;}
+    .paper{box-shadow:none;border-radius:0;max-width:none;width:auto;padding:0;}
+    body{font-size:10.5pt;line-height:1.42;}
+    .intro-banner{border:none;background:none;padding:0;}
+    table.tbl{font-size:9.5pt;}
+    table.tbl th{width:auto !important;}
+    table.tbl td,table.tbl th{padding:5pt 7pt;}
+    .doc-footer{display:none;}
+    .doc-section+.doc-section{border-top:none;margin-top:14pt;padding-top:0;}
+    table.tbl tr,.phsn-card,.process-group{break-inside:avoid;}
+    h1,h2,h3,h4{break-after:avoid;}
+    #processes{break-before:page;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+  const DATA = {
+    technical: {
+      intro: `The current system used by the Physics and Circuits Laboratory at NU Fairview is entirely manual and paper-based, relying on face-to-face meetings to reserve laboratory rooms and on equipment borrowing. Students and faculty are required to fill out paper-based borrower's slips and laboratory service request forms to request equipment or reserve laboratory space. These requests are then reviewed and processed manually, often using Excel files, and in-person coordination for tracking. This current approach makes it difficult to efficiently track laboratory equipment availability, manage borrowing records, and prevent schedule conflicts.`,
+      phsn: [
+        { label:"People", text:`Students and faculty submit requests and borrowing slips. The Physics and Circuits laboratory head receives, reviews, and records transactions.` },
+        { label:"Hardware", text:`The current system uses papers, printers, and office computers for Excel updates. No scanners or automated devices are used.` },
+        { label:"Software", text:`The laboratory head uses spreadsheet files to track inventory and reservations. There is no digitalized database.` },
+        { label:"Network", text:`The process is not heavily reliant on a network, as most transactions happen in person or through manual messaging.` },
+      ],
+    },
+    processGroups: [
+      {
+        id:"proc-room-reservation", table:"3.2.1", title:"Laboratory Room Reservation",
+        rows:[
+          { id:"LRR001", name:"Inquiry", steps:[
+            { text:`Students or faculty will either visit the Physics or Circuits Department or e-mail the head to inquire about the availability of the rooms.` },
+            { text:`The laboratory head will check the availability of the laboratory rooms in their Google Sheet.` },
+          ]},
+          { id:"LRR002", name:"Confirmation", steps:[
+            { text:"", sub:[
+              `If there are no available days or/and/or time slots for the laboratory rooms, the request may be declined.`,
+              `If there is an available slot, the reservation will be entertained.`,
+            ]},
+          ]},
+          { id:"LRR003", name:"Processing", steps:[
+            { text:`A laboratory service request form will be given to the requester.` },
+            { text:`The requester will need to fill in the required details in the form.` },
+            { text:`Papers given will be signed by a faculty, the assigned professor or dean, and the laboratory technician.` },
+            { text:`Reservation confirmed.` },
+          ]},
+        ],
+      },
+      {
+        id:"proc-equipment-borrowing", table:"3.2.2", title:"Laboratory Equipment Borrowing",
+        rows:[
+          { id:"EQR001", name:"Inquiry", steps:[
+            { text:`Students or faculty will visit the Physics or Circuits Department to inquire about equipment availability.` },
+            { text:`The laboratory head will check the equipment's availability in their Google Sheets file.` },
+          ]},
+          { id:"EQR002", name:"Confirmation", steps:[
+            { text:"", sub:[
+              `If no equipment is available, borrowing will be impossible.`,
+              `If the requested equipment is available, borrowing will be entertained.`,
+            ]},
+          ]},
+          { id:"EQR003", name:"Processing", steps:[
+            { text:`A borrowing slip will be given to the requester.` },
+            { text:`The requester will need to fill out the equipment to be borrowed and the group members for clearance purposes.` },
+            { text:`Papers given will be signed by both parties (incl. the faculty). Once done, the equipment will now be reserved or borrowed.` },
+          ]},
+        ],
+      },
+      {
+        id:"proc-inventory", table:"3.2.3", title:"Laboratory Equipment Inventory Management",
+        rows:[
+          { id:"INV001", name:"Equipment Gathering", steps:[
+            { text:`Equipment will be sent to the Physics or Circuits Storage room.` },
+            { text:`Once properly received, it will be confirmed.` },
+          ]},
+          { id:"INV002", name:"Equipment Registration", steps:[
+            { text:`Equipment sent will now be registered in the main spreadsheet.` },
+            { text:`The registration will include the existing quantity of each piece of equipment, the description, its type, and its unit - box, units, or pcs.` },
+            { text:`Once registered, it will be saved and available for reservation or borrowing. The status of each piece of equipment must be manually updated.` },
+          ]},
+        ],
+      },
+      {
+        id:"proc-clearance", table:"3.2.4", title:"Laboratory Clearance Management",
+        rows:[
+          { id:"CLR001", name:"Equipment Checking", steps:[
+            { text:`Students responsible for the equipment will need to visit the Physics or Circuits Laboratory head.` },
+            { text:`After the visit, the equipment will be re-verified to see if it's broken or missing.` },
+          ]},
+          { id:"CLR002", name:"Clearance Form", steps:[
+            { text:`Once equipment is verified as broken or missing, a clearance form will be given to the students, which they must fill out and sign themselves, have a faculty member sign, and have the Physics and Circuits laboratory head sign for formality.` },
+          ]},
+          { id:"CLR003", name:"Clearance Submission", steps:[
+            { text:`Once the clearance form is filled out and signed, it will be submitted to the Physics and Circuits laboratory head and given to the registrar afterward.` },
+          ]},
+        ],
+      },
+      {
+        id:"proc-blc", table:"3.2.5", title:"Laboratory Broken, Loss, and Consumed Logs",
+        rows:[
+          { id:"BLC001", name:"Equipment Checking", steps:[
+            { text:`Borrowed equipment will be checked after every scheduled session.` },
+          ]},
+          { id:"BLC002", name:"Equipment Logging", steps:[
+            { text:`Used equipment will be marked as consumed in the Google Sheet.` },
+            { text:`Equipment used without remaining usage will be marked as lost in the Google Sheet.` },
+            { text:`Broken equipment will be marked as broken in the Google Sheet.` },
+          ]},
+        ],
+      },
+      {
+        id:"proc-daily-task", table:"3.2.6", title:"Laboratory Daily Task Report",
+        rows:[
+          { id:"DRT001", name:"Work Availability", steps:[
+            { text:`Identify if the Physics and Circuits Laboratory head is working from home, on a day off, or on leave.` },
+          ]},
+          { id:"DRT002", name:"Daily Report Submission", steps:[
+            { text:`Wait for the scheduled morning/afternoon schedules to finish.` },
+            { text:`Complete all email requests and inquiries.` },
+            { text:`Finish the specific daily task report form.` },
+          ]},
+        ],
+      },
+      {
+        id:"proc-end-term", table:"3.2.7", title:"Laboratory End Term Report",
+        rows:[
+          { id:"ETR001", name:"Data Gathering", steps:[
+            { text:`The Physics and Circuits laboratory head will gather data such as:`, sub:[
+              `Laboratory Facility Usage per faculty`,
+              `Most equipment borrowed`,
+              `Amount of broken, lost, and consumed equipment`,
+              `Etc.`,
+            ]},
+            { text:`Each data point has been automatically calculated and will be exported for presentation.` },
+          ]},
+          { id:"ETR002", name:"Data Reporting", steps:[
+            { text:`Gathered data will then be exported to a PowerPoint and will be reported, and submitted to the higher-ups in NU Fairview.` },
+          ]},
+        ],
+      },
+      {
+        id:"proc-logs", table:"3.2.8", title:"Laboratory Logs",
+        rows:[
+          { id:"LGS001", name:"Equipment and Room Reservations", steps:[
+            { text:`The Physics and Circuits Laboratory head will need to manually gather all scheduled equipment borrowings and room reservations.` },
+            { text:`The Physics and Circuits Laboratory head will then manually input all that information into the Google Sheets.` },
+          ]},
+          { id:"LGS002", name:"Status Marking", steps:[
+            { text:`The Physics and Circuits laboratory head will manually update all room reservations and equipment borrowing statuses to 'completed' once they are complete.` },
+          ]},
+        ],
+      },
+    ],
+  };
+
+  const NAV = [
+    { id:"tech-background", label:"3.1 Technical Background" },
+    { id:"processes", label:"3.2 List of Processes", children:
+      DATA.processGroups.map(g => ({ id:g.id, label:`${g.table} ${g.title}` })) },
+  ];
+</script>
+
+<script type="text/babel" id="app-source">
+const { useState, useEffect, useMemo, useCallback } = React;
+
+const IconMenu = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>;
+const IconPrint = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>;
+const IconUp = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>;
+const IconArrowRight = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>;
+
+function flattenIds(items){ let out=[]; for(const it of items){ out.push(it.id); if(it.children) out=out.concat(flattenIds(it.children)); } return out; }
+function buildParentMap(items,parent,map){ for(const it of items){ map[it.id]=parent; if(it.children) buildParentMap(it.children,it.id,map); } return map; }
+
+function SectionHeading({ level=2, kicker, title, id }){
+  const Tag = "h"+level;
+  return (
+    <div className="section-heading">
+      <Tag>{kicker && <span className="kicker">{kicker}</span>}{title}</Tag>
+      <a className="anchor-link" href={`#${id}`}>#</a>
+    </div>
+  );
+}
+
+function NavTree({ items, activeId, onNavigate, depth }){
+  return (
+    <ul className="nav-list">
+      {items.map(item => {
+        const isActive = item.id === activeId;
+        return (
+          <li key={item.id}>
+            <div className={`nav-row ${isActive ? "active" : ""}`}>
+              <button className="nav-label" style={{ paddingLeft: 8 + depth*16 }} onClick={() => onNavigate(item.id)}>
+                <span className="nav-text">{item.label}</span>
+              </button>
+            </div>
+            {item.children && <NavTree items={item.children} activeId={activeId} onNavigate={onNavigate} depth={depth+1} />}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function Sidebar({ activeId, onNavigate, open }){
+  return (
+    <aside className={`sidebar ${open ? "open" : ""}`} aria-label="Document outline">
+      <div className="doc-chip"><span className="dot"></span> Current System (As-Is)</div>
+      <NavTree items={NAV} activeId={activeId} onNavigate={onNavigate} depth={0} />
+    </aside>
+  );
+}
+
+function Step({ step }){
+  return (
+    <li>
+      {step.text}
+      {step.sub && (
+        <ol className="alpha">
+          {step.sub.map((s,i) => <li key={i}>{s}</li>)}
+        </ol>
+      )}
+    </li>
+  );
+}
+
+function ProcessGroup({ group }){
+  return (
+    <section id={group.id} className="doc-section sub process-group">
+      <div className="process-group-title">
+        <span className="process-tag">{group.table}</span>
+        <h4>{group.title}</h4>
+      </div>
+      <div className="table-wrap">
+        <table className="tbl">
+          <thead><tr><th style={{width:"110px"}}>Process ID</th><th style={{width:"170px"}}>Process Name</th><th>Process Details</th></tr></thead>
+          <tbody>
+            {group.rows.map(row => (
+              <tr key={row.id}>
+                <td><span className="pid">{row.id}</span></td>
+                <td>{row.name}</td>
+                <td className="details"><ol>{row.steps.map((s,i) => <Step key={i} step={s} />)}</ol></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function TechBackgroundSection(){
+  return (
+    <section id="tech-background" className="doc-section">
+      <SectionHeading level={3} kicker="3.1" title="Technical Background" id="tech-background" />
+      <div className="lede"><p>{DATA.technical.intro}</p></div>
+      <div className="phsn-grid">
+        {DATA.technical.phsn.map(p => (
+          <div className="phsn-card" key={p.label}>
+            <div className="label">{p.label}</div>
+            <p>{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ProcessesSection(){
+  return (
+    <section id="processes" className="doc-section">
+      <SectionHeading level={3} kicker="3.2" title="List of Processes" id="processes" />
+      {DATA.processGroups.map(g => <ProcessGroup key={g.id} group={g} />)}
+    </section>
+  );
+}
+
+function Footer(){
+  return (
+    <div className="doc-footer">
+      Transcribed from the MNTSDEV requirements documentation for the Physics and Circuits Laboratory, NU Fairview — the as-is process the SOMADA proposal (see <a href="Docs.html">Docs.html</a>) is designed to replace.
+      To edit, change the <code>DATA</code> object near the top of this file's source.
+    </div>
+  );
+}
+
+function App(){
+  const flatIds = useMemo(() => flattenIds(NAV), []);
+  const parentMap = useMemo(() => buildParentMap(NAV, null, {}), []);
+  const [activeId, setActiveId] = useState(flatIds[0]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [showTop, setShowTop] = useState(false);
+
+  const scrollToSection = useCallback((id) => {
+    const el = document.getElementById(id);
+    if (el) { el.scrollIntoView({ behavior:"smooth", block:"start" }); history.replaceState(null,"","#"+id); setActiveId(id); }
+    setSidebarOpen(false);
+  }, []);
+
+  useEffect(() => {
+    const els = flatIds.map(id => document.getElementById(id)).filter(Boolean);
+    let ticking = false;
+    function update(){
+      const scrollTop = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(100, (scrollTop/max)*100) : 0);
+      setShowTop(scrollTop > 700);
+      const threshold = window.innerHeight * 0.28;
+      let current = els[0] && els[0].id;
+      for (const el of els) { if (el.getBoundingClientRect().top - threshold <= 0) current = el.id; else break; }
+      setActiveId(prev => prev === current ? prev : current);
+      ticking = false;
+    }
+    function onScroll(){ if(!ticking){ ticking = true; window.requestAnimationFrame(update); } }
+    window.addEventListener("scroll", onScroll, { passive:true });
+    update();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [flatIds]);
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.slice(1);
+      setTimeout(() => { const el = document.getElementById(id); if (el) el.scrollIntoView({ block:"start" }); }, 60);
+    }
+  }, []);
+
+  return (
+    <React.Fragment>
+      <div className="progress-bar" style={{ width: progress+"%" }}></div>
+      <div className="topbar">
+        <div className="topbar-left">
+          <button className="icon-btn menu-toggle" onClick={() => setSidebarOpen(o=>!o)} aria-label="Toggle outline"><IconMenu /></button>
+          <div className="brand">
+            <div className="brand-badge">🗄️</div>
+            <div className="brand-text">
+              <span className="brand-title">Current System (As-Is)</span>
+              <span className="brand-sub">Physics and Circuits Laboratory · manual process SOMADA replaces</span>
+            </div>
+          </div>
+        </div>
+        <div className="topbar-right">
+          <button className="icon-btn" onClick={() => window.print()}><IconPrint /> <span>Print / Export PDF</span></button>
+        </div>
+      </div>
+
+      <nav className="page-tabs">
+        <a className="page-tab" href="index.html">🏠 Home</a>
+        <a className="page-tab" href="Docs.html">📄 Documentation</a>
+        <a className="page-tab active" href="Current-System.html">🗂️ Current System</a>
+        <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">🧩 Use Case Diagram</a>
+        <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">🔀 DFD Level 0</a>
+        <a className="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">🔀 DFD Level 1</a>
+      </nav>
+
+      <div className="shell">
+        {sidebarOpen && <div className="sidebar-scrim show" onClick={() => setSidebarOpen(false)}></div>}
+        <Sidebar activeId={activeId} onNavigate={scrollToSection} open={sidebarOpen} />
+        <main className="content-wrap" role="main">
+          <div className="paper">
+            <div className="intro-banner">
+              <div className="intro-eyebrow">III. Current System</div>
+              <h1>How the laboratory runs today, without SOMADA</h1>
+              <div className="lede"><p>Every process below is manual: paper forms, in-person visits, and a shared Google Sheet the laboratory head updates by hand. This is the process SOMADA is being built to replace.</p></div>
+              <div className="intro-links">
+                <a className="icon-btn primary" href="Docs.html">View the SOMADA proposal <IconArrowRight /></a>
+              </div>
+            </div>
+            <TechBackgroundSection />
+            <ProcessesSection />
+            <Footer />
+          </div>
+        </main>
+      </div>
+
+      <button className={`back-to-top ${showTop ? "show" : ""}`} onClick={() => window.scrollTo({top:0,behavior:"smooth"})} aria-label="Back to top"><IconUp /></button>
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js" crossorigin></script>
+<script>
+  var appCode = document.getElementById("app-source").textContent;
+  var compiled = Babel.transform(appCode, { presets: ["react"] }).code;
+  var runner = document.createElement("script");
+  runner.textContent = compiled;
+  document.body.appendChild(runner);
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  html,body{margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;}
+  #stage{display:inline-block;}
+  .page-tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid #e4e5ec;display:flex;align-items:center;gap:4px;padding:10px 16px;z-index:10;overflow-x:auto;font-family:'Segoe UI',Arial,sans-serif;}
+  .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:#5b6270;white-space:nowrap;flex:0 0 auto;text-decoration:none;}
+  .page-tab:hover{background:#eef0f4;color:#1c2029;}
+  .page-tab.active{background:#e9f1fc;color:#1a4fb0;}
+</style>
+</head>
+<body>
+<nav class="page-tabs">
+  <a class="page-tab" href="../../index.html">🏠 Home</a>
+  <a class="page-tab" href="../../Docs.html">📄 Documentation</a>
+  <a class="page-tab" href="../../Current-System.html">🗂️ Current System</a>
+  <a class="page-tab active" href="usecase-diagram-source.html">🧩 Use Case Diagram</a>
+  <a class="page-tab" href="dfd-level0/dfd-level0-source.html">🔀 DFD Level 0</a>
+  <a class="page-tab" href="dfd-level1/dfd-level1-source.html">🔀 DFD Level 1</a>
+</nav>
+<div id="stage"></div>
+<script>
+/* ===================== DATA =====================
+   One central vertical column holds every base use case (the ones actors
+   actually associate with) — no more duplicated "Log In" split into loginL /
+   loginR; there's one Log In oval and all six actors connect straight to it.
+   Include/extend satellites are NOT inline in that column — each one sits just
+   to the left or right of its parent oval, connected by a short arrow, so the
+   include/exclude relationship always reads as "out of the shape, to a shape
+   beside it" rather than a big loop back into the same vertical line. */
+const ACTORS = [
+  { id:'classrep', label:['Class','Representative'], color:'#2f6fd6', side:'left' },
+  { id:'faculty',  label:['Faculty'],                 color:'#b5384a', side:'left' },
+  { id:'dean',     label:['Dean'],                    color:'#c23b8f', side:'left' },
+  { id:'headlab',  label:['Head','Laboratory'],        color:'#2e9e5b', side:'right' },
+  { id:'physics',  label:['Physics Laboratory','Staff'], color:'#d98a2b', side:'right' },
+  { id:'circuits', label:['Circuits Laboratory','Staff'], color:'#1f9c9c', side:'right' },
+];
+
+// The single column — order top to bottom.
+const BASE_UC = [
+  { id:'login',       label:['Log In'] },
+  { id:'viewdash',     label:['View My','Dashboard'] },
+  { id:'chooselab',    label:['Choose Laboratory'] },
+  { id:'viewsched',    label:['View Schedule &','Availability'] },
+  { id:'submitres',    label:['Submit Laboratory','Reservation'] },
+  { id:'cancelres',    label:['Cancel Laboratory','Reservation'] },
+  { id:'reschedres',   label:['Reschedule Laboratory','Reservation'] },
+  { id:'viewstatus',   label:['View Reservation','Status'] },
+  { id:'viewhistory',  label:['View Reservation','History'] },
+  { id:'clearstatus',  label:['View Clearance','Status'] },
+  { id:'approve',      label:['Approve / Reject','Reservation'] },
+  { id:'askq',         label:['Ask Laboratory','Question'] },
+  { id:'issueacct',    label:['Issue Class','Representative Account'] },
+  { id:'mgminv',       label:['Manage Equipment','Inventory'] },
+  { id:'issueeq',      label:['Issue Equipment'] },
+  { id:'procret',      label:['Process Return'] },
+  { id:'procclear',    label:['Process Clearance'] },
+  { id:'wastedisp',    label:['Log Waste','Disposal'] },
+  { id:'mgmlogs',      label:['Manage Laboratory','Logs & Schedule'] },
+  { id:'dashboard',    label:['View Laboratory','Dashboard'] },
+  { id:'endterm',      label:['Generate End-Term','Report'] },
+];
+// Satellites: each sits beside its parent, on the given side.
+const SAT_UC = [
+  { id:'selectres',    label:['Select Resources /','Equipment'],   parent:'submitres', side:'left' },
+  { id:'checkitem',    label:['Check Item','Availability'],        parent:'askq', side:'left' },
+  { id:'checksched',   label:['Check Schedule','Availability'],    parent:'askq', side:'left' },
+  { id:'checkstatus',  label:['Check Reservation','Status'],       parent:'askq', side:'left' },
+  { id:'checkhours',   label:['Check Operating','Hours'],          parent:'askq', side:'left' },
+  { id:'addeq',        label:['Add Equipment'],                    parent:'mgminv', side:'right' },
+  { id:'updateeq',     label:['Update Equipment'],                 parent:'mgminv', side:'right' },
+  { id:'deleteeq',     label:['Delete Equipment'],                 parent:'mgminv', side:'right' },
+  { id:'searcheq',     label:['Search & Filter','Inventory'],      parent:'mgminv', side:'right' },
+  { id:'recordblc',    label:['Record Broken / Lost','/ Consumed Items'], parent:'procret', side:'right' },
+  { id:'markclear',    label:['Mark Clearance as','Cleared / Replaced'],  parent:'procclear', side:'right' },
+];
+SAT_UC.forEach(s => { s.sat = true; });
+const USECASES = BASE_UC.concat(SAT_UC);
+
+// Associations. Where several actors share one use case with the same noun, the noun is
+// stamped once near the oval instead of once per actor line (computed below via grouping).
+const ASSOC = [
+  {actor:'classrep', uc:'login', n:'Credentials'}, {actor:'faculty', uc:'login', n:'Credentials'}, {actor:'dean', uc:'login', n:'Credentials'},
+  {actor:'headlab', uc:'login', n:'Credentials'}, {actor:'physics', uc:'login', n:'Credentials'}, {actor:'circuits', uc:'login', n:'Credentials'},
+  {actor:'classrep', uc:'viewdash', n:'Dashboard'}, {actor:'faculty', uc:'viewdash', n:'Dashboard'},
+  {actor:'classrep', uc:'chooselab', n:'Laboratory'}, {actor:'faculty', uc:'chooselab', n:'Laboratory'}, {actor:'dean', uc:'chooselab', n:'Laboratory'},
+  {actor:'classrep', uc:'viewsched', n:'Schedule'}, {actor:'faculty', uc:'viewsched', n:'Schedule'}, {actor:'dean', uc:'viewsched', n:'Schedule'},
+  {actor:'classrep', uc:'submitres', n:'Reservation'}, {actor:'faculty', uc:'submitres', n:'Reservation'}, {actor:'dean', uc:'submitres', n:'Reservation'},
+  {actor:'classrep', uc:'viewstatus', n:'Status'}, {actor:'faculty', uc:'viewstatus', n:'Status'}, {actor:'dean', uc:'viewstatus', n:'Status'},
+  {actor:'classrep', uc:'cancelres', n:'Cancellation'}, {actor:'faculty', uc:'cancelres', n:'Cancellation'},
+  {actor:'classrep', uc:'reschedres', n:'Reschedule'}, {actor:'faculty', uc:'reschedres', n:'Reschedule'},
+  {actor:'classrep', uc:'viewhistory', n:'History'}, {actor:'faculty', uc:'viewhistory', n:'History'},
+  {actor:'classrep', uc:'clearstatus', n:'Clearance'}, {actor:'faculty', uc:'clearstatus', n:'Clearance'},
+  {actor:'faculty', uc:'approve', n:'Decision'}, {actor:'dean', uc:'approve', n:'Decision'},
+  {actor:'classrep', uc:'askq', n:'Question'}, {actor:'faculty', uc:'askq', n:'Question'},
+  {actor:'headlab', uc:'issueacct', n:'Account'},
+  {actor:'headlab', uc:'mgminv', n:'Inventory'}, {actor:'physics', uc:'mgminv', n:'Inventory'}, {actor:'circuits', uc:'mgminv', n:'Inventory'},
+  {actor:'headlab', uc:'issueeq', n:'Equipment'}, {actor:'physics', uc:'issueeq', n:'Equipment'}, {actor:'circuits', uc:'issueeq', n:'Equipment'},
+  {actor:'headlab', uc:'procret', n:'Return'}, {actor:'physics', uc:'procret', n:'Return'}, {actor:'circuits', uc:'procret', n:'Return'},
+  {actor:'headlab', uc:'procclear', n:'Clearance'}, {actor:'physics', uc:'procclear', n:'Clearance'}, {actor:'circuits', uc:'procclear', n:'Clearance'},
+  {actor:'headlab', uc:'wastedisp', n:'Disposal'}, {actor:'physics', uc:'wastedisp', n:'Disposal'}, {actor:'circuits', uc:'wastedisp', n:'Disposal'},
+  {actor:'headlab', uc:'mgmlogs', n:'Schedule'}, {actor:'physics', uc:'mgmlogs', n:'Schedule'}, {actor:'circuits', uc:'mgmlogs', n:'Schedule'},
+  {actor:'headlab', uc:'dashboard', n:'Metrics'}, {actor:'physics', uc:'dashboard', n:'Metrics'}, {actor:'circuits', uc:'dashboard', n:'Metrics'},
+  {actor:'headlab', uc:'endterm', n:'Report'},
+];
+const groupCount = {};
+ASSOC.forEach(a => { const k=a.uc+'|'+a.n; groupCount[k]=(groupCount[k]||0)+1; });
+
+const RELS = [
+  {from:'submitres', to:'selectres', type:'extend'},
+  {from:'askq', to:'checkitem', type:'extend'},
+  {from:'askq', to:'checksched', type:'extend'},
+  {from:'askq', to:'checkstatus', type:'extend'},
+  {from:'askq', to:'checkhours', type:'extend'},
+  {from:'mgminv', to:'addeq', type:'include'},
+  {from:'mgminv', to:'updateeq', type:'include'},
+  {from:'mgminv', to:'deleteeq', type:'include'},
+  {from:'mgminv', to:'searcheq', type:'extend'},
+  {from:'procret', to:'recordblc', type:'include'},
+  {from:'procclear', to:'recordblc', type:'include'},
+  {from:'procclear', to:'markclear', type:'include'},
+];
+
+/* ===================== LAYOUT ===================== */
+const BW = 260, BH = 82;   // base use-case ellipse
+const SW = 210, SH = 60;   // satellite ellipse
+const ROWH = 140;
+const ROWY0 = 160;
+const UCX = 1060;              // the single column's shared center X
+const SAT_GAP = 90;             // clear space between the column and a satellite column
+const SATX = { left: UCX - BW/2 - SAT_GAP - SW/2, right: UCX + BW/2 + SAT_GAP + SW/2 };
+const ACTORX = { left:110, right:2010 };
+const CANVAS_W = 2120;
+
+function ucBox(u){ return u.sat ? {w:SW,h:SH} : {w:BW,h:BH}; }
+const ucById = {}; const baseIndex = {};
+BASE_UC.forEach((u,i) => { u.cy = ROWY0 + i*ROWH; u.x = UCX; ucById[u.id] = u; baseIndex[u.id] = i; });
+
+// stack each parent's satellites, centered on the parent's own row
+const byParent = {};
+SAT_UC.forEach(s => { (byParent[s.parent]=byParent[s.parent]||[]).push(s); });
+Object.keys(byParent).forEach(pid => {
+  const list = byParent[pid];
+  const parent = ucById[pid];
+  const step = SH + 14;
+  const span = (list.length-1)*step;
+  list.forEach((s,i) => { s.cy = parent.cy - span/2 + i*step; s.x = SATX[s.side]; ucById[s.id] = s; });
+});
+
+const CANVAS_H = ROWY0 + BASE_UC.length*ROWH + 220;
+
+// actor Y = weighted center of everything it connects to, then nudged apart so
+// two actors on the same side never sit closer than a minimum gap.
+function assignActorY(list){
+  const raw = list.map(a=>{
+    const rows = ASSOC.filter(x=>x.actor===a.id).map(x=>ucById[x.uc].cy);
+    const avg = rows.reduce((s,v)=>s+v,0) / rows.length;
+    return { a, y: avg };
+  }).sort((p,q)=>p.y-q.y);
+  const MIN_GAP = 360;
+  for (let i=1;i<raw.length;i++){
+    if (raw[i].y - raw[i-1].y < MIN_GAP) raw[i].y = raw[i-1].y + MIN_GAP;
+  }
+  const lo = 260, hi = CANVAS_H-260;
+  if (raw[raw.length-1].y > hi){ const off = raw[raw.length-1].y - hi; raw.forEach(r=>r.y-=off); }
+  if (raw[0].y < lo){ const off = lo - raw[0].y; raw.forEach(r=>r.y+=off); }
+  raw.forEach(r=>{ r.a.cy = r.y; });
+}
+assignActorY(ACTORS.filter(a=>a.side==='left'));
+assignActorY(ACTORS.filter(a=>a.side==='right'));
+
+/* ===================== SVG BUILD ===================== */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, children){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (children||[]).forEach(c => e.appendChild(c));
+  return e;
+}
+function textEl(x, y, lines, attrs){
+  const t = el('text', Object.assign({x, 'text-anchor':'middle'}, attrs));
+  const lh = attrs.lineHeight || 15;
+  const startDy = -((lines.length-1)*lh)/2;
+  lines.forEach((line,i) => {
+    const ts = el('tspan', { x, y: y + startDy + i*lh });
+    ts.textContent = line;
+    t.appendChild(ts);
+  });
+  return t;
+}
+function labelPill(layer, x, y, text, color, bold){
+  const w = 10 + text.length*5.7;
+  layer.appendChild(el('rect', { x:x-w/2, y:y-8.5, width:w, height:15, rx:3, fill:'#ffffff', opacity:0.94 }));
+  layer.appendChild(textEl(x, y+3, [text], { 'font-size':10.5, fill:color, 'font-weight': bold?'700':'600', 'font-family':'Arial,Helvetica,sans-serif' }));
+}
+
+const svg = el('svg', { xmlns:NS, width:CANVAS_W, height:CANVAS_H, viewBox:`0 0 ${CANVAS_W} ${CANVAS_H}` });
+
+const defs = el('defs');
+function arrowMarker(id, color){
+  const m = el('marker', { id, markerWidth:9, markerHeight:9, refX:7, refY:3.5, orient:'auto', markerUnits:'userSpaceOnUse' });
+  m.appendChild(el('path', { d:'M0,0 L8,3.5 L0,7 Z', fill:color }));
+  return m;
+}
+defs.appendChild(arrowMarker('arrowGray', '#8a93a3'));
+svg.appendChild(defs);
+
+svg.appendChild(el('rect', { x:0, y:0, width:CANVAS_W, height:CANVAS_H, fill:'#ffffff' }));
+
+// boundary box — wraps the column plus both satellite columns
+const boxX = SATX.left - SW/2 - 30, boxW = (SATX.right + SW/2 + 30) - boxX, boxY = 66, boxH = CANVAS_H - 200;
+svg.appendChild(el('rect', { x:boxX, y:boxY, width:boxW, height:boxH, rx:6, fill:'#eef3fa', stroke:'#aeb9c9', 'stroke-width':1.4 }));
+svg.appendChild(textEl(boxX+14, boxY+22, ['SOMADA – Reservation & Management System'], { 'font-size':13, fill:'#5b6577', 'font-weight':'600', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+svg.appendChild(textEl(CANVAS_W/2, 36, ['SOMADA – System Boundary'], { 'font-size':23, fill:'#1b2029', 'font-weight':'700', 'font-family':'Georgia,serif' }));
+
+// ---- association lines (actor -> base use case) ----
+const assocLayer = el('g');
+svg.appendChild(assocLayer);
+ASSOC.forEach(a => {
+  const actor = actorAt(a.actor);
+  const uc = ucById[a.uc];
+  const uy = uc.cy;
+  const box = ucBox(uc);
+  const ax = ACTORX[actor.side];
+  const ay = actor.cy;
+  const targetX = actor.side === 'left' ? UCX - box.w/2 : UCX + box.w/2;
+  const startX = actor.side === 'left' ? ax + 26 : ax - 26;
+  const c1x = startX + (targetX-startX)*0.55;
+  const c2x = startX + (targetX-startX)*0.45;
+  const path = `M ${startX} ${ay} C ${c1x} ${ay}, ${c2x} ${uy}, ${targetX} ${uy}`;
+  assocLayer.appendChild(el('path', { d:path, fill:'none', stroke:actor.color, 'stroke-width':1.6, opacity:0.8 }));
+  const shared = groupCount[a.uc+'|'+a.n] > 1;
+  if (!shared) {
+    const lt = 0.86;
+    const lx = Math.pow(1-lt,3)*startX + 3*Math.pow(1-lt,2)*lt*c1x + 3*(1-lt)*lt*lt*c2x + Math.pow(lt,3)*targetX;
+    const ly = Math.pow(1-lt,3)*ay + 3*Math.pow(1-lt,2)*lt*ay + 3*(1-lt)*lt*lt*uy + Math.pow(lt,3)*uy;
+    labelPill(assocLayer, lx, ly, a.n, actor.color);
+  }
+});
+function actorAt(id){ return ACTORS.find(a=>a.id===id); }
+const seenGroup = {};
+ASSOC.forEach(a => {
+  const key = a.uc + '|' + a.n;
+  if (groupCount[key] <= 1 || seenGroup[key]) return;
+  seenGroup[key] = true;
+  const uc = ucById[a.uc]; const uy = uc.cy; const box = ucBox(uc);
+  const actor = actorAt(a.actor);
+  const lx = actor.side === 'left' ? UCX - box.w/2 - 34 : UCX + box.w/2 + 34;
+  labelPill(assocLayer, lx, uy, a.n, '#4a5164', true);
+});
+
+// ---- include/extend relationship arrows: parent oval straight out its side to
+// the satellite beside it. Where several satellites share one parent (mgminv,
+// askq) each gets its own straight-ish line, fanned out from the parent edge so
+// they don't overlap on the way to their differently-offset targets. ----
+const relLayer = el('g');
+svg.appendChild(relLayer);
+RELS.forEach(r => {
+  const from = ucById[r.from], to = ucById[r.to];
+  const side = to.side; // which side of the parent the satellite sits on
+  const fromEdgeX = side==='left' ? from.x - ucBox(from).w/2 : from.x + ucBox(from).w/2;
+  const toEdgeX = side==='left' ? to.x + ucBox(to).w/2 : to.x - ucBox(to).w/2;
+  const srcU = r.type==='include' ? from : to;
+  const dstU = r.type==='include' ? to : from;
+  const sx = srcU===from ? fromEdgeX : toEdgeX, sy = srcU.cy;
+  const dx = dstU===from ? fromEdgeX : toEdgeX, dy = dstU.cy;
+  const midx = (sx+dx)/2;
+  const path = `M ${sx} ${sy} C ${midx} ${sy}, ${midx} ${dy}, ${dx} ${dy}`;
+  relLayer.appendChild(el('path', { d:path, fill:'none', stroke:'#8a93a3', 'stroke-width':1.4, 'stroke-dasharray':'5,4', 'marker-end':'url(#arrowGray)' }));
+  const lx = midx, ly = (sy+dy)/2;
+  const tag = `«${r.type}»`;
+  const tagW = 16 + tag.length*6.4;
+  relLayer.appendChild(el('rect', { x:lx-tagW/2, y:ly-9.5, width:tagW, height:18, rx:9, fill:'#4a5164' }));
+  relLayer.appendChild(textEl(lx, ly+3.5, [tag], { 'font-size':10.5, fill:'#ffffff', 'font-weight':'600', 'font-family':'Arial,Helvetica,sans-serif' }));
+});
+
+// ---- use case ovals ----
+const ucLayer = el('g');
+svg.appendChild(ucLayer);
+USECASES.forEach(u => {
+  const box = ucBox(u);
+  ucLayer.appendChild(el('ellipse', { cx:u.x, cy:u.cy, rx:box.w/2, ry:box.h/2, fill: u.sat ? '#e3edf9' : '#cfe4f7', stroke:'#2b3a55', 'stroke-width':1.3 }));
+  ucLayer.appendChild(textEl(u.x, u.cy, u.label, { 'font-size': u.sat ? 12 : 13, fill:'#1b2029', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:15 }));
+});
+
+// ---- actors ----
+function drawActor(a){
+  const x = ACTORX[a.side];
+  const y = a.cy;
+  const g = el('g');
+  const c = a.color;
+  g.appendChild(el('circle', { cx:x, cy:y-34, r:11, fill:'none', stroke:c, 'stroke-width':2.4 }));
+  g.appendChild(el('line', { x1:x, y1:y-23, x2:x, y2:y+8, stroke:c, 'stroke-width':2.4 }));
+  g.appendChild(el('line', { x1:x-16, y1:y-12, x2:x+16, y2:y-12, stroke:c, 'stroke-width':2.4 }));
+  g.appendChild(el('line', { x1:x, y1:y+8, x2:x-15, y2:y+30, stroke:c, 'stroke-width':2.4 }));
+  g.appendChild(el('line', { x1:x, y1:y+8, x2:x+15, y2:y+30, stroke:c, 'stroke-width':2.4 }));
+  g.appendChild(textEl(x, y+50, a.label, { 'font-size':13, fill:c, 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:15 }));
+  return g;
+}
+const actorLayer = el('g');
+ACTORS.forEach(a => actorLayer.appendChild(drawActor(a)));
+svg.appendChild(actorLayer);
+
+// ---- legend ----
+const legend = el('g', { transform:`translate(${boxX}, ${CANVAS_H-70})` });
+legend.appendChild(el('line', { x1:0, y1:0, x2:28, y2:0, stroke:'#5b6577', 'stroke-width':1.6 }));
+legend.appendChild(textEl(38, 4, ['Direct association, labelled with the object exchanged'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+legend.appendChild(el('line', { x1:520, y1:0, x2:548, y2:0, stroke:'#8a93a3', 'stroke-width':1.4, 'stroke-dasharray':'5,4', 'marker-end':'url(#arrowGray)' }));
+legend.appendChild(textEl(558, 4, ['«include» always runs  ·  «extend» runs conditionally'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+svg.appendChild(legend);
+
+document.getElementById('stage').appendChild(svg);
+window.__done = true;
+</script>
+</body>
+</html>

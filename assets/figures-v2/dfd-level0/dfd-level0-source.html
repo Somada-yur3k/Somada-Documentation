@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  html,body{margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;}
+  #stage{display:inline-block;}
+  .page-tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid #e4e5ec;display:flex;align-items:center;gap:4px;padding:10px 16px;z-index:10;overflow-x:auto;font-family:'Segoe UI',Arial,sans-serif;}
+  .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:#5b6270;white-space:nowrap;flex:0 0 auto;text-decoration:none;}
+  .page-tab:hover{background:#eef0f4;color:#1c2029;}
+  .page-tab.active{background:#e7f5ed;color:#1c7a45;}
+</style>
+</head>
+<body>
+<nav class="page-tabs">
+  <a class="page-tab" href="../../../index.html">🏠 Home</a>
+  <a class="page-tab" href="../../../Docs.html">📄 Documentation</a>
+  <a class="page-tab" href="../../../Current-System.html">🗂️ Current System</a>
+  <a class="page-tab" href="../usecase-diagram-source.html">🧩 Use Case Diagram</a>
+  <a class="page-tab active" href="dfd-level0-source.html">🔀 DFD Level 0</a>
+  <a class="page-tab" href="../dfd-level1/dfd-level1-source.html">🔀 DFD Level 1</a>
+</nav>
+<div id="stage"></div>
+<script>
+/* ===================== DATA =====================
+   Context Diagram (DFD Level 0): the whole system as one process, six external
+   entities around it, no data stores (a context diagram never shows internals).
+   Flows here are the coarse, aggregate versions of what Level 1 later decomposes
+   per process — e.g. "Reservation Status" here stands in for the separate
+   status/history/clearance/borrowing-slip reads Level 1 breaks it into.
+
+   Layout follows the supplied style guide exactly: a 2-column x 3-row grid with
+   the process in the middle. The two TOP-row and two BOTTOM-row entities route
+   straight into the process's top/bottom edges (not just left/right) — that's
+   what keeps every edge of the box in use instead of stacking everything onto
+   just two sides. The two MIDDLE-row entities (Faculty, Head Laboratory) connect
+   directly to the process's left/right edges since they sit level with it. */
+const ENTITIES_L = [
+  { id:'classrep', label:['Class Representative'], color:'#2f6fd6', row:'top' },
+  { id:'faculty',  label:['Faculty'],               color:'#b5384a', row:'mid' },
+  { id:'dean',     label:['Dean'],                  color:'#c23b8f', row:'bot' },
+];
+const ENTITIES_R = [
+  { id:'circuits', label:['Circuits Laboratory Staff'], color:'#1f9c9c', row:'top' },
+  { id:'headlab',  label:['Head Laboratory'],           color:'#2e9e5b', row:'mid' },
+  { id:'physics',  label:['Physics Laboratory Staff'],  color:'#d98a2b', row:'bot' },
+];
+const ENTITIES = ENTITIES_L.concat(ENTITIES_R);
+ENTITIES_L.forEach(e=>{ e.side='L'; });
+ENTITIES_R.forEach(e=>{ e.side='R'; });
+const entityById = {}; ENTITIES.forEach(e=>entityById[e.id]=e);
+
+const PROCESS = { num:'0', label:['SOMADA','Web-Based Laboratory','Management System'] };
+
+// dir 'in' = entity->system, 'out' = system->entity. Coarse, entity-level flows —
+// the fine-grained per-process breakdown lives in DFD Level 1.
+const FLOWS = [
+  // ---- Class Representative ----
+  {entity:'classrep', dir:'in',  label:'Login Credentials'},
+  {entity:'classrep', dir:'in',  label:'Reservation Request'},
+  {entity:'classrep', dir:'in',  label:'Question'},
+  {entity:'classrep', dir:'out', label:'Reservation Status'},
+  {entity:'classrep', dir:'out', label:'Answer'},
+
+  // ---- Faculty ----
+  {entity:'faculty', dir:'in',  label:'Login Credentials'},
+  {entity:'faculty', dir:'in',  label:'Reservation Request'},
+  {entity:'faculty', dir:'in',  label:'Approval Decision'},
+  {entity:'faculty', dir:'in',  label:'Question'},
+  {entity:'faculty', dir:'out', label:'Account Credentials'},
+  {entity:'faculty', dir:'out', label:'Reservation Status'},
+  {entity:'faculty', dir:'out', label:'Pending Reservation'},
+  {entity:'faculty', dir:'out', label:'Answer'},
+
+  // ---- Dean ----
+  {entity:'dean', dir:'in',  label:'Login Credentials'},
+  {entity:'dean', dir:'in',  label:'Reservation Request'},
+  {entity:'dean', dir:'in',  label:'Approval Decision'},
+  {entity:'dean', dir:'out', label:'Reservation Status'},
+  {entity:'dean', dir:'out', label:'Pending Reservation'},
+
+  // ---- Head Laboratory ----
+  {entity:'headlab', dir:'in',  label:'Login Credentials'},
+  {entity:'headlab', dir:'in',  label:'Class Representative Details'},
+  {entity:'headlab', dir:'in',  label:'Returned Item'},
+  {entity:'headlab', dir:'in',  label:'Accountable Member'},
+  {entity:'headlab', dir:'in',  label:'Equipment Update'},
+  {entity:'headlab', dir:'in',  label:'Schedule Update'},
+  {entity:'headlab', dir:'in',  label:'Daily Task Entry'},
+  {entity:'headlab', dir:'in',  label:'Report Request'},
+  {entity:'headlab', dir:'in',  label:'Disposal Entry'},
+  {entity:'headlab', dir:'out', label:'Account Confirmation'},
+  {entity:'headlab', dir:'out', label:'Borrowing Slip'},
+  {entity:'headlab', dir:'out', label:'Equipment Catalogue'},
+  {entity:'headlab', dir:'out', label:'Schedule Confirmation'},
+  {entity:'headlab', dir:'out', label:'Dashboard Metrics'},
+  {entity:'headlab', dir:'out', label:'Disposal Confirmation'},
+
+  // ---- Physics Laboratory Staff ----
+  {entity:'physics', dir:'in',  label:'Login Credentials'},
+  {entity:'physics', dir:'in',  label:'Returned Item'},
+  {entity:'physics', dir:'in',  label:'Accountable Member'},
+  {entity:'physics', dir:'in',  label:'Equipment Update'},
+  {entity:'physics', dir:'in',  label:'Report Request'},
+  {entity:'physics', dir:'in',  label:'Disposal Entry'},
+  {entity:'physics', dir:'out', label:'Borrowing Slip'},
+  {entity:'physics', dir:'out', label:'Equipment Catalogue'},
+  {entity:'physics', dir:'out', label:'Dashboard Metrics'},
+  {entity:'physics', dir:'out', label:'Disposal Confirmation'},
+
+  // ---- Circuits Laboratory Staff ----
+  {entity:'circuits', dir:'in',  label:'Login Credentials'},
+  {entity:'circuits', dir:'in',  label:'Returned Item'},
+  {entity:'circuits', dir:'in',  label:'Accountable Member'},
+  {entity:'circuits', dir:'in',  label:'Equipment Update'},
+  {entity:'circuits', dir:'in',  label:'Report Request'},
+  {entity:'circuits', dir:'in',  label:'Disposal Entry'},
+  {entity:'circuits', dir:'out', label:'Borrowing Slip'},
+  {entity:'circuits', dir:'out', label:'Equipment Catalogue'},
+  {entity:'circuits', dir:'out', label:'Dashboard Metrics'},
+  {entity:'circuits', dir:'out', label:'Disposal Confirmation'},
+];
+ENTITIES.forEach(e=>{ e.flowIdx = []; });
+FLOWS.forEach((f,idx)=>{ entityById[f.entity].flowIdx.push(idx); });
+
+/* ===================== LAYOUT ===================== */
+const ENTITY_W = 260;
+const ROW_GAP = 70;     // vertical gap between the top/bottom row entities and the process
+const COL_GAP = 130;    // horizontal gap between the mid-row entities and the process
+const TOP_MARGIN = 150;
+
+// entity box height driven by how many of its own flows must fan out along its edge
+ENTITIES.forEach(e=>{ e.h = Math.max(90, e.flowIdx.length*24 + 24); });
+
+// process box sized to fit the busier of each pair of edges it serves
+function slotsFor(ids){ return ids.reduce((s,id)=> s + entityById[id].flowIdx.length, 0); }
+const topSlots = Math.max(entityById.classrep.flowIdx.length, entityById.circuits.flowIdx.length);
+const botSlots = Math.max(entityById.dean.flowIdx.length, entityById.physics.flowIdx.length);
+const PROC_W = 2 * Math.max(topSlots, botSlots) * 26 + 80;
+const PROC_H = Math.max(entityById.faculty.flowIdx.length, entityById.headlab.flowIdx.length) * 24 + 70;
+
+const COL_L_X = 50;
+const PROC_X = COL_L_X + ENTITY_W + COL_GAP;
+const COL_R_X = PROC_X + PROC_W + COL_GAP;
+const CANVAS_W = COL_R_X + ENTITY_W + 50;
+
+const topRowH = Math.max(entityById.classrep.h, entityById.circuits.h);
+const botRowH = Math.max(entityById.dean.h, entityById.physics.h);
+const proc = { top: TOP_MARGIN + topRowH + ROW_GAP, w: PROC_W, h: PROC_H };
+proc.bottom = proc.top + proc.h;
+proc.cy = proc.top + proc.h/2;
+const bottomRowY = proc.bottom + ROW_GAP;
+const CANVAS_H = bottomRowY + botRowH + 130;
+
+// top row: bottom-align so both boxes' bottom edges sit at the same gap line
+entityById.classrep.top = proc.top - ROW_GAP - entityById.classrep.h;
+entityById.circuits.top = proc.top - ROW_GAP - entityById.circuits.h;
+entityById.classrep.x = COL_L_X; entityById.circuits.x = COL_R_X;
+// bottom row: top-align so both boxes start right after the gap line
+entityById.dean.top = bottomRowY;
+entityById.physics.top = bottomRowY;
+entityById.dean.x = COL_L_X; entityById.physics.x = COL_R_X;
+// mid row: vertically centered on the process
+entityById.faculty.top = proc.cy - entityById.faculty.h/2;
+entityById.headlab.top = proc.cy - entityById.headlab.h/2;
+entityById.faculty.x = COL_L_X; entityById.headlab.x = COL_R_X;
+ENTITIES.forEach(e=>{ e.cy = e.top + e.h/2; e.cx = e.x + ENTITY_W/2; });
+
+/* ===================== ANCHOR SPREADING ===================== */
+function spread(count, span, margin){
+  margin = margin===undefined ? 10 : margin;
+  const usable = span - margin*2;
+  if (count<=1) return [0];
+  const step = usable/(count-1);
+  return Array.from({length:count}, (_,i)=> -usable/2 + i*step);
+}
+// entity-side anchors: every flow gets its own point along the entity's own edge.
+// Every entity — corner or mid-row — exits via its own left/right (vertical) edge,
+// so the spread always has to be over that entity's own height, never a fixed width.
+// (Bug fixed here: this used to spread corner entities over the constant ENTITY_W
+// instead of their own e.h, so a short box like Dean's had its connection points
+// computed across a range wider than the box itself.)
+const entityAnchor = {};
+ENTITIES.forEach(e=>{
+  const offs = spread(e.flowIdx.length, e.h);
+  e.flowIdx.forEach((idx,i)=>{ entityAnchor[idx] = offs[i]; });
+});
+
+/* ===================== SVG BUILD ===================== */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, children){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (children||[]).forEach(c => e.appendChild(c));
+  return e;
+}
+function textEl(x, y, lines, attrs){
+  const t = el('text', Object.assign({x, 'text-anchor':'middle'}, attrs));
+  const lh = attrs.lineHeight || 14;
+  const startDy = -((lines.length-1)*lh)/2;
+  lines.forEach((line,i) => {
+    const ts = el('tspan', { x, y: y + startDy + i*lh });
+    ts.textContent = line;
+    t.appendChild(ts);
+  });
+  return t;
+}
+function labelPill(layer, x, y, text, color, anchor){
+  const w = 12 + text.length*5.5;
+  const ax = anchor==='start' ? x : anchor==='end' ? x - w : x - w/2;
+  layer.appendChild(el('rect', { x:ax, y:y-7.5, width:w, height:15, rx:3, fill:'#ffffff', opacity:0.96 }));
+  layer.appendChild(textEl(ax+w/2, y+3.5, [text], { 'font-size':10.3, fill:color, 'font-weight':'600', 'font-family':'Arial,Helvetica,sans-serif' }));
+}
+
+const svg = el('svg', { xmlns:NS, width:CANVAS_W, height:CANVAS_H, viewBox:`0 0 ${CANVAS_W} ${CANVAS_H}` });
+const defs = el('defs');
+function arrowMarker(id, color){
+  const m = el('marker', { id, markerWidth:9, markerHeight:9, refX:7, refY:3.5, orient:'auto', markerUnits:'userSpaceOnUse' });
+  m.appendChild(el('path', { d:'M0,0 L8,3.5 L0,7 Z', fill:color }));
+  return m;
+}
+ENTITIES.forEach(e=> defs.appendChild(arrowMarker('arrow-'+e.id, e.color)));
+svg.appendChild(defs);
+svg.appendChild(el('rect', { x:0, y:0, width:CANVAS_W, height:CANVAS_H, fill:'#ffffff' }));
+svg.appendChild(textEl(CANVAS_W/2, 46, ['SOMADA — Context Diagram (DFD Level 0)'], { 'font-size':26, fill:'#1b2029', 'font-weight':'700', 'font-family':'Georgia,serif' }));
+svg.appendChild(textEl(CANVAS_W/2, 76, ['The SOMADA system as a single process, showing every external role it exchanges data with'], { 'font-size':13, fill:'#6b7484', 'font-family':'Arial,Helvetica,sans-serif' }));
+
+const flowLayer = el('g'); svg.appendChild(flowLayer);
+const boxLayer = el('g'); svg.appendChild(boxLayer);
+
+function elbow(x1,y1,x2,y2,viaX){ return `M ${x1} ${y1} L ${viaX} ${y1} L ${viaX} ${y2} L ${x2} ${y2}`; }
+
+/* ---- top/bottom-row entities: direct L-bend into the process's top/bottom edge ----
+   Entity and target don't overlap in the axis that varies (entity is entirely above
+   or below the process), so a plain corner bend never needs a shared lane — assigning
+   target positions in the same sorted order as the entity-side anchors keeps the
+   flows from crossing each other. */
+function drawCorner(e, half){ // half: 'L' or 'R' — which half of the top/bottom edge this entity uses
+  const goingDown = (e.row==='top'); // top-row entities bend downward into proc.top; bottom-row bend upward into proc.bottom
+  const targetY = goingDown ? proc.top : proc.bottom;
+  const halfX0 = half==='L' ? PROC_X + 16 : PROC_X + proc.w/2 + 10;
+  const halfX1 = half==='L' ? PROC_X + proc.w/2 - 10 : PROC_X + proc.w - 16;
+  const order = e.flowIdx.slice().sort((a,b)=> entityAnchor[a]-entityAnchor[b]);
+  const exitRight = (e.side==='L'); // left-column entities exit their own right edge; right-column exit their left edge
+  // Non-crossing requires the entity-anchor order and the target-x order to run in
+  // the SAME direction at top-right/bottom-left (the corner "opens" the same way on
+  // both edges) but OPPOSITE directions at top-left/bottom-right (the corner is
+  // mirrored) — this is what made top-right (Circuits) and bottom-left (Dean) look
+  // fine while top-left (Class Rep) and bottom-right (Physics) crossed themselves.
+  const descending = (goingDown === exitRight);
+  let xs = spread(order.length, halfX1-halfX0, 0).map(v => (halfX0+halfX1)/2 + v);
+  if (descending) xs = xs.slice().reverse();
+  const entEdgeX = exitRight ? e.x + ENTITY_W : e.x;
+  order.forEach((idx, i) => {
+    const f = FLOWS[idx];
+    const ey = e.cy + entityAnchor[idx];
+    const tx = xs[i];
+    const entToProc = (f.dir === 'in');
+    const d = entToProc
+      ? elbow(entEdgeX, ey, tx, targetY, tx)
+      : elbow(tx, targetY, entEdgeX, ey, tx);
+    // label always sits just outside the entity box, clear of it either way —
+    // an out-flow's arrowhead lands right there anyway, so it reads fine.
+    const stubX = entEdgeX + (exitRight?10:-10), stubY = ey, stubAnchor = exitRight?'start':'end';
+    flowLayer.appendChild(el('path', { d, fill:'none', stroke:e.color, 'stroke-width':1.5, opacity:0.8, 'marker-end':`url(#arrow-${e.id})` }));
+    labelPill(flowLayer, stubX, stubY, f.label, e.color, stubAnchor);
+  });
+}
+drawCorner(entityById.classrep, 'L');
+drawCorner(entityById.circuits, 'R');
+drawCorner(entityById.dean, 'L');
+drawCorner(entityById.physics, 'R');
+
+/* ---- mid-row entities: lane-packed Z-bend straight into the process's left/right edge ---- */
+function packLanes(items){
+  const laneEnd = []; const laneOf = {};
+  items.slice().sort((a,b)=>a.y0-b.y0).forEach(it=>{
+    let chosen = -1;
+    for (let i=0;i<laneEnd.length;i++){ if (laneEnd[i] < it.y0 - 18){ chosen=i; break; } }
+    if (chosen===-1){ chosen = laneEnd.length; laneEnd.push(-Infinity); }
+    laneEnd[chosen] = it.y1;
+    laneOf[it.key] = chosen;
+  });
+  return { laneOf, count: laneEnd.length };
+}
+function drawMid(e){
+  const exitRight = (e.side==='L');
+  const entEdgeX = exitRight ? e.x + ENTITY_W : e.x;
+  const pEdgeX = exitRight ? PROC_X : PROC_X + proc.w;
+  const order = e.flowIdx.slice().sort((a,b)=> entityAnchor[a]-entityAnchor[b]);
+  const pOffs = spread(order.length, proc.h, 22);
+  const procY = {}; order.forEach((idx,i)=>{ procY[idx] = proc.cy + pOffs[i]; });
+  const items = order.map(idx => {
+    const ey = e.cy + entityAnchor[idx];
+    return { key: idx, y0: Math.min(ey, procY[idx]), y1: Math.max(ey, procY[idx]) };
+  });
+  const lanes = packLanes(items);
+  const gutterX0 = exitRight ? entEdgeX + 20 : pEdgeX + 20;
+  const LANE_STEP = 15;
+  order.forEach(idx=>{
+    const f = FLOWS[idx];
+    const ey = e.cy + entityAnchor[idx];
+    const py = procY[idx];
+    const laneX = gutterX0 + lanes.laneOf[idx]*LANE_STEP;
+    const entToProc = (f.dir === 'in');
+    const d = entToProc
+      ? elbow(entEdgeX, ey, pEdgeX, py, laneX)
+      : elbow(pEdgeX, py, entEdgeX, ey, laneX);
+    const stubX = entEdgeX + (exitRight?10:-10), stubY = ey, stubAnchor = exitRight?'start':'end';
+    flowLayer.appendChild(el('path', { d, fill:'none', stroke:e.color, 'stroke-width':1.5, opacity:0.8, 'marker-end':`url(#arrow-${e.id})` }));
+    labelPill(flowLayer, stubX, stubY, f.label, e.color, stubAnchor);
+  });
+}
+drawMid(entityById.faculty);
+drawMid(entityById.headlab);
+
+// ---- per-entity icon: same rectangle shape for every entity (correct DFD notation —
+// shape is not supposed to vary), but a distinct pictograph so each role still reads
+// at a glance without relying on color alone (e.g. a black-and-white printout). ----
+function starPoints(rOuter, rInner, n){
+  const pts=[];
+  for(let i=0;i<n*2;i++){
+    const r = i%2===0?rOuter:rInner;
+    const a = -Math.PI/2 + i*Math.PI/n;
+    pts.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));
+  }
+  return pts.join(' ');
+}
+function entityIcon(id, cx, cy, color){
+  const g = el('g', { transform:`translate(${cx},${cy})` });
+  const st = { stroke:color, 'stroke-width':1.6, fill:'none', 'stroke-linecap':'round', 'stroke-linejoin':'round' };
+  if (id==='classrep'){ // graduation cap — Class Representative
+    g.appendChild(el('polygon', Object.assign({ points:'-11,-2 0,-7 11,-2 0,3' }, st, { fill:color, 'fill-opacity':0.15 })));
+    g.appendChild(el('line', Object.assign({ x1:6, y1:0, x2:6, y2:7 }, st)));
+    g.appendChild(el('circle', { cx:6, cy:8, r:1.4, fill:color }));
+  } else if (id==='faculty'){ // open book — Faculty
+    g.appendChild(el('path', Object.assign({ d:'M-10,-6 L-1,-7 L-1,7 L-10,6 Z' }, st)));
+    g.appendChild(el('path', Object.assign({ d:'M10,-6 L1,-7 L1,7 L10,6 Z' }, st)));
+  } else if (id==='dean'){ // star — Dean (institutional authority)
+    g.appendChild(el('polygon', Object.assign({ points:starPoints(10,4.2,5) }, st, { fill:color, 'fill-opacity':0.15 })));
+  } else if (id==='headlab'){ // shield — Head Laboratory (oversight)
+    g.appendChild(el('path', Object.assign({ d:'M0,-9 L8,-5.5 L8,1 C8,6 4,9.5 0,10.5 C-4,9.5 -8,6 -8,1 L-8,-5.5 Z' }, st)));
+  } else if (id==='physics'){ // atom — Physics Laboratory Staff
+    g.appendChild(el('circle', { cx:0, cy:0, r:1.8, fill:color }));
+    g.appendChild(el('ellipse', Object.assign({ cx:0, cy:0, rx:10, ry:4 }, st)));
+    g.appendChild(el('ellipse', Object.assign({ cx:0, cy:0, rx:10, ry:4, transform:'rotate(60)' }, st)));
+    g.appendChild(el('ellipse', Object.assign({ cx:0, cy:0, rx:10, ry:4, transform:'rotate(120)' }, st)));
+  } else if (id==='circuits'){ // chip — Circuits Laboratory Staff
+    g.appendChild(el('rect', Object.assign({ x:-6, y:-6, width:12, height:12, rx:1.5 }, st)));
+    [-4,0,4].forEach(o=>{
+      g.appendChild(el('line', Object.assign({ x1:o, y1:-6, x2:o, y2:-9 }, st)));
+      g.appendChild(el('line', Object.assign({ x1:o, y1:6, x2:o, y2:9 }, st)));
+      g.appendChild(el('line', Object.assign({ x1:-6, y1:o, x2:-9, y2:o }, st)));
+      g.appendChild(el('line', Object.assign({ x1:6, y1:o, x2:9, y2:o }, st)));
+    });
+  }
+  return g;
+}
+
+// ---- boxes: entities ----
+ENTITIES.forEach(e=>{
+  const g = el('g');
+  g.appendChild(el('rect', { x:e.x, y:e.top, width:ENTITY_W, height:e.h, rx:6, fill:'#e9f1fc', stroke:e.color, 'stroke-width':1.8 }));
+  g.appendChild(entityIcon(e.id, e.x+24, e.top+24, e.color));
+  g.appendChild(textEl(e.x+ENTITY_W/2, e.cy, e.label, { 'font-size':14, fill:'#1b2029', 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:17 }));
+  boxLayer.appendChild(g);
+});
+
+// ---- box: the single process ----
+(function(){
+  const g = el('g');
+  const hdrH = 30;
+  g.appendChild(el('rect', { x:PROC_X, y:proc.top, width:proc.w, height:proc.h, rx:10, fill:'#eef2fb', stroke:'#2f5fdb', 'stroke-width':2 }));
+  g.appendChild(el('path', { d:`M ${PROC_X} ${proc.top+10} a 10 10 0 0 1 10 -10 h ${proc.w-20} a 10 10 0 0 1 10 10 v ${hdrH-10} h ${-proc.w}Z`, fill:'#2f5fdb' }));
+  g.appendChild(textEl(PROC_X+proc.w/2, proc.top+18, [PROCESS.num], { 'font-size':14, fill:'#ffffff', 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif' }));
+  g.appendChild(textEl(PROC_X+proc.w/2, proc.top+hdrH+(proc.h-hdrH)/2, PROCESS.label, { 'font-size':18, fill:'#1b2029', 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:23 }));
+  boxLayer.appendChild(g);
+})();
+
+// ---- legend ----
+const legend = el('g', { transform:`translate(${COL_L_X}, ${CANVAS_H-50})` });
+legend.appendChild(el('rect', { x:0, y:-14, width:22, height:16, rx:4, fill:'#e9f1fc', stroke:'#5b6577', 'stroke-width':1.3 }));
+legend.appendChild(textEl(70, -3, ['External Entity — a role outside the system boundary'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+legend.appendChild(el('rect', { x:520, y:-19, width:24, height:24, rx:6, fill:'#eef2fb', stroke:'#2f5fdb', 'stroke-width':1.3 }));
+legend.appendChild(textEl(600, -3, ['Process — the entire system, one box at Level 0'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+legend.appendChild(el('line', { x1:1120, y1:-6, x2:1150, y2:-6, stroke:'#5b6577', 'stroke-width':1.5, 'marker-end':'url(#arrow-headlab)' }));
+legend.appendChild(textEl(1160, -3, ['Data flow, labelled with the noun exchanged'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+
+svg.appendChild(legend);
+document.getElementById('stage').appendChild(svg);
+window.__done = true;
+</script>
+</body>
+</html>

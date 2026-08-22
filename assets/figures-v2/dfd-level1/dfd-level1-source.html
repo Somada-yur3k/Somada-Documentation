@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  html,body{margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;}
+  #stage{display:inline-block;}
+  .page-tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid #e4e5ec;display:flex;align-items:center;gap:4px;padding:10px 16px;z-index:10;overflow-x:auto;font-family:'Segoe UI',Arial,sans-serif;}
+  .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:#5b6270;white-space:nowrap;flex:0 0 auto;text-decoration:none;}
+  .page-tab:hover{background:#eef0f4;color:#1c2029;}
+  .page-tab.active{background:#eaf0fd;color:#2245a8;}
+</style>
+</head>
+<body>
+<nav class="page-tabs">
+  <a class="page-tab" href="../../../index.html">🏠 Home</a>
+  <a class="page-tab" href="../../../Docs.html">📄 Documentation</a>
+  <a class="page-tab" href="../../../Current-System.html">🗂️ Current System</a>
+  <a class="page-tab" href="../usecase-diagram-source.html">🧩 Use Case Diagram</a>
+  <a class="page-tab" href="../dfd-level0/dfd-level0-source.html">🔀 DFD Level 0</a>
+  <a class="page-tab active" href="dfd-level1-source.html">🔀 DFD Level 1</a>
+</nav>
+<div id="stage"></div>
+<script>
+/* ===================== DATA =====================
+   Two clusters, same idea as the use case diagram: requester-side actors only ever
+   touch requester-side processes, admin-side actors only ever touch admin-side
+   processes. Anything that has to cross sides (e.g. a class rep seeing their
+   borrowing/clearance status) travels through a shared data store in the center
+   instead of a long direct line — that's what kept the use case diagram clean,
+   and it's what the old Level 1 was missing (every actor reached every process). */
+const ENTITIES_L = [
+  { id:'classrep', label:['Class Representative'], color:'#2f6fd6' },
+  { id:'faculty',  label:['Faculty'],               color:'#b5384a' },
+  { id:'dean',     label:['Dean'],                  color:'#c23b8f' },
+];
+const ENTITIES_R = [
+  { id:'headlab',  label:['Head Laboratory'],        color:'#2e9e5b' },
+  { id:'physics',  label:['Physics Laboratory Staff'], color:'#d98a2b' },
+  { id:'circuits', label:['Circuits Laboratory Staff'], color:'#1f9c9c' },
+];
+const ENTITIES = ENTITIES_L.concat(ENTITIES_R);
+
+const PROCESSES_L = [
+  { id:'L1', num:'1.0', label:['Authenticate','(Log In)'] },
+  { id:'L2', num:'2.0', label:['Handle Laboratory Reservation','& Track Status'] },
+  { id:'L3', num:'3.0', label:['Process Reservation','Approval'] },
+  { id:'L4', num:'4.0', label:['Ask Laboratory','Question'] },
+];
+const PROCESSES_R = [
+  { id:'R1', num:'5.0',  label:['Manage Accounts','& Authentication'] },
+  { id:'R2', num:'6.0',  label:['Issue Borrowing Slip','& Process Return'] },
+  { id:'R3', num:'7.0',  label:['Process Clearance'] },
+  { id:'R4', num:'8.0',  label:['Manage Equipment','Inventory'] },
+  { id:'R5', num:'9.0',  label:['Manage Laboratory','Logs & Schedule'] },
+  { id:'R6', num:'10.0', label:['View Laboratory Dashboard','& Generate Reports'] },
+  { id:'R7', num:'11.0', label:['Log Waste Disposal'] },
+];
+const PROCESSES = PROCESSES_L.concat(PROCESSES_R);
+
+const STORES = [
+  { id:'d1',  num:'D1',  label:['Reservation Records'] },
+  { id:'d2',  num:'D2',  label:['Borrowing Records'] },
+  { id:'d3',  num:'D3',  label:['Approval Records'] },
+  { id:'d4',  num:'D4',  label:['Clearance Records'] },
+  { id:'d5',  num:'D5',  label:['Equipment Inventory','Records'] },
+  { id:'d6',  num:'D6',  label:['Laboratory Schedule'] },
+  { id:'d7',  num:'D7',  label:['Broken, Loss &','Consumed Logs'] },
+  { id:'d8',  num:'D8',  label:['Physics Laboratory Logs'] },
+  { id:'d9',  num:'D9',  label:['Circuits Laboratory Logs'] },
+  { id:'d10', num:'D10', label:['Daily Task Logs'] },
+  { id:'d11', num:'D11', label:['Waste Disposal Records'] },
+  { id:'d12', num:'D12', label:['Q&A Knowledge Base'] },
+  { id:'d13', num:'D13', label:['Q&A Conversation Logs'] },
+  { id:'d14', num:'D14', label:['User Accounts'] },
+];
+
+// kind 'ep': entity <-> process (always same side). dir 'in' = entity->process, 'out' = process->entity.
+// kind 'ps': process <-> store. dir 'out' = process->store (write), 'in' = store->process (read).
+const FLOWS = [
+  // ================= LEFT CLUSTER =================
+  // ---- 1.0 Authenticate (Log In) ----
+  {kind:'ep', entity:'classrep', process:'L1', dir:'in',  label:'Login Credentials'},
+  {kind:'ep', entity:'faculty',  process:'L1', dir:'in',  label:'Login Credentials'},
+  {kind:'ep', entity:'faculty',  process:'L1', dir:'out', label:'Account Credentials'},
+  {kind:'ep', entity:'dean',     process:'L1', dir:'in',  label:'Login Credentials'},
+  {kind:'ps', process:'L1', store:'d14', dir:'in', label:'Account Verification'},
+
+  // ---- 2.0 Handle Laboratory Reservation & Track Status ----
+  {kind:'ep', entity:'classrep', process:'L2', dir:'in',  label:'Reservation Request'},
+  {kind:'ep', entity:'classrep', process:'L2', dir:'out', label:'Reservation Status'},
+  {kind:'ep', entity:'faculty',  process:'L2', dir:'in',  label:'Reservation Request'},
+  {kind:'ep', entity:'faculty',  process:'L2', dir:'out', label:'Reservation Status'},
+  {kind:'ep', entity:'dean',     process:'L2', dir:'in',  label:'Reservation Request'},
+  {kind:'ep', entity:'dean',     process:'L2', dir:'out', label:'Reservation Status'},
+  {kind:'ps', process:'L2', store:'d1', dir:'out', label:'Reservation Data'},
+  {kind:'ps', process:'L2', store:'d1', dir:'in',  label:'Reservation Record'},
+  {kind:'ps', process:'L2', store:'d6', dir:'in',  label:'Schedule Data'},
+  {kind:'ps', process:'L2', store:'d4', dir:'in',  label:'Clearance Status'},
+  {kind:'ps', process:'L2', store:'d2', dir:'in',  label:'Borrowing Status'},
+
+  // ---- 3.0 Process Reservation Approval ----
+  {kind:'ep', entity:'faculty', process:'L3', dir:'out', label:'Pending Reservation'},
+  {kind:'ep', entity:'faculty', process:'L3', dir:'in',  label:'Approval Decision'},
+  {kind:'ep', entity:'dean',    process:'L3', dir:'out', label:'Pending Reservation'},
+  {kind:'ep', entity:'dean',    process:'L3', dir:'in',  label:'Approval Decision'},
+  {kind:'ps', process:'L3', store:'d1', dir:'in',  label:'Pending Reservation'},
+  {kind:'ps', process:'L3', store:'d1', dir:'out', label:'Approval Outcome'},
+  {kind:'ps', process:'L3', store:'d3', dir:'out', label:'Approval Record'},
+
+  // ---- 4.0 Ask Laboratory Question ----
+  {kind:'ep', entity:'classrep', process:'L4', dir:'in',  label:'Question'},
+  {kind:'ep', entity:'classrep', process:'L4', dir:'out', label:'Answer'},
+  {kind:'ep', entity:'faculty',  process:'L4', dir:'in',  label:'Question'},
+  {kind:'ep', entity:'faculty',  process:'L4', dir:'out', label:'Answer'},
+  {kind:'ps', process:'L4', store:'d12', dir:'out', label:'Knowledge Base Query'},
+  {kind:'ps', process:'L4', store:'d12', dir:'in',  label:'Knowledge Base Answer'},
+  {kind:'ps', process:'L4', store:'d13', dir:'out', label:'Conversation Log'},
+  {kind:'ps', process:'L4', store:'d1',  dir:'in',  label:'Reservation Status Data'},
+
+  // ================= RIGHT CLUSTER =================
+  // ---- 5.0 Manage Accounts & Authentication ----
+  {kind:'ep', entity:'headlab',  process:'R1', dir:'in',  label:'Login Credentials'},
+  {kind:'ep', entity:'physics',  process:'R1', dir:'in',  label:'Login Credentials'},
+  {kind:'ep', entity:'circuits', process:'R1', dir:'in',  label:'Login Credentials'},
+  {kind:'ep', entity:'headlab',  process:'R1', dir:'in',  label:'Class Representative Details'},
+  {kind:'ep', entity:'headlab',  process:'R1', dir:'out', label:'Account Confirmation'},
+  {kind:'ps', process:'R1', store:'d14', dir:'out', label:'Account Record'},
+  {kind:'ps', process:'R1', store:'d14', dir:'in',  label:'Account Verification'},
+
+  // ---- 6.0 Issue Borrowing Slip & Process Return ----
+  {kind:'ep', entity:'headlab',  process:'R2', dir:'in',  label:'Returned Item'},
+  {kind:'ep', entity:'headlab',  process:'R2', dir:'out', label:'Borrowing Slip'},
+  {kind:'ep', entity:'physics',  process:'R2', dir:'in',  label:'Returned Item'},
+  {kind:'ep', entity:'physics',  process:'R2', dir:'out', label:'Borrowing Slip'},
+  {kind:'ep', entity:'circuits', process:'R2', dir:'in',  label:'Returned Item'},
+  {kind:'ep', entity:'circuits', process:'R2', dir:'out', label:'Borrowing Slip'},
+  {kind:'ps', process:'R2', store:'d1', dir:'in',  label:'Approved Reservation'},
+  {kind:'ps', process:'R2', store:'d2', dir:'out', label:'Borrowing Record'},
+  {kind:'ps', process:'R2', store:'d5', dir:'out', label:'Issued Quantity'},
+  {kind:'ps', process:'R2', store:'d5', dir:'in',  label:'Stock on Hand'},
+
+  // ---- 7.0 Process Clearance ----
+  {kind:'ep', entity:'headlab',  process:'R3', dir:'in', label:'Accountable Member'},
+  {kind:'ep', entity:'physics',  process:'R3', dir:'in', label:'Accountable Member'},
+  {kind:'ep', entity:'circuits', process:'R3', dir:'in', label:'Accountable Member'},
+  {kind:'ps', process:'R3', store:'d4', dir:'out', label:'Clearance Record'},
+  {kind:'ps', process:'R3', store:'d7', dir:'out', label:'Damage and Loss Entry'},
+
+  // ---- 8.0 Manage Equipment Inventory ----
+  {kind:'ep', entity:'headlab',  process:'R4', dir:'in',  label:'Equipment Update'},
+  {kind:'ep', entity:'physics',  process:'R4', dir:'in',  label:'Equipment Update'},
+  {kind:'ep', entity:'circuits', process:'R4', dir:'in',  label:'Equipment Update'},
+  {kind:'ep', entity:'headlab',  process:'R4', dir:'out', label:'Equipment Catalogue'},
+  {kind:'ep', entity:'physics',  process:'R4', dir:'out', label:'Equipment Catalogue'},
+  {kind:'ep', entity:'circuits', process:'R4', dir:'out', label:'Equipment Catalogue'},
+  {kind:'ps', process:'R4', store:'d5', dir:'out', label:'Item Record'},
+  {kind:'ps', process:'R4', store:'d5', dir:'in',  label:'Item Data'},
+
+  // ---- 9.0 Manage Laboratory Logs & Schedule ----
+  {kind:'ep', entity:'headlab',  process:'R5', dir:'in',  label:'Schedule Update'},
+  {kind:'ep', entity:'headlab',  process:'R5', dir:'out', label:'Schedule Confirmation'},
+  {kind:'ep', entity:'headlab',  process:'R5', dir:'in',  label:'Daily Task Entry'},
+  {kind:'ps', process:'R5', store:'d6',  dir:'out', label:'Schedule Data'},
+  {kind:'ps', process:'R5', store:'d8',  dir:'out', label:'Physics Log Entry'},
+  {kind:'ps', process:'R5', store:'d9',  dir:'out', label:'Circuits Log Entry'},
+  {kind:'ps', process:'R5', store:'d10', dir:'out', label:'Daily Task Data'},
+
+  // ---- 10.0 View Laboratory Dashboard & Generate Reports ----
+  {kind:'ep', entity:'headlab',  process:'R6', dir:'in',  label:'Report Request'},
+  {kind:'ep', entity:'physics',  process:'R6', dir:'in',  label:'Report Request'},
+  {kind:'ep', entity:'circuits', process:'R6', dir:'in',  label:'Report Request'},
+  {kind:'ep', entity:'headlab',  process:'R6', dir:'out', label:'Dashboard Metrics'},
+  {kind:'ep', entity:'physics',  process:'R6', dir:'out', label:'Dashboard Metrics'},
+  {kind:'ep', entity:'circuits', process:'R6', dir:'out', label:'Dashboard Metrics'},
+  {kind:'ps', process:'R6', store:'d5',  dir:'in', label:'Inventory Summary'},
+  {kind:'ps', process:'R6', store:'d2',  dir:'in', label:'Borrowing Summary'},
+  {kind:'ps', process:'R6', store:'d11', dir:'in', label:'Disposal Summary'},
+
+  // ---- 11.0 Log Waste Disposal ----
+  {kind:'ep', entity:'headlab',  process:'R7', dir:'in',  label:'Disposal Entry'},
+  {kind:'ep', entity:'physics',  process:'R7', dir:'in',  label:'Disposal Entry'},
+  {kind:'ep', entity:'circuits', process:'R7', dir:'in',  label:'Disposal Entry'},
+  {kind:'ep', entity:'headlab',  process:'R7', dir:'out', label:'Disposal Confirmation'},
+  {kind:'ep', entity:'physics',  process:'R7', dir:'out', label:'Disposal Confirmation'},
+  {kind:'ep', entity:'circuits', process:'R7', dir:'out', label:'Disposal Confirmation'},
+  {kind:'ps', process:'R7', store:'d11', dir:'out', label:'Disposal Record'},
+];
+
+const entityById = {}; ENTITIES.forEach((e)=>{ entityById[e.id]=e; });
+const processById = {}; PROCESSES.forEach((p,i)=>{ p.row=i; processById[p.id]=p; });
+const storeById = {}; STORES.forEach((s,i)=>{ s.row=i; storeById[s.id]=s; });
+PROCESSES_L.forEach((p,i)=>{ p.side='L'; p.sideRow=i; });
+PROCESSES_R.forEach((p,i)=>{ p.side='R'; p.sideRow=i; });
+ENTITIES_L.forEach((e,i)=>{ e.side='L'; e.sideRow=i; });
+ENTITIES_R.forEach((e,i)=>{ e.side='R'; e.sideRow=i; });
+
+// merge-key for ep flows shared by several entities on the same side/process/dir/label:
+// draw every line, but stamp the noun once instead of once per entity.
+const epGroupCount = {};
+FLOWS.filter(f=>f.kind==='ep').forEach(f=>{ const k=f.process+'|'+f.dir+'|'+f.label; epGroupCount[k]=(epGroupCount[k]||0)+1; });
+
+/* ===================== LAYOUT ===================== */
+const ENTITY_W = 220, PROC_W = 320, STORE_W = 250;
+const GAP = 42;
+const TOP = 150;
+const HDR_H = 26; // process header band; anchors must stay clear of it
+
+// ep flows shared by several entities on the same process+dir+label collapse to one
+// visual "bus": one shared process-side anchor, one shared lane, short colored feeder
+// stubs per entity. Individual (unshared) flows keep their own anchor as before.
+function slotKey(f, idx){
+  if (f.kind!=='ep') return 'F'+idx;
+  const g = f.process+'|'+f.dir+'|'+f.label;
+  return epGroupCount[g] > 1 ? ('G:'+g) : ('F'+idx);
+}
+
+function sizeProcess(p){
+  const epSlots = new Set();
+  FLOWS.forEach((f,idx)=>{ if (f.kind==='ep' && f.process===p.id) epSlots.add(slotKey(f,idx)); });
+  const psCount = FLOWS.filter(f=>f.kind==='ps' && f.process===p.id).length;
+  p.h = Math.max(100, Math.max(epSlots.size, psCount) * 24 + HDR_H + 14);
+}
+PROCESSES.forEach(sizeProcess);
+
+function stack(items, top, gap){
+  gap = gap===undefined ? GAP : gap;
+  let y = top;
+  items.forEach(it=>{ it.top = y; it.cy = y + it.h/2; y += it.h + gap; });
+  return y - gap; // bottom of last item
+}
+const STORE_H = 58;
+STORES.forEach(s=>{ s.h = STORE_H; });
+const leftBottom  = stack(PROCESSES_L, TOP);
+const rightBottom = stack(PROCESSES_R, TOP);
+const storeBottom = stack(STORES, TOP, 22);
+const colBottom = Math.max(leftBottom, rightBottom, storeBottom);
+// vertically center every shorter column inside the tallest one's span
+const fullH = colBottom - TOP;
+function centerIn(items, bottom){
+  const h = bottom - TOP;
+  if (h >= fullH) return;
+  const off = (fullH-h)/2;
+  items.forEach(it=>{ it.top+=off; it.cy+=off; });
+}
+centerIn(PROCESSES_L, leftBottom);
+centerIn(PROCESSES_R, rightBottom);
+centerIn(STORES, storeBottom);
+
+// entity box height driven by its own flow count, same reasoning as sizeProcess —
+// a busy entity (Head Laboratory touches 7 processes) needs more room than a quiet one.
+ENTITIES.forEach(e=>{
+  const count = FLOWS.filter(f=>f.kind==='ep' && f.entity===e.id).length;
+  e.h = Math.max(88, count*22 + 24);
+});
+function spreadInSpan(items, top, bottom){
+  const h = bottom - top;
+  items.forEach((it,i)=>{ it.cy = top + (i+0.5)*(h/items.length); it.top = it.cy - it.h/2; });
+}
+spreadInSpan(ENTITIES_L, TOP, colBottom);
+spreadInSpan(ENTITIES_R, TOP, colBottom);
+
+const CANVAS_H = colBottom + 130;
+
+// x positions, left to right: [entitiesL][gutterA][processL][gutterB][stores][gutterC][processR][gutterD][entitiesR]
+// gutterA/gutterD (entity<->process) are sized to the actual labels that live in
+// them: an individual (entity-side) label and a shared (process-side) label can
+// land at nearly the same Y by coincidence, so the gutter has to be wide enough
+// for the two longest such labels to coexist without their pills touching —
+// a fixed gutter width was the root cause of a real overlap (a long individual
+// label like "Class Representative Details" reaching back across a narrow gutter
+// into a shared label like "Login Credentials" anchored at the process edge).
+function labelW(text){ return 12 + text.length*5.5; }
+function maxEntityLabelW(side){
+  let m = 0;
+  FLOWS.forEach(f=>{
+    if (f.kind!=='ep' || processById[f.process].side!==side) return;
+    if (epGroupCount[f.process+'|'+f.dir+'|'+f.label] > 1) return;
+    m = Math.max(m, labelW(f.label));
+  });
+  return m;
+}
+function maxSharedLabelW(side){
+  let m = 0; const seen = {};
+  FLOWS.forEach(f=>{
+    if (f.kind!=='ep' || processById[f.process].side!==side) return;
+    const key = f.process+'|'+f.dir+'|'+f.label;
+    if (epGroupCount[key] <= 1 || seen[key]) return;
+    seen[key] = true;
+    m = Math.max(m, labelW(f.label));
+  });
+  return m;
+}
+const ENTL_X = 40;
+const GUTTER = 190;
+const gutterAW = Math.max(GUTTER, maxEntityLabelW('L') + maxSharedLabelW('L') + 60);
+const gutterDW = Math.max(GUTTER, maxEntityLabelW('R') + maxSharedLabelW('R') + 60);
+const PROCL_X = ENTL_X + ENTITY_W + gutterAW;
+const STORE_X = PROCL_X + PROC_W + GUTTER;
+const PROCR_X = STORE_X + STORE_W + GUTTER;
+const ENTR_X = PROCR_X + PROC_W + gutterDW;
+const CANVAS_W = ENTR_X + ENTITY_W + 40;
+
+/* ===================== ANCHOR SPREADING ===================== */
+// topInset keeps anchors out of a box's header band (process boxes only — entities
+// and stores have no header, so it defaults to 0).
+function spreadAnchors(count, boxH, topInset){
+  topInset = topInset || 0;
+  const top = -boxH/2 + topInset + 9;
+  const bottom = boxH/2 - 9;
+  if (count<=1) return [ (top+bottom)/2 ];
+  const step = (bottom-top)/(count-1);
+  return Array.from({length:count}, (_,i)=> top + i*step);
+}
+
+function buildAnchors(flowFilter, keyFn, boxOf, sortRowOf, boxHOf, topInsetOf){
+  const anchor = {};
+  const groups = {};
+  FLOWS.forEach((f,idx)=>{ if (!flowFilter(f)) return; const k = keyFn(f); (groups[k]=groups[k]||[]).push(idx); });
+  Object.keys(groups).forEach(k=>{
+    const idxs = groups[k].sort((a,b)=> sortRowOf(FLOWS[a]) - sortRowOf(FLOWS[b]));
+    const offs = spreadAnchors(idxs.length, boxHOf(k), topInsetOf ? topInsetOf(k) : 0);
+    idxs.forEach((idx,i)=>{ anchor[k+'|'+idx] = offs[i]; });
+  });
+  return anchor;
+}
+
+// entity-side anchors (one set per entity, ordered by the process it targets) —
+// every entity still gets its own short stub even when its flow joins a shared bus.
+const entityAnchor = buildAnchors(
+  f=>f.kind==='ep', f=>f.entity,
+  null, f=>processById[f.process].row, k=>entityById[k].h
+);
+// process-side anchors, entity edge — one slot per DISTINCT slotKey (shared groups
+// collapse to a single slot instead of one per entity).
+const procEntitySlotAnchor = {};
+PROCESSES.forEach(p=>{
+  const slotRows = {};
+  FLOWS.forEach((f,idx)=>{
+    if (f.kind!=='ep' || f.process!==p.id) return;
+    const sk = slotKey(f,idx);
+    (slotRows[sk] = slotRows[sk] || []).push(entityById[f.entity].sideRow);
+  });
+  const keys = Object.keys(slotRows).sort((a,b)=> Math.min(...slotRows[a]) - Math.min(...slotRows[b]));
+  const offs = spreadAnchors(keys.length, p.h, HDR_H);
+  keys.forEach((k,i)=>{ procEntitySlotAnchor[p.id+'|'+k] = offs[i]; });
+});
+// process-side anchors, store edge
+const procStoreAnchor = buildAnchors(
+  f=>f.kind==='ps', f=>f.process,
+  null, f=>storeById[f.store].row, k=>processById[k].h, k=>HDR_H
+);
+// store-side anchors, left edge (talks to L processes) and right edge (talks to R processes) tracked separately
+const storeAnchorL = buildAnchors(
+  f=>f.kind==='ps' && processById[f.process].side==='L', f=>f.store,
+  null, f=>processById[f.process].row, k=>STORE_H
+);
+const storeAnchorR = buildAnchors(
+  f=>f.kind==='ps' && processById[f.process].side==='R', f=>f.store,
+  null, f=>processById[f.process].row, k=>STORE_H
+);
+
+/* ===================== LANE PACKING (greedy interval partition) ===================== */
+function packLanes(items){
+  const laneEnd = []; const laneOf = {};
+  items.slice().sort((a,b)=>a.y0-b.y0).forEach(it=>{
+    let chosen = -1;
+    for (let i=0;i<laneEnd.length;i++){ if (laneEnd[i] < it.y0 - 20){ chosen=i; break; } }
+    if (chosen===-1){ chosen = laneEnd.length; laneEnd.push(-Infinity); }
+    laneEnd[chosen] = it.y1;
+    laneOf[it.key] = chosen;
+  });
+  return { laneOf, count: laneEnd.length };
+}
+
+function gutterItemsEP(side){
+  const bySlot = {};
+  FLOWS.forEach((f,idx)=>{
+    if (f.kind!=='ep') return;
+    const p = processById[f.process]; if (p.side!==side) return;
+    const e = entityById[f.entity];
+    const sk = f.process+'|'+slotKey(f,idx);
+    const ey = e.cy + entityAnchor[f.entity+'|'+idx];
+    const py = p.cy + procEntitySlotAnchor[sk];
+    if (!bySlot[sk]) bySlot[sk] = { y0:Infinity, y1:-Infinity };
+    bySlot[sk].y0 = Math.min(bySlot[sk].y0, ey, py);
+    bySlot[sk].y1 = Math.max(bySlot[sk].y1, ey, py);
+  });
+  return Object.keys(bySlot).map(sk=>({ key: sk, y0: bySlot[sk].y0, y1: bySlot[sk].y1 }));
+}
+function gutterItemsPS(side){
+  const items = [];
+  FLOWS.forEach((f,idx)=>{
+    if (f.kind!=='ps') return;
+    const p = processById[f.process]; if (p.side!==side) return;
+    const s = storeById[f.store];
+    const py = p.cy + procStoreAnchor[f.process+'|'+idx];
+    const sAnchor = side==='L' ? storeAnchorL : storeAnchorR;
+    const sy = s.cy + sAnchor[f.store+'|'+idx];
+    items.push({ key: idx, y0: Math.min(py,sy), y1: Math.max(py,sy) });
+  });
+  return items;
+}
+const gutterA = packLanes(gutterItemsEP('L')); // entitiesL <-> processL
+const gutterB = packLanes(gutterItemsPS('L')); // processL  <-> stores
+const gutterC = packLanes(gutterItemsPS('R')); // stores    <-> processR
+const gutterD = packLanes(gutterItemsEP('R')); // processR  <-> entitiesR
+const LANE_STEP = 13;
+const gutterA_X0 = ENTL_X + ENTITY_W + 18;
+const gutterB_X0 = PROCL_X + PROC_W + 18;
+const gutterC_X0 = STORE_X + STORE_W + 18;
+const gutterD_X0 = PROCR_X + PROC_W + 18;
+
+/* ===================== SVG BUILD ===================== */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, children){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  (children||[]).forEach(c => e.appendChild(c));
+  return e;
+}
+function textEl(x, y, lines, attrs){
+  const t = el('text', Object.assign({x, 'text-anchor':'middle'}, attrs));
+  const lh = attrs.lineHeight || 14;
+  const startDy = -((lines.length-1)*lh)/2;
+  lines.forEach((line,i) => {
+    const ts = el('tspan', { x, y: y + startDy + i*lh });
+    ts.textContent = line;
+    t.appendChild(ts);
+  });
+  return t;
+}
+function labelPill(layer, x, y, text, color, anchor){
+  const w = 12 + text.length*5.5;
+  const ax = anchor==='start' ? x : anchor==='end' ? x - w : x - w/2;
+  layer.appendChild(el('rect', { x:ax, y:y-7.5, width:w, height:15, rx:3, fill:'#ffffff', opacity:0.95 }));
+  layer.appendChild(textEl(ax+w/2, y+3.5, [text], { 'font-size':10, fill:color, 'font-weight':'600', 'font-family':'Arial,Helvetica,sans-serif' }));
+}
+
+const svg = el('svg', { xmlns:NS, width:CANVAS_W, height:CANVAS_H, viewBox:`0 0 ${CANVAS_W} ${CANVAS_H}` });
+const defs = el('defs');
+function arrowMarker(id, color){
+  const m = el('marker', { id, markerWidth:9, markerHeight:9, refX:7, refY:3.5, orient:'auto', markerUnits:'userSpaceOnUse' });
+  m.appendChild(el('path', { d:'M0,0 L8,3.5 L0,7 Z', fill:color }));
+  return m;
+}
+ENTITIES.forEach(e=> defs.appendChild(arrowMarker('arrow-'+e.id, e.color)));
+defs.appendChild(arrowMarker('arrow-store', '#7c8797'));
+svg.appendChild(defs);
+svg.appendChild(el('rect', { x:0, y:0, width:CANVAS_W, height:CANVAS_H, fill:'#ffffff' }));
+svg.appendChild(textEl(CANVAS_W/2, 46, ['SOMADA — DFD Level 1'], { 'font-size':26, fill:'#1b2029', 'font-weight':'700', 'font-family':'Georgia,serif' }));
+svg.appendChild(textEl(CANVAS_W/2, 76, ['Requester-side processes (left) and laboratory-admin processes (right), meeting only at shared data stores in the center'], { 'font-size':13, fill:'#6b7484', 'font-family':'Arial,Helvetica,sans-serif' }));
+
+const flowLayer = el('g'); svg.appendChild(flowLayer);
+const boxLayer = el('g'); svg.appendChild(boxLayer);
+
+function elbow(x1,y1,x2,y2,viaX){ return `M ${x1} ${y1} L ${viaX} ${y1} L ${viaX} ${y2} L ${x2} ${y2}`; }
+
+function drawEP(side, entX, procX, gutterX0, lanes){
+  FLOWS.forEach((f,idx)=>{
+    if (f.kind!=='ep') return;
+    const p = processById[f.process]; if (p.side!==side) return;
+    const e = entityById[f.entity];
+    const sk = f.process+'|'+slotKey(f,idx);
+    const ey = e.cy + entityAnchor[f.entity+'|'+idx];
+    const py = p.cy + procEntitySlotAnchor[sk];
+    const laneX = gutterX0 + lanes.laneOf[sk]*LANE_STEP;
+    const entEdgeX = side==='L' ? entX + ENTITY_W : entX;
+    const procEdgeX = side==='L' ? procX : procX + PROC_W;
+    let d, stubX, stubY, stubAnchor;
+    const entToProc = (f.dir === 'in'); // 'in' = entity sends to the process; direction is about dir, not which side the entity sits on
+    if (entToProc){
+      d = elbow(entEdgeX,ey,procEdgeX,py,laneX);
+      stubX = entEdgeX + (side==='L'?10:-10); stubY = ey; stubAnchor = side==='L' ? 'start':'end';
+    } else {
+      d = elbow(procEdgeX,py,entEdgeX,ey,laneX);
+      stubX = procEdgeX + (side==='L'?-10:10); stubY = py; stubAnchor = side==='L' ? 'end':'start';
+    }
+    flowLayer.appendChild(el('path', { d, fill:'none', stroke:e.color, 'stroke-width':1.5, opacity:0.8, 'marker-end':`url(#arrow-${e.id})` }));
+    const key = f.process+'|'+f.dir+'|'+f.label;
+    if (epGroupCount[key] <= 1){
+      labelPill(flowLayer, stubX, stubY, f.label, e.color, stubAnchor);
+    }
+  });
+  // shared labels once per (process,dir,label) group, placed on the process-side stub
+  const seen = {};
+  FLOWS.forEach((f,idx)=>{
+    if (f.kind!=='ep') return;
+    const p = processById[f.process]; if (p.side!==side) return;
+    const key = f.process+'|'+f.dir+'|'+f.label;
+    if (epGroupCount[key] <= 1 || seen[key]) return;
+    seen[key] = true;
+    const sk = f.process+'|'+slotKey(f,idx);
+    const py = p.cy + procEntitySlotAnchor[sk];
+    const procEdgeX = side==='L' ? procX : procX + PROC_W;
+    const stubX = procEdgeX + (side==='L'?-14:14);
+    labelPill(flowLayer, stubX, py, f.label, '#4a5164', side==='L'?'end':'start');
+  });
+}
+drawEP('L', ENTL_X, PROCL_X, gutterA_X0, gutterA);
+drawEP('R', ENTR_X, PROCR_X, gutterD_X0, gutterD);
+
+function drawPS(side, procX, gutterX0, lanes, storeAnchor){
+  FLOWS.forEach((f,idx)=>{
+    if (f.kind!=='ps') return;
+    const p = processById[f.process]; if (p.side!==side) return;
+    const s = storeById[f.store];
+    const py = p.cy + procStoreAnchor[f.process+'|'+idx];
+    const sy = s.cy + storeAnchor[f.store+'|'+idx];
+    const laneX = gutterX0 + lanes.laneOf[idx]*LANE_STEP;
+    const procEdgeX = side==='L' ? procX + PROC_W : procX;
+    const storeEdgeX = side==='L' ? STORE_X : STORE_X + STORE_W;
+    let d, stubX, stubY, stubAnchor;
+    const procToStore = f.dir==='out';
+    if (procToStore){
+      d = elbow(procEdgeX,py,storeEdgeX,sy,laneX);
+      stubX = procEdgeX + (side==='L'?10:-10); stubY = py; stubAnchor = side==='L'?'start':'end';
+    } else {
+      d = elbow(storeEdgeX,sy,procEdgeX,py,laneX);
+      stubX = storeEdgeX + (side==='L'?-10:10); stubY = sy; stubAnchor = side==='L'?'end':'start';
+    }
+    flowLayer.appendChild(el('path', { d, fill:'none', stroke:'#7c8797', 'stroke-width':1.4, opacity:0.85, 'marker-end':'url(#arrow-store)' }));
+    labelPill(flowLayer, stubX, stubY, f.label, '#5b6577', stubAnchor);
+  });
+}
+drawPS('L', PROCL_X, gutterB_X0, gutterB, storeAnchorL);
+drawPS('R', PROCR_X, gutterC_X0, gutterC, storeAnchorR);
+
+// ---- per-entity icon: same rectangle shape for every entity (correct DFD notation —
+// shape is not supposed to vary), but a distinct pictograph so each role still reads
+// at a glance without relying on color alone (e.g. a black-and-white printout). ----
+function starPoints(rOuter, rInner, n){
+  const pts=[];
+  for(let i=0;i<n*2;i++){
+    const r = i%2===0?rOuter:rInner;
+    const a = -Math.PI/2 + i*Math.PI/n;
+    pts.push((r*Math.cos(a)).toFixed(2)+','+(r*Math.sin(a)).toFixed(2));
+  }
+  return pts.join(' ');
+}
+function entityIcon(id, cx, cy, color){
+  const g = el('g', { transform:`translate(${cx},${cy})` });
+  const st = { stroke:color, 'stroke-width':1.6, fill:'none', 'stroke-linecap':'round', 'stroke-linejoin':'round' };
+  if (id==='classrep'){ // graduation cap — Class Representative
+    g.appendChild(el('polygon', Object.assign({ points:'-11,-2 0,-7 11,-2 0,3' }, st, { fill:color, 'fill-opacity':0.15 })));
+    g.appendChild(el('line', Object.assign({ x1:6, y1:0, x2:6, y2:7 }, st)));
+    g.appendChild(el('circle', { cx:6, cy:8, r:1.4, fill:color }));
+  } else if (id==='faculty'){ // open book — Faculty
+    g.appendChild(el('path', Object.assign({ d:'M-10,-6 L-1,-7 L-1,7 L-10,6 Z' }, st)));
+    g.appendChild(el('path', Object.assign({ d:'M10,-6 L1,-7 L1,7 L10,6 Z' }, st)));
+  } else if (id==='dean'){ // star — Dean (institutional authority)
+    g.appendChild(el('polygon', Object.assign({ points:starPoints(10,4.2,5) }, st, { fill:color, 'fill-opacity':0.15 })));
+  } else if (id==='headlab'){ // shield — Head Laboratory (oversight)
+    g.appendChild(el('path', Object.assign({ d:'M0,-9 L8,-5.5 L8,1 C8,6 4,9.5 0,10.5 C-4,9.5 -8,6 -8,1 L-8,-5.5 Z' }, st)));
+  } else if (id==='physics'){ // atom — Physics Laboratory Staff
+    g.appendChild(el('circle', { cx:0, cy:0, r:1.8, fill:color }));
+    g.appendChild(el('ellipse', Object.assign({ cx:0, cy:0, rx:10, ry:4 }, st)));
+    g.appendChild(el('ellipse', Object.assign({ cx:0, cy:0, rx:10, ry:4, transform:'rotate(60)' }, st)));
+    g.appendChild(el('ellipse', Object.assign({ cx:0, cy:0, rx:10, ry:4, transform:'rotate(120)' }, st)));
+  } else if (id==='circuits'){ // chip — Circuits Laboratory Staff
+    g.appendChild(el('rect', Object.assign({ x:-6, y:-6, width:12, height:12, rx:1.5 }, st)));
+    [-4,0,4].forEach(o=>{
+      g.appendChild(el('line', Object.assign({ x1:o, y1:-6, x2:o, y2:-9 }, st)));
+      g.appendChild(el('line', Object.assign({ x1:o, y1:6, x2:o, y2:9 }, st)));
+      g.appendChild(el('line', Object.assign({ x1:-6, y1:o, x2:-9, y2:o }, st)));
+      g.appendChild(el('line', Object.assign({ x1:6, y1:o, x2:9, y2:o }, st)));
+    });
+  }
+  return g;
+}
+
+// ---- boxes: entities ----
+function drawEntities(list, x){
+  list.forEach(e=>{
+    const g = el('g');
+    g.appendChild(el('rect', { x, y:e.top, width:ENTITY_W, height:e.h, rx:6, fill:'#e9f1fc', stroke:e.color, 'stroke-width':1.8 }));
+    g.appendChild(entityIcon(e.id, x+24, e.top+24, e.color));
+    g.appendChild(textEl(x+ENTITY_W/2, e.cy, e.label, { 'font-size':13.5, fill:'#1b2029', 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:16 }));
+    boxLayer.appendChild(g);
+  });
+}
+drawEntities(ENTITIES_L, ENTL_X);
+drawEntities(ENTITIES_R, ENTR_X);
+
+// ---- boxes: processes ----
+function drawProcesses(list, x){
+  list.forEach(p=>{
+    const g = el('g');
+    const hdrH = 26;
+    g.appendChild(el('rect', { x, y:p.top, width:PROC_W, height:p.h, rx:8, fill:'#eef2fb', stroke:'#2f5fdb', 'stroke-width':1.8 }));
+    g.appendChild(el('path', { d:`M ${x} ${p.top+8} a 8 8 0 0 1 8 -8 h ${PROC_W-16} a 8 8 0 0 1 8 8 v ${hdrH-8} h ${-PROC_W} Z`, fill:'#2f5fdb' }));
+    g.appendChild(textEl(x+PROC_W/2, p.top+16, [p.num], { 'font-size':12.5, fill:'#ffffff', 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif' }));
+    g.appendChild(textEl(x+PROC_W/2, p.top+hdrH+(p.h-hdrH)/2, p.label, { 'font-size':13.5, fill:'#1b2029', 'font-weight':'600', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:16 }));
+    boxLayer.appendChild(g);
+  });
+}
+drawProcesses(PROCESSES_L, PROCL_X);
+drawProcesses(PROCESSES_R, PROCR_X);
+
+// ---- boxes: data stores ----
+STORES.forEach(s=>{
+  const g = el('g');
+  const tabW = 42;
+  g.appendChild(el('rect', { x:STORE_X, y:s.top, width:STORE_W, height:STORE_H, fill:'#eaf1fc', stroke:'#4a7fd0', 'stroke-width':1.5 }));
+  g.appendChild(el('rect', { x:STORE_X, y:s.top, width:tabW, height:STORE_H, fill:'#4a7fd0' }));
+  g.appendChild(textEl(STORE_X+tabW/2, s.cy, [s.num], { 'font-size':11.5, fill:'#ffffff', 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif' }));
+  g.appendChild(textEl(STORE_X+tabW+(STORE_W-tabW)/2, s.cy, s.label, { 'font-size':11.5, fill:'#1b2029', 'font-weight':'600', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:13 }));
+  boxLayer.appendChild(g);
+});
+
+// ---- section dividers ----
+svg.appendChild(textEl(ENTL_X+(PROCL_X+PROC_W-ENTL_X)/2, TOP-24, ['REQUESTER SIDE'], { 'font-size':12, fill:'#8a93a3', 'font-weight':'700', 'letter-spacing':'1.5px', 'font-family':'Arial,Helvetica,sans-serif' }));
+svg.appendChild(textEl(PROCR_X+(ENTR_X+ENTITY_W-PROCR_X)/2, TOP-24, ['LABORATORY ADMIN SIDE'], { 'font-size':12, fill:'#8a93a3', 'font-weight':'700', 'letter-spacing':'1.5px', 'font-family':'Arial,Helvetica,sans-serif' }));
+svg.appendChild(textEl(STORE_X+STORE_W/2, TOP-24, ['SHARED DATA STORES'], { 'font-size':12, fill:'#8a93a3', 'font-weight':'700', 'letter-spacing':'1.5px', 'font-family':'Arial,Helvetica,sans-serif' }));
+
+// ---- legend ----
+const legend = el('g', { transform:`translate(${ENTL_X}, ${CANVAS_H-50})` });
+legend.appendChild(el('rect', { x:0, y:-14, width:22, height:16, rx:4, fill:'#e9f1fc', stroke:'#5b6577', 'stroke-width':1.3 }));
+legend.appendChild(textEl(70, -3, ['External Entity — a role outside the system boundary'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+legend.appendChild(el('rect', { x:430, y:-19, width:22, height:22, rx:5, fill:'#eef2fb', stroke:'#2f5fdb', 'stroke-width':1.3 }));
+legend.appendChild(textEl(500, -3, ['Process — numbered, transforms data'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+legend.appendChild(el('rect', { x:830, y:-14, width:22, height:16, fill:'#eaf1fc', stroke:'#4a7fd0', 'stroke-width':1.3 }));
+legend.appendChild(textEl(900, -3, ['Data Store — where a process persists records'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+legend.appendChild(el('line', { x1:1330, y1:-6, x2:1360, y2:-6, stroke:'#7c8797', 'stroke-width':1.5, 'marker-end':'url(#arrow-store)' }));
+legend.appendChild(textEl(1370, -3, ['Data flow, labelled with the noun exchanged'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+
+svg.appendChild(legend);
+document.getElementById('stage').appendChild(svg);
+window.__done = true;
+</script>
+</body>
+</html>

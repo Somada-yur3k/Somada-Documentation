@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOMADA — Documentation Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3f4f7; --paper:#ffffff; --ink:#1c2029; --ink-soft:#5b6270; --ink-faint:#8a90a0;
+    --line:#e4e5ec; --line-strong:#d3d5e0;
+    --docs:#5b47e0; --docs-soft:#efecfd;
+    --current:#b5652b; --current-soft:#faeadb;
+    --usecase:#2f6fd6; --usecase-soft:#e9f1fc;
+    --dfd0:#2e9e5b; --dfd0-soft:#e7f5ed;
+    --dfd1:#2f5fdb; --dfd1-soft:#eaf0fd;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2{font-family:'Source Serif 4',Georgia,serif;color:var(--ink);margin:0;line-height:1.2;}
+  a{color:inherit;text-decoration:none;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:64px 28px 90px;}
+  .hero{text-align:center;margin-bottom:56px;}
+  .hero-badge{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#5b47e0,#2f6fd6);color:#fff;font-size:28px;margin-bottom:20px;}
+  .hero h1{font-size:38px;font-weight:700;}
+  .hero p{font-family:'Inter',sans-serif;font-size:15px;color:var(--ink-soft);margin-top:10px;}
+
+  .group{margin-bottom:44px;}
+  .group-label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:16px;padding-left:2px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+
+  .card{display:flex;flex-direction:column;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;position:relative;overflow:hidden;}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);}
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 28px -12px rgba(30,32,50,.18);border-color:var(--line-strong);}
+  .card-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-soft);color:var(--accent);margin-bottom:2px;}
+  .card h2{font-size:18px;font-weight:700;}
+  .card p{font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-soft);line-height:1.55;margin:0;flex:1;}
+  .card-cta{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent);margin-top:4px;}
+  .card-cta svg{width:14px;height:14px;transition:transform .15s ease;}
+  .card:hover .card-cta svg{transform:translateX(3px);}
+
+  .card.docs{--accent:var(--docs);--accent-soft:var(--docs-soft);}
+  .card.current{--accent:var(--current);--accent-soft:var(--current-soft);}
+  .card.usecase{--accent:var(--usecase);--accent-soft:var(--usecase-soft);}
+  .card.dfd0{--accent:var(--dfd0);--accent-soft:var(--dfd0-soft);}
+  .card.dfd1{--accent:var(--dfd1);--accent-soft:var(--dfd1-soft);}
+
+  footer{text-align:center;margin-top:20px;font-size:12.5px;color:var(--ink-faint);font-family:'Inter',sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-badge">🧪</div>
+    <h1>SOMADA</h1>
+    <p>Web-Based Laboratory Management System — documentation, current-system context, and system diagrams in one place.</p>
+  </div>
+
+  <div class="group">
+    <div class="group-label">Documentation</div>
+    <div class="grid">
+      <a class="card docs" href="Docs.html">
+        <div class="card-icon">📄</div>
+        <h2>Documentation</h2>
+        <p>The full project documentation — overview, methodology, requirements analysis, use cases, diagrams, and the ERD.</p>
+        <span class="card-cta">Open Documentation <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="card current" href="Current-System.html">
+        <div class="card-icon">🗂️</div>
+        <h2>Current System</h2>
+        <p>How the Physics &amp; Circuits Laboratory runs today — the manual, paper-based process this project replaces.</p>
+        <span class="card-cta">Open Current System <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">System Diagrams</div>
+    <div class="grid">
+      <a class="card usecase" href="assets/figures-v2/usecase-diagram-source.html">
+        <div class="card-icon">🧩</div>
+        <h2>Use Case Diagram</h2>
+        <p>Six actors and every base use case in one vertical list, with include/extend relationships branching to the side.</p>
+        <span class="card-cta">Open Diagram <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="card dfd0" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">
+        <div class="card-icon">🔀</div>
+        <h2>DFD — Level 0</h2>
+        <p>Context diagram: SOMADA as a single process, with every data flow it exchanges with each of the six roles.</p>
+        <span class="card-cta">Open Diagram <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="card dfd1" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">
+        <div class="card-icon">🔀</div>
+        <h2>DFD — Level 1</h2>
+        <p>The system decomposed into 11 processes and 14 data stores, split into requester-side and laboratory-admin clusters.</p>
+        <span class="card-cta">Open Diagram <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+    </div>
+  </div>
+
+  <footer>SOMADA · MSYADD1 — NU Fairview</footer>
+</div>
+</body>
+</html>

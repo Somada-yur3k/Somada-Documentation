@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SOMADA Documentation</title>
+<meta name="description" content="SOMADA: A Web-Based Laboratory Management System — project documentation (MSYADD1)." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AA%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef0f4; --paper:#ffffff; --ink:#1f2430; --ink-soft:#5b6270; --ink-faint:#8a90a0;
+    --line:#e3e6ec; --line-strong:#cfd4dd;
+    --accent:#5b47e0; --accent-ink:#4433b8; --accent-soft:#efecfd;
+    --sidebar-bg:#fbfbfd; --head-bg:#f6f6fa;
+    --must-bg:#fdecea; --must-ink:#b3261e;
+    --should-bg:#e8f0fe; --should-ink:#1a56c4;
+    --st-neutral-bg:#eef0f4; --st-neutral-ink:#5b6270;
+    --st-progress-bg:#fff4e0; --st-progress-ink:#a15c00;
+    --st-done-bg:#e6f6ec; --st-done-ink:#1a7d3f;
+    --st-blocked-bg:#fdecea; --st-blocked-ink:#b3261e;
+    --shadow:0 1px 2px rgba(20,20,43,.05), 0 10px 30px rgba(20,20,43,.07);
+    --radius:12px;
+    --chrome-h:99px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4{font-family:'Source Serif 4',Georgia,'Times New Roman',serif;color:var(--ink);line-height:1.25;margin:0;}
+  p{margin:0 0 12px;}
+  ul,ol{margin:0 0 12px;padding-left:22px;}
+  li{margin-bottom:6px;}
+  a{color:var(--accent-ink);}
+  button{font-family:inherit;}
+  ::selection{background:#d7cdfb;}
+
+  /* ---------- chrome: progress + topbar ---------- */
+  .progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),#8f7bff);width:0%;z-index:70;transition:width .1s linear;}
+  .topbar{position:fixed;top:3px;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:60;gap:12px;}
+  .topbar-left{display:flex;align-items:center;gap:10px;min-width:0;}
+  .page-tabs{position:fixed;top:59px;left:0;right:0;height:40px;background:#fbfbfd;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:4px;padding:0 16px;z-index:59;overflow-x:auto;}
+  .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink-soft);white-space:nowrap;flex:0 0 auto;}
+  .page-tab:hover{background:#eef0f4;color:var(--ink);}
+  .page-tab.active{background:var(--accent-soft);color:var(--accent-ink);}
+  .topbar-right{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+  a.icon-btn{text-decoration:none;}
+  .brand{display:flex;align-items:center;gap:8px;min-width:0;}
+  .brand-badge{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto;}
+  .brand-text{display:flex;flex-direction:column;line-height:1.15;min-width:0;}
+  .brand-title{font-weight:700;font-size:14px;color:var(--ink);white-space:nowrap;}
+  .brand-sub{font-size:11.5px;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);border-radius:8px;height:36px;padding:0 12px;cursor:pointer;font-size:13px;font-weight:600;}
+  .icon-btn:hover{background:var(--head-bg);color:var(--ink);}
+  .icon-btn svg{width:16px;height:16px;}
+  .menu-toggle{display:none;width:36px;padding:0;}
+  .menu-toggle svg{width:18px;height:18px;}
+
+  /* ---------- layout shell ---------- */
+  .shell{display:flex;}
+  .sidebar-scrim{display:none;position:fixed;inset:0;background:rgba(20,20,43,.35);z-index:45;}
+  .sidebar{position:fixed;top:var(--chrome-h);left:0;bottom:0;width:300px;background:var(--sidebar-bg);border-right:1px solid var(--line);overflow-y:auto;z-index:50;padding:14px 10px 40px;}
+  .sidebar-search{position:relative;margin:2px 4px 12px;}
+  .sidebar-search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-faint);}
+  .sidebar-search input{width:100%;height:36px;border-radius:8px;border:1px solid var(--line-strong);background:#fff;padding:0 10px 0 32px;font-size:13px;color:var(--ink);outline:none;}
+  .sidebar-search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .sidebar-search kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10.5px;color:var(--ink-faint);border:1px solid var(--line-strong);border-radius:4px;padding:1px 5px;background:#f8f8fb;}
+  .doc-chip{display:flex;align-items:center;gap:8px;margin:0 4px 10px;padding:8px 10px;border-radius:9px;background:#fff;border:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);font-weight:600;}
+  .doc-chip span.dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
+  .nav-empty{padding:14px 10px;font-size:12.5px;color:var(--ink-faint);}
+
+  .nav-list{list-style:none;margin:0;padding:0;}
+  .nav-row{display:flex;align-items:stretch;border-left:3px solid transparent;border-radius:0 8px 8px 0;margin:1px 0;}
+  .nav-row.active{border-left-color:var(--accent);background:var(--accent-soft);}
+  .nav-row.active>.nav-label .nav-text{color:var(--accent-ink);font-weight:700;}
+  .nav-label{flex:1;display:flex;align-items:center;gap:7px;min-width:0;background:none;border:none;text-align:left;padding:7px 8px;font-size:13px;color:var(--ink-soft);cursor:pointer;border-radius:8px;}
+  .nav-label:hover{background:#f0f0f7;color:var(--ink);}
+  .nav-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .nav-page{margin-left:auto;font-size:10.5px;color:var(--ink-faint);flex:0 0 auto;padding-left:6px;}
+  .nav-chevron{width:26px;flex:0 0 auto;background:none;border:none;color:var(--ink-faint);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;}
+  .nav-chevron:hover{background:#e9e9f2;color:var(--ink);}
+  .nav-chevron svg{width:13px;height:13px;transition:transform .15s ease;}
+  .nav-chevron.open svg{transform:rotate(90deg);}
+
+  .content-wrap{flex:1;margin-left:300px;margin-top:var(--chrome-h);min-width:0;padding:32px 20px 120px;}
+  .paper{max-width:860px;margin:0 auto;background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:56px 64px;}
+  .doc-section{scroll-margin-top:75px;padding-top:6px;}
+  .doc-section + .doc-section{margin-top:46px;padding-top:32px;border-top:1px solid var(--line);}
+  .doc-section.sub{margin-top:34px;padding-top:0;border-top:none;}
+
+  /* ---------- headings ---------- */
+  .section-heading{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+  .section-heading h2{font-size:26px;}
+  .section-heading h3{font-size:20px;}
+  .section-heading h4{font-size:16.5px;}
+  .kicker{font-family:'Inter',sans-serif;font-weight:700;font-size:12px;letter-spacing:.03em;color:#fff;background:var(--accent);border-radius:6px;padding:2px 7px;vertical-align:middle;margin-right:8px;}
+  .anchor-link{opacity:0;text-decoration:none;color:var(--ink-faint);font-family:'Inter',sans-serif;font-weight:400;font-size:14px;transition:opacity .1s;}
+  .section-heading:hover .anchor-link{opacity:1;}
+  .cap{font-family:'Source Serif 4',serif;font-style:italic;color:var(--ink-soft);font-size:14px;margin:-4px 0 16px;}
+  .lede{font-family:'Source Serif 4',serif;font-size:16px;line-height:1.7;color:var(--ink);}
+  .lede p{margin:0 0 15px;}
+
+  /* ---------- cover ---------- */
+  .cover{text-align:center;padding:30px 0 10px;}
+  .cover .kicker-line{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-family:'Inter',sans-serif;font-weight:600;margin-bottom:22px;}
+  .cover h1{font-size:30px;line-height:1.35;margin-bottom:30px;}
+  .cover .meta-block{font-family:'Source Serif 4',serif;font-size:15px;color:var(--ink-soft);line-height:2;margin:26px 0;}
+  .cover .meta-block strong{color:var(--ink);}
+  .authors{display:grid;grid-template-columns:1fr 1fr;gap:6px 40px;max-width:520px;margin:26px auto 0;font-family:'Source Serif 4',serif;font-size:15.5px;}
+  .authors div{padding:4px 0;}
+
+  /* ---------- TOC ---------- */
+  .toc-list{list-style:none;margin:0;padding:0;font-family:'Source Serif 4',serif;font-size:15.5px;}
+  .toc-list li{margin-bottom:2px;}
+  .toc-row{display:flex;align-items:baseline;gap:8px;padding:6px 4px;border-radius:6px;cursor:pointer;text-decoration:none;color:var(--ink);}
+  .toc-row:hover{background:var(--head-bg);}
+  .toc-row.indent{padding-left:26px;font-size:14.5px;color:var(--ink-soft);}
+  .toc-label{white-space:nowrap;}
+  .toc-fill{flex:1;border-bottom:1.5px dotted var(--line-strong);position:relative;top:-4px;margin:0 4px;}
+  .toc-page{color:var(--ink-faint);font-size:13.5px;font-family:'Inter',sans-serif;}
+
+  /* ---------- tables ---------- */
+  .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:8px 0 6px;}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13.3px;font-family:'Inter',sans-serif;min-width:640px;}
+  table.tbl th{background:var(--head-bg);text-align:left;padding:10px 12px;border-bottom:2px solid var(--line-strong);font-weight:700;color:var(--ink-soft);font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
+  table.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink);}
+  table.tbl tr:last-child td{border-bottom:none;}
+  table.tbl tr:hover td{background:#fbfbfe;}
+
+  .priority-badge,.status-pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+  .priority-must{background:var(--must-bg);color:var(--must-ink);}
+  .priority-should{background:var(--should-bg);color:var(--should-ink);}
+  .status-neutral{background:var(--st-neutral-bg);color:var(--st-neutral-ink);}
+  .status-progress{background:var(--st-progress-bg);color:var(--st-progress-ink);}
+  .status-done{background:var(--st-done-bg);color:var(--st-done-ink);}
+  .status-blocked{background:var(--st-blocked-bg);color:var(--st-blocked-ink);}
+
+  /* ---------- figures ---------- */
+  .doc-figure{margin:18px 0 8px;text-align:center;}
+  .figure-frame{position:relative;display:inline-block;max-width:100%;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fbfbfd;cursor:zoom-in;}
+  .figure-frame img{display:block;max-width:100%;height:auto;max-height:560px;object-fit:contain;margin:0 auto;}
+  .zoom-hint{position:absolute;right:8px;bottom:8px;background:rgba(31,36,48,.78);color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;display:flex;align-items:center;gap:4px;opacity:0;transition:opacity .12s;}
+  .zoom-hint svg{width:11px;height:11px;}
+  .figure-frame:hover .zoom-hint{opacity:1;}
+  figcaption{font-family:'Source Serif 4',serif;font-style:italic;color:var(--ink-soft);font-size:13.5px;margin-top:10px;}
+
+  /* ---------- use case cards ---------- */
+  .usecase-card{background:#fcfcfe;border:1px solid var(--line);border-radius:12px;padding:26px 28px;}
+  .usecase-head{margin-bottom:14px;}
+  .usecase-table-tag{display:inline-block;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--accent-ink);background:var(--accent-soft);padding:2px 8px;border-radius:6px;margin-bottom:6px;}
+  .usecase-head h4{font-size:19px;}
+  .usecase-subtitle{font-family:'Inter',sans-serif;font-size:12.5px;color:var(--ink-faint);margin-top:3px;}
+  dl.usecase-meta{display:grid;grid-template-columns:150px 1fr;gap:9px 16px;margin:16px 0 20px;font-size:14px;}
+  dl.usecase-meta dt{font-family:'Inter',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-faint);padding-top:2px;}
+  dl.usecase-meta dd{margin:0;font-family:'Source Serif 4',serif;line-height:1.6;color:var(--ink);}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{font-family:'Inter',sans-serif;font-size:12px;background:#fff;border:1px solid var(--line-strong);color:var(--ink-soft);padding:3px 9px;border-radius:20px;white-space:nowrap;}
+  .usecase-card h5{font-family:'Inter',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);font-weight:700;margin:20px 0 8px;}
+  .stakeholder-list,.check-list{list-style:none;padding:0;margin:0 0 4px;font-size:14px;}
+  .stakeholder-list li,.check-list li{position:relative;padding-left:18px;margin-bottom:8px;font-family:'Source Serif 4',serif;line-height:1.55;}
+  .stakeholder-list li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .check-list li::before{content:"✓";position:absolute;left:0;top:0;color:var(--st-done-ink);font-weight:700;font-family:'Inter',sans-serif;font-size:12.5px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+  .flow-table{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;}
+  .flow-col{padding:14px 18px;}
+  .flow-col:first-child{border-right:1px solid var(--line);}
+  .flow-col-head{font-family:'Inter',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--accent-ink);margin-bottom:8px;}
+  .flow-col ol{margin:0;padding-left:18px;font-family:'Source Serif 4',serif;font-size:13.8px;line-height:1.55;}
+  .flow-col li{margin-bottom:9px;}
+  .exception-list{list-style:none;padding:0;margin:0;}
+  .exception-list li{font-family:'Source Serif 4',serif;font-size:14px;line-height:1.6;background:#fff8ec;border-left:3px solid #e8ac2e;padding:9px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;}
+
+  /* ---------- entities reference (ERD) ---------- */
+  .entity-note{font-size:12.5px;color:var(--ink-faint);font-family:'Inter',sans-serif;margin:22px 0 10px;text-transform:uppercase;letter-spacing:.03em;font-weight:700;}
+  .entity-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .entity-card{border:1px solid var(--line);border-radius:9px;padding:10px 13px;background:#fcfcfe;}
+  .entity-card .ename{font-family:'Inter',sans-serif;font-weight:700;font-size:12.5px;color:var(--accent-ink);margin-bottom:4px;letter-spacing:.02em;}
+  .entity-card .efields{font-size:12px;color:var(--ink-soft);line-height:1.5;font-family:'Inter',sans-serif;}
+
+  /* ---------- lightbox ---------- */
+  .lightbox{position:fixed;inset:0;background:rgba(15,16,24,.86);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;cursor:zoom-out;}
+  .lightbox img{max-width:100%;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);cursor:default;background:#fff;}
+  .lightbox-caption{color:#e7e7ee;font-family:'Source Serif 4',serif;font-style:italic;margin-top:16px;font-size:14px;text-align:center;max-width:700px;}
+  .lightbox-close{position:absolute;top:20px;right:24px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .lightbox-close svg{width:18px;height:18px;}
+
+  /* ---------- footer / back-to-top ---------- */
+  .doc-footer{margin-top:50px;padding-top:22px;border-top:1px solid var(--line);font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-faint);line-height:1.7;}
+  .back-to-top{position:fixed;right:26px;bottom:26px;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid var(--line-strong);box-shadow:var(--shadow);color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:40;opacity:0;pointer-events:none;transition:opacity .15s, transform .15s;}
+  .back-to-top.show{opacity:1;pointer-events:auto;}
+  .back-to-top:hover{color:var(--accent-ink);transform:translateY(-2px);}
+  .back-to-top svg{width:18px;height:18px;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:980px){
+    .menu-toggle{display:inline-flex;}
+    .sidebar{left:-320px;transition:left .22s ease;box-shadow:0 0 40px rgba(0,0,0,.15);}
+    .sidebar.open{left:0;}
+    .sidebar-scrim.show{display:block;}
+    .content-wrap{margin-left:0;padding:24px 14px 100px;}
+    .paper{padding:34px 22px;}
+    .brand-sub{display:none;}
+    .topbar-right .icon-btn span{display:none;}
+    .topbar-right .icon-btn{width:36px;padding:0;justify-content:center;}
+    dl.usecase-meta{grid-template-columns:1fr;}
+    .two-col{grid-template-columns:1fr;}
+    .flow-table{grid-template-columns:1fr;}
+    .flow-col:first-child{border-right:none;border-bottom:1px solid var(--line);}
+    .entity-grid{grid-template-columns:1fr;}
+    .authors{grid-template-columns:1fr;text-align:center;}
+  }
+
+  /* ---------- print: real A4 pagination ---------- */
+  /* Page-number footer: cover is unnumbered ("page 0"), numbering becomes
+     visible starting at 1 on the Table of Contents page, then 2, 3, 4... */
+  @page{
+    size: A4;
+    margin: 20mm 18mm;
+    @bottom-center{
+      content: counter(page);
+      font-family: 'Inter', sans-serif;
+      font-size: 9pt;
+      color: #9a9fab;
+    }
+  }
+  @page :first{
+    counter-reset: page 0;
+    @bottom-center{ content: none; }
+  }
+  @media print{
+    html,body{background:#fff;width:auto;height:auto;}
+    .progress-bar,.topbar,.page-tabs,.sidebar,.sidebar-scrim,.zoom-hint,.anchor-link,.back-to-top,.sidebar-search kbd{display:none !important;}
+    .content-wrap{margin:0 !important;padding:0 !important;}
+    .paper{box-shadow:none;border-radius:0;max-width:none;width:auto;padding:0;}
+
+    body{font-size:10.5pt;line-height:1.42;}
+    h1{font-size:21pt;}
+    h2{font-size:16pt;}
+    h3{font-size:13.5pt;}
+    h4{font-size:12pt;}
+    h5{font-size:9.5pt;margin:9pt 0 4pt !important;}
+    .cap,.lede,dl.usecase-meta dd,.stakeholder-list li,.check-list li,.flow-col ol,.exception-list li{font-size:10.5pt;}
+    .lede p{margin:0 0 8pt;}
+    table.tbl{font-size:8.7pt;}
+    table.tbl th{width:auto !important;white-space:normal;}
+    table.tbl td,table.tbl th{padding:3.5pt 5pt;line-height:1.32;}
+    .priority-badge,.status-pill{padding:1pt 5pt;}
+
+    .usecase-card{border:none;background:none;padding:0;}
+    .usecase-head{margin-bottom:6pt;}
+    dl.usecase-meta{grid-template-columns:100px 1fr;gap:3pt 8pt;margin:8pt 0 9pt;}
+    .usecase-card h5{margin:9pt 0 4pt;}
+    .stakeholder-list li,.check-list li{margin-bottom:3pt;}
+    .flow-col{padding:5pt 8pt;}
+    .flow-col li{margin-bottom:3pt;}
+    .exception-list li{padding:4pt 7pt;margin-bottom:3pt;}
+    .chip{padding:1pt 6pt;font-size:9pt;}
+
+    .doc-section+.doc-section{border-top:none;margin-top:14pt;padding-top:0;}
+    .doc-section.sub{margin-top:11pt;}
+    .cover{padding:0;}
+    .figure-frame{cursor:default;border-color:#ccc;}
+    .doc-figure{margin:8pt 0 4pt;}
+    .doc-figure img{max-height:215mm;}
+    .entity-note,.entity-grid{display:none;}
+    .doc-footer{display:none;}
+
+    /* page starts, matched to the original document's own page boundaries */
+    #cover{break-after:page;}
+    #toc{break-after:page;}
+    #overview{break-before:page;}
+    #methodology{break-before:page;}
+    #requirements{break-before:page;}
+    #events{break-before:page;}
+    #usecase-diagrams{break-before:page;}
+    #usecase-full{break-before:page;}
+    #gap-analysis{break-before:page;}
+    #context-diagram{break-before:page;}
+    #dfd{break-before:page;}
+    #dfd-level1,#dfd-p1,#dfd-p2,#dfd-p3,#dfd-p4,#dfd-p5,#dfd-p6,#dfd-p7,#dfd-p8,#dfd-p9,#dfd-p10{break-before:page;}
+    #erd{break-before:page;}
+
+    /* avoid awkward mid-element splits; the use case cards are allowed to flow
+       across a page boundary (like the source document does) rather than being
+       forced onto a fresh page whenever they don't fully fit what's left of one */
+    table.tbl tr,.doc-figure,.entity-card,.authors,.usecase-head,dl.usecase-meta>dt,.stakeholder-list li,.check-list li,.flow-col li,.exception-list li{break-inside:avoid;}
+    dl.usecase-meta>dt{break-after:avoid;}
+    h1,h2,h3,h4,h5{break-after:avoid;}
+    .toc-row{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+/* =========================================================================
+   DOCUMENT DATA
+   Everything the page renders lives here as plain data. To update content
+   later (e.g. change a backlog item's Status from "Not Started" to
+   "In Progress" or "Done"), edit the arrays below — the layout/components
+   further down do not need to change. Status strings are matched loosely
+   (case-insensitive, "contains"), so "Done", "Completed", "in progress"
+   etc. all pick up the right colour automatically.
+   ========================================================================= */
+  const DATA = {
+    meta: {
+      title: "SOMADA: A Web-Based Laboratory Management System",
+      submittedTo: "Project Documentation Submitted to the Faculty of the School of Engineering and Technology",
+      org: "NU Fairview",
+      requirement: "In Partial Fulfillment of the Requirements for Systems Analysis and Detailed Design for IT",
+      courseCode: "MSYADD1",
+      authorsLeft: ["ADAMOS, Eurika B.", "SALIO, Anilov P."],
+      authorsRight: ["FEROL, John Sebastian Khyle", "IMPERIAL, Jherico S."],
+    },
+
+    backlog: [
+      { id:"01", role:"Class Representative / Faculty", want:`log in to a personal SOMADA account`, soThat:`I can submit and track my own laboratory reservations without going to the laboratory in person to file a paper form`, priority:"Must", sprint:1, status:"Not Started" },
+      { id:"02", role:"Head Laboratory", want:`issue a system account to a new Class Representative`, soThat:`the representative and their assigned Faculty member can start using SOMADA for their class`, priority:"Must", sprint:1, status:"Not Started" },
+      { id:"03", role:"Class Representative / Faculty", want:`choose Physics or Circuits Laboratory and view its schedule and availability before booking`, soThat:`I only see the slots and resources that actually apply to the laboratory I need`, priority:"Must", sprint:1, status:"Not Started" },
+      { id:"04", role:"Class Representative / Faculty / Dean", want:`submit a laboratory reservation on-schedule or out-of-schedule, selecting any resources the session needs`, soThat:`I can secure a room and equipment without filling out a paper form`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"05", role:"Class Representative / Faculty", want:`cancel or reschedule a reservation I already submitted`, soThat:`a change of plan doesn't leave a stale booking or force me to file a whole new request`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"06", role:"Faculty", want:`review and approve or reject a Class Representative's reservation from my own dashboard`, soThat:`I stay the approving authority for my class without an emailed link or a signature`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"07", role:"Dean", want:`approve or reject an out-of-schedule reservation, and submit my own out-of-schedule request for Defense Lab use`, soThat:`facility-level bookings outside the regular schedule still go through the office responsible for them`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"08", role:"Class Representative / Faculty / Dean", want:`view the status and history of my reservations, and the clearance status raised against my group`, soThat:`I know where a request stands and what I'm accountable for without visiting the laboratory`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"09", role:"Class Representative / Faculty", want:`ask SOMADA a question about item availability, schedule availability, operating hours or my reservation status`, soThat:`I can get an answer grounded in the laboratory's own records without waiting for a reply`, priority:"Should", sprint:4, status:"Not Started" },
+      { id:"10", role:"Head Laboratory / Laboratory Staff", want:`add, edit, or remove equipment records for my assigned laboratory`, soThat:`I can accurately manage and categorize what is currently in the storage room`, priority:"Must", sprint:1, status:"Not Started" },
+      { id:"11", role:"Head Laboratory / Laboratory Staff", want:`issue equipment against an approved reservation and record its return`, soThat:`borrowing and stock levels stay accurate without re-encoding a paper slip`, priority:"Must", sprint:3, status:"Not Started" },
+      { id:"12", role:"Head Laboratory / Laboratory Staff", want:`record issued and returned quantities separately, with equipment barred from being marked consumed`, soThat:`consumed counts reflect only what was genuinely used up, and unreturned equipment is correctly recorded as broken or lost`, priority:"Must", sprint:3, status:"Not Started" },
+      { id:"13", role:"Head Laboratory / Laboratory Staff", want:`record a broken or missing item against the accountable member and raise a clearance`, soThat:`I can document damaged items and clear the accountable person before the end of the term`, priority:"Must", sprint:3, status:"Not Started" },
+      { id:"14", role:"Head Laboratory / Laboratory Staff", want:`log items withdrawn for disposal and flag those that are hazardous waste`, soThat:`I can show what left the laboratory and why, and keep hazardous items separated for proper collection`, priority:"Should", sprint:3, status:"Not Started" },
+      { id:"15", role:"Head Laboratory / Laboratory Staff", want:`maintain the laboratory schedule and usage logs for my assigned laboratory`, soThat:`vacant blocks are published for reservations and session usage is captured for reporting`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"16", role:"Head Laboratory / Laboratory Staff", want:`view a live dashboard of inventory, requests, and usage for my assigned laboratory`, soThat:`I can track availability and activity without a physical count`, priority:"Should", sprint:3, status:"Not Started" },
+      { id:"17", role:"Head Laboratory", want:`generate printable summaries and an end-of-term report across both laboratories`, soThat:`I can review usage patterns and submit the figures required by the administration`, priority:"Should", sprint:4, status:"Not Started" },
+    ],
+
+    events: [
+      { event:"A user signs in", trigger:"User enters their SOMADA username and password on the login screen", source:"Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Log In", response:"Credentials verified and a role-scoped session is established", destination:"User Accounts, role dashboard" },
+      { event:"Head Laboratory issues a Class Representative account", trigger:"Head Laboratory submits the new representative's details against a Faculty member", source:"Head Laboratory", useCase:"Issue Class Representative Account", response:"Account created and login credentials emailed to the Faculty member for hand-off", destination:"User Accounts, Faculty" },
+      { event:"A requester chooses a laboratory and checks availability", trigger:"Requester selects Physics or Circuits Laboratory and opens its schedule", source:"Class Representative, Faculty, Dean", useCase:"Choose Laboratory, View Schedule & Availability", response:"Laboratory schedule and vacant blocks displayed for the selected laboratory", destination:"Requester" },
+      { event:"A requester submits a laboratory reservation", trigger:"Requester completes the reservation form, on-schedule or out-of-schedule, and submits", source:"Class Representative, Faculty, Dean", useCase:"Submit Laboratory Reservation", response:"Reservation saved as Pending where approval is required, or forwarded directly to laboratory processing where the requester is already the approving authority", destination:"Reservation Records, requester dashboard" },
+      { event:"A requester changes plans after submitting", trigger:"Requester selects Cancel or Reschedule on an existing reservation", source:"Class Representative, Faculty", useCase:"Cancel Laboratory Reservation, Reschedule Laboratory Reservation", response:"Reservation withdrawn or moved to a new slot, held block released or reassigned", destination:"Reservation Records" },
+      { event:"Faculty decides on a Class Representative's reservation", trigger:"Faculty reviews the pending reservation on their dashboard and selects Approve or Reject", source:"Faculty", useCase:"Approve / Reject Reservation", response:"Reservation status updated to Approved or Rejected; approval record written", destination:"Reservation Records, Approval Records, Class Representative" },
+      { event:"Dean decides on an out-of-schedule reservation", trigger:"Dean reviews a Faculty out-of-schedule reservation, or a Class Representative reservation with no assigned professor, and selects Approve or Reject", source:"Dean", useCase:"Approve / Reject Reservation", response:"Reservation status updated to Approved or Rejected; approval record written", destination:"Reservation Records, Approval Records, requester" },
+      { event:"A requester checks on a reservation", trigger:"Requester opens their dashboard", source:"Class Representative, Faculty, Dean", useCase:"View Reservation Status, View Reservation History, View Clearance Status", response:"Current status, past reservations, and any open clearance displayed", destination:"Requester" },
+      { event:"A requester asks a question", trigger:"Requester submits a question from within their account", source:"Class Representative, Faculty", useCase:"Ask Laboratory Question", response:"Answer composed from the laboratory's own records on item, schedule, or reservation status, or operating hours", destination:"Requester" },
+      { event:"Laboratory staff issue equipment for a session", trigger:"Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued per item", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Issue Equipment", response:"Borrowing record created against the requester and the date; issued quantities deducted from stock", destination:"Borrowing Records, Equipment Inventory Records" },
+      { event:"A session ends and items are returned", trigger:"Laboratory staff record returned quantities against quantities issued", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Process Return", response:"Quantities reconciled; unreturned consumables marked consumed; equipment not returned in working order marked broken or lost", destination:"Borrowing Records, Broken/Loss/Consumed Logs" },
+      { event:"Accountability is raised for a damaged or missing item", trigger:"Laboratory staff select the accountable member from the borrowing record", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Process Clearance", response:"Clearance record created against the accountable Class Representative or Faculty member and tracked to settlement", destination:"Clearance Records, requester dashboard" },
+      { event:"An item is withdrawn from the laboratory", trigger:"Laboratory staff record the item, reason, quantity and classification", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Log Waste Disposal", response:"Disposal entry created; hazardous items flagged for separate collection", destination:"Waste Disposal Records, End-Term Report" },
+      { event:"Laboratory staff maintain the equipment catalogue", trigger:"Head Laboratory or assigned Laboratory Staff add, edit, or remove a holding", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Manage Equipment Inventory", response:"Catalogue updated and availability recomputed; a low stock flag is raised where a quantity falls below its reorder level", destination:"Equipment Inventory Records, Laboratory Dashboard" },
+      { event:"The Dean's office issues the term schedule", trigger:"Head Laboratory records the committed and vacant blocks for each laboratory room", source:"Head Laboratory", useCase:"Manage Laboratory Logs & Schedule", response:"Laboratory schedule updated for each room and vacant blocks published for reservations", destination:"Laboratory Schedule" },
+      { event:"Laboratory staff record the usage of a completed session", trigger:"The return for the session has been reconciled", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Manage Laboratory Logs & Schedule", response:"Usage entry recorded in the Physics or Circuits laboratory log for the session", destination:"Physics Laboratory Logs, Circuits Laboratory Logs, End-Term Report" },
+      { event:"Laboratory staff open the dashboard", trigger:"Staff sign in and dashboard metrics load", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"View Laboratory Dashboard", response:"Inventory, reservation, and usage metrics summarized for the assigned laboratory, or across both for Head Laboratory", destination:"Laboratory Dashboard" },
+      { event:"The term ends", trigger:"Head Laboratory triggers the end-of-term report", source:"Head Laboratory", useCase:"Generate End-Term Report", response:"Usage per requester, most-borrowed items, and broken, lost, and consumed totals compiled across both laboratories and exported for submission", destination:"Head Laboratory, then NU Fairview administration" },
+    ],
+
+    useCases: [
+      {
+        id:"uc-login", table:3, title:"Log In", useCaseName:"Log In",
+        scenario:`A Class Representative, Faculty member, Dean, Head Laboratory, or Laboratory Staff needs access to their role-scoped SOMADA account.`,
+        triggeringEvent:`The user selects "Log In" and enters their username and password.`,
+        briefDescription:`SOMADA is now a five-role authenticated system. Under the current manual process there is no system at all — a requester fills out a paper form and brings it to the laboratory in person. Every role signs in with a dedicated SOMADA account and a system-generated password: a Class Representative's username is their NU Student ID, and every other role's username is their NU Fairview email. The system verifies the credentials, establishes a session scoped to the user's role and, for Head Laboratory and Laboratory Staff, their assigned laboratory, and loads the dashboard for that role. Physics Laboratory Staff and Circuits Laboratory Staff never receive standing access to the other laboratory's data.`,
+        actors:"Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"View My Dashboard, View Laboratory Dashboard, Issue Class Representative Account",
+        stakeholders:[
+          `Class Representative and Faculty: need their own account to submit and track reservations without going to the laboratory in person.`,
+          `Dean: needs an account to both submit out-of-schedule requests and approve them.`,
+          `Head Laboratory and Laboratory Staff: need access scoped to the laboratory or laboratories they are assigned to.`,
+          `NU Fairview: requires every account identity-anchored to a real NU identifier.`,
+        ],
+        preconditions:[`The user's account has already been issued: Class Representative accounts are created by Head Laboratory and handed to the Faculty member; all other accounts are provisioned in advance.`,`The system is reachable from the user's device.`],
+        postconditions:[`A session scoped to the user's role, and laboratory assignment where applicable, is established and the corresponding dashboard is displayed.`,`If verification fails, no session is created.`],
+        flowActor:[`User opens the login screen.`,`User enters their username and password.`,`User submits the credentials.`],
+        flowSystem:[`System validates the credentials against the stored account.`,`System establishes a session scoped to the user's role and laboratory assignment.`,`System loads the dashboard for that role.`],
+        exceptions:[
+          `If the credentials are invalid, the system reports the failure and no session is created.`,
+          `If the account is unavailable, the system displays a failure message and directs the user to the account holder responsible for reissuing it — Head Laboratory for a Class Representative account.`,
+          `If a Physics or Circuits Laboratory Staff account attempts to reach the other laboratory's screens, the system refuses access.`,
+        ],
+      },
+      {
+        id:"uc-viewdash", table:4, title:"View My Dashboard", useCaseName:"View My Dashboard",
+        scenario:`A Class Representative or Faculty member wants a single landing page for their own reservations.`,
+        triggeringEvent:`The requester logs in and My Dashboard loads.`,
+        briefDescription:`My Dashboard is the requester-side personal landing page: it surfaces the requester's current reservation status, reservation history, and any open clearance in one place, replacing the old reference-number tracking screen that needed no account. Because the requester is signed in, the dashboard is scoped to that person's own reservations only — a Class Representative never sees another section's requests.`,
+        actors:"Class Representative, Faculty", related:"Log In, View Reservation Status, View Reservation History, View Clearance Status",
+        stakeholders:[
+          `Class Representative and Faculty: need their own reservations, history, and clearance visible without a reference number.`,
+          `Head Laboratory: benefits from fewer status enquiries handled in person.`,
+        ],
+        preconditions:[`The requester is signed in.`],
+        postconditions:[`The dashboard displays the requester's current reservation status, reservation history, and clearance status.`,`No stored record is changed.`],
+        flowActor:[`Requester logs in.`,`Requester reviews the dashboard summary.`,`Requester opens a specific reservation or clearance entry for detail.`],
+        flowSystem:[`System retrieves the reservations and clearance records belonging to the signed-in requester.`,`System renders the summary on the dashboard.`],
+        exceptions:[
+          `If the requester has no reservations yet, the dashboard shows an empty state directing them to Submit Laboratory Reservation.`,
+        ],
+      },
+      {
+        id:"uc-chooselab", table:5, title:"Choose Laboratory", useCaseName:"Choose Laboratory",
+        scenario:`A requester needs to work with one specific laboratory's schedule and resources before booking.`,
+        triggeringEvent:`The requester selects Physics Laboratory or Circuits Laboratory.`,
+        briefDescription:`Choosing a laboratory is now an explicit first step rather than implied by which paper form was picked up. Every reservation, schedule view, and inventory interaction downstream is scoped to the laboratory chosen here, so a requester never has to sort Physics results out of a mixed list.`,
+        actors:"Class Representative, Faculty, Dean", related:"View Schedule & Availability, Submit Laboratory Reservation",
+        stakeholders:[
+          `Class Representative, Faculty, and Dean: need to work against the correct laboratory's schedule and resources.`,
+          `Physics Laboratory Staff and Circuits Laboratory Staff: rely on requests arriving already scoped to their laboratory.`,
+        ],
+        preconditions:[`The requester is signed in.`],
+        postconditions:[`The selected laboratory is carried into the schedule view and any reservation the requester goes on to submit.`],
+        flowActor:[`Requester selects Physics Laboratory or Circuits Laboratory.`],
+        flowSystem:[`System scopes the following schedule and reservation screens to the selected laboratory.`],
+        exceptions:[
+          `None — selection is always available to a signed-in requester.`,
+        ],
+      },
+      {
+        id:"uc-viewsched", table:6, title:"View Schedule & Availability", useCaseName:"View Schedule & Availability",
+        scenario:`A requester needs to know which blocks are open before submitting a reservation.`,
+        triggeringEvent:`The requester opens the schedule for the chosen laboratory.`,
+        briefDescription:`The system displays the committed and vacant blocks for the chosen laboratory, drawn from the laboratory schedule that Head Laboratory maintains, together with equipment availability where relevant. This is a read-only view; it does not itself hold a slot.`,
+        actors:"Class Representative, Faculty, Dean", related:"Choose Laboratory, Submit Laboratory Reservation",
+        stakeholders:[
+          `Class Representative, Faculty, and Dean: need to see open blocks before committing to a request.`,
+          `Head Laboratory: needs the schedule it maintains to be the single source requesters see.`,
+        ],
+        preconditions:[`A laboratory has been chosen.`],
+        postconditions:[`The schedule and vacant blocks for the chosen laboratory are displayed. No stored record is changed.`],
+        flowActor:[`Requester opens the schedule for the chosen laboratory.`,`Requester reviews the committed and vacant blocks.`],
+        flowSystem:[`System retrieves the laboratory schedule and equipment availability for the chosen laboratory.`,`System displays the committed and vacant blocks.`],
+        exceptions:[
+          `If the term schedule has not yet been recorded by Head Laboratory, the system shows no vacant blocks and advises the requester to check again later.`,
+        ],
+      },
+      {
+        id:"uc-submitres", table:7, title:"Submit Laboratory Reservation", useCaseName:"Submit Laboratory Reservation",
+        scenario:`A requester needs a laboratory room, equipment, or both, for a session.`,
+        triggeringEvent:`The requester completes the reservation form and submits it.`,
+        briefDescription:`Renamed from "File Laboratory Service Request." The requester selects any resources the session needs from the catalogue, states whether the reservation is on-schedule or out-of-schedule, and submits against the laboratory and slot already chosen. What happens next depends on who is submitting: a Class Representative's reservation always requires a decision under Approve / Reject Reservation — from their assigned Faculty member if one exists for the session, otherwise from the Dean. A Faculty member's on-schedule reservation needs no approval, because Faculty already holds academic authority over their own class; a Faculty out-of-schedule reservation still requires the Dean, whose authority covers facility use outside the regular schedule. The Dean's own out-of-schedule reservation — most often for Defense Lab use — likewise needs no approval, since the Dean already is the authority for that case. In every case, the pattern is the same: the appropriate authority approves, and the step is skipped only when the requester already is that authority.`,
+        actors:"Class Representative, Faculty, Dean", related:"Choose Laboratory, View Schedule & Availability, Approve / Reject Reservation, Cancel Laboratory Reservation, Reschedule Laboratory Reservation",
+        stakeholders:[
+          `Class Representative: needs a reservation submitted on behalf of the class without a paper form.`,
+          `Faculty: needs both an approval gate for their class's requests and an ungated path for their own on-schedule use.`,
+          `Dean: needs visibility and authority over out-of-schedule and facility-level use.`,
+          `Head Laboratory: needs requests to arrive complete and already scoped to the correct laboratory.`,
+        ],
+        preconditions:[`The requester is signed in and has chosen a laboratory.`,`The laboratory schedule for the term has been recorded.`],
+        postconditions:[`The reservation is stored. Where a decision is required, it is stored as Pending and made available under Approve / Reject Reservation; where the requester is already the approving authority, it is forwarded directly to Head Laboratory / Laboratory Staff for processing. The selected slot is held against further reservations while the reservation is active.`],
+        flowActor:[
+          `Requester selects the resources the session needs from the catalogue.`,
+          `Requester confirms the laboratory, date, and time already chosen.`,
+          `Requester states whether the reservation is on-schedule or out-of-schedule.`,
+          `For a Class Representative reservation, the requester's group is carried from their account.`,
+          `Requester reviews the reservation and submits it.`,
+        ],
+        flowSystem:[
+          `System displays the resource catalogue scoped to the chosen laboratory with live availability.`,
+          `System validates the selected slot against the laboratory schedule.`,
+          `System determines whether a decision is required, based on the requester's role and whether an assigned professor exists for the session.`,
+          `System stores the reservation as Pending and routes it to the appropriate approver, or forwards it directly for laboratory processing where no approval applies.`,
+        ],
+        exceptions:[
+          `If the selected slot is already committed, the system reports the conflict and offers the remaining vacant blocks.`,
+          `If a requested resource quantity exceeds availability, the system flags it so the requester can adjust it.`,
+          `If required information is incomplete, the system requests corrections before submission.`,
+        ],
+      },
+      {
+        id:"uc-cancelres", table:8, title:"Cancel Laboratory Reservation", useCaseName:"Cancel Laboratory Reservation",
+        scenario:`A requester no longer needs a reservation they already submitted.`,
+        triggeringEvent:`The requester selects Cancel on an existing reservation from their dashboard.`,
+        briefDescription:`Genuinely missing from the previous request-and-track model, where a request could only run its course once filed. The requester withdraws a Pending or Approved reservation before its session date, and the block it held is released back to the schedule.`,
+        actors:"Class Representative, Faculty", related:"Submit Laboratory Reservation, Reschedule Laboratory Reservation, View Reservation Status",
+        stakeholders:[
+          `Class Representative and Faculty: need to withdraw a reservation without it running to a no-show.`,
+          `Head Laboratory: needs the released block to reopen for other requesters promptly.`,
+        ],
+        preconditions:[`A reservation exists belonging to the requester, with status Pending or Approved.`,`The session date has not yet passed.`],
+        postconditions:[`The reservation status is set to Cancelled and the block it held is released back to the laboratory schedule.`],
+        flowActor:[`Requester opens the reservation from their dashboard.`,`Requester selects Cancel and confirms.`],
+        flowSystem:[`System validates that the reservation belongs to the requester and is still cancellable.`,`System sets the status to Cancelled and releases the held block.`],
+        exceptions:[
+          `If the reservation is already Completed or the session date has passed, the system refuses the cancellation.`,
+          `If the reservation was Approved, the assigned Faculty member or Dean is notified of the cancellation.`,
+        ],
+      },
+      {
+        id:"uc-reschedres", table:9, title:"Reschedule Laboratory Reservation", useCaseName:"Reschedule Laboratory Reservation",
+        scenario:`A requester needs to move a reservation to a different date or time.`,
+        triggeringEvent:`The requester selects Reschedule on an existing reservation from their dashboard.`,
+        briefDescription:`Also genuinely missing from the previous model. The requester selects a new vacant block for the same laboratory; the original block is released and the new block is held in its place. Where the original reservation required a decision, the rescheduled reservation returns to Pending for the same approver.`,
+        actors:"Class Representative, Faculty", related:"Submit Laboratory Reservation, Cancel Laboratory Reservation, View Schedule & Availability",
+        stakeholders:[
+          `Class Representative and Faculty: need to move a booking without cancelling and refiling from scratch.`,
+          `Head Laboratory: needs the schedule to reflect the move rather than holding two blocks for one session.`,
+        ],
+        preconditions:[`A reservation exists belonging to the requester, with status Pending or Approved.`,`The session date has not yet passed.`],
+        postconditions:[`The original block is released. The new block is held against the reservation. Where a decision applies, the reservation returns to Pending for the original approver.`],
+        flowActor:[`Requester opens the reservation from their dashboard.`,`Requester selects Reschedule and chooses a new vacant block.`,`Requester confirms the change.`],
+        flowSystem:[`System validates the new block against the laboratory schedule.`,`System releases the original block and holds the new one.`,`System resets the status to Pending where a decision applies, and routes it to the original approver.`],
+        exceptions:[
+          `If the new block is already committed, the system reports the conflict and offers the remaining vacant blocks.`,
+          `If the reservation is already Completed or the session date has passed, the system refuses the reschedule.`,
+        ],
+      },
+      {
+        id:"uc-viewstatus", table:10, title:"View Reservation Status", useCaseName:"View Reservation Status",
+        scenario:`A requester wants to know where a specific reservation currently stands.`,
+        triggeringEvent:`The requester opens a reservation from their dashboard.`,
+        briefDescription:`Replaces the old public reference-number tracking screen. Because the requester is signed in, the system already knows which reservations are theirs — no reference number is needed. The status shown is Pending, Approved, Rejected, Ongoing, or Completed.`,
+        actors:"Class Representative, Faculty, Dean", related:"View My Dashboard, Submit Laboratory Reservation, Approve / Reject Reservation",
+        stakeholders:[
+          `Class Representative, Faculty, and Dean: need progress visible without a reference number or a visit to the laboratory.`,
+          `Head Laboratory: needs routine status enquiries answered without personal attendance.`,
+        ],
+        preconditions:[`A reservation exists belonging to the requester.`],
+        postconditions:[`The current status and details of the reservation are displayed. No stored record is changed.`],
+        flowActor:[`Requester opens a reservation from their dashboard.`,`Requester reviews its status.`],
+        flowSystem:[`System retrieves the reservation and its current status.`,`System displays the status and details held on the record.`],
+        exceptions:[
+          `None beyond ordinary access control — a requester cannot view a reservation that is not theirs.`,
+        ],
+      },
+      {
+        id:"uc-viewhistory", table:11, title:"View Reservation History", useCaseName:"View Reservation History",
+        scenario:`A requester wants to see their past reservations, not just the current one.`,
+        triggeringEvent:`The requester opens Reservation History from their dashboard.`,
+        briefDescription:`Lists every reservation the requester has submitted, including cancelled, rejected, and completed ones, so a Class Representative or Faculty member has a full record of past laboratory use without asking Head Laboratory to look it up.`,
+        actors:"Class Representative, Faculty", related:"View My Dashboard, View Reservation Status",
+        stakeholders:[
+          `Class Representative and Faculty: need a record of past reservations for their own reference.`,
+        ],
+        preconditions:[`The requester is signed in.`],
+        postconditions:[`The requester's past reservations are displayed. No stored record is changed.`],
+        flowActor:[`Requester opens Reservation History.`,`Requester reviews the listed reservations.`],
+        flowSystem:[`System retrieves every reservation belonging to the requester, regardless of status.`,`System displays them in the history view.`],
+        exceptions:[
+          `If the requester has no past reservations, the history is shown empty.`,
+        ],
+      },
+      {
+        id:"uc-clearstatus", table:12, title:"View Clearance Status", useCaseName:"View Clearance Status",
+        scenario:`A requester needs to know what accountability, if any, has been raised against their group.`,
+        triggeringEvent:`The requester opens Clearance Status from their dashboard.`,
+        briefDescription:`Head Laboratory's Process Clearance creates accountability records against a Class Representative's group or a Faculty member, but under the previous model nothing let the requester side see them. This closes that gap: the requester sees the item, reason, and settlement status of any clearance raised against them.`,
+        actors:"Class Representative, Faculty", related:"View My Dashboard, Process Clearance",
+        stakeholders:[
+          `Class Representative and Faculty: need to know what is recorded against them and how to settle it.`,
+          `Head Laboratory: needs the clearance visible to the accountable party without a separate paper copy.`,
+        ],
+        preconditions:[`The requester is signed in.`],
+        postconditions:[`Any clearance raised against the requester's group or against the requester is displayed with its status. No stored record is changed.`],
+        flowActor:[`Requester opens Clearance Status.`,`Requester reviews any open or settled clearance.`],
+        flowSystem:[`System retrieves clearance records raised against the requester or their group.`,`System displays the item, reason, and settlement status.`],
+        exceptions:[
+          `If no clearance has been raised, the view shows an empty state.`,
+        ],
+      },
+      {
+        id:"uc-approve", table:13, title:"Approve / Reject Reservation", useCaseName:"Approve / Reject Reservation",
+        scenario:`A submitted reservation awaits a decision from the appropriate authority.`,
+        triggeringEvent:`Faculty or Dean opens a Pending reservation from their dashboard and selects Approve or Reject.`,
+        briefDescription:`Renamed from "Approve Class Rep. Reservation" — rejecting is not a separate feature, it is the other branch of the same review. Shared by Faculty and Dean under one routing rule: a Class Representative's reservation goes to their assigned Faculty member if one exists for the session, otherwise to the Dean; a Faculty out-of-schedule reservation goes to the Dean. Faculty on-schedule reservations and the Dean's own out-of-schedule reservations never reach this use case, because the requester is already the authority in those cases.`,
+        actors:"Faculty, Dean", related:"Submit Laboratory Reservation, View Reservation Status, Issue Equipment",
+        stakeholders:[
+          `Faculty: must authorise a Class Representative's reservation for their own class.`,
+          `Dean: must authorise out-of-schedule use and stand in where no professor is assigned.`,
+          `Class Representative: needs the reservation settled without a physically routed form.`,
+          `Head Laboratory: needs a recorded decision before it processes the reservation.`,
+        ],
+        preconditions:[`A reservation exists with the status Pending.`,`The approver is signed in.`],
+        postconditions:[`The reservation status is updated to Approved or Rejected. An approval record is written carrying the decision, the approver, and the time of decision. An approved reservation becomes available to Head Laboratory / Laboratory Staff for processing; a rejected one releases its held block.`],
+        flowActor:[`Approver opens the Pending reservation from their dashboard.`,`Approver reviews the reservation details.`,`Approver selects Approve or Reject.`],
+        flowSystem:[`System displays the Pending reservation to the routed approver.`,`System records the decision and writes the approval record.`,`System updates the reservation status and notifies the requester.`],
+        exceptions:[
+          `If the reservation is rejected, the status is set to Rejected and the held block is released.`,
+          `If the approver takes no action before the session date, the reservation remains Pending and Head Laboratory follows it up outside the system.`,
+        ],
+      },
+      {
+        id:"uc-askq", table:14, title:"Ask Laboratory Question", useCaseName:"Ask Laboratory Question",
+        scenario:`A Class Representative or Faculty member needs a quick answer without waiting for a reply.`,
+        triggeringEvent:`The requester submits a question from within their account.`,
+        briefDescription:`Renamed and repositioned from the previous, unauthenticated Virtual Assistant. Q&A now lives entirely inside the authenticated Class Representative and Faculty accounts, identified by the session rather than by a typed Student ID or email; scope is explicitly informational only — it answers on item availability, laboratory schedule availability, operating hours, and now "status of my reservation" as well, but it never creates, modifies, approves, or rejects a reservation. Each requester's conversation history is isolated from every other requester's. If the answer is not grounded in SOMADA's own authorized data, the system says so rather than inventing one.`,
+        actors:"Class Representative, Faculty", related:"View My Dashboard, View Reservation Status, View Schedule & Availability",
+        stakeholders:[
+          `Class Representative and Faculty: need routine answers without visiting the laboratory or waiting for office hours.`,
+          `Head Laboratory: needs the volume of repetitive enquiries reduced.`,
+          `NU Fairview: requires answers grounded in the laboratory's own records, not invented.`,
+        ],
+        preconditions:[`The requester is signed in.`,`The knowledge base is populated.`],
+        postconditions:[`An answer grounded on laboratory records is returned. The exchange is written to the requester's own conversation log, isolated from other requesters. No reservation or borrowing record is created or changed.`],
+        flowActor:[`Requester opens Q&A from within their account.`,`Requester submits a question.`,`Requester reads the answer returned.`],
+        flowSystem:[`System interprets the question and retrieves the relevant laboratory records, scoped to the signed-in requester where the question concerns their own reservation.`,`System composes an answer grounded on those records.`,`System writes the exchange to the requester's own conversation log.`],
+        exceptions:[
+          `If the question asks the system to create, modify, approve, or reject a reservation, the assistant declines and directs the requester to Submit Laboratory Reservation instead.`,
+          `If no matching record exists, the assistant states that the information is not held rather than composing an answer.`,
+        ],
+      },
+      {
+        id:"uc-issueacct", table:15, title:"Issue Class Representative Account", useCaseName:"Issue Class Representative Account",
+        scenario:`A class needs a Class Representative account so it can submit reservations through SOMADA.`,
+        triggeringEvent:`Head Laboratory submits the new Class Representative's details against a Faculty member.`,
+        briefDescription:`Accounts are issued top-down, not self-registered. Head Laboratory creates the account, and the system generates the password and emails the login credentials to the Faculty member for hand-off to their Class Representative — the Faculty-to-representative leg stays a manual, outside-the-system hand-off, the same as the old registrar hand-off. The account is identity-anchored to the representative's NU Student ID.`,
+        actors:"Head Laboratory", related:"Log In, Manage Accounts & Authentication",
+        stakeholders:[
+          `Head Laboratory: needs a controlled way to bring a new class onto SOMADA.`,
+          `Faculty: needs to receive and hand off the credentials for their own class's representative.`,
+          `Class Representative: needs a working account without self-registering.`,
+        ],
+        preconditions:[`Head Laboratory is signed in.`,`The Faculty member the account is issued against already has a SOMADA account.`],
+        postconditions:[`A Class Representative account is created with a system-generated password, anchored to the representative's NU Student ID. Login credentials are emailed to the Faculty member.`],
+        flowActor:[`Head Laboratory opens Issue Class Representative Account.`,`Head Laboratory enters the representative's NU Student ID and selects the assigned Faculty member.`,`Head Laboratory submits the account request.`],
+        flowSystem:[`System validates the Student ID and Faculty selection.`,`System creates the account with a system-generated password.`,`System emails the login credentials to the assigned Faculty member.`],
+        exceptions:[
+          `If an account already exists for that Student ID, the system refuses to create a duplicate.`,
+          `If the assigned Faculty member has no SOMADA account yet, the system blocks issuance until that account exists.`,
+        ],
+      },
+      {
+        id:"uc-inventory", table:16, title:"Manage Equipment Inventory", useCaseName:"Manage Equipment Inventory",
+        scenario:`Laboratory staff maintain the catalogue of laboratory holdings.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff open Inventory Management to add, edit, remove, or search a holding.`,
+        briefDescription:`Unchanged in function from the previous model, but the actor is now split: Head Laboratory sees and manages holdings across both laboratories, while Physics Laboratory Staff and Circuits Laboratory Staff each manage only their own laboratory's catalogue. Each holding is recorded by name together with its description, category, unit of measure, quantity, condition status, reorder level, and an optional photograph, with quantities tracked as existing, available, in use, and reserved. Equipment cannot be recorded as consumed; consumables are depletable. A low stock flag is raised when a quantity falls below its reorder level.`,
+        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Issue Equipment, Process Return, Log Waste Disposal, View Laboratory Dashboard",
+        stakeholders:[
+          `Head Laboratory: needs stock levels visible across both laboratories.`,
+          `Physics Laboratory Staff and Circuits Laboratory Staff: need their own laboratory's catalogue accurate without visibility into the other's.`,
+          `Class Representative and Faculty: rely on the catalogue reflecting what can actually be reserved.`,
+        ],
+        preconditions:[`The user is signed in with access to the laboratory being managed.`,`The item category and unit of measure are defined.`],
+        postconditions:[`The holding is created, amended, or removed within the acting user's laboratory scope. Existing, available, in use, and reserved quantities are recomputed. A low stock flag is raised where a quantity falls below its reorder level.`],
+        flowActor:[`User opens Inventory Management for their assigned laboratory.`,`User searches or filters the catalogue.`,`User adds, edits, or removes a holding.`,`User saves the change.`],
+        flowSystem:[`System displays the catalogue scoped to the user's laboratory assignment, or both for Head Laboratory.`,`System validates the entry against category, unit, and type rules.`,`System stores the change and recomputes availability.`,`System raises a low stock flag where a quantity falls below its reorder level.`],
+        exceptions:[
+          `If removal is attempted for an item with an outstanding issued quantity, the system refuses it.`,
+          `If a Physics or Circuits Laboratory Staff account attempts to edit the other laboratory's catalogue, the system refuses access.`,
+        ],
+      },
+      {
+        id:"uc-issueeq", table:17, title:"Issue Equipment", useCaseName:"Issue Equipment",
+        scenario:`An approved reservation requires equipment to be released for the session.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued for each item.`,
+        briefDescription:`Generates the borrowing record from the approved reservation, with the item list constrained to the resources selected on it. The quantity issued is recorded per item against the requester and the date of the session, and issued quantities are deducted from available stock. A borrowing slip is produced and made visible to the requester.`,
+        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Approve / Reject Reservation, Process Return, Manage Equipment Inventory",
+        stakeholders:[
+          `Head Laboratory and Laboratory Staff: need issuance recorded against inventory without re-encoding.`,
+          `Class Representative and Faculty: need the session supplied with the resources approved.`,
+        ],
+        preconditions:[`The reservation holds the status Approved.`,`The user is signed in with access to the reservation's laboratory.`,`The approved items are physically available.`],
+        postconditions:[`A borrowing record is created against the reservation, the requester, and the date. Available stock is decremented by the issued quantity for each item. The reservation status is set to Ongoing.`],
+        flowActor:[`User opens the approved reservation.`,`User confirms the items and records the quantity issued for each.`,`User releases the prepared items.`],
+        flowSystem:[`System displays the item list constrained to the approved reservation.`,`System validates the issued quantity against stock on hand.`,`System writes the borrowing record and decrements available stock.`,`System sets the reservation status to Ongoing.`],
+        exceptions:[
+          `If an approved item cannot be supplied in the quantity requested, the user records a reduced quantity coordinated with the requester.`,
+          `If the reservation does not hold the status Approved, the system refuses issuance.`,
+        ],
+      },
+      {
+        id:"uc-procret", table:18, title:"Process Return", useCaseName:"Process Return",
+        scenario:`A session has ended and the borrowed items are checked back in.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff record the returned quantities against the quantities issued.`,
+        briefDescription:`Unchanged in function from the previous model. Returned quantities are reconciled against issued quantities; only the unreturned balance of a consumable is marked consumed. Equipment that cannot be returned in working order is marked broken, and equipment not returned at all is marked lost — equipment is never eligible to be marked consumed. The physical hand-off itself stays face-to-face; there is no requester-side use case for it, since recording the outcome is what this use case covers.`,
+        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Issue Equipment, Process Clearance, Log Waste Disposal, Manage Equipment Inventory",
+        stakeholders:[
+          `Head Laboratory and Laboratory Staff: need consumed counts to reflect genuine depletion only.`,
+          `Class Representative and Faculty: need returns credited so no accountability is recorded in error.`,
+        ],
+        preconditions:[`A borrowing record exists with the status Ongoing.`,`The returned items have been physically checked.`],
+        postconditions:[`Returned quantities are recorded. Unreturned balances are classified as consumed, broken, or lost. Available stock is restored for equipment returned in working order. The reservation is set to Completed where no balance remains outstanding.`],
+        flowActor:[`User checks the returned items after the session.`,`User records the returned quantity for each item.`,`User classifies unreturned equipment as broken or lost.`],
+        flowSystem:[`System displays the quantities issued for the borrowing record.`,`System computes the unreturned balance for each item.`,`System marks unreturned consumables as consumed and bars equipment from being marked consumed.`,`System sets the reservation to Completed where no balance remains outstanding.`],
+        exceptions:[
+          `If a returned quantity exceeds the quantity issued, the system rejects the entry.`,
+          `If a balance remains outstanding, the reservation stays Ongoing and a clearance is raised against the accountable party.`,
+        ],
+      },
+      {
+        id:"uc-procclear", table:19, title:"Process Clearance", useCaseName:"Process Clearance",
+        scenario:`An item is found broken or missing during the post-session check and accountability must be recorded.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff select the accountable member from the borrowing record.`,
+        briefDescription:`Raises a clearance record against the accountable Class Representative's group, or against the requesting Faculty member where the reservation named no group, stating the item, quantity, and reason, and tracks it to settlement. Now visible to the accountable party directly through View Clearance Status, closing the gap where the old paper clearance had no account to land in.`,
+        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Process Return, View Clearance Status, Generate End-Term Report",
+        stakeholders:[
+          `Head Laboratory and Laboratory Staff: need accountability attached to the borrower.`,
+          `Class Representative and Faculty: need to be told what is recorded against them and how to settle it.`,
+        ],
+        preconditions:[`A borrowing record identifies the accountable party.`,`An item is recorded as broken or lost against that record.`],
+        postconditions:[`A clearance record is created against the accountable Class Representative or Faculty member. It becomes visible to them through View Clearance Status and is marked cleared or replaced on settlement.`],
+        flowActor:[`User opens the borrowing record for the session.`,`User selects the accountable party.`,`User raises the clearance record stating the item, quantity, and reason.`,`User marks the clearance cleared or replaced on settlement.`],
+        flowSystem:[`System displays the accountable party recorded on the borrowing record.`,`System writes the clearance record and makes it visible to that party.`,`System updates the clearance status and closes it on settlement.`],
+        exceptions:[
+          `If no group was recorded on the reservation, the clearance is raised against the requesting Faculty member instead.`,
+          `If a clearance remains unsettled at the end of the term, it stays open and is listed in the end-term report.`,
+        ],
+      },
+      {
+        id:"uc-wastedisp", table:20, title:"Log Waste Disposal", useCaseName:"Log Waste Disposal",
+        scenario:`An item is withdrawn permanently from the laboratory and must be recorded and classified.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff record the item, reason, quantity, and classification in the disposal log.`,
+        briefDescription:`Unchanged in function from the previous model. Items already recorded as broken, lost, or consumed are reviewed to determine which are withdrawn permanently and classified as general or hazardous waste; items that can be repaired are retained.`,
+        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Process Return, Manage Equipment Inventory, Generate End-Term Report",
+        stakeholders:[
+          `Head Laboratory and Laboratory Staff: need a traceable record of what has left the facility and why.`,
+          `NU Fairview: needs hazardous waste consolidated for institutional compliance reporting.`,
+        ],
+        preconditions:[`The item appears in the Broken, Loss and Consumed log or in the inventory.`,`The user is signed in.`],
+        postconditions:[`A disposal entry is created carrying reason, quantity, date, disposal method, handler, and classification. Hazardous entries are flagged for separate collection.`],
+        flowActor:[`User reviews the items recorded as broken, lost, or consumed.`,`User selects an item for withdrawal and states the reason and quantity.`,`User classifies the item as general or hazardous waste.`],
+        flowSystem:[`System displays the candidate items from the Broken, Loss and Consumed log.`,`System validates the quantity against the recorded balance.`,`System writes the disposal record and reduces the inventory.`,`System flags hazardous entries for separate collection.`],
+        exceptions:[
+          `If the quantity exceeds the recorded balance, the system rejects the entry.`,
+          `If the item can be repaired, it is retained and no disposal entry is created.`,
+        ],
+      },
+      {
+        id:"uc-mgmlogs", table:21, title:"Manage Laboratory Logs & Schedule", useCaseName:"Manage Laboratory Logs & Schedule",
+        scenario:`The term schedule must be recorded so requesters can view availability and vacant blocks can be released.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff record the term schedule or a session's usage.`,
+        briefDescription:`Head Laboratory records, for each laboratory room, which blocks are committed and which remain vacant for reservations. Physics Laboratory Staff and Circuits Laboratory Staff record session usage for their own laboratory once a return has been reconciled; the system compiles these entries into the figures supplied to the end-term report.`,
+        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"View Schedule & Availability, Process Return, Generate End-Term Report",
+        stakeholders:[
+          `Head Laboratory: maintains the schedule that gates every reservation.`,
+          `Physics Laboratory Staff and Circuits Laboratory Staff: record their own laboratory's usage.`,
+          `Class Representative, Faculty, and Dean: rely on published vacant blocks when submitting reservations.`,
+        ],
+        preconditions:[`The user is signed in with access to the laboratory being updated.`],
+        postconditions:[`The laboratory schedule is updated and vacant blocks are published. A usage entry is recorded for each completed session and made available to reporting.`],
+        flowActor:[`User opens Laboratory Logs and Schedule for their assigned laboratory.`,`User records committed blocks or a completed session's usage.`,`User marks remaining blocks vacant.`],
+        flowSystem:[`System validates that committed blocks do not overlap.`,`System stores the schedule and publishes vacant blocks.`,`System compiles usage entries and makes them available to reporting.`],
+        exceptions:[
+          `If two committed blocks overlap, the system rejects the entry.`,
+          `If a block already carries an approved reservation, it cannot be recommitted until that reservation is released.`,
+        ],
+      },
+      {
+        id:"uc-dashboard", table:22, title:"View Laboratory Dashboard", useCaseName:"View Laboratory Dashboard",
+        scenario:`Laboratory staff need the state of their laboratory summarised on signing in.`,
+        triggeringEvent:`The user signs in and dashboard metrics load.`,
+        briefDescription:`Renamed from "View Real-Time Inventory & Dashboard" — the broader name matches its actual scope, which is inventory, reservations, and usage together, not inventory alone. Physics Laboratory Staff and Circuits Laboratory Staff each see only their own laboratory's metrics; Head Laboratory sees both. This is the same shared use case for all three roles, scoped per the acting user, not a separately named dashboard per role — consistent with how the other admin-cluster use cases already scope by actor. The AI-generated written insight summary that previously accompanied these metrics is cut from scope; the metrics themselves are unchanged.`,
+        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Log In, Manage Equipment Inventory, Generate End-Term Report",
+        stakeholders:[
+          `Head Laboratory: needs a cross-laboratory view.`,
+          `Physics Laboratory Staff and Circuits Laboratory Staff: need their own laboratory's metrics without the other's mixed in.`,
+        ],
+        preconditions:[`The user is signed in.`,`Records exist for the current term.`],
+        postconditions:[`The dashboard metrics are displayed, scoped to the user's laboratory assignment. No stored record is changed.`],
+        flowActor:[`User signs in.`,`User reviews the dashboard metrics.`],
+        flowSystem:[`System aggregates inventory, reservation, and usage figures scoped to the user's laboratory assignment, or both for Head Laboratory.`,`System renders the metrics on the dashboard.`],
+        exceptions:[
+          `If insufficient data exists for the term, the affected metric is shown empty rather than omitted.`,
+        ],
+      },
+      {
+        id:"uc-endterm", table:23, title:"Generate End-Term Report", useCaseName:"Generate End-Term Report",
+        scenario:`The term has ended and the laboratory must report its activity to the administration.`,
+        triggeringEvent:`Head Laboratory triggers the end-of-term report.`,
+        briefDescription:`Unchanged in function from the previous model. The system compiles facility usage per requester across both laboratories, the most borrowed equipment, the totals of broken, lost, and consumed items, and the waste disposal entries, and exports the result to Head Laboratory for submission.`,
+        actors:"Head Laboratory", related:"View Laboratory Dashboard, Log Waste Disposal, Process Clearance, Manage Laboratory Logs & Schedule",
+        stakeholders:[
+          `Head Laboratory: needs reporting that does not depend on a spreadsheet formula set.`,
+          `NU Fairview administration: receives the figures required at the end of each term.`,
+        ],
+        preconditions:[`The term is recorded in the system and its records are complete.`,`Head Laboratory is signed in.`],
+        postconditions:[`The report is compiled across both laboratories and exported to Head Laboratory. Every figure is traceable to the stored records behind it.`],
+        flowActor:[`Head Laboratory opens the reporting screens for the term.`,`Head Laboratory selects the term and triggers the report.`,`Head Laboratory exports the report for submission.`],
+        flowSystem:[`System aggregates usage per requester and per item across both laboratories.`,`System compiles the broken, loss, and consumed totals and the waste disposal entries.`,`System exports the report in the selected format.`],
+        exceptions:[
+          `If clearances remain open at the end of the term, they are listed in the report as outstanding.`,
+          `If the export fails, Head Laboratory is notified and may retry.`,
+        ],
+      },
+    ],
+
+    gaps: [
+      { id:"01", current:`Inventory is held in the inventory finder worksheet as name, description, existing quantity, unit and type, with no condition field and no record of how much of each item is currently out or committed; edits are typed directly into cells.`, proposed:`Provide an inventory module supporting add, edit and remove, in which each holding is recorded by name with a condition status and quantities tracked as existing, available, in use and reserved.`, impact:`Stock levels become visible at a glance and changes are attributable rather than silently overwritten.` },
+      { id:"02", current:`Borrowing is recorded in the Physics and Circuits usage logs by date, subject code, professor, particulars and quantity; no student is named anywhere in the workbook.`, proposed:`Provide a borrowing record capturing student ID numbers and time against the approved request.`, impact:`Accountability attaches to the borrower rather than only to the supervising professor.` },
+      { id:"03", current:`Damage and loss are logged by date, professor, item, quantity and unit; the accountable group is traceable only through the signed paper slip for that session.`, proposed:`Record damage and loss directly against the accountable group drawn from the borrowing record.`, impact:`Removes the paper cross-reference step and prevents unattributed losses.` },
+      { id:"04", current:`Availability is established by opening the inventory finder and reading a quantity that is updated by hand after each session.`, proposed:`Provide a live availability view showing quantities on hand and expected return times.`, impact:`Availability can be checked without a physical count.` },
+      { id:"05", current:`End-of-term figures are computed by formula blocks in the Broken, Loss and Consumed worksheet and exported manually into a presentation.`, proposed:`Generate summaries and transaction logs directly from stored records.`, impact:`Reporting no longer depends on preserving a hand-built formula set.` },
+      { id:"06", current:`Clearance is issued on paper, signed by the student, a faculty member and the laboratory head, then forwarded to the registrar.`, proposed:`Provide a digital clearance record raised and tracked by the laboratory head.`, impact:`Removes lost and incomplete clearance records and shortens processing time.` },
+      { id:"07", current:`Required equipment is written onto the paper service request form and re-encoded by the laboratory head.`, proposed:`Allow equipment to be selected from the catalogue at the kiosk with live stock indicators.`, impact:`Removes re-encoding and prevents requests for items that are unavailable.` },
+      { id:"08", current:`Availability is checked against weekly grids kept per laboratory room; a grid for the Circuits room does not yet exist.`, proposed:`Provide a calendar with per-room conflict detection covering every laboratory room.`, impact:`Conflicts are prevented at filing rather than discovered afterwards.` },
+      { id:"09", current:`Approval is a signature on a printed form; the signed copy is stored on the university SharePoint service and reached from the request register through a stored link.`, proposed:`Record approval through a confirmation control in an automated email, requiring no account.`, impact:`Removes physical routing of forms and the dependency on external file storage.` },
+      { id:"10", current:`Out-of-schedule use is arranged in person or by email against vacant blocks. The two-day advance requirement is applied by the laboratory head but is not recorded or enforced anywhere in the workbook.`, proposed:`Allow out-of-schedule requests to be filed against vacant blocks with the two-day requirement enforced by the system.`, impact:`Removes on-the-spot requests and makes the advance requirement auditable.` },
+      { id:"11", current:`Recurrence is written as free text in the remarks column of the request register, for example EVERY SATURDAY.`, proposed:`Type each request as whole-term or one-time and handle the request lifecycle accordingly.`, impact:`Completion counts are no longer distorted by recurring requests.` },
+      { id:"12", current:`The usage logs carry a quantity column and a consumed column with a type marker, but nothing prevents an equipment item from being marked consumed.`, proposed:`Record issued and returned quantities separately and bar equipment from being marked consumed.`, impact:`Consumed counts reflect genuine depletion only, and unreturned equipment is recorded as broken or lost.` },
+      { id:"13", current:`The hazardous waste disposal worksheet exists as a prepared template in which no disposal has been recorded.`, proposed:`Provide a disposal log linked to the inventory, recording reason, quantity, unit, date and classification.`, impact:`Withdrawals from the laboratory become traceable and hazardous items become reportable.` },
+      { id:"14", current:`Consumable levels are known only from the last manual decrement, so a shortage surfaces when a scheduled session already requires the item.`, proposed:`Forecast consumable demand from historical usage and raise stockout alerts ahead of scheduled sessions.`, impact:`Restocking becomes anticipatory rather than reactive.` },
+      { id:"15", current:`Item availability, operating hours and request status are answered by the laboratory head in person or by email during office hours.`, proposed:`Provide a virtual assistant answering from laboratory records to verified users at any hour.`, impact:`Reduces repetitive workload and removes the office-hours constraint on routine inquiries.` },
+      { id:"16", current:`Usage figures sit in formula blocks and are interpreted by the laboratory head.`, proposed:`Generate automated insights from the dashboard metrics.`, impact:`Patterns in usage and resourcing surface without manual interpretation.` },
+    ],
+
+    dfdProcesses: [
+      { id:"dfd-p1", fig:"Figure 4", title:"Process 1.0 — File Laboratory Service Request; Track Request Status", image:"assets/figures/fig-dfd-p1.png" },
+      { id:"dfd-p2", fig:"Figure 5", title:"Process 2.0 — Approve Service Request", image:"assets/figures/fig-dfd-p2.png" },
+      { id:"dfd-p3", fig:"Figure 6", title:"Process 3.0 — Issue Equipment; Process Return", image:"assets/figures/fig-dfd-p3.png" },
+      { id:"dfd-p4", fig:"Figure 7", title:"Process 4.0 — Process Clearance", image:"assets/figures/fig-dfd-p4.png" },
+      { id:"dfd-p5", fig:"Figure 8", title:"Process 5.0 — Manage Equipment Inventory", image:"assets/figures/fig-dfd-p5.png" },
+      { id:"dfd-p6", fig:"Figure 9", title:"Process 6.0 — Manage Laboratory Logs & Schedule; Manage Daily Task Log", image:"assets/figures/fig-dfd-p6.png" },
+      { id:"dfd-p7", fig:"Figure 10", title:"Process 7.0 — View Real-Time Inventory & Dashboard; Generate End-Term Report; Forecast Consumable Demand", image:"assets/figures/fig-dfd-p7.png" },
+      { id:"dfd-p8", fig:"Figure 11", title:"Process 8.0 — Log Waste Disposal", image:"assets/figures/fig-dfd-p8.png" },
+      { id:"dfd-p9", fig:"Figure 12", title:"Process 9.0 — Query Virtual Assistant", image:"assets/figures/fig-dfd-p9.png" },
+      { id:"dfd-p10", fig:"Figure 13", title:"Process 10.0 — Authenticate User (Login to System)", image:"assets/figures/fig-dfd-p10.png" },
+    ],
+
+    entities: [
+      { name:"TERM", fields:"PK term_id · term_code, start_date, end_date" },
+      { name:"LAB_ROOM", fields:"PK room_id · room_name, lab_type" },
+      { name:"SCHEDULE_BLOCK", fields:"PK block_id · FK term_id, FK room_id, FK request_id · block_date, start_time, end_time, block_type" },
+      { name:"DAILY_TASK_LOG", fields:"PK task_log_id · FK account_id · log_date, work_availability, tasks_handled, overtime_hours, submission_flag, remarks" },
+      { name:"SYSTEM_ACCOUNT", fields:"PK account_id · username, password_hash, nu_email, last_login_at" },
+      { name:"APPROVAL", fields:"PK approval_id · FK request_id, FK approver_id · decision, decision_datetime, confirm_token, token_expiry, token_used" },
+      { name:"LAB_SERVICE_REQUEST", fields:"PK request_id · request_reference, FK parent_request_id, FK student_id, FK faculty_id, FK approver_id · request_type, request_basis, usage_type, status, date_filed" },
+      { name:"REQUEST_ITEM", fields:"PF request_id, PF item_id · qty_requested" },
+      { name:"REQUEST_GROUP_MEMBER", fields:"PF request_id, PF student_id" },
+      { name:"STUDENT", fields:"PK student_id · student_name, program, year_section" },
+      { name:"FACULTY", fields:"PK faculty_id · faculty_name, nu_email, faculty_role" },
+      { name:"BORROWING", fields:"PK borrowing_id · FK request_id, FK faculty_id · slip_no, date_issued, session_date, status" },
+      { name:"BORROWING_MEMBER", fields:"PF borrowing_id, PF student_id" },
+      { name:"BORROWING_ITEM", fields:"PF borrowing_id, PF item_id · qty_issued, qty_returned, qty_broken, qty_lost, qty_consumed" },
+      { name:"PHYSICS_LAB_LOG", fields:"PK usage_id · FK block_id, FK borrowing_id, FK faculty_id · subject_code, particulars" },
+      { name:"CIRCUITS_LAB_LOG", fields:"PK usage_id · FK block_id, FK borrowing_id, FK faculty_id · subject_code, particulars" },
+      { name:"CHAT_LOG", fields:"PK chat_id · FK student_id, FK faculty_id, FK kb_id · query_text, response_text, query_datetime" },
+      { name:"KNOWLEDGE_BASE", fields:"PK kb_id · topic, content, category, last_updated" },
+      { name:"ITEM", fields:"PK item_id · FK category_id · item_name, item_type, unit_of_measure, qty_existing, qty_available, qty_in_use, qty_reserved, reorder_level, condition_status, photo_path" },
+      { name:"ITEM_CATEGORY", fields:"PK category_id · category_name, description" },
+      { name:"BLC_LOG", fields:"PK blc_id · FK item_id, FK borrowing_id · entry_type, quantity, entry_date, reason" },
+      { name:"WASTE_DISPOSAL", fields:"PK disposal_id · FK item_id, FK blc_id · quantity, disposal_date, reason, disposal_method, handler_name, waste_class, status" },
+      { name:"CLEARANCE", fields:"PK clearance_id · FK blc_id, FK student_id, FK faculty_id · quantity, reason, date_raised, status, settlement_date" },
+      { name:"FORECAST_RESULT", fields:"PK forecast_id · FK item_id · computed_at, consumption_rate, reorder_point, projected_depletion_date, confidence_level" },
+    ],
+  };
+
+  const TOC_ENTRIES = [
+    { label:"I. Project Overview", page:1, id:"overview", indent:0 },
+    { label:"II. Methodology", page:3, id:"methodology", indent:0 },
+    { label:"III. Requirements Analysis", page:5, id:"requirements", indent:0 },
+    { label:"3.1.1 Product Backlog", page:5, id:"backlog", indent:1 },
+    { label:"3.1.2 Event Tables", page:8, id:"events", indent:1 },
+    { label:"3.1.3 Use Case Diagrams", page:11, id:"usecase-diagrams", indent:1 },
+    { label:"3.1.4 Use Case Full Description", page:12, id:"usecase-full", indent:1 },
+    { label:"3.1.5 Gap Analysis", page:35, id:"gap-analysis", indent:1 },
+    { label:"3.1.6 Context Diagram", page:38, id:"context-diagram", indent:1 },
+    { label:"3.1.7 Data Flow Diagrams", page:39, id:"dfd", indent:1 },
+    { label:"3.1.8 Entity-Relationship Diagram", page:50, id:"erd", indent:1 },
+  ];
+
+  /* Sidebar outline tree — built from DATA so it can never drift out of sync
+     with the content sections above. */
+  const NAV = [
+    { id:"cover", label:"Cover Page" },
+    { id:"toc", label:"Table of Contents" },
+    { id:"overview", label:"I. Project Overview" },
+    { id:"methodology", label:"II. Methodology" },
+    { id:"requirements", label:"III. Requirements Analysis", children:[
+      { id:"backlog", label:"3.1.1 Product Backlog" },
+      { id:"events", label:"3.1.2 Event Tables" },
+      { id:"usecase-diagrams", label:"3.1.3 Use Case Diagrams" },
+      { id:"usecase-full", label:"3.1.4 Use Case Full Description", children:
+        DATA.useCases.map(uc => ({ id:uc.id, label:`Table ${uc.table} — ${uc.title}` })) },
+      { id:"gap-analysis", label:"3.1.5 Gap Analysis" },
+      { id:"context-diagram", label:"3.1.6 Context Diagram" },
+      { id:"dfd", label:"3.1.7 Data Flow Diagrams", children:[
+        { id:"dfd-level1", label:"Level 1 — Overview" },
+        ...DATA.dfdProcesses.map(p => ({ id:p.id, label:`${p.fig} — ${p.title}` })),
+      ]},
+      { id:"erd", label:"3.1.8 Entity-Relationship Diagram" },
+    ]},
+  ];
+</script>
+
+<script type="text/babel" id="app-source">
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+/* ----------------------------- icons ----------------------------- */
+const IconMenu = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>;
+const IconSearch = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
+const IconPrint = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>;
+const IconClose = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+const IconChevron = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
+const IconUp = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>;
+const IconZoom = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>;
+
+/* ----------------------------- small pieces ----------------------------- */
+function PriorityBadge({ priority }) {
+  const p = (priority || "").toLowerCase();
+  const cls = p === "must" ? "priority-must" : p === "should" ? "priority-should" : "priority-should";
+  return <span className={`priority-badge ${cls}`}>{priority}</span>;
+}
+
+function StatusPill({ status }) {
+  const s = (status || "").toLowerCase();
+  let cls = "status-neutral";
+  if (s.includes("progress")) cls = "status-progress";
+  else if (s.includes("block")) cls = "status-blocked";
+  else if (s.includes("done") || s.includes("complete")) cls = "status-done";
+  else if (s.includes("not started")) cls = "status-neutral";
+  return <span className={`status-pill ${cls}`}>{status}</span>;
+}
+
+function SectionHeading({ level = 2, kicker, title, id }) {
+  const Tag = "h" + level;
+  return (
+    <div className="section-heading">
+      <Tag>
+        {kicker && <span className="kicker">{kicker}</span>}
+        {title}
+      </Tag>
+      <a className="anchor-link" href={`#${id}`}>#</a>
+    </div>
+  );
+}
+
+function DataTable({ columns, rows }) {
+  return (
+    <div className="table-wrap">
+      <table className="tbl">
+        <thead><tr>{columns.map(c => <th key={c.key} style={c.width ? { width: c.width } : undefined}>{c.label}</th>)}</tr></thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={i}>{columns.map(c => <td key={c.key}>{c.render ? c.render(row[c.key], row) : row[c.key]}</td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Figure({ src, caption, onZoom }) {
+  return (
+    <figure className="doc-figure">
+      <div className="figure-frame" onClick={() => onZoom({ src, caption })}>
+        <img src={src} alt={caption} loading="lazy" />
+        <span className="zoom-hint"><IconZoom /> Click to enlarge</span>
+      </div>
+      <figcaption>{caption}</figcaption>
+    </figure>
+  );
+}
+
+function Lightbox({ src, caption, onClose }) {
+  useEffect(() => {
+    function onKey(e) { if (e.key === "Escape") onClose(); }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  return (
+    <div className="lightbox" onClick={onClose}>
+      <button className="lightbox-close" onClick={onClose} aria-label="Close"><IconClose /></button>
+      <img src={src} alt={caption} onClick={(e) => e.stopPropagation()} />
+      <div className="lightbox-caption">{caption}</div>
+    </div>
+  );
+}
+
+/* ----------------------------- sidebar ----------------------------- */
+function filterNav(items, q) {
+  if (!q) return items;
+  const lower = q.toLowerCase();
+  const out = [];
+  for (const item of items) {
+    const selfMatch = item.label.toLowerCase().includes(lower);
+    const kids = item.children ? filterNav(item.children, q) : null;
+    if (selfMatch || (kids && kids.length)) {
+      out.push({ ...item, children: kids && kids.length ? kids : (selfMatch ? item.children : null) });
+    }
+  }
+  return out;
+}
+
+function flattenIds(items) {
+  let out = [];
+  for (const it of items) { out.push(it.id); if (it.children) out = out.concat(flattenIds(it.children)); }
+  return out;
+}
+
+function buildParentMap(items, parent, map) {
+  for (const it of items) { map[it.id] = parent; if (it.children) buildParentMap(it.children, it.id, map); }
+  return map;
+}
+
+function NavTree({ items, activeId, expanded, toggleExpand, onNavigate, depth, forceOpen }) {
+  return (
+    <ul className="nav-list">
+      {items.map(item => {
+        const hasChildren = !!(item.children && item.children.length);
+        const isActive = item.id === activeId;
+        const isOpen = forceOpen || !!expanded[item.id];
+        return (
+          <li key={item.id}>
+            <div className={`nav-row ${isActive ? "active" : ""}`}>
+              <button className="nav-label" style={{ paddingLeft: 8 + depth * 16 }} onClick={() => onNavigate(item.id)}>
+                <span className="nav-text">{item.label}</span>
+              </button>
+              {hasChildren && (
+                <button className={`nav-chevron ${isOpen ? "open" : ""}`} aria-label="Toggle section"
+                  onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}>
+                  <IconChevron />
+                </button>
+              )}
+            </div>
+            {hasChildren && isOpen && (
+              <NavTree items={item.children} activeId={activeId} expanded={expanded} toggleExpand={toggleExpand}
+                onNavigate={onNavigate} depth={depth + 1} forceOpen={forceOpen} />
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function Sidebar({ activeId, onNavigate, open, query, setQuery, expanded, toggleExpand, searchRef }) {
+  const visible = useMemo(() => filterNav(NAV, query.trim()), [query]);
+  return (
+    <aside className={`sidebar ${open ? "open" : ""}`} aria-label="Document outline">
+      <div className="doc-chip"><span className="dot"></span> SOMADA Documentation</div>
+      <div className="sidebar-search">
+        <IconSearch />
+        <input ref={searchRef} type="text" placeholder="Search this document…" value={query}
+          onChange={(e) => setQuery(e.target.value)} />
+        {!query && <kbd>/</kbd>}
+      </div>
+      {visible.length === 0
+        ? <div className="nav-empty">No sections match "{query}".</div>
+        : <NavTree items={visible} activeId={activeId} expanded={expanded} toggleExpand={toggleExpand}
+            onNavigate={onNavigate} depth={0} forceOpen={!!query.trim()} />
+      }
+    </aside>
+  );
+}
+
+/* ----------------------------- content sections ----------------------------- */
+function CoverSection() {
+  const m = DATA.meta;
+  return (
+    <section id="cover" className="doc-section cover">
+      <div className="kicker-line">{m.org} · School of Engineering and Technology</div>
+      <h1>{m.title}</h1>
+      <div className="meta-block">
+        {m.submittedTo}<br/>
+        <strong>{m.org}</strong><br/><br/>
+        {m.requirement}<br/>
+        <strong>Systems Analysis and Detailed Design for IT</strong><br/>
+        <strong>{m.courseCode}</strong>
+      </div>
+      <div className="cap" style={{marginTop:26}}>By</div>
+      <div className="authors">
+        {m.authorsLeft.map(a => <div key={a}>{a}</div>)}
+        {m.authorsRight.map(a => <div key={a}>{a}</div>)}
+      </div>
+    </section>
+  );
+}
+
+function TocSection({ onNavigate }) {
+  return (
+    <section id="toc" className="doc-section">
+      <SectionHeading title="Table of Contents" id="toc" />
+      <ul className="toc-list">
+        {TOC_ENTRIES.map(t => (
+          <li key={t.id}>
+            <a className={`toc-row ${t.indent ? "indent" : ""}`} onClick={(e) => { e.preventDefault(); onNavigate(t.id); }} href={`#${t.id}`}>
+              <span className="toc-label">{t.label}</span>
+              <span className="toc-fill"></span>
+              <span className="toc-page">{t.page}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function OverviewSection() {
+  return (
+    <section id="overview" className="doc-section">
+      <SectionHeading title="I. Project Overview" id="overview" />
+      <div className="lede">
+        <p>SOMADA is a web-based laboratory management system for the Physics and Circuits Laboratory of NU Fairview. It replaces the laboratory's paper forms and spreadsheet records with one online system that holds the inventory, room bookings, borrowing records, clearances and disposal records together and keeps them consistent.</p>
+        <p>The laboratory is a teaching facility on the fourth floor of the campus, open from 8:30 AM to 5:30 PM, serving the laboratory sessions of physics, circuits and information technology subjects. It holds 322 catalogued items in eight categories. Some are durable equipment such as oscilloscopes, multimeters, Arduino kits and physics apparatus. The rest are consumable supplies such as resistors, jumper wires, soldering lead and batteries. One person, the laboratory head, manages all of it.</p>
+        <p>Every transaction currently begins on paper. Students and faculty fill out borrower's slips and laboratory service request forms by hand. The laboratory head reviews each one, then types the same information again into a protected Google Sheets workbook of eleven worksheets. Room availability is checked against a separate weekly grid for each room, and on those grids the difference between a class session, a lecture booking and a special request exists only as the laboratory head's own colour coding. Approvals are signatures collected in person, and the signed forms are kept outside the workbook.</p>
+        <p>None of these records are connected to each other, and that is where the difficulty starts. The borrowing records are not linked to the inventory, so one mistyped quantity quietly changes every figure that depends on it, and nobody can tell how much of a consumable is left without counting it by hand. Approvals are slow because a form has to be carried to a person for signature. Scheduling conflicts turn up only after they have happened. A shortage of supplies is discovered at the moment a scheduled session needs the item. Students and faculty who want to know whether an item is available, or whether their request has been approved, have to visit the laboratory or wait for the laboratory head to reply. When an instrument comes back damaged, or does not come back at all, the only way to find out who is accountable is to dig up the signed paper slip from that session.</p>
+        <p>The proposed system puts all of this on one platform, built around five authenticated roles in place of the single administrative account the laboratory head previously held alone: Class Representative, Faculty, Dean, Head Laboratory, and Laboratory Staff assigned to either the Physics or the Circuits Laboratory. Every role signs in to its own SOMADA account — a Class Representative by NU Student ID, everyone else by NU Fairview email, each with a system-generated password — in place of a paper form filled out and brought to the laboratory in person. A Class Representative's account is issued top-down: Head Laboratory creates it and the system emails the credentials to the class's assigned Faculty member, who hands them to the representative in person. After choosing Physics or Circuits Laboratory and checking its schedule, a requester submits a reservation on-schedule or out-of-schedule, selecting any resources the session needs from a catalogue with live stock; a one-time reservation holds a single time block, while a whole-term reservation holds the corresponding block in each remaining week of the term, and the system checks every block it would hold for conflicts before accepting it. Whether that reservation needs a decision, and from whom, follows one rule throughout: the appropriate authority approves, and the step is skipped only when the requester already is that authority. A Class Representative's reservation is decided by their assigned Faculty member, or by the Dean where no professor is assigned; a Faculty member's own on-schedule reservation needs no approval, since Faculty already holds authority over their class, while a Faculty out-of-schedule reservation still goes to the Dean; and the Dean's own out-of-schedule reservation — most often for Defense Lab use — likewise needs none, since the Dean already is the authority for that case. From an approved reservation, Head Laboratory or the assigned Laboratory Staff issue the equipment, and the system builds the borrowing record, deducts the stock, and reconciles the returns after the session, raising a clearance against the accountable Class Representative or Faculty member where an item comes back broken or does not come back at all — a clearance the accountable party can now see directly from their own dashboard, rather than only on a paper copy. Items withdrawn from the laboratory for good go into a disposal log. Artificial intelligence is scoped to one function: Ask Laboratory Question, an assistant reachable only from inside a signed-in Class Representative or Faculty account, answering on item availability, schedule availability, operating hours, and the status of the requester's own reservation, grounded in the laboratory's own records and never creating or deciding a reservation itself; the demand-forecasting and automated dashboard-insight functions considered earlier are cut from scope. Each requester follows their own reservations from My Dashboard rather than a public reference-number screen, and can cancel or reschedule a reservation without refiling it from scratch. At the end of the term Head Laboratory exports the report of laboratory activity, compiled across both laboratories, and submits it to the administration. Payment for lost items, outside repairs, and the hand-off to the registrar stay manual.</p>
+      </div>
+    </section>
+  );
+}
+
+function MethodologySection({ onZoom }) {
+  return (
+    <section id="methodology" className="doc-section">
+      <SectionHeading title="II. Methodology" id="methodology" />
+      <div className="lede">
+        <p>The system is developed under the Agile methodology, following the Scrum Framework. Agile was selected because the requirements of this project continued to change throughout requirements gathering.</p>
+        <p>This project spans three (3) terms, each term running thirteen and a half (13.5) weeks and corresponding to one subject and one release: MNTSDEV in the second year third term, MYSADD1 in the third year first term, and MCSPROJ in the third year second term.</p>
+      </div>
+      <Figure src="assets/figures/fig-scrum.png" caption="Figure 1: Scrum Framework" onZoom={onZoom} />
+      <div className="lede" style={{marginTop:18}}>
+        <p><strong>Product Vision.</strong> The product vision was formed during MNTSDEV from the operational problems of the Physics and Circuits Laboratory and the Product Owner: paper borrower's slips and laboratory service request forms re-encoded by hand, a Google Sheet and several workbooks whose borrowing records are not linked to its inventory, room availability checked against a separate weekly grid for each room, approvals signed on paper and stored outside the workbook, and consumable quantities that cannot be established without a physical count.</p>
+        <p><strong>Product Backlog and User Stories.</strong> From that vision the team wrote the objectives as user stories and organized them into the product backlog presented in Table 1: to digitalize inventory and equipment borrowing, to provide reservation with conflict detection, to replace paper-based clearance, to record approval through an emailed confirmation control and publish request status, to add demand forecasting and a virtual assistant, and to record waste disposal. The backlog is a living artifact and is refined continuously as consultation produces new information.</p>
+        <p><strong>Sprint Planning.</strong> At the start of each sprint, the team will pull the backlog items it forecasts it can complete into sprint backlogs, and state a sprint goal. However, it may be adjusted if there is new information or miscalculations.</p>
+        <p><strong>The Sprint.</strong> Sprints will run at a fixed length. However, the fixed length will be decided when the development phase starts.</p>
+        <p><strong>Sprint Review and Sprint Retrospective.</strong> Each sprint closes with a sprint review, at which is demonstrated to the laboratory head and the backlog is adjusted in light of what he raises, and then a sprint retrospective, at which the team inspects how it worked during the sprint, its collaboration, its tools and its process, and commits to at least one improvement for the next sprint. The review inspects the product, while the retrospective inspects the process.</p>
+        <p><strong>Product Backlog Refinement.</strong> Findings from the review and the retrospective return to the product backlog, which the Product Owner reorders before the next sprint planning.</p>
+        <p><strong>Current Status.</strong> As of this submission the product vision, the product backlog, the requirements analysis, the system models and the prototype are complete or in revision, and construction has not begun. Every item in Table 1 therefore carries the status Not Started, and the fixed length of the sprint is left unassigned until the development phase starts.</p>
+      </div>
+    </section>
+  );
+}
+
+function RequirementsIntro() {
+  return (
+    <section id="requirements" className="doc-section">
+      <SectionHeading title="III. Requirements Analysis" id="requirements" />
+    </section>
+  );
+}
+
+function BacklogSection() {
+  const columns = [
+    { key:"id", label:"ID", width:"44px" },
+    { key:"role", label:"As a", width:"120px" },
+    { key:"want", label:"I want to be able to" },
+    { key:"soThat", label:"So that" },
+    { key:"priority", label:"Priority", width:"84px", render:(v) => <PriorityBadge priority={v} /> },
+    { key:"sprint", label:"Sprint", width:"60px" },
+    { key:"status", label:"Status", width:"116px", render:(v) => <StatusPill status={v} /> },
+  ];
+  return (
+    <section id="backlog" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.1" title="Product Backlog" id="backlog" />
+      <p className="cap">Table 1: Product Backlog</p>
+      <DataTable columns={columns} rows={DATA.backlog} />
+    </section>
+  );
+}
+
+function EventsSection() {
+  const columns = [
+    { key:"event", label:"Event" },
+    { key:"trigger", label:"Trigger" },
+    { key:"source", label:"Source", width:"120px" },
+    { key:"useCase", label:"Use Case", width:"160px" },
+    { key:"response", label:"Response" },
+    { key:"destination", label:"Destination" },
+  ];
+  return (
+    <section id="events" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.2" title="Event Tables" id="events" />
+      <p className="cap">Table 2: Event Tables</p>
+      <DataTable columns={columns} rows={DATA.events} />
+    </section>
+  );
+}
+
+function UseCaseDiagramsSection({ onZoom }) {
+  return (
+    <section id="usecase-diagrams" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.3" title="Use Case Diagrams" id="usecase-diagrams" />
+      <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 1: Use Case Diagram" onZoom={onZoom} />
+      <div className="lede" style={{marginTop:18}}>
+        <p>Figure 1 presents the use case diagram under the revised system model. It shows six actors — Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff — replacing the previous single administrative account, and the twenty-one base use cases in which they participate, together with the further use cases reached from those base cases through include and extend relationships. Every event listed in Table 2 is raised by one of these six actors; the system performs no function on a schedule of its own, and artificial intelligence is scoped to Ask Laboratory Question only — the forecasting and automated dashboard-insight functions of the previous model have been cut from scope.</p>
+      </div>
+    </section>
+  );
+}
+
+function UseCaseSection({ uc }) {
+  const related = uc.related.split(",").map(s => s.trim()).filter(Boolean);
+  const actors = uc.actors.split(",").map(s => s.trim()).filter(Boolean);
+  return (
+    <section id={uc.id} className="doc-section sub usecase-section">
+      <div className="usecase-card">
+        <div className="usecase-head">
+          <div className="usecase-table-tag">Table {uc.table}</div>
+          <h4>{uc.title}</h4>
+          {uc.title !== uc.useCaseName && <div className="usecase-subtitle">Use Case Name: {uc.useCaseName}</div>}
+        </div>
+
+        <dl className="usecase-meta">
+          <dt>Scenario</dt><dd>{uc.scenario}</dd>
+          <dt>Triggering Event</dt><dd>{uc.triggeringEvent}</dd>
+          <dt>Brief Description</dt><dd>{uc.briefDescription}</dd>
+          <dt>Actors</dt><dd className="chip-row">{actors.map(a => <span className="chip" key={a}>{a}</span>)}</dd>
+          <dt>Related Use Cases</dt><dd className="chip-row">{related.map(r => <span className="chip" key={r}>{r}</span>)}</dd>
+        </dl>
+
+        <h5>Stakeholders</h5>
+        <ul className="stakeholder-list">
+          {uc.stakeholders.map((s, i) => {
+            const idx = s.indexOf(":");
+            if (idx === -1) return <li key={i}>{s}</li>;
+            return <li key={i}><strong>{s.slice(0, idx)}:</strong>{s.slice(idx + 1)}</li>;
+          })}
+        </ul>
+
+        <div className="two-col">
+          <div>
+            <h5>Preconditions</h5>
+            <ul className="check-list">{uc.preconditions.map((p, i) => <li key={i}>{p}</li>)}</ul>
+          </div>
+          <div>
+            <h5>Postconditions</h5>
+            <ul className="check-list">{uc.postconditions.map((p, i) => <li key={i}>{p}</li>)}</ul>
+          </div>
+        </div>
+
+        <h5>Flow of Activities</h5>
+        <div className="flow-table">
+          <div className="flow-col">
+            <div className="flow-col-head">Actor</div>
+            <ol>{uc.flowActor.map((s, i) => <li key={i}>{s}</li>)}</ol>
+          </div>
+          <div className="flow-col">
+            <div className="flow-col-head">System</div>
+            <ol>{uc.flowSystem.map((s, i) => <li key={i}>{s}</li>)}</ol>
+          </div>
+        </div>
+
+        <h5>Exception Conditions</h5>
+        <ul className="exception-list">
+          {uc.exceptions.map((e, i) => <li key={i}>{e}</li>)}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function UseCaseFullSection() {
+  return (
+    <section id="usecase-full" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.4" title="Use Case Full Description" id="usecase-full" />
+      <div className="lede">
+        <p>Tables 3 to 23 give the full description of the twenty-one base use cases shown in Figure 1. The included and extended use cases are described within the flow of activities of the base use case to which each belongs.</p>
+      </div>
+      {DATA.useCases.map(uc => <UseCaseSection key={uc.id} uc={uc} />)}
+    </section>
+  );
+}
+
+function GapAnalysisSection() {
+  const columns = [
+    { key:"id", label:"ID", width:"44px" },
+    { key:"current", label:"Current System" },
+    { key:"proposed", label:"Proposed Changes" },
+    { key:"impact", label:"Impact" },
+  ];
+  return (
+    <section id="gap-analysis" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.5" title="Gap Analysis" id="gap-analysis" />
+      <div className="lede"><p>Table 24 sets out the gap analysis, mapping each product backlog item to the current system and to the proposed change.</p></div>
+      <p className="cap">Table 24: Gap Analysis</p>
+      <DataTable columns={columns} rows={DATA.gaps} />
+    </section>
+  );
+}
+
+function ContextDiagramSection({ onZoom }) {
+  return (
+    <section id="context-diagram" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.6" title="Context Diagram" id="context-diagram" />
+      <Figure src="assets/figures/fig-context.png" caption="Figure 2: Context Diagram" onZoom={onZoom} />
+      <div className="lede" style={{marginTop:18}}>
+        <p>Figure 2 presents the context diagram, showing SOMADA as a single process together with the four external entities it exchanges data with. Students and faculty submit service requests and inquiries and receive references, statuses, borrowing slips and assistant responses; faculty and the Dean receive approval request emails and return confirmations; and the laboratory head supplies inventory, issuance, return, clearance, schedule and disposal entries and receives the catalogue, alerts, dashboard metrics, the demand forecast and the exported end-term report.</p>
+      </div>
+    </section>
+  );
+}
+
+function DfdSection({ onZoom }) {
+  return (
+    <section id="dfd" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.7" title="Data Flow Diagrams" id="dfd" />
+
+      <section id="dfd-level1" className="doc-section sub">
+        <SectionHeading level={4} title="Level 1" id="dfd-level1" />
+        <Figure src="assets/figures/fig-dfd-l1.png" caption="Figure 3: Level 1 Data Flow Diagram" onZoom={onZoom} />
+        <div className="lede" style={{marginTop:18}}>
+          <p>Figure 3 presents the Level 1 data flow diagram, which decomposes the single process of the context diagram into ten processes and fifteen data stores. The Level 2 decomposition of each of the ten processes is presented in Figures 4 to 13.</p>
+        </div>
+      </section>
+
+      <div className="doc-section sub">
+        <SectionHeading level={4} title="Level 2" id="dfd-level2-label" />
+      </div>
+      {DATA.dfdProcesses.map(p => (
+        <section id={p.id} key={p.id} className="doc-section sub">
+          <h4 style={{fontSize:"15.5px", marginBottom:10, color:"var(--ink-soft)"}}>{p.fig} — {p.title}</h4>
+          <Figure src={p.image} caption={`${p.fig}: Level 2 Data Flow Diagram — ${p.title}`} onZoom={onZoom} />
+        </section>
+      ))}
+    </section>
+  );
+}
+
+function ErdSection({ onZoom }) {
+  return (
+    <section id="erd" className="doc-section sub">
+      <SectionHeading level={3} kicker="3.1.8" title="Entity-Relationship Diagram" id="erd" />
+      <Figure src="assets/figures/fig-erd.png" caption="Figure 14: Entity Relationship Diagram" onZoom={onZoom} />
+      <div className="entity-note">Entity quick reference (read off the diagram above, for fast lookup)</div>
+      <div className="entity-grid">
+        {DATA.entities.map(e => (
+          <div className="entity-card" key={e.name}>
+            <div className="ename">{e.name}</div>
+            <div className="efields">{e.fields}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <div className="doc-footer">
+      Compiled from the original MSYADD1 project submission (<em>SOMADA Paper — MSYADD1</em>), NU Fairview, School of Engineering and Technology.
+      Source PDF kept in <code>PDF-DOCS-File/</code>; figures extracted to <code>assets/figures/</code>.
+      To edit content, change the arrays inside the <code>DATA</code> object near the top of this file's source — the layout below reads from it automatically.
+    </div>
+  );
+}
+
+/* ----------------------------- app shell ----------------------------- */
+function App() {
+  const flatIds = useMemo(() => flattenIds(NAV), []);
+  const parentMap = useMemo(() => buildParentMap(NAV, null, {}), []);
+
+  const [activeId, setActiveId] = useState(flatIds[0]);
+  const [query, setQuery] = useState("");
+  const [expanded, setExpanded] = useState({ requirements: true });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [lightbox, setLightbox] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [showTop, setShowTop] = useState(false);
+  const searchRef = useRef(null);
+  const tickingRef = useRef(false);
+
+  const toggleExpand = useCallback((id) => {
+    setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  }, []);
+
+  const scrollToSection = useCallback((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.replaceState(null, "", "#" + id);
+      setActiveId(id);
+    }
+    setSidebarOpen(false);
+  }, []);
+
+  // auto-expand ancestors of the active section
+  useEffect(() => {
+    let id = parentMap[activeId];
+    const toOpen = {};
+    while (id) { toOpen[id] = true; id = parentMap[id]; }
+    if (Object.keys(toOpen).length) setExpanded(prev => ({ ...prev, ...toOpen }));
+  }, [activeId, parentMap]);
+
+  // scrollspy + reading progress, rAF-throttled
+  useEffect(() => {
+    const els = flatIds.map(id => document.getElementById(id)).filter(Boolean);
+    function update() {
+      const scrollTop = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0);
+      setShowTop(scrollTop > 800);
+
+      const threshold = window.innerHeight * 0.28;
+      let current = els[0] && els[0].id;
+      for (const el of els) {
+        if (el.getBoundingClientRect().top - threshold <= 0) current = el.id; else break;
+      }
+      setActiveId(prev => (prev === current ? prev : current));
+      tickingRef.current = false;
+    }
+    function onScroll() {
+      if (!tickingRef.current) { tickingRef.current = true; window.requestAnimationFrame(update); }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [flatIds]);
+
+  // open a direct link's hash on first load
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.slice(1);
+      setTimeout(() => { const el = document.getElementById(id); if (el) el.scrollIntoView({ block: "start" }); }, 60);
+    }
+  }, []);
+
+  // "/" focuses search, unless already typing somewhere
+  useEffect(() => {
+    function onKey(e) {
+      const tag = document.activeElement && document.activeElement.tagName;
+      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA") {
+        e.preventDefault();
+        searchRef.current && searchRef.current.focus();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <React.Fragment>
+      <div className="progress-bar" style={{ width: progress + "%" }}></div>
+      <div className="topbar">
+        <div className="topbar-left">
+          <button className="icon-btn menu-toggle" onClick={() => setSidebarOpen(o => !o)} aria-label="Toggle outline"><IconMenu /></button>
+          <div className="brand">
+            <div className="brand-badge">🧪</div>
+            <div className="brand-text">
+              <span className="brand-title">SOMADA Documentation</span>
+              <span className="brand-sub">Web-Based Laboratory Management System · MSYADD1</span>
+            </div>
+          </div>
+        </div>
+        <div className="topbar-right">
+          <button className="icon-btn" onClick={() => window.print()}><IconPrint /> <span>Print / Export PDF</span></button>
+        </div>
+      </div>
+
+      <nav className="page-tabs">
+        <a className="page-tab" href="index.html">🏠 Home</a>
+        <a className="page-tab active" href="Docs.html">📄 Documentation</a>
+        <a className="page-tab" href="Current-System.html">🗂️ Current System</a>
+        <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">🧩 Use Case Diagram</a>
+        <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">🔀 DFD Level 0</a>
+        <a className="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">🔀 DFD Level 1</a>
+      </nav>
+
+      <div className="shell">
+        {sidebarOpen && <div className="sidebar-scrim show" onClick={() => setSidebarOpen(false)}></div>}
+        <Sidebar activeId={activeId} onNavigate={scrollToSection} open={sidebarOpen} query={query} setQuery={setQuery}
+          expanded={expanded} toggleExpand={toggleExpand} searchRef={searchRef} />
+
+        <main className="content-wrap" role="main">
+          <div className="paper">
+            <CoverSection />
+            <TocSection onNavigate={scrollToSection} />
+            <OverviewSection />
+            <MethodologySection onZoom={setLightbox} />
+            <RequirementsIntro />
+            <BacklogSection />
+            <EventsSection />
+            <UseCaseDiagramsSection onZoom={setLightbox} />
+            <UseCaseFullSection />
+            <GapAnalysisSection />
+            <ContextDiagramSection onZoom={setLightbox} />
+            <DfdSection onZoom={setLightbox} />
+            <ErdSection onZoom={setLightbox} />
+            <Footer />
+          </div>
+        </main>
+      </div>
+
+      <button className={`back-to-top ${showTop ? "show" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top">
+        <IconUp />
+      </button>
+
+      {lightbox && <Lightbox src={lightbox.src} caption={lightbox.caption} onClose={() => setLightbox(null)} />}
+    </React.Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js" crossorigin></script>
+<script>
+  // Explicit transform (rather than Babel's auto data-presets scan) so this
+  // works the same regardless of Babel-standalone version quirks.
+  var appCode = document.getElementById("app-source").textContent;
+  var compiled = Babel.transform(appCode, { presets: ["react"] }).code;
+  var runner = document.createElement("script");
+  runner.textContent = compiled;
+  document.body.appendChild(runner);
+</script>
+</body>
+</html>
