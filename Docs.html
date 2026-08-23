@@ -143,6 +143,8 @@
   .zoom-hint{position:absolute;right:8px;bottom:8px;background:rgba(31,36,48,.78);color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;display:flex;align-items:center;gap:4px;opacity:0;transition:opacity .12s;}
   .zoom-hint svg{width:11px;height:11px;}
   .figure-frame:hover .zoom-hint{opacity:1;}
+  .figure-editor-link{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 11px;border:1px solid #cbd8f1;border-radius:8px;background:#f3f7ff;color:#2455b8;font-size:12px;font-weight:700;text-decoration:none;}
+  .figure-editor-link:hover{background:#e8f0ff;border-color:#9db8ea;}
   figcaption{font-family:'Source Serif 4',serif;font-style:italic;color:var(--ink-soft);font-size:13.5px;margin-top:10px;}
 
   /* ---------- use case cards ---------- */
@@ -289,7 +291,160 @@
     h1,h2,h3,h4,h5{break-after:avoid;}
     .toc-row{break-inside:avoid;}
   }
+
+  /* ---------- refreshed professional interface ---------- */
+  :root{
+    --bg:#f3f6fb;
+    --paper:#ffffff;
+    --ink:#172033;
+    --ink-soft:#526078;
+    --ink-faint:#8a95a8;
+    --line:#e5eaf2;
+    --line-strong:#d5ddea;
+    --accent:#2563eb;
+    --accent-ink:#1d4ed8;
+    --accent-soft:#eaf1ff;
+    --sidebar-bg:#fbfcfe;
+    --head-bg:#f7f9fc;
+    --shadow:0 1px 3px rgba(27,39,64,.06),0 18px 45px rgba(43,60,89,.08);
+    --radius:16px;
+  }
+  body{background:linear-gradient(135deg,#f7f9fd 0%,#eef3fa 100%);letter-spacing:-.006em;}
+  a{color:var(--accent-ink);}
+  .progress-bar{height:4px;background:linear-gradient(90deg,#2563eb,#14b8a6);}
+  .topbar{height:64px;padding:0 24px;background:rgba(255,255,255,.92);border-bottom-color:rgba(213,221,234,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+  .page-tabs{top:67px;height:44px;padding:0 24px;background:rgba(251,252,254,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+  .brand-badge{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#0f4bc5);box-shadow:0 6px 14px rgba(37,99,235,.24);font-size:17px;}
+  .brand-title{font-size:14px;letter-spacing:-.02em;}
+  .brand-sub{font-size:11px;letter-spacing:0;}
+  .page-tab{padding:7px 11px;border-radius:7px;font-size:12px;transition:background .15s,color .15s;}
+  .page-tab.active{background:#e8efff;color:#1d4ed8;}
+  .icon-btn{height:37px;border-color:#d9e1ed;border-radius:9px;box-shadow:0 1px 1px rgba(27,39,64,.03);transition:background .15s,border-color .15s,transform .15s;}
+  .icon-btn:hover{background:#f7f9fc;border-color:#bbc9dc;transform:translateY(-1px);}
+  .sidebar{top:111px;width:290px;padding:18px 14px 44px;background:rgba(251,252,254,.88);border-right-color:#e2e8f0;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
+  .content-wrap{margin-left:290px;margin-top:111px;padding:44px 30px 120px;}
+  .doc-chip{margin:0 3px 16px;padding:10px 11px;border:0;border-radius:10px;background:#172554;color:#dbeafe;font-size:12px;box-shadow:0 8px 18px rgba(23,37,84,.14);}
+  .doc-chip span.dot{width:8px;height:8px;background:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,.15);}
+  .sidebar-search{margin:0 3px 16px;}
+  .sidebar-search input{height:38px;border-color:#d9e1ed;border-radius:9px;background:rgba(255,255,255,.9);font-size:12.5px;transition:border-color .15s,box-shadow .15s;}
+  .sidebar-search input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+  .sidebar-search kbd{background:#f2f5f9;border-color:#dce4ef;}
+  .nav-row{margin:2px 0;border-left-width:2px;border-radius:7px;}
+  .nav-row.active{background:#edf3ff;border-left-color:#2563eb;}
+  .nav-label{padding-top:7px;padding-bottom:7px;font-size:12.5px;border-radius:7px;transition:background .12s,color .12s;}
+  .nav-label:hover{background:#f0f4f9;}
+  .nav-row.active>.nav-label .nav-text{color:#1d4ed8;}
+  .nav-chevron{border-radius:7px;}
+  .paper{max-width:910px;border:1px solid rgba(219,226,237,.9);border-radius:18px;box-shadow:var(--shadow);padding:64px 72px;}
+  .doc-section{scroll-margin-top:132px;}
+  .doc-section + .doc-section{margin-top:54px;padding-top:40px;border-top-color:#e8edf5;}
+  .doc-section.sub{margin-top:38px;}
+  .section-heading{gap:9px;margin-bottom:17px;}
+  .section-heading h2{font-size:28px;letter-spacing:-.035em;}
+  .section-heading h3{font-size:21px;letter-spacing:-.025em;}
+  .section-heading h4{font-size:17px;letter-spacing:-.015em;}
+  .kicker{padding:3px 7px;border-radius:5px;background:#e8efff;color:#1d4ed8;font-size:10.5px;vertical-align:2px;}
+  .anchor-link{font-size:13px;}
+  .cap{font-size:13px;color:#758299;}
+  .lede{font-size:16.5px;line-height:1.75;color:#344159;}
+  .cover{padding:22px 18px 24px;}
+  .cover .kicker-line{color:#2563eb;font-size:11px;font-weight:700;letter-spacing:.14em;}
+  .cover h1{max-width:690px;margin:0 auto 32px;font-size:35px;letter-spacing:-.045em;}
+  .cover .meta-block{max-width:630px;margin:26px auto;font-size:15px;line-height:1.9;}
+  .authors{max-width:570px;gap:7px 50px;font-size:14.5px;color:#40506a;}
+  .toc-list{font-size:15px;}
+  .toc-row{padding:8px 9px;border:1px solid transparent;transition:background .15s,border-color .15s;}
+  .toc-row:hover{background:#f7f9fd;border-color:#e7edf7;}
+  .toc-row.indent{font-size:13.5px;}
+  .toc-fill{border-color:#d7dfeb;}
+  .table-wrap{margin:12px 0 8px;border-color:#e0e7f0;border-radius:12px;box-shadow:0 5px 14px rgba(31,48,76,.035);}
+  table.tbl{font-size:13px;}
+  table.tbl th{padding:11px 13px;background:#f5f8fc;border-bottom-color:#dce5f0;color:#617088;font-size:10.5px;}
+  table.tbl td{padding:12px 13px;border-bottom-color:#e8edf4;color:#324058;line-height:1.45;}
+  table.tbl tr:hover td{background:#f8faff;}
+  .priority-badge,.status-pill{padding:4px 9px;font-size:10.5px;letter-spacing:.01em;}
+  .usecase-card{border-color:#e0e7f0;border-radius:14px;padding:30px 32px;background:linear-gradient(180deg,#fff,#fbfcff);box-shadow:0 8px 20px rgba(31,48,76,.035);}
+  .usecase-table-tag{background:#eaf1ff;color:#1d4ed8;font-size:10px;}
+  .usecase-head h4{font-size:21px;letter-spacing:-.025em;}
+  .usecase-subtitle{font-size:12px;}
+  dl.usecase-meta{gap:10px 18px;margin:18px 0 22px;}
+  dl.usecase-meta dt{font-size:10px;color:#8290a5;}
+  .chip{border-color:#dde5ef;background:#fff;color:#526078;font-size:11.5px;}
+  .usecase-card h5{font-size:10.5px;color:#728097;margin-top:23px;}
+  .flow-table{border-color:#e0e7f0;border-radius:10px;}
+  .flow-col{padding:16px 19px;}
+  .flow-col-head{font-size:10.5px;}
+  .exception-list li{background:#fff8ec;border-left-color:#f1b44c;border-radius:0 7px 7px 0;}
+  /* Formal use-case specification tables */
+  .usecase-table-section{margin-top:34px;}
+  .usecase-table-wrap{margin:8px 0 0;overflow:visible;}
+  table.tbl.usecase-doc-table{min-width:0;table-layout:fixed;font-size:13.2px;}
+  .usecase-doc-table .uc-title-row th{padding:13px 16px;background:#172554;color:#fff;border-bottom:0;font-size:13px;text-transform:none;letter-spacing:0;text-align:left;}
+  .usecase-doc-table .uc-title-row .uc-table-no{display:inline-block;margin-right:9px;padding:3px 7px;border-radius:5px;background:rgba(255,255,255,.16);font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;vertical-align:1px;}
+  .usecase-doc-table .uc-title-row strong{font-family:'Source Serif 4',Georgia,serif;font-size:17px;font-weight:700;}
+  .usecase-doc-table th[scope="row"]{width:180px;background:#f5f8fc;color:#526078;font-size:10.5px;line-height:1.35;text-transform:uppercase;letter-spacing:.04em;white-space:normal;}
+  .usecase-doc-table td{color:#344159;line-height:1.55;}
+  .usecase-doc-table .uc-section-row th{padding:9px 13px;background:#eaf1ff;color:#1d4ed8;border-bottom:1px solid #d8e5fb;font-size:10.5px;text-align:left;}
+  .usecase-doc-table .uc-flow-head th{width:auto;padding:9px 13px;background:#f5f8fc;color:#526078;font-size:10.5px;text-align:left;}
+  .usecase-doc-table .uc-flow-cell{vertical-align:top;}
+  .usecase-doc-table .uc-flow-cell + .uc-flow-cell{border-left:1px solid #e8edf4;}
+  .usecase-table-list{margin:0;padding-left:19px;font-family:'Source Serif 4',Georgia,serif;}
+  .usecase-table-list li{margin-bottom:5px;}
+  .usecase-table-list li:last-child{margin-bottom:0;}
+  .usecase-doc-table .uc-exception-list li::marker{color:#bd7014;}
+  .figure-frame{border-color:#e0e7f0;border-radius:12px;box-shadow:0 6px 18px rgba(31,48,76,.05);}
+  figcaption{font-size:13px;}
+  .entity-card{border-color:#e0e7f0;border-radius:10px;background:#fcfdff;}
+  .entity-card .ename{color:#1d4ed8;}
+  .doc-footer{color:#7b879a;border-top-color:#e6ebf3;}
+  .back-to-top{right:30px;bottom:30px;width:42px;height:42px;border-color:#d8e1ec;box-shadow:0 8px 24px rgba(31,48,76,.14);}
+  .back-to-top:hover{color:#1d4ed8;}
+  @media (max-width:980px){
+    .topbar{padding:0 14px;}
+    .page-tabs{padding:0 12px;}
+    .sidebar{top:111px;left:-310px;width:290px;}
+    .content-wrap{margin-left:0;padding:26px 14px 100px;}
+    .paper{padding:38px 24px;border-radius:14px;}
+    .cover h1{font-size:29px;}
+  }
+  @media (max-width:560px){
+    .page-tabs{gap:1px;}
+    .page-tab{font-size:11.5px;padding:7px 9px;}
+    .paper{padding:30px 18px;}
+    .section-heading h2{font-size:25px;}
+    .cover{padding-left:0;padding-right:0;}
+    .cover h1{font-size:27px;}
+    .usecase-card{padding:22px 18px;}
+  }
+  /* Keep the submitted/PDF version compact and paginated like the source document. */
+  @media print{
+    .content-wrap{margin:0 !important;padding:0 !important;}
+    .paper{box-shadow:none;border:0;border-radius:0;max-width:none;width:auto;padding:0;}
+    .doc-section{scroll-margin-top:0;}
+    .doc-section + .doc-section{margin-top:14pt;padding-top:0;border-top:0;}
+    .doc-section.sub{margin-top:11pt;}
+    .section-heading h2{font-size:16pt;letter-spacing:normal;}
+    .section-heading h3{font-size:13.5pt;letter-spacing:normal;}
+    .section-heading h4{font-size:12pt;letter-spacing:normal;}
+    .lede{font-size:10.5pt;line-height:1.42;color:var(--ink);}
+    .cover{padding:0;}
+    .cover h1{font-size:21pt;letter-spacing:normal;}
+    .table-wrap,.figure-frame{box-shadow:none;}
+    table.tbl{font-size:8.7pt;}
+    table.tbl td,table.tbl th{padding:3.5pt 5pt;line-height:1.32;}
+    .usecase-card{border:0;background:none;box-shadow:none;padding:0;}
+    .usecase-head h4{font-size:12pt;letter-spacing:normal;}
+    .usecase-table-section{margin-top:11pt;}
+    .usecase-table-wrap{overflow:visible;border-radius:0;}
+    table.tbl.usecase-doc-table{font-size:8.7pt;}
+    .usecase-doc-table .uc-title-row th{padding:4pt 6pt;font-size:10pt;}
+    .usecase-doc-table .uc-title-row strong{font-size:12pt;}
+    .usecase-doc-table th[scope="row"],.usecase-doc-table .uc-flow-head th,.usecase-doc-table .uc-section-row th{padding:3.5pt 5pt;font-size:8pt;}
+    .usecase-doc-table td{line-height:1.35;}
+    .usecase-table-list li{margin-bottom:2pt;}
+  }
 </style>
+<link rel="stylesheet" href="assets/somada-navigation.css">
 </head>
 <body>
 <div id="root"></div>
@@ -345,13 +500,14 @@
       { event:"Dean decides on an out-of-schedule reservation", trigger:"Dean reviews a Faculty out-of-schedule reservation, or a Class Representative reservation with no assigned professor, and selects Approve or Reject", source:"Dean", useCase:"Approve / Reject Reservation", response:"Reservation status updated to Approved or Rejected; approval record written", destination:"Reservation Records, Approval Records, requester" },
       { event:"A requester checks on a reservation", trigger:"Requester opens their dashboard", source:"Class Representative, Faculty, Dean", useCase:"View Reservation Status, View Reservation History, View Clearance Status", response:"Current status, past reservations, and any open clearance displayed", destination:"Requester" },
       { event:"A requester asks a question", trigger:"Requester submits a question from within their account", source:"Class Representative, Faculty", useCase:"Ask Laboratory Question", response:"Answer composed from the laboratory's own records on item, schedule, or reservation status, or operating hours", destination:"Requester" },
-      { event:"Laboratory staff issue equipment for a session", trigger:"Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued per item", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Issue Equipment", response:"Borrowing record created against the requester and the date; issued quantities deducted from stock", destination:"Borrowing Records, Equipment Inventory Records" },
-      { event:"A session ends and items are returned", trigger:"Laboratory staff record returned quantities against quantities issued", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Process Return", response:"Quantities reconciled; unreturned consumables marked consumed; equipment not returned in working order marked broken or lost", destination:"Borrowing Records, Broken/Loss/Consumed Logs" },
-      { event:"Accountability is raised for a damaged or missing item", trigger:"Laboratory staff select the accountable member from the borrowing record", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Process Clearance", response:"Clearance record created against the accountable Class Representative or Faculty member and tracked to settlement", destination:"Clearance Records, requester dashboard" },
+      { event:"Laboratory staff issue equipment for a session", trigger:"Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued per item", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Issue Equipment", response:"Borrowing slip record created from the approved reservation; issued quantities deducted from stock; borrowing slip displayed to the requester", destination:"Borrowing Slip Records, Equipment Inventory Records, Class Representative or Faculty requester" },
+      { event:"A session ends and items are returned", trigger:"Laboratory staff record returned quantities against the issued items on the borrowing slip", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Process Return", response:"Borrowing slip quantities reconciled; unreturned consumables marked consumed; equipment not returned in working order marked broken or lost", destination:"Borrowing Slip Records, Broken/Loss/Consumed Logs" },
+      { event:"Accountability is raised for a damaged or missing item", trigger:"Laboratory staff select the accountable member from the borrowing slip record", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Process Clearance", response:"Clearance record created against the accountable Class Representative or Faculty member and tracked to settlement", destination:"Clearance Records, requester dashboard" },
       { event:"An item is withdrawn from the laboratory", trigger:"Laboratory staff record the item, reason, quantity and classification", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Log Waste Disposal", response:"Disposal entry created; hazardous items flagged for separate collection", destination:"Waste Disposal Records, End-Term Report" },
       { event:"Laboratory staff maintain the equipment catalogue", trigger:"Head Laboratory or assigned Laboratory Staff add, edit, or remove a holding", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Manage Equipment Inventory", response:"Catalogue updated and availability recomputed; a low stock flag is raised where a quantity falls below its reorder level", destination:"Equipment Inventory Records, Laboratory Dashboard" },
-      { event:"The Dean's office issues the term schedule", trigger:"Head Laboratory records the committed and vacant blocks for each laboratory room", source:"Head Laboratory", useCase:"Manage Laboratory Logs & Schedule", response:"Laboratory schedule updated for each room and vacant blocks published for reservations", destination:"Laboratory Schedule" },
-      { event:"Laboratory staff record the usage of a completed session", trigger:"The return for the session has been reconciled", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Manage Laboratory Logs & Schedule", response:"Usage entry recorded in the Physics or Circuits laboratory log for the session", destination:"Physics Laboratory Logs, Circuits Laboratory Logs, End-Term Report" },
+      { event:"The Dean's office issues the term schedule", trigger:"Head Laboratory records the committed and vacant blocks for each laboratory room", source:"Head Laboratory", useCase:"Manage Laboratory Logs, Schedule & Daily Tasks", response:"Laboratory schedule updated for each room and vacant blocks published for reservations", destination:"Laboratory Schedule" },
+      { event:"Laboratory staff record the usage of a completed session", trigger:"The return for the session has been reconciled", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Manage Laboratory Logs, Schedule & Daily Tasks", response:"Usage entry recorded in the Physics or Circuits laboratory log for the session", destination:"Physics Laboratory Logs, Circuits Laboratory Logs, End-Term Report" },
+      { event:"Laboratory staff record a daily activity", trigger:"Head Laboratory or assigned Laboratory Staff submit an activity completed during their shift", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Manage Laboratory Logs, Schedule & Daily Tasks", response:"Daily task record stored with its laboratory, activity, date, status, and recorder", destination:"Daily Task Records, End-Term Report" },
       { event:"Laboratory staff open the dashboard", trigger:"Staff sign in and dashboard metrics load", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"View Laboratory Dashboard", response:"Inventory, reservation, and usage metrics summarized for the assigned laboratory, or across both for Head Laboratory", destination:"Laboratory Dashboard" },
       { event:"The term ends", trigger:"Head Laboratory triggers the end-of-term report", source:"Head Laboratory", useCase:"Generate End-Term Report", response:"Usage per requester, most-borrowed items, and broken, lost, and consumed totals compiled across both laboratories and exported for submission", destination:"Head Laboratory, then NU Fairview administration" },
     ],
@@ -642,16 +798,16 @@
         id:"uc-issueeq", table:17, title:"Issue Equipment", useCaseName:"Issue Equipment",
         scenario:`An approved reservation requires equipment to be released for the session.`,
         triggeringEvent:`Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued for each item.`,
-        briefDescription:`Generates the borrowing record from the approved reservation, with the item list constrained to the resources selected on it. The quantity issued is recorded per item against the requester and the date of the session, and issued quantities are deducted from available stock. A borrowing slip is produced and made visible to the requester.`,
+        briefDescription:`Generates a borrowing slip record from the approved reservation, with the item list constrained to the resources selected on it. The quantity issued is recorded per item against the requester and the date of the session, and issued quantities are deducted from available stock. The stored borrowing slip is made visible to the requester and becomes the source record for return and clearance processing.`,
         actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Approve / Reject Reservation, Process Return, Manage Equipment Inventory",
         stakeholders:[
           `Head Laboratory and Laboratory Staff: need issuance recorded against inventory without re-encoding.`,
           `Class Representative and Faculty: need the session supplied with the resources approved.`,
         ],
         preconditions:[`The reservation holds the status Approved.`,`The user is signed in with access to the reservation's laboratory.`,`The approved items are physically available.`],
-        postconditions:[`A borrowing record is created against the reservation, the requester, and the date. Available stock is decremented by the issued quantity for each item. The reservation status is set to Ongoing.`],
+        postconditions:[`A borrowing slip record is created against the approved reservation, requester, and session date. Available stock is decremented by the issued quantity for each item. The reservation status is set to Ongoing.`],
         flowActor:[`User opens the approved reservation.`,`User confirms the items and records the quantity issued for each.`,`User releases the prepared items.`],
-        flowSystem:[`System displays the item list constrained to the approved reservation.`,`System validates the issued quantity against stock on hand.`,`System writes the borrowing record and decrements available stock.`,`System sets the reservation status to Ongoing.`],
+        flowSystem:[`System displays the item list constrained to the approved reservation.`,`System validates the issued quantity against stock on hand.`,`System writes the borrowing slip record and decrements available stock.`,`System sets the reservation status to Ongoing and displays the borrowing slip to the requester.`],
         exceptions:[
           `If an approved item cannot be supplied in the quantity requested, the user records a reduced quantity coordinated with the requester.`,
           `If the reservation does not hold the status Approved, the system refuses issuance.`,
@@ -667,10 +823,10 @@
           `Head Laboratory and Laboratory Staff: need consumed counts to reflect genuine depletion only.`,
           `Class Representative and Faculty: need returns credited so no accountability is recorded in error.`,
         ],
-        preconditions:[`A borrowing record exists with the status Ongoing.`,`The returned items have been physically checked.`],
+        preconditions:[`A borrowing slip record exists with the status Ongoing.`,`The returned items have been physically checked.`],
         postconditions:[`Returned quantities are recorded. Unreturned balances are classified as consumed, broken, or lost. Available stock is restored for equipment returned in working order. The reservation is set to Completed where no balance remains outstanding.`],
         flowActor:[`User checks the returned items after the session.`,`User records the returned quantity for each item.`,`User classifies unreturned equipment as broken or lost.`],
-        flowSystem:[`System displays the quantities issued for the borrowing record.`,`System computes the unreturned balance for each item.`,`System marks unreturned consumables as consumed and bars equipment from being marked consumed.`,`System sets the reservation to Completed where no balance remains outstanding.`],
+        flowSystem:[`System displays the quantities issued on the borrowing slip record.`,`System computes the unreturned balance for each item.`,`System marks unreturned consumables as consumed and bars equipment from being marked consumed.`,`System sets the reservation to Completed where no balance remains outstanding.`],
         exceptions:[
           `If a returned quantity exceeds the quantity issued, the system rejects the entry.`,
           `If a balance remains outstanding, the reservation stays Ongoing and a clearance is raised against the accountable party.`,
@@ -679,17 +835,17 @@
       {
         id:"uc-procclear", table:19, title:"Process Clearance", useCaseName:"Process Clearance",
         scenario:`An item is found broken or missing during the post-session check and accountability must be recorded.`,
-        triggeringEvent:`Head Laboratory or assigned Laboratory Staff select the accountable member from the borrowing record.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff select the accountable member from the borrowing slip record.`,
         briefDescription:`Raises a clearance record against the accountable Class Representative's group, or against the requesting Faculty member where the reservation named no group, stating the item, quantity, and reason, and tracks it to settlement. Now visible to the accountable party directly through View Clearance Status, closing the gap where the old paper clearance had no account to land in.`,
         actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Process Return, View Clearance Status, Generate End-Term Report",
         stakeholders:[
           `Head Laboratory and Laboratory Staff: need accountability attached to the borrower.`,
           `Class Representative and Faculty: need to be told what is recorded against them and how to settle it.`,
         ],
-        preconditions:[`A borrowing record identifies the accountable party.`,`An item is recorded as broken or lost against that record.`],
+        preconditions:[`A borrowing slip record identifies the accountable party.`,`An item is recorded as broken or lost against that record.`],
         postconditions:[`A clearance record is created against the accountable Class Representative or Faculty member. It becomes visible to them through View Clearance Status and is marked cleared or replaced on settlement.`],
-        flowActor:[`User opens the borrowing record for the session.`,`User selects the accountable party.`,`User raises the clearance record stating the item, quantity, and reason.`,`User marks the clearance cleared or replaced on settlement.`],
-        flowSystem:[`System displays the accountable party recorded on the borrowing record.`,`System writes the clearance record and makes it visible to that party.`,`System updates the clearance status and closes it on settlement.`],
+        flowActor:[`User opens the borrowing slip record for the session.`,`User selects the accountable party.`,`User raises the clearance record stating the item, quantity, and reason.`,`User marks the clearance cleared or replaced on settlement.`],
+        flowSystem:[`System displays the accountable party recorded on the borrowing slip.`,`System writes the clearance record and makes it visible to that party.`,`System updates the clearance status and closes it on settlement.`],
         exceptions:[
           `If no group was recorded on the reservation, the clearance is raised against the requesting Faculty member instead.`,
           `If a clearance remains unsettled at the end of the term, it stays open and is listed in the end-term report.`,
@@ -715,23 +871,24 @@
         ],
       },
       {
-        id:"uc-mgmlogs", table:21, title:"Manage Laboratory Logs & Schedule", useCaseName:"Manage Laboratory Logs & Schedule",
-        scenario:`The term schedule must be recorded so requesters can view availability and vacant blocks can be released.`,
-        triggeringEvent:`Head Laboratory or assigned Laboratory Staff record the term schedule or a session's usage.`,
-        briefDescription:`Head Laboratory records, for each laboratory room, which blocks are committed and which remain vacant for reservations. Physics Laboratory Staff and Circuits Laboratory Staff record session usage for their own laboratory once a return has been reconciled; the system compiles these entries into the figures supplied to the end-term report.`,
+        id:"uc-mgmlogs", table:21, title:"Manage Laboratory Logs, Schedule & Daily Tasks", useCaseName:"Manage Laboratory Logs, Schedule & Daily Tasks",
+        scenario:`The term schedule, completed session usage, and non-transaction daily laboratory activities must be recorded.`,
+        triggeringEvent:`Head Laboratory or assigned Laboratory Staff record a schedule block, a session's usage, or a completed daily activity.`,
+        briefDescription:`Head Laboratory records, for each laboratory room, which blocks are committed and which remain vacant for reservations. Physics Laboratory Staff and Circuits Laboratory Staff record session usage for their own laboratory once a return has been reconciled. All authorised laboratory staff may also record non-transaction daily activities such as laboratory preparation, cleaning, inspection, assistance, or maintenance; these records remain separate from borrowing transactions and are supplied to the end-term report.`,
         actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"View Schedule & Availability, Process Return, Generate End-Term Report",
         stakeholders:[
           `Head Laboratory: maintains the schedule that gates every reservation.`,
-          `Physics Laboratory Staff and Circuits Laboratory Staff: record their own laboratory's usage.`,
+          `Physics Laboratory Staff and Circuits Laboratory Staff: record their own laboratory's usage and completed daily activities.`,
           `Class Representative, Faculty, and Dean: rely on published vacant blocks when submitting reservations.`,
         ],
         preconditions:[`The user is signed in with access to the laboratory being updated.`],
-        postconditions:[`The laboratory schedule is updated and vacant blocks are published. A usage entry is recorded for each completed session and made available to reporting.`],
-        flowActor:[`User opens Laboratory Logs and Schedule for their assigned laboratory.`,`User records committed blocks or a completed session's usage.`,`User marks remaining blocks vacant.`],
-        flowSystem:[`System validates that committed blocks do not overlap.`,`System stores the schedule and publishes vacant blocks.`,`System compiles usage entries and makes them available to reporting.`],
+        postconditions:[`The laboratory schedule is updated and vacant blocks are published. Session usage and daily task entries are stored separately and made available to reporting.`],
+        flowActor:[`User opens Laboratory Logs, Schedule and Daily Tasks for their assigned laboratory.`,`User records committed blocks, a completed session's usage, or a daily activity with its date and status.`,`User submits the entry or marks remaining schedule blocks vacant.`],
+        flowSystem:[`System validates that committed blocks do not overlap and that the activity entry identifies a laboratory and date.`,`System stores schedule and usage data in the laboratory logs and stores non-transaction activities in Daily Task Records.`,`System publishes vacant blocks and makes usage and activity records available to reporting.`],
         exceptions:[
           `If two committed blocks overlap, the system rejects the entry.`,
           `If a block already carries an approved reservation, it cannot be recommitted until that reservation is released.`,
+          `If a daily activity has no laboratory, activity description, or date, the system rejects the entry.`,
         ],
       },
       {
@@ -775,8 +932,8 @@
 
     gaps: [
       { id:"01", current:`Inventory is held in the inventory finder worksheet as name, description, existing quantity, unit and type, with no condition field and no record of how much of each item is currently out or committed; edits are typed directly into cells.`, proposed:`Provide an inventory module supporting add, edit and remove, in which each holding is recorded by name with a condition status and quantities tracked as existing, available, in use and reserved.`, impact:`Stock levels become visible at a glance and changes are attributable rather than silently overwritten.` },
-      { id:"02", current:`Borrowing is recorded in the Physics and Circuits usage logs by date, subject code, professor, particulars and quantity; no student is named anywhere in the workbook.`, proposed:`Provide a borrowing record capturing student ID numbers and time against the approved request.`, impact:`Accountability attaches to the borrower rather than only to the supervising professor.` },
-      { id:"03", current:`Damage and loss are logged by date, professor, item, quantity and unit; the accountable group is traceable only through the signed paper slip for that session.`, proposed:`Record damage and loss directly against the accountable group drawn from the borrowing record.`, impact:`Removes the paper cross-reference step and prevents unattributed losses.` },
+      { id:"02", current:`Borrowing is recorded in the Physics and Circuits usage logs by date, subject code, professor, particulars and quantity; no student is named anywhere in the workbook.`, proposed:`Provide a Borrowing Slip Record capturing the requester, group members, issued items, quantities, date, and time against the approved reservation.`, impact:`Accountability attaches to the borrower rather than only to the supervising professor.` },
+      { id:"03", current:`Damage and loss are logged by date, professor, item, quantity and unit; the accountable group is traceable only through the signed paper slip for that session.`, proposed:`Record damage and loss directly against the accountable group drawn from the Borrowing Slip Record.`, impact:`Removes the paper cross-reference step and prevents unattributed losses.` },
       { id:"04", current:`Availability is established by opening the inventory finder and reading a quantity that is updated by hand after each session.`, proposed:`Provide a live availability view showing quantities on hand and expected return times.`, impact:`Availability can be checked without a physical count.` },
       { id:"05", current:`End-of-term figures are computed by formula blocks in the Broken, Loss and Consumed worksheet and exported manually into a presentation.`, proposed:`Generate summaries and transaction logs directly from stored records.`, impact:`Reporting no longer depends on preserving a hand-built formula set.` },
       { id:"06", current:`Clearance is issued on paper, signed by the student, a faculty member and the laboratory head, then forwarded to the registrar.`, proposed:`Provide a digital clearance record raised and tracked by the laboratory head.`, impact:`Removes lost and incomplete clearance records and shortens processing time.` },
@@ -792,18 +949,7 @@
       { id:"16", current:`Usage figures sit in formula blocks and are interpreted by the laboratory head.`, proposed:`Generate automated insights from the dashboard metrics.`, impact:`Patterns in usage and resourcing surface without manual interpretation.` },
     ],
 
-    dfdProcesses: [
-      { id:"dfd-p1", fig:"Figure 4", title:"Process 1.0 — File Laboratory Service Request; Track Request Status", image:"assets/figures/fig-dfd-p1.png" },
-      { id:"dfd-p2", fig:"Figure 5", title:"Process 2.0 — Approve Service Request", image:"assets/figures/fig-dfd-p2.png" },
-      { id:"dfd-p3", fig:"Figure 6", title:"Process 3.0 — Issue Equipment; Process Return", image:"assets/figures/fig-dfd-p3.png" },
-      { id:"dfd-p4", fig:"Figure 7", title:"Process 4.0 — Process Clearance", image:"assets/figures/fig-dfd-p4.png" },
-      { id:"dfd-p5", fig:"Figure 8", title:"Process 5.0 — Manage Equipment Inventory", image:"assets/figures/fig-dfd-p5.png" },
-      { id:"dfd-p6", fig:"Figure 9", title:"Process 6.0 — Manage Laboratory Logs & Schedule; Manage Daily Task Log", image:"assets/figures/fig-dfd-p6.png" },
-      { id:"dfd-p7", fig:"Figure 10", title:"Process 7.0 — View Real-Time Inventory & Dashboard; Generate End-Term Report; Forecast Consumable Demand", image:"assets/figures/fig-dfd-p7.png" },
-      { id:"dfd-p8", fig:"Figure 11", title:"Process 8.0 — Log Waste Disposal", image:"assets/figures/fig-dfd-p8.png" },
-      { id:"dfd-p9", fig:"Figure 12", title:"Process 9.0 — Query Virtual Assistant", image:"assets/figures/fig-dfd-p9.png" },
-      { id:"dfd-p10", fig:"Figure 13", title:"Process 10.0 — Authenticate User (Login to System)", image:"assets/figures/fig-dfd-p10.png" },
-    ],
+    dfdProcesses: [],
 
     entities: [
       { name:"TERM", fields:"PK term_id · term_code, start_date, end_date" },
@@ -871,7 +1017,7 @@
   ];
 </script>
 
-<script type="text/babel" id="app-source">
+<script type="text/plain" id="app-source">
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
 /* ----------------------------- icons ----------------------------- */
@@ -928,7 +1074,21 @@ function DataTable({ columns, rows }) {
   );
 }
 
-function Figure({ src, caption, onZoom }) {
+// Use-case descriptions in the source data retain their full analysis detail.
+// The formal paper table shows a concise summary so each specification remains
+// readable and does not become a page-long narrative.
+function conciseText(text, maxLength = 300) {
+  if (!text) return "";
+  const cleaned = text.replace(/\s+/g, " ").trim();
+  const sentenceEnd = cleaned.search(/(?<=[.!?])\s/);
+  const firstSentence = sentenceEnd === -1 ? cleaned : cleaned.slice(0, sentenceEnd + 1);
+  if (firstSentence.length <= maxLength) return firstSentence;
+  const shortened = firstSentence.slice(0, maxLength);
+  const lastSpace = shortened.lastIndexOf(" ");
+  return (lastSpace > 0 ? shortened.slice(0, lastSpace) : shortened) + "…";
+}
+
+function Figure({ src, caption, onZoom, editorHref }) {
   return (
     <figure className="doc-figure">
       <div className="figure-frame" onClick={() => onZoom({ src, caption })}>
@@ -936,6 +1096,7 @@ function Figure({ src, caption, onZoom }) {
         <span className="zoom-hint"><IconZoom /> Click to enlarge</span>
       </div>
       <figcaption>{caption}</figcaption>
+      {editorHref && <a className="figure-editor-link" href={editorHref}>Open interactive arrow editor</a>}
     </figure>
   );
 }
@@ -1079,11 +1240,11 @@ function OverviewSection() {
     <section id="overview" className="doc-section">
       <SectionHeading title="I. Project Overview" id="overview" />
       <div className="lede">
-        <p>SOMADA is a web-based laboratory management system for the Physics and Circuits Laboratory of NU Fairview. It replaces the laboratory's paper forms and spreadsheet records with one online system that holds the inventory, room bookings, borrowing records, clearances and disposal records together and keeps them consistent.</p>
+        <p>SOMADA is a web-based laboratory management system for the Physics and Circuits Laboratory of NU Fairview. It replaces the laboratory's paper forms and spreadsheet records with one online system that holds the inventory, room bookings, Borrowing Slip Records, clearances, daily task records, and disposal records together and keeps them consistent.</p>
         <p>The laboratory is a teaching facility on the fourth floor of the campus, open from 8:30 AM to 5:30 PM, serving the laboratory sessions of physics, circuits and information technology subjects. It holds 322 catalogued items in eight categories. Some are durable equipment such as oscilloscopes, multimeters, Arduino kits and physics apparatus. The rest are consumable supplies such as resistors, jumper wires, soldering lead and batteries. One person, the laboratory head, manages all of it.</p>
         <p>Every transaction currently begins on paper. Students and faculty fill out borrower's slips and laboratory service request forms by hand. The laboratory head reviews each one, then types the same information again into a protected Google Sheets workbook of eleven worksheets. Room availability is checked against a separate weekly grid for each room, and on those grids the difference between a class session, a lecture booking and a special request exists only as the laboratory head's own colour coding. Approvals are signatures collected in person, and the signed forms are kept outside the workbook.</p>
         <p>None of these records are connected to each other, and that is where the difficulty starts. The borrowing records are not linked to the inventory, so one mistyped quantity quietly changes every figure that depends on it, and nobody can tell how much of a consumable is left without counting it by hand. Approvals are slow because a form has to be carried to a person for signature. Scheduling conflicts turn up only after they have happened. A shortage of supplies is discovered at the moment a scheduled session needs the item. Students and faculty who want to know whether an item is available, or whether their request has been approved, have to visit the laboratory or wait for the laboratory head to reply. When an instrument comes back damaged, or does not come back at all, the only way to find out who is accountable is to dig up the signed paper slip from that session.</p>
-        <p>The proposed system puts all of this on one platform, built around five authenticated roles in place of the single administrative account the laboratory head previously held alone: Class Representative, Faculty, Dean, Head Laboratory, and Laboratory Staff assigned to either the Physics or the Circuits Laboratory. Every role signs in to its own SOMADA account — a Class Representative by NU Student ID, everyone else by NU Fairview email, each with a system-generated password — in place of a paper form filled out and brought to the laboratory in person. A Class Representative's account is issued top-down: Head Laboratory creates it and the system emails the credentials to the class's assigned Faculty member, who hands them to the representative in person. After choosing Physics or Circuits Laboratory and checking its schedule, a requester submits a reservation on-schedule or out-of-schedule, selecting any resources the session needs from a catalogue with live stock; a one-time reservation holds a single time block, while a whole-term reservation holds the corresponding block in each remaining week of the term, and the system checks every block it would hold for conflicts before accepting it. Whether that reservation needs a decision, and from whom, follows one rule throughout: the appropriate authority approves, and the step is skipped only when the requester already is that authority. A Class Representative's reservation is decided by their assigned Faculty member, or by the Dean where no professor is assigned; a Faculty member's own on-schedule reservation needs no approval, since Faculty already holds authority over their class, while a Faculty out-of-schedule reservation still goes to the Dean; and the Dean's own out-of-schedule reservation — most often for Defense Lab use — likewise needs none, since the Dean already is the authority for that case. From an approved reservation, Head Laboratory or the assigned Laboratory Staff issue the equipment, and the system builds the borrowing record, deducts the stock, and reconciles the returns after the session, raising a clearance against the accountable Class Representative or Faculty member where an item comes back broken or does not come back at all — a clearance the accountable party can now see directly from their own dashboard, rather than only on a paper copy. Items withdrawn from the laboratory for good go into a disposal log. Artificial intelligence is scoped to one function: Ask Laboratory Question, an assistant reachable only from inside a signed-in Class Representative or Faculty account, answering on item availability, schedule availability, operating hours, and the status of the requester's own reservation, grounded in the laboratory's own records and never creating or deciding a reservation itself; the demand-forecasting and automated dashboard-insight functions considered earlier are cut from scope. Each requester follows their own reservations from My Dashboard rather than a public reference-number screen, and can cancel or reschedule a reservation without refiling it from scratch. At the end of the term Head Laboratory exports the report of laboratory activity, compiled across both laboratories, and submits it to the administration. Payment for lost items, outside repairs, and the hand-off to the registrar stay manual.</p>
+        <p>The proposed system puts all of this on one platform, built around five authenticated roles in place of the single administrative account the laboratory head previously held alone: Class Representative, Faculty, Dean, Head Laboratory, and Laboratory Staff assigned to either the Physics or the Circuits Laboratory. Every role signs in to its own SOMADA account — a Class Representative by NU Student ID, everyone else by NU Fairview email, each with a system-generated password — in place of a paper form filled out and brought to the laboratory in person. A Class Representative's account is issued top-down: Head Laboratory creates it and the system emails the credentials to the class's assigned Faculty member, who hands them to the representative in person. After choosing Physics or Circuits Laboratory and checking its schedule, a requester submits a reservation on-schedule or out-of-schedule, selecting any resources the session needs from a catalogue with live stock; a one-time reservation holds a single time block, while a whole-term reservation holds the corresponding block in each remaining week of the term, and the system checks every block it would hold for conflicts before accepting it. Whether that reservation needs a decision, and from whom, follows one rule throughout: the appropriate authority approves, and the step is skipped only when the requester already is that authority. A Class Representative's reservation is decided by their assigned Faculty member, or by the Dean where no professor is assigned; a Faculty member's own on-schedule reservation needs no approval, since Faculty already holds authority over their class, while a Faculty out-of-schedule reservation still goes to the Dean; and the Dean's own out-of-schedule reservation — most often for Defense Lab use — likewise needs none, since the Dean already is the authority for that case. From an approved reservation, Head Laboratory or the assigned Laboratory Staff issue the equipment, and the system builds the Borrowing Slip Record, displays the slip to the requester, deducts the stock, and reconciles the returns after the session, raising a clearance against the accountable Class Representative or Faculty member where an item comes back broken or does not come back at all. Laboratory staff also record non-transaction daily activities separately from session usage. Items withdrawn from the laboratory for good go into a disposal log. Artificial intelligence is scoped to one function: Ask Laboratory Question, an assistant reachable only from inside a signed-in Class Representative or Faculty account, answering on item availability, schedule availability, operating hours, and the status of the requester's own reservation, grounded in the laboratory's own records and never creating or deciding a reservation itself; the demand-forecasting and automated dashboard-insight functions considered earlier are cut from scope. Each requester follows their own reservations from My Dashboard rather than a public reference-number screen, and can cancel or reschedule a reservation without refiling it from scratch. At the end of the term Head Laboratory exports the report of laboratory activity, compiled across both laboratories, and submits it to the administration. Payment for lost items, outside repairs, and the hand-off to the registrar stay manual.</p>
       </div>
     </section>
   );
@@ -1160,7 +1321,7 @@ function UseCaseDiagramsSection({ onZoom }) {
   return (
     <section id="usecase-diagrams" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.3" title="Use Case Diagrams" id="usecase-diagrams" />
-      <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 1: Use Case Diagram" onZoom={onZoom} />
+      <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 1: Use Case Diagram" onZoom={onZoom} editorHref="assets/figures-v2/usecase-diagram-source.html" />
       <div className="lede" style={{marginTop:18}}>
         <p>Figure 1 presents the use case diagram under the revised system model. It shows six actors — Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff — replacing the previous single administrative account, and the twenty-one base use cases in which they participate, together with the further use cases reached from those base cases through include and extend relationships. Every event listed in Table 2 is raised by one of these six actors; the system performs no function on a schedule of its own, and artificial intelligence is scoped to Ask Laboratory Question only — the forecasting and automated dashboard-insight functions of the previous model have been cut from scope.</p>
       </div>
@@ -1172,58 +1333,42 @@ function UseCaseSection({ uc }) {
   const related = uc.related.split(",").map(s => s.trim()).filter(Boolean);
   const actors = uc.actors.split(",").map(s => s.trim()).filter(Boolean);
   return (
-    <section id={uc.id} className="doc-section sub usecase-section">
-      <div className="usecase-card">
-        <div className="usecase-head">
-          <div className="usecase-table-tag">Table {uc.table}</div>
-          <h4>{uc.title}</h4>
-          {uc.title !== uc.useCaseName && <div className="usecase-subtitle">Use Case Name: {uc.useCaseName}</div>}
-        </div>
-
-        <dl className="usecase-meta">
-          <dt>Scenario</dt><dd>{uc.scenario}</dd>
-          <dt>Triggering Event</dt><dd>{uc.triggeringEvent}</dd>
-          <dt>Brief Description</dt><dd>{uc.briefDescription}</dd>
-          <dt>Actors</dt><dd className="chip-row">{actors.map(a => <span className="chip" key={a}>{a}</span>)}</dd>
-          <dt>Related Use Cases</dt><dd className="chip-row">{related.map(r => <span className="chip" key={r}>{r}</span>)}</dd>
-        </dl>
-
-        <h5>Stakeholders</h5>
-        <ul className="stakeholder-list">
-          {uc.stakeholders.map((s, i) => {
-            const idx = s.indexOf(":");
-            if (idx === -1) return <li key={i}>{s}</li>;
-            return <li key={i}><strong>{s.slice(0, idx)}:</strong>{s.slice(idx + 1)}</li>;
-          })}
-        </ul>
-
-        <div className="two-col">
-          <div>
-            <h5>Preconditions</h5>
-            <ul className="check-list">{uc.preconditions.map((p, i) => <li key={i}>{p}</li>)}</ul>
-          </div>
-          <div>
-            <h5>Postconditions</h5>
-            <ul className="check-list">{uc.postconditions.map((p, i) => <li key={i}>{p}</li>)}</ul>
-          </div>
-        </div>
-
-        <h5>Flow of Activities</h5>
-        <div className="flow-table">
-          <div className="flow-col">
-            <div className="flow-col-head">Actor</div>
-            <ol>{uc.flowActor.map((s, i) => <li key={i}>{s}</li>)}</ol>
-          </div>
-          <div className="flow-col">
-            <div className="flow-col-head">System</div>
-            <ol>{uc.flowSystem.map((s, i) => <li key={i}>{s}</li>)}</ol>
-          </div>
-        </div>
-
-        <h5>Exception Conditions</h5>
-        <ul className="exception-list">
-          {uc.exceptions.map((e, i) => <li key={i}>{e}</li>)}
-        </ul>
+    <section id={uc.id} className="doc-section sub usecase-table-section">
+      <p className="cap">Table {uc.table}: Use Case Full Description</p>
+      <div className="table-wrap usecase-table-wrap">
+        <table className="tbl usecase-doc-table">
+          <tbody>
+            <tr className="uc-title-row">
+              <th colSpan="2"><span className="uc-table-no">Table {uc.table}</span><strong>{uc.title}</strong></th>
+            </tr>
+            <tr><th scope="row">Use Case Name</th><td>{uc.useCaseName}</td></tr>
+            <tr><th scope="row">Scenario</th><td>{uc.scenario}</td></tr>
+            <tr><th scope="row">Triggering Event</th><td>{uc.triggeringEvent}</td></tr>
+            <tr><th scope="row">Brief Description</th><td>{conciseText(uc.briefDescription)}</td></tr>
+            <tr><th scope="row">Actors</th><td>{actors.join(", ")}</td></tr>
+            <tr><th scope="row">Related Use Cases</th><td>{related.join(", ")}</td></tr>
+            <tr className="uc-section-row"><th colSpan="2">Stakeholders</th></tr>
+            <tr><th scope="row">Stakeholder Interests</th><td>
+              <ul className="usecase-table-list">
+                {uc.stakeholders.map((s, i) => {
+                  const idx = s.indexOf(":");
+                  return idx === -1 ? <li key={i}>{s}</li> : <li key={i}><strong>{s.slice(0, idx)}:</strong>{s.slice(idx + 1)}</li>;
+                })}
+              </ul>
+            </td></tr>
+            <tr className="uc-section-row"><th colSpan="2">Conditions</th></tr>
+            <tr><th scope="row">Preconditions</th><td><ul className="usecase-table-list">{uc.preconditions.map((p, i) => <li key={i}>{p}</li>)}</ul></td></tr>
+            <tr><th scope="row">Postconditions</th><td><ul className="usecase-table-list">{uc.postconditions.map((p, i) => <li key={i}>{p}</li>)}</ul></td></tr>
+            <tr className="uc-section-row"><th colSpan="2">Flow of Activities</th></tr>
+            <tr className="uc-flow-head"><th>Actor</th><th>System</th></tr>
+            <tr>
+              <td className="uc-flow-cell"><ol className="usecase-table-list">{uc.flowActor.map((s, i) => <li key={i}>{s}</li>)}</ol></td>
+              <td className="uc-flow-cell"><ol className="usecase-table-list">{uc.flowSystem.map((s, i) => <li key={i}>{s}</li>)}</ol></td>
+            </tr>
+            <tr className="uc-section-row"><th colSpan="2">Exception Conditions</th></tr>
+            <tr><th scope="row">Exceptions</th><td><ul className="usecase-table-list uc-exception-list">{uc.exceptions.map((e, i) => <li key={i}>{e}</li>)}</ul></td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
   );
@@ -1234,7 +1379,7 @@ function UseCaseFullSection() {
     <section id="usecase-full" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.4" title="Use Case Full Description" id="usecase-full" />
       <div className="lede">
-        <p>Tables 3 to 23 give the full description of the twenty-one base use cases shown in Figure 1. The included and extended use cases are described within the flow of activities of the base use case to which each belongs.</p>
+        <p>Tables 3 to 23 summarize the twenty-one base use cases shown in Figure 1. Each table records the essential actors, conditions, activities, and exceptions; included and extended use cases appear under their related base use case.</p>
       </div>
       {DATA.useCases.map(uc => <UseCaseSection key={uc.id} uc={uc} />)}
     </section>
@@ -1262,9 +1407,9 @@ function ContextDiagramSection({ onZoom }) {
   return (
     <section id="context-diagram" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.6" title="Context Diagram" id="context-diagram" />
-      <Figure src="assets/figures/fig-context.png" caption="Figure 2: Context Diagram" onZoom={onZoom} />
+      <Figure src="assets/figures-v2/dfd-level0/dfd-level0-draft.png" caption="Figure 2: Context Diagram (DFD Level 0)" onZoom={onZoom} editorHref="assets/figures-v2/dfd-level0/dfd-level0-source.html" />
       <div className="lede" style={{marginTop:18}}>
-        <p>Figure 2 presents the context diagram, showing SOMADA as a single process together with the four external entities it exchanges data with. Students and faculty submit service requests and inquiries and receive references, statuses, borrowing slips and assistant responses; faculty and the Dean receive approval request emails and return confirmations; and the laboratory head supplies inventory, issuance, return, clearance, schedule and disposal entries and receives the catalogue, alerts, dashboard metrics, the demand forecast and the exported end-term report.</p>
+        <p>Figure 2 presents SOMADA as one process at DFD Level 0. Its six external entities match the Use Case Diagram: Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff. The arrows are labelled with the noun exchanged, such as credentials, reservation, approval decision, laboratory update, operational records, dashboard, and report. The detailed functions and records behind these exchanges are decomposed in the Level 1 DFD.</p>
       </div>
     </section>
   );
@@ -1277,14 +1422,17 @@ function DfdSection({ onZoom }) {
 
       <section id="dfd-level1" className="doc-section sub">
         <SectionHeading level={4} title="Level 1" id="dfd-level1" />
-        <Figure src="assets/figures/fig-dfd-l1.png" caption="Figure 3: Level 1 Data Flow Diagram" onZoom={onZoom} />
+        <Figure src="assets/figures-v2/dfd-level1/dfd-level1-draft.png" caption="Figure 3: Level 1 Data Flow Diagram" onZoom={onZoom} editorHref="assets/figures-v2/dfd-level1/dfd-level1-source.html" />
         <div className="lede" style={{marginTop:18}}>
-          <p>Figure 3 presents the Level 1 data flow diagram, which decomposes the single process of the context diagram into ten processes and fifteen data stores. The Level 2 decomposition of each of the ten processes is presented in Figures 4 to 13.</p>
+          <p>Figure 3 decomposes SOMADA into eight primary processes and ten essential data stores. Process 1.0 is Log In and Manage Accounts: every external entity sends its credentials to this first process before accessing its authorised functions. The chatbot reads D8 Knowledge Base and writes each question-and-answer exchange to D9 Chat Interaction History. After an approved reservation reaches Process 6.0, D5 stores its distinct Borrowing Slip Record; the slip is displayed to the Class Representative or Faculty requester and becomes the source record for return processing. D6 Clearance Records remain separate because a clearance is created only when accountability arises from a borrowing slip, while D7 stores non-transaction Daily Task Records. D10 stores disposal transactions, while dashboards and end-term reports are generated outputs rather than databases. Each arrow is a separate, noun-labelled exchange selected from the Level 0 context diagram. Symbols marked with an asterisk are repeated representations of the same actors, not additional roles; they are placed beside operational processes only to keep every staff and requester flow independent and easy to trace. Exception and transaction detail is expanded in the Level 2 diagrams so the model remains clear in print and during panel presentation.</p>
         </div>
       </section>
 
       <div className="doc-section sub">
         <SectionHeading level={4} title="Level 2" id="dfd-level2-label" />
+        <div className="lede" style={{marginTop:18}}>
+          <p>Level 2 diagrams are ready for decomposition from the finalized eight-process Level 1 model. The previous ten-process draft has been retired because its numbering and boundaries no longer balanced with the current context and Level 1 diagrams. Each new Level 2 diagram will preserve its parent process inputs and outputs, including the stored and displayed Borrowing Slip and the distinct Daily Task Records flow.</p>
+        </div>
       </div>
       {DATA.dfdProcesses.map(p => (
         <section id={p.id} key={p.id} className="doc-section sub">
@@ -1426,13 +1574,20 @@ function App() {
         </div>
       </div>
 
-      <nav className="page-tabs">
-        <a className="page-tab" href="index.html">🏠 Home</a>
-        <a className="page-tab active" href="Docs.html">📄 Documentation</a>
-        <a className="page-tab" href="Current-System.html">🗂️ Current System</a>
-        <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">🧩 Use Case Diagram</a>
-        <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">🔀 DFD Level 0</a>
-        <a className="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">🔀 DFD Level 1</a>
+      <nav className="page-tabs somada-nav nav-fixed" aria-label="Primary navigation">
+        <a className="nav-brand" href="index.html" aria-label="SOMADA home">
+          <span className="nav-brand-mark">S</span>
+          <span className="nav-brand-copy"><strong>SOMADA</strong><small>Documentation Suite</small></span>
+        </a>
+        <div className="nav-links">
+          <a className="page-tab" href="index.html">Home</a>
+          <a className="page-tab active" href="Docs.html">Documentation</a>
+          <a className="page-tab" href="Current-System.html">Current System</a>
+          <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">Use Case</a>
+          <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">DFD Level 0</a>
+          <a className="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">DFD Level 1</a>
+        </div>
+        <a className="page-tab nav-download" href="assets/downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a>
       </nav>
 
       <div className="shell">

@@ -157,6 +157,7 @@
     #processes{break-before:page;}
   }
 </style>
+<link rel="stylesheet" href="assets/somada-navigation.css">
 </head>
 <body>
 <div id="root"></div>
@@ -491,13 +492,20 @@ function App(){
         </div>
       </div>
 
-      <nav className="page-tabs">
-        <a className="page-tab" href="index.html">🏠 Home</a>
-        <a className="page-tab" href="Docs.html">📄 Documentation</a>
-        <a className="page-tab active" href="Current-System.html">🗂️ Current System</a>
-        <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">🧩 Use Case Diagram</a>
-        <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">🔀 DFD Level 0</a>
-        <a className="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">🔀 DFD Level 1</a>
+      <nav className="page-tabs somada-nav nav-fixed" aria-label="Primary navigation">
+        <a className="nav-brand" href="index.html" aria-label="SOMADA home">
+          <span className="nav-brand-mark">S</span>
+          <span className="nav-brand-copy"><strong>SOMADA</strong><small>Documentation Suite</small></span>
+        </a>
+        <div className="nav-links">
+          <a className="page-tab" href="index.html">Home</a>
+          <a className="page-tab" href="Docs.html">Documentation</a>
+          <a className="page-tab active" href="Current-System.html">Current System</a>
+          <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">Use Case</a>
+          <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">DFD Level 0</a>
+          <a className="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">DFD Level 1</a>
+        </div>
+        <a className="page-tab nav-download" href="assets/downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a>
       </nav>
 
       <div className="shell">
