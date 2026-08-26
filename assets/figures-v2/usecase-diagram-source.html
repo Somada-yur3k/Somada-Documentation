@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOMADA Use Case Diagram</title>
 <style>
-  html,body{margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;}
-  #stage{display:inline-block;}
+  html,body{margin:0;padding:0;background:#fff;font-family:Arial,Helvetica,sans-serif;}
+  #stage{display:inline-block;line-height:0;}
   .page-tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid #e4e5ec;display:flex;align-items:center;gap:4px;padding:10px 16px;z-index:10;overflow-x:auto;font-family:'Segoe UI',Arial,sans-serif;}
   .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:#5b6270;white-space:nowrap;flex:0 0 auto;text-decoration:none;}
   .page-tab:hover{background:#eef0f4;color:#1c2029;}
   .page-tab.active{background:#e9f1fc;color:#1a4fb0;}
+  body.export-mode .page-tabs{display:none;}
 </style>
 <link rel="stylesheet" href="../somada-navigation.css">
 <link rel="stylesheet" href="diagram-interactions.css">
@@ -25,305 +28,296 @@
     <a class="page-tab" href="dfd-level0/dfd-level0-source.html">DFD Level 0</a>
     <a class="page-tab" href="dfd-level1/dfd-level1-source.html">DFD Level 1</a>
   </div>
-  <a class="page-tab nav-download" href="../downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a>
+  <a class="page-tab nav-download" href="../downloads/use-case-guide-layout-skill.zip" download="use-case-guide-layout-skill.zip">Download Use Case Skill</a>
 </nav>
 <div id="stage"></div>
 <script>
-/* ===================== DATA =====================
-   One central vertical column holds every base use case (the ones actors
-   actually associate with) — no more duplicated "Log In" split into loginL /
-   loginR; there's one Log In oval and all six actors connect straight to it.
-   Include/extend satellites are NOT inline in that column — each one sits just
-   to the left or right of its parent oval, connected by a short arrow, so the
-   include/exclude relationship always reads as "out of the shape, to a shape
-   beside it" rather than a big loop back into the same vertical line. */
+/*
+ * Three-column layout based on the project's Use Case Guide:
+ *   left   = requester and approver processes
+ *   center = included and extended supporting use cases
+ *   right  = laboratory management processes
+ * Actors remain outside the SOMADA system boundary. Dashboard-only entries
+ * are intentionally excluded so the diagram emphasizes business processes.
+ */
+if (new URLSearchParams(location.search).has('export')) {
+  document.body.classList.add('export-mode');
+}
+
 const ACTORS = [
-  { id:'classrep', label:['Class','Representative'], color:'#2f6fd6', side:'left' },
-  { id:'faculty',  label:['Faculty'],                 color:'#b5384a', side:'left' },
-  { id:'dean',     label:['Dean'],                    color:'#c23b8f', side:'left' },
-  { id:'headlab',  label:['Head','Laboratory'],        color:'#2e9e5b', side:'right' },
-  { id:'physics',  label:['Physics Laboratory','Staff'], color:'#d98a2b', side:'right' },
-  { id:'circuits', label:['Circuits Laboratory','Staff'], color:'#1f9c9c', side:'right' },
-];
-
-// The single column — order top to bottom.
-const BASE_UC = [
-  { id:'login',       label:['Log In'] },
-  { id:'viewdash',     label:['View My','Dashboard'] },
-  { id:'chooselab',    label:['Choose Laboratory'] },
-  { id:'viewsched',    label:['View Schedule &','Availability'] },
-  { id:'submitres',    label:['Submit Laboratory','Reservation'] },
-  { id:'cancelres',    label:['Cancel Laboratory','Reservation'] },
-  { id:'reschedres',   label:['Reschedule Laboratory','Reservation'] },
-  { id:'viewstatus',   label:['View Reservation','Status'] },
-  { id:'viewhistory',  label:['View Reservation','History'] },
-  { id:'clearstatus',  label:['View Clearance','Status'] },
-  { id:'approve',      label:['Approve / Reject','Reservation'] },
-  { id:'askq',         label:['Ask Laboratory','Question'] },
-  { id:'issueacct',    label:['Issue Class','Representative Account'] },
-  { id:'mgminv',       label:['Manage Equipment','Inventory'] },
-  { id:'issueeq',      label:['Issue Equipment'] },
-  { id:'procret',      label:['Process Return'] },
-  { id:'procclear',    label:['Process Clearance'] },
-  { id:'wastedisp',    label:['Log Waste','Disposal'] },
-  { id:'mgmlogs',      label:['Manage Logs, Schedule','& Daily Tasks'] },
-  { id:'dashboard',    label:['View Laboratory','Dashboard'] },
-  { id:'endterm',      label:['Generate End-Term','Report'] },
-];
-// Satellites: each sits beside its parent, on the given side.
-const SAT_UC = [
-  { id:'selectres',    label:['Select Resources /','Equipment'],   parent:'submitres', side:'left' },
-  { id:'checkitem',    label:['Check Item','Availability'],        parent:'askq', side:'left' },
-  { id:'checksched',   label:['Check Schedule','Availability'],    parent:'askq', side:'left' },
-  { id:'checkstatus',  label:['Check Reservation','Status'],       parent:'askq', side:'left' },
-  { id:'checkhours',   label:['Check Operating','Hours'],          parent:'askq', side:'left' },
-  { id:'addeq',        label:['Add Equipment'],                    parent:'mgminv', side:'right' },
-  { id:'updateeq',     label:['Update Equipment'],                 parent:'mgminv', side:'right' },
-  { id:'deleteeq',     label:['Delete Equipment'],                 parent:'mgminv', side:'right' },
-  { id:'searcheq',     label:['Search & Filter','Inventory'],      parent:'mgminv', side:'right' },
-  { id:'recordblc',    label:['Record Broken / Lost','/ Consumed Items'], parent:'procret', side:'right' },
-  { id:'markclear',    label:['Mark Clearance as','Cleared / Replaced'],  parent:'procclear', side:'right' },
-];
-SAT_UC.forEach(s => { s.sat = true; });
-const USECASES = BASE_UC.concat(SAT_UC);
-
-// Associations. Where several actors share one use case with the same noun, the noun is
-// stamped once near the oval instead of once per actor line (computed below via grouping).
-const ASSOC = [
-  {actor:'classrep', uc:'login', n:'Credentials'}, {actor:'faculty', uc:'login', n:'Credentials'}, {actor:'dean', uc:'login', n:'Credentials'},
-  {actor:'headlab', uc:'login', n:'Credentials'}, {actor:'physics', uc:'login', n:'Credentials'}, {actor:'circuits', uc:'login', n:'Credentials'},
-  {actor:'classrep', uc:'viewdash', n:'Dashboard'}, {actor:'faculty', uc:'viewdash', n:'Dashboard'},
-  {actor:'classrep', uc:'chooselab', n:'Laboratory'}, {actor:'faculty', uc:'chooselab', n:'Laboratory'}, {actor:'dean', uc:'chooselab', n:'Laboratory'},
-  {actor:'classrep', uc:'viewsched', n:'Schedule'}, {actor:'faculty', uc:'viewsched', n:'Schedule'}, {actor:'dean', uc:'viewsched', n:'Schedule'},
-  {actor:'classrep', uc:'submitres', n:'Reservation'}, {actor:'faculty', uc:'submitres', n:'Reservation'}, {actor:'dean', uc:'submitres', n:'Reservation'},
-  {actor:'classrep', uc:'viewstatus', n:'Status'}, {actor:'faculty', uc:'viewstatus', n:'Status'}, {actor:'dean', uc:'viewstatus', n:'Status'},
-  {actor:'classrep', uc:'cancelres', n:'Cancellation'}, {actor:'faculty', uc:'cancelres', n:'Cancellation'},
-  {actor:'classrep', uc:'reschedres', n:'Reschedule'}, {actor:'faculty', uc:'reschedres', n:'Reschedule'},
-  {actor:'classrep', uc:'viewhistory', n:'History'}, {actor:'faculty', uc:'viewhistory', n:'History'},
-  {actor:'classrep', uc:'clearstatus', n:'Clearance'}, {actor:'faculty', uc:'clearstatus', n:'Clearance'},
-  {actor:'faculty', uc:'approve', n:'Decision'}, {actor:'dean', uc:'approve', n:'Decision'},
-  {actor:'classrep', uc:'askq', n:'Question'}, {actor:'faculty', uc:'askq', n:'Question'},
-  {actor:'headlab', uc:'issueacct', n:'Account'},
-  {actor:'headlab', uc:'mgminv', n:'Inventory'}, {actor:'physics', uc:'mgminv', n:'Inventory'}, {actor:'circuits', uc:'mgminv', n:'Inventory'},
-  {actor:'headlab', uc:'issueeq', n:'Equipment'}, {actor:'physics', uc:'issueeq', n:'Equipment'}, {actor:'circuits', uc:'issueeq', n:'Equipment'},
-  {actor:'headlab', uc:'procret', n:'Return'}, {actor:'physics', uc:'procret', n:'Return'}, {actor:'circuits', uc:'procret', n:'Return'},
-  {actor:'headlab', uc:'procclear', n:'Clearance'}, {actor:'physics', uc:'procclear', n:'Clearance'}, {actor:'circuits', uc:'procclear', n:'Clearance'},
-  {actor:'headlab', uc:'wastedisp', n:'Disposal'}, {actor:'physics', uc:'wastedisp', n:'Disposal'}, {actor:'circuits', uc:'wastedisp', n:'Disposal'},
-  {actor:'headlab', uc:'mgmlogs', n:'Schedule / Activity'}, {actor:'physics', uc:'mgmlogs', n:'Schedule / Activity'}, {actor:'circuits', uc:'mgmlogs', n:'Schedule / Activity'},
-  {actor:'headlab', uc:'dashboard', n:'Metrics'}, {actor:'physics', uc:'dashboard', n:'Metrics'}, {actor:'circuits', uc:'dashboard', n:'Metrics'},
-  {actor:'headlab', uc:'endterm', n:'Report'},
-];
-const groupCount = {};
-ASSOC.forEach(a => { const k=a.uc+'|'+a.n; groupCount[k]=(groupCount[k]||0)+1; });
-
-const RELS = [
-  {from:'submitres', to:'selectres', type:'extend'},
-  {from:'askq', to:'checkitem', type:'extend'},
-  {from:'askq', to:'checksched', type:'extend'},
-  {from:'askq', to:'checkstatus', type:'extend'},
-  {from:'askq', to:'checkhours', type:'extend'},
-  {from:'mgminv', to:'addeq', type:'include'},
-  {from:'mgminv', to:'updateeq', type:'include'},
-  {from:'mgminv', to:'deleteeq', type:'include'},
-  {from:'mgminv', to:'searcheq', type:'extend'},
-  {from:'procret', to:'recordblc', type:'include'},
-  {from:'procclear', to:'recordblc', type:'include'},
-  {from:'procclear', to:'markclear', type:'include'},
-];
-
-/* ===================== LAYOUT ===================== */
-const BW = 260, BH = 82;   // base use-case ellipse
-const SW = 210, SH = 60;   // satellite ellipse
-const ROWH = 140;
-const ROWY0 = 160;
-const UCX = 1060;              // the single column's shared center X
-const SAT_GAP = 90;             // clear space between the column and a satellite column
-const SATX = { left: UCX - BW/2 - SAT_GAP - SW/2, right: UCX + BW/2 + SAT_GAP + SW/2 };
-const ACTORX = { left:110, right:2010 };
-const CANVAS_W = 2120;
-
-function ucBox(u){ return u.sat ? {w:SW,h:SH} : {w:BW,h:BH}; }
-const ucById = {}; const baseIndex = {};
-BASE_UC.forEach((u,i) => { u.cy = ROWY0 + i*ROWH; u.x = UCX; ucById[u.id] = u; baseIndex[u.id] = i; });
-
-// stack each parent's satellites, centered on the parent's own row
-const byParent = {};
-SAT_UC.forEach(s => { (byParent[s.parent]=byParent[s.parent]||[]).push(s); });
-Object.keys(byParent).forEach(pid => {
-  const list = byParent[pid];
-  const parent = ucById[pid];
-  const step = SH + 14;
-  const span = (list.length-1)*step;
-  list.forEach((s,i) => { s.cy = parent.cy - span/2 + i*step; s.x = SATX[s.side]; ucById[s.id] = s; });
-});
-
-const CANVAS_H = ROWY0 + BASE_UC.length*ROWH + 220;
-
-// actor Y = weighted center of everything it connects to, then nudged apart so
-// two actors on the same side never sit closer than a minimum gap.
-function assignActorY(list){
-  const raw = list.map(a=>{
-    const rows = ASSOC.filter(x=>x.actor===a.id).map(x=>ucById[x.uc].cy);
-    const avg = rows.reduce((s,v)=>s+v,0) / rows.length;
-    return { a, y: avg };
-  }).sort((p,q)=>p.y-q.y);
-  const MIN_GAP = 360;
-  for (let i=1;i<raw.length;i++){
-    if (raw[i].y - raw[i-1].y < MIN_GAP) raw[i].y = raw[i-1].y + MIN_GAP;
+  {
+    id:'classrep', label:['Class','Representative'], color:'#2454a6', side:'left', cy:430,
+    uses:['login','chooselab','viewsched','submitres','cancelres','reschedres','viewstatus','viewhistory','clearstatus','askq']
+  },
+  {
+    id:'dean', label:['Dean'], color:'#7b68a6', side:'left', cy:950,
+    uses:['login','chooselab','viewsched','submitres','viewstatus','approve']
+  },
+  {
+    id:'faculty', label:['Faculty'], color:'#e08a00', side:'left', cy:1470,
+    uses:['login','chooselab','viewsched','submitres','cancelres','reschedres','viewstatus','viewhistory','clearstatus','approve','askq']
+  },
+  {
+    id:'headlab', label:['Head','Laboratory'], color:'#2f7d1b', side:'right', cy:430,
+    uses:['login','issueacct','mgminv','issueeq','procret','procclear','wastedisp','mgmlogs','endterm']
+  },
+  {
+    id:'physics', label:['Physics Laboratory','Staff'], color:'#707782', side:'right', cy:950,
+    uses:['login','mgminv','issueeq','procret','procclear','wastedisp','mgmlogs']
+  },
+  {
+    id:'circuits', label:['Circuits Laboratory','Staff'], color:'#182ed4', side:'right', cy:1470,
+    uses:['login','mgminv','issueeq','procret','procclear','wastedisp','mgmlogs']
   }
-  const lo = 260, hi = CANVAS_H-260;
-  if (raw[raw.length-1].y > hi){ const off = raw[raw.length-1].y - hi; raw.forEach(r=>r.y-=off); }
-  if (raw[0].y < lo){ const off = lo - raw[0].y; raw.forEach(r=>r.y+=off); }
-  raw.forEach(r=>{ r.a.cy = r.y; });
-}
-assignActorY(ACTORS.filter(a=>a.side==='left'));
-assignActorY(ACTORS.filter(a=>a.side==='right'));
+];
 
-/* ===================== SVG BUILD ===================== */
+const BASE_UC = [
+  {id:'login',       x:1300, cy:205,  label:['Log In'], shared:true},
+
+  {id:'chooselab',   x:860,  cy:340,  label:['Choose Laboratory'], column:'left'},
+  {id:'viewsched',   x:860,  cy:490,  label:['View Schedule &','Availability'], column:'left'},
+  {id:'submitres',   x:860,  cy:640,  label:['Submit Laboratory','Reservation'], column:'left'},
+  {id:'cancelres',   x:860,  cy:790,  label:['Cancel Laboratory','Reservation'], column:'left'},
+  {id:'reschedres',  x:860,  cy:940,  label:['Reschedule Laboratory','Reservation'], column:'left'},
+  {id:'viewstatus',  x:860,  cy:1090, label:['View Reservation','Status'], column:'left'},
+  {id:'viewhistory', x:860,  cy:1240, label:['View Reservation','History'], column:'left'},
+  {id:'clearstatus', x:860,  cy:1390, label:['View Clearance','Status'], column:'left'},
+  {id:'approve',     x:860,  cy:1540, label:['Approve / Reject','Reservation'], column:'left'},
+  {id:'askq',        x:860,  cy:1690, label:['Ask Laboratory','Question'], column:'left'},
+
+  {id:'issueacct',   x:1740, cy:390,  label:['Issue Class','Representative Account'], column:'right'},
+  {id:'mgminv',      x:1740, cy:570,  label:['Manage Equipment','Inventory'], column:'right'},
+  {id:'issueeq',     x:1740, cy:750,  label:['Issue Equipment'], column:'right'},
+  {id:'procret',     x:1740, cy:930,  label:['Process Return'], column:'right'},
+  {id:'procclear',   x:1740, cy:1110, label:['Process Clearance'], column:'right'},
+  {id:'wastedisp',   x:1740, cy:1290, label:['Log Waste','Disposal'], column:'right'},
+  {id:'mgmlogs',     x:1740, cy:1470, label:['Manage Logs, Schedule','& Daily Tasks'], column:'right'},
+  {id:'endterm',     x:1740, cy:1650, label:['Generate End-Term','Report'], column:'right'}
+];
+
+const SUPPORT_UC = [
+  {id:'addeq',       x:1300, cy:315,  label:['Add Equipment']},
+  {id:'updateeq',    x:1300, cy:405,  label:['Update Equipment']},
+  {id:'deleteeq',    x:1300, cy:495,  label:['Remove Equipment']},
+  {id:'searcheq',    x:1300, cy:585,  label:['Search & Filter','Inventory']},
+  {id:'selectres',   x:1300, cy:685,  label:['Select Resources /','Equipment']},
+  {id:'recordblc',   x:1300, cy:900,  label:['Record Broken / Lost','/ Consumed Items']},
+  {id:'markclear',   x:1300, cy:1110, label:['Mark Clearance as','Cleared / Replaced']},
+  {id:'checkitem',   x:1300, cy:1325, label:['Check Item','Availability']},
+  {id:'checksched',  x:1300, cy:1420, label:['Check Schedule','Availability']},
+  {id:'checkstatus', x:1300, cy:1515, label:['Check Reservation','Status']},
+  {id:'checkhours',  x:1300, cy:1610, label:['Check Operating','Hours']}
+];
+
+const RELATIONSHIPS = [
+  {from:'mgminv',      to:'addeq',       type:'include'},
+  {from:'mgminv',      to:'updateeq',    type:'include'},
+  {from:'mgminv',      to:'deleteeq',    type:'include'},
+  {from:'searcheq',    to:'mgminv',      type:'extend'},
+  {from:'selectres',   to:'submitres',   type:'extend'},
+  {from:'procret',     to:'recordblc',   type:'include'},
+  {from:'procclear',   to:'recordblc',   type:'include'},
+  {from:'procclear',   to:'markclear',   type:'include'},
+  {from:'checkitem',   to:'askq',        type:'extend'},
+  {from:'checksched',  to:'askq',        type:'extend'},
+  {from:'checkstatus', to:'askq',        type:'extend'},
+  {from:'checkhours',  to:'askq',        type:'extend'}
+];
+
+const CANVAS_W = 2600;
+const CANVAS_H = 1900;
+const BOUNDARY = {x:630, y:105, w:1340, h:1680};
+const BASE_SIZE = {rx:150, ry:42};
+const LOGIN_SIZE = {rx:170, ry:48};
+const SUPPORT_SIZE = {rx:130, ry:31};
+const ACTOR_X = {left:170, right:2430};
+
 const NS = 'http://www.w3.org/2000/svg';
-function el(tag, attrs, children){
-  const e = document.createElementNS(NS, tag);
-  for (const k in attrs) e.setAttribute(k, attrs[k]);
-  (children||[]).forEach(c => e.appendChild(c));
-  return e;
+const byId = {};
+BASE_UC.concat(SUPPORT_UC).forEach(item => { byId[item.id] = item; });
+
+function el(tag, attrs, children) {
+  const node = document.createElementNS(NS, tag);
+  Object.entries(attrs || {}).forEach(([key,value]) => node.setAttribute(key, value));
+  (children || []).forEach(child => node.appendChild(child));
+  return node;
 }
-function textEl(x, y, lines, attrs){
-  const t = el('text', Object.assign({x, 'text-anchor':'middle'}, attrs));
-  const lh = attrs.lineHeight || 15;
-  const startDy = -((lines.length-1)*lh)/2;
-  lines.forEach((line,i) => {
-    const ts = el('tspan', { x, y: y + startDy + i*lh });
-    ts.textContent = line;
-    t.appendChild(ts);
+
+function textEl(x, y, lines, attrs) {
+  const options = Object.assign({x, y, 'text-anchor':'middle'}, attrs || {});
+  const lineHeight = Number(options.lineHeight || 19);
+  delete options.lineHeight;
+  const text = el('text', options);
+  const firstY = y - ((lines.length - 1) * lineHeight) / 2;
+  lines.forEach((line,index) => {
+    const span = el('tspan', {x, y:firstY + index * lineHeight});
+    span.textContent = line;
+    text.appendChild(span);
   });
-  return t;
+  return text;
 }
-function labelPill(layer, x, y, text, color, bold, flowId){
-  const w = 10 + text.length*5.7;
-  const group = el('g', flowId ? {class:'diagram-flow-label','data-flow-id':flowId} : {});
-  group.appendChild(el('rect', { x:x-w/2, y:y-8.5, width:w, height:17, rx:5, fill:'#ffffff', stroke:'#dfe3ea', 'stroke-width':.7 }));
-  group.appendChild(textEl(x, y+3, [text], { 'font-size':10.5, fill:'#172033', 'font-weight': bold?'700':'600', 'font-family':'Arial,Helvetica,sans-serif' }));
+
+function useCaseSize(useCase) {
+  if (useCase.shared) return LOGIN_SIZE;
+  return SUPPORT_UC.includes(useCase) ? SUPPORT_SIZE : BASE_SIZE;
+}
+
+function ellipseBoundaryPoint(useCase, externalPoint) {
+  const size = useCaseSize(useCase);
+  const dx = externalPoint.x - useCase.x;
+  const dy = externalPoint.y - useCase.cy;
+  const scale = 1 / Math.sqrt((dx * dx) / (size.rx * size.rx) + (dy * dy) / (size.ry * size.ry));
+  return {x:useCase.x + dx * scale, y:useCase.cy + dy * scale};
+}
+
+function labelPill(layer, x, y, label, flowId) {
+  const width = Math.max(76, 22 + label.length * 7.2);
+  const group = el('g', {class:'diagram-flow-label', 'data-flow-id':flowId});
+  group.appendChild(el('rect', {
+    x:x-width/2, y:y-14, width, height:28, rx:14,
+    fill:'#ffffff', stroke:'#98a2b3', 'stroke-width':1
+  }));
+  group.appendChild(textEl(x, y+4, [`«${label}»`], {
+    'font-size':14, fill:'#344054', 'font-weight':'700',
+    'font-family':'Arial,Helvetica,sans-serif'
+  }));
   layer.appendChild(group);
 }
 
-const svg = el('svg', { xmlns:NS, width:CANVAS_W, height:CANVAS_H, viewBox:`0 0 ${CANVAS_W} ${CANVAS_H}` });
+const svg = el('svg', {
+  xmlns:NS, width:CANVAS_W, height:CANVAS_H,
+  viewBox:`0 0 ${CANVAS_W} ${CANVAS_H}`,
+  role:'img', 'aria-labelledby':'diagram-title diagram-description'
+});
+
+const title = el('title', {id:'diagram-title'});
+title.textContent = 'SOMADA Use Case Diagram';
+svg.appendChild(title);
+const description = el('desc', {id:'diagram-description'});
+description.textContent = 'Six large actors surround a system boundary. Request and approval use cases form the left column, include and extend use cases form the center column, and laboratory management use cases form the right column.';
+svg.appendChild(description);
 
 const defs = el('defs');
-function arrowMarker(id, color){
-  const m = el('marker', { id, markerWidth:9, markerHeight:9, refX:7, refY:3.5, orient:'auto', markerUnits:'userSpaceOnUse' });
-  m.appendChild(el('path', { d:'M0,0 L8,3.5 L0,7 Z', fill:color }));
-  return m;
-}
-defs.appendChild(arrowMarker('arrowGray', '#8a93a3'));
+const openArrow = el('marker', {
+  id:'openArrow', markerWidth:12, markerHeight:12, refX:10, refY:6,
+  orient:'auto', markerUnits:'userSpaceOnUse'
+});
+openArrow.appendChild(el('path', {
+  d:'M 1 1 L 10 6 L 1 11', fill:'#ffffff', stroke:'#667085',
+  'stroke-width':1.5, 'stroke-linejoin':'round'
+}));
+defs.appendChild(openArrow);
 svg.appendChild(defs);
 
-svg.appendChild(el('rect', { x:0, y:0, width:CANVAS_W, height:CANVAS_H, fill:'#ffffff' }));
+svg.appendChild(el('rect', {x:0, y:0, width:CANVAS_W, height:CANVAS_H, fill:'#f8fafc'}));
+svg.appendChild(textEl(CANVAS_W/2, 48, ['SOMADA Use Case Diagram'], {
+  'font-size':30, fill:'#101828', 'font-weight':'700',
+  'font-family':'Georgia,Times New Roman,serif'
+}));
+svg.appendChild(el('rect', {
+  x:BOUNDARY.x, y:BOUNDARY.y, width:BOUNDARY.w, height:BOUNDARY.h,
+  fill:'#e9eef5', stroke:'#9fb0c5', 'stroke-width':2
+}));
+svg.appendChild(textEl(BOUNDARY.x+18, BOUNDARY.y+26, ['SOMADA – Laboratory Reservation and Management System'], {
+  'font-size':14, fill:'#344054', 'font-weight':'700', 'text-anchor':'start',
+  'font-family':'Arial,Helvetica,sans-serif'
+}));
 
-// boundary box — wraps the column plus both satellite columns
-const boxX = SATX.left - SW/2 - 30, boxW = (SATX.right + SW/2 + 30) - boxX, boxY = 66, boxH = CANVAS_H - 200;
-svg.appendChild(el('rect', { x:boxX, y:boxY, width:boxW, height:boxH, rx:6, fill:'#eef3fa', stroke:'#aeb9c9', 'stroke-width':1.4 }));
-svg.appendChild(textEl(boxX+14, boxY+22, ['SOMADA – Reservation & Management System'], { 'font-size':13, fill:'#5b6577', 'font-weight':'600', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
-svg.appendChild(textEl(CANVAS_W/2, 36, ['SOMADA – System Boundary'], { 'font-size':23, fill:'#1b2029', 'font-weight':'700', 'font-family':'Georgia,serif' }));
-
-// ---- association lines (actor -> base use case): direct, straight lines
-// matching the supplied use-case diagram guide. ----
-const assocLayer = el('g');
-svg.appendChild(assocLayer);
-ASSOC.forEach((a,index) => {
-  const actor = actorAt(a.actor);
-  const uc = ucById[a.uc];
-  const uy = uc.cy;
-  const box = ucBox(uc);
-  const ax = ACTORX[actor.side];
-  const ay = actor.cy;
-  const targetX = actor.side === 'left' ? UCX - box.w/2 : UCX + box.w/2;
-  const startX = actor.side === 'left' ? ax + 26 : ax - 26;
-  const path = `M ${startX} ${ay} L ${targetX} ${uy}`;
-  const flowId = `usecase-association-${index}`;
-  assocLayer.appendChild(el('path', { class:'diagram-connector', 'data-flow-id':flowId, d:path, fill:'none', stroke:actor.color, 'stroke-width':1.6, opacity:0.8 }));
-  const shared = groupCount[a.uc+'|'+a.n] > 1;
-  if (!shared) {
-    const lt = 0.86;
-    const lx = startX + (targetX-startX)*lt;
-    const ly = ay + (uy-ay)*lt;
-    labelPill(assocLayer, lx, ly, a.n, actor.color, false, flowId);
-  }
-});
-function actorAt(id){ return ACTORS.find(a=>a.id===id); }
-const seenGroup = {};
-ASSOC.forEach(a => {
-  const key = a.uc + '|' + a.n;
-  if (groupCount[key] <= 1 || seenGroup[key]) return;
-  seenGroup[key] = true;
-  const uc = ucById[a.uc]; const uy = uc.cy; const box = ucBox(uc);
-  const actor = actorAt(a.actor);
-  const lx = actor.side === 'left' ? UCX - box.w/2 - 34 : UCX + box.w/2 + 34;
-  labelPill(assocLayer, lx, uy, a.n, '#4a5164', true);
+// Solid UML associations: actors stay outside the boundary and connect only
+// to the base use cases in which they directly participate.
+const associationLayer = el('g', {'aria-label':'Actor associations'});
+svg.appendChild(associationLayer);
+ACTORS.forEach(actor => {
+  const hand = {
+    x:ACTOR_X[actor.side] + (actor.side === 'left' ? 58 : -58),
+    y:actor.cy - 17
+  };
+  actor.uses.forEach(useCaseId => {
+    const useCase = byId[useCaseId];
+    const endpoint = ellipseBoundaryPoint(useCase, hand);
+    const flowId = `association-${actor.id}-${useCaseId}`;
+    associationLayer.appendChild(el('path', {
+      class:'diagram-connector', 'data-flow-id':flowId,
+      d:`M ${hand.x} ${hand.y} L ${endpoint.x.toFixed(1)} ${endpoint.y.toFixed(1)}`,
+      fill:'none', stroke:'#667085', 'stroke-width':1.45, opacity:.86
+    }));
+  });
 });
 
-// ---- include/extend relationship arrows: direct straight lines between each
-// parent and satellite, matching the supplied use-case diagram guide. ----
-const relLayer = el('g');
-svg.appendChild(relLayer);
-RELS.forEach((r,index) => {
-  const from = ucById[r.from], to = ucById[r.to];
-  const side = to.side; // which side of the parent the satellite sits on
-  const fromEdgeX = side==='left' ? from.x - ucBox(from).w/2 : from.x + ucBox(from).w/2;
-  const toEdgeX = side==='left' ? to.x + ucBox(to).w/2 : to.x - ucBox(to).w/2;
-  const srcU = r.type==='include' ? from : to;
-  const dstU = r.type==='include' ? to : from;
-  const sx = srcU===from ? fromEdgeX : toEdgeX, sy = srcU.cy;
-  const dx = dstU===from ? fromEdgeX : toEdgeX, dy = dstU.cy;
-  const midx = (sx+dx)/2;
-  const path = `M ${sx} ${sy} L ${dx} ${dy}`;
-  const flowId = `usecase-relationship-${index}`;
-  relLayer.appendChild(el('path', { class:'diagram-connector', 'data-flow-id':flowId, d:path, fill:'none', stroke:'#8a93a3', 'stroke-width':1.4, 'stroke-dasharray':'5,4', 'marker-end':'url(#arrowGray)' }));
-  const lx = midx, ly = (sy+dy)/2;
-  const tag = `«${r.type}»`;
-  const tagW = 16 + tag.length*6.4;
-  const tagGroup = el('g',{class:'diagram-flow-label','data-flow-id':flowId});
-  tagGroup.appendChild(el('rect', { x:lx-tagW/2, y:ly-9.5, width:tagW, height:18, rx:9, fill:'#4a5164' }));
-  tagGroup.appendChild(textEl(lx, ly+3.5, [tag], { 'font-size':10.5, fill:'#ffffff', 'font-weight':'600', 'font-family':'Arial,Helvetica,sans-serif' }));
-  relLayer.appendChild(tagGroup);
+// Dashed UML dependencies. The data records the semantic direction directly:
+// include points to the required use case; extend points to the base use case.
+const relationshipLayer = el('g', {'aria-label':'Include and extend relationships'});
+svg.appendChild(relationshipLayer);
+RELATIONSHIPS.forEach((relationship,index) => {
+  const source = byId[relationship.from];
+  const target = byId[relationship.to];
+  const sourceEdge = ellipseBoundaryPoint(source, {x:target.x, y:target.cy});
+  const targetEdge = ellipseBoundaryPoint(target, {x:source.x, y:source.cy});
+  const flowId = `relationship-${index}-${relationship.type}`;
+  relationshipLayer.appendChild(el('path', {
+    class:'diagram-connector', 'data-flow-id':flowId,
+    d:`M ${sourceEdge.x.toFixed(1)} ${sourceEdge.y.toFixed(1)} L ${targetEdge.x.toFixed(1)} ${targetEdge.y.toFixed(1)}`,
+    fill:'none', stroke:'#667085', 'stroke-width':1.6,
+    'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'
+  }));
+  const lx = sourceEdge.x + (targetEdge.x-sourceEdge.x)*.5;
+  const ly = sourceEdge.y + (targetEdge.y-sourceEdge.y)*.5;
+  labelPill(relationshipLayer, lx, ly, relationship.type, flowId);
 });
 
-// ---- use case ovals ----
-const ucLayer = el('g');
-svg.appendChild(ucLayer);
-USECASES.forEach(u => {
-  const box = ucBox(u);
-  ucLayer.appendChild(el('ellipse', { cx:u.x, cy:u.cy, rx:box.w/2, ry:box.h/2, fill: u.sat ? '#e3edf9' : '#cfe4f7', stroke:'#2b3a55', 'stroke-width':1.3 }));
-  ucLayer.appendChild(textEl(u.x, u.cy, u.label, { 'font-size': u.sat ? 12 : 13, fill:'#1b2029', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:15 }));
+const useCaseLayer = el('g', {'aria-label':'Use cases'});
+svg.appendChild(useCaseLayer);
+BASE_UC.concat(SUPPORT_UC).forEach(useCase => {
+  const size = useCaseSize(useCase);
+  const support = SUPPORT_UC.includes(useCase);
+  const group = el('g', {id:`usecase-${useCase.id}`});
+  group.appendChild(el('ellipse', {
+    cx:useCase.x, cy:useCase.cy, rx:size.rx, ry:size.ry,
+    fill:support ? '#dcecf8' : '#cde7f8',
+    stroke:'#1ea7e8', 'stroke-width':2
+  }));
+  group.appendChild(textEl(useCase.x, useCase.cy+5, useCase.label, {
+    'font-size':support ? 14 : 16,
+    fill:'#101828', 'font-weight':support ? '500' : '600',
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:support ? 17 : 19
+  }));
+  useCaseLayer.appendChild(group);
 });
 
-// ---- actors ----
-function drawActor(a){
-  const x = ACTORX[a.side];
-  const y = a.cy;
-  const g = el('g');
-  const c = a.color;
-  g.appendChild(el('circle', { cx:x, cy:y-34, r:11, fill:'none', stroke:c, 'stroke-width':2.4 }));
-  g.appendChild(el('line', { x1:x, y1:y-23, x2:x, y2:y+8, stroke:c, 'stroke-width':2.4 }));
-  g.appendChild(el('line', { x1:x-16, y1:y-12, x2:x+16, y2:y-12, stroke:c, 'stroke-width':2.4 }));
-  g.appendChild(el('line', { x1:x, y1:y+8, x2:x-15, y2:y+30, stroke:c, 'stroke-width':2.4 }));
-  g.appendChild(el('line', { x1:x, y1:y+8, x2:x+15, y2:y+30, stroke:c, 'stroke-width':2.4 }));
-  g.appendChild(textEl(x, y+50, a.label, { 'font-size':13, fill:c, 'font-weight':'700', 'font-family':'Arial,Helvetica,sans-serif', lineHeight:15 }));
-  return g;
+function drawActor(actor) {
+  const x = ACTOR_X[actor.side];
+  const y = actor.cy;
+  const color = actor.color;
+  const group = el('g', {id:`actor-${actor.id}`});
+  group.appendChild(el('circle', {cx:x, cy:y-76, r:24, fill:'none', stroke:color, 'stroke-width':7}));
+  group.appendChild(el('line', {x1:x, y1:y-52, x2:x, y2:y+22, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
+  group.appendChild(el('line', {x1:x-58, y1:y-18, x2:x+58, y2:y-18, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
+  group.appendChild(el('line', {x1:x, y1:y+22, x2:x-43, y2:y+86, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
+  group.appendChild(el('line', {x1:x, y1:y+22, x2:x+43, y2:y+86, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
+  group.appendChild(textEl(x, y+126, actor.label, {
+    'font-size':19, fill:'#101828', 'font-weight':'700',
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:22
+  }));
+  return group;
 }
-const actorLayer = el('g');
-ACTORS.forEach(a => actorLayer.appendChild(drawActor(a)));
+
+const actorLayer = el('g', {'aria-label':'Actors'});
+ACTORS.forEach(actor => actorLayer.appendChild(drawActor(actor)));
 svg.appendChild(actorLayer);
 
-// ---- legend ----
-const legend = el('g', { transform:`translate(${boxX}, ${CANVAS_H-70})` });
-legend.appendChild(el('line', { x1:0, y1:0, x2:28, y2:0, stroke:'#5b6577', 'stroke-width':1.6 }));
-legend.appendChild(textEl(38, 4, ['Direct association, labelled with the object exchanged'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
-legend.appendChild(el('line', { x1:520, y1:0, x2:548, y2:0, stroke:'#8a93a3', 'stroke-width':1.4, 'stroke-dasharray':'5,4', 'marker-end':'url(#arrowGray)' }));
-legend.appendChild(textEl(558, 4, ['«include» always runs  ·  «extend» runs conditionally'], { 'font-size':11.5, fill:'#5b6577', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif' }));
+const legend = el('g', {transform:'translate(760 1840)', 'aria-label':'Relationship legend'});
+legend.appendChild(el('line', {x1:0, y1:0, x2:55, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
+legend.appendChild(textEl(72, 5, ['«include» required supporting behavior'], {
+  'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
+}));
+legend.appendChild(el('line', {x1:460, y1:0, x2:515, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
+legend.appendChild(textEl(532, 5, ['«extend» conditional supporting behavior'], {
+  'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
+}));
 svg.appendChild(legend);
 
 document.getElementById('stage').appendChild(svg);
-window.SOMADADiagramEditor.init(svg,{storageKey:'usecase-diagram'});
+window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-diagram-three-column-v1'});
 window.__done = true;
 </script>
 </body>

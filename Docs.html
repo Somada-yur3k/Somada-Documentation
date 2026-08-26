@@ -1323,7 +1323,7 @@ function UseCaseDiagramsSection({ onZoom }) {
       <SectionHeading level={3} kicker="3.1.3" title="Use Case Diagrams" id="usecase-diagrams" />
       <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 1: Use Case Diagram" onZoom={onZoom} editorHref="assets/figures-v2/usecase-diagram-source.html" />
       <div className="lede" style={{marginTop:18}}>
-        <p>Figure 1 presents the use case diagram under the revised system model. It shows six actors — Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff — replacing the previous single administrative account, and the twenty-one base use cases in which they participate, together with the further use cases reached from those base cases through include and extend relationships. Every event listed in Table 2 is raised by one of these six actors; the system performs no function on a schedule of its own, and artificial intelligence is scoped to Ask Laboratory Question only — the forecasting and automated dashboard-insight functions of the previous model have been cut from scope.</p>
+        <p>Figure 1 presents the use case diagram under the revised system model. Six large actors — Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff — frame the system boundary. Inside it, requester and approval processes occupy the left column, supporting include and extend use cases form the center column, and laboratory operations occupy the right column. The figure emphasizes nineteen business processes and therefore does not draw View My Dashboard or View Laboratory Dashboard as standalone use cases; those presentation behaviors remain documented in their full descriptions. Every event listed in Table 2 is raised by one of the six actors, and artificial intelligence remains scoped to Ask Laboratory Question only.</p>
       </div>
     </section>
   );
@@ -1379,7 +1379,7 @@ function UseCaseFullSection() {
     <section id="usecase-full" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.4" title="Use Case Full Description" id="usecase-full" />
       <div className="lede">
-        <p>Tables 3 to 23 summarize the twenty-one base use cases shown in Figure 1. Each table records the essential actors, conditions, activities, and exceptions; included and extended use cases appear under their related base use case.</p>
+        <p>Tables 3 to 23 record the complete functional descriptions behind the system model. Figure 1 displays the nineteen process-focused base use cases; the two dashboard presentation behaviors remain in these tables for requirements completeness but are intentionally omitted as standalone diagram nodes. Included and extended use cases appear under their related base use case.</p>
       </div>
       {DATA.useCases.map(uc => <UseCaseSection key={uc.id} uc={uc} />)}
     </section>
