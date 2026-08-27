@@ -36,8 +36,10 @@ Build a panel-readable UML use-case diagram that closely follows the supplied gu
 
 - Keep actor-to-use-case associations on the actor's own side whenever possible.
 - Connect each actor only to the use cases in which that role directly participates; do not create a dense all-to-all web.
-- Give each association its own visible endpoints. Avoid shared trunks and minimize crossings through spacing and actor alignment.
-- Stack center-column supporting use cases vertically. Route their short dashed relationships horizontally or diagonally to the related main ellipse.
+- Attach every connector to a use-case ellipse through a horizontal side port only. The endpoint must be either the exact left midpoint `(cx - rx, cy)` or exact right midpoint `(cx + rx, cy)`; never attach a line to the top, bottom, or another angled point on the ellipse.
+- Route associations from left-side actors into the left midpoint of each related use case and associations from right-side actors into the right midpoint. Multiple associations may meet at that side port, but their paths must remain individually traceable outside the ellipse.
+- Stack center-column supporting use cases vertically. Route each dashed dependency between the nearest horizontal side ports of its source and target so the arrowhead also lands only on a left or right midpoint.
+- Avoid shared trunks and minimize crossings through spacing and actor alignment.
 - Place `<<include>>` or `<<extend>>` beside its own dashed dependency, never floating between multiple lines.
 - Increase the canvas or boundary height before shrinking actors, ellipses, or text to unreadable sizes.
 
@@ -57,6 +59,6 @@ Before completion:
 3. Confirm all actors are large, uniform, outside the system boundary, and clearly labelled.
 4. Confirm `View Dashboard` and similar navigation-only items are absent unless the user explicitly restores them.
 5. Verify every `<<include>>` and `<<extend>>` arrow points in the correct UML direction.
-6. Trace every association and dependency; reject ambiguous endpoints, label collisions, unnecessary crossings, and lines passing through unrelated ellipses or actor labels.
+6. Trace every association and dependency; confirm every ellipse endpoint is exactly on its left or right midpoint, then reject ambiguous paths, label collisions, unnecessary crossings, and lines passing through unrelated ellipses or actor labels.
 7. Render the complete diagram at normal scale and at high zoom. Check both desktop display and print/export output.
 8. Keep the result consistent with the guide's composition without copying placeholder labels or sacrificing the system's actual meaning.

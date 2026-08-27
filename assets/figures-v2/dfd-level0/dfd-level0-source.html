@@ -9,6 +9,7 @@
   .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:#5b6270;white-space:nowrap;flex:0 0 auto;text-decoration:none;}
   .page-tab:hover{background:#eef0f4;color:#1c2029;}
   .page-tab.active{background:#e7f5ed;color:#1c7a45;}
+  body.export-mode .page-tabs{display:none;}
 </style>
 <link rel="stylesheet" href="../../somada-navigation.css">
 <link rel="stylesheet" href="../diagram-interactions.css">
@@ -29,6 +30,9 @@
 </nav>
 <div id="stage"></div>
 <script>
+if (new URLSearchParams(location.search).has('export')) {
+  document.body.classList.add('export-mode');
+}
 /* Context Diagram / DFD Level 0
    The six external roles deliberately match the Use Case Diagram. Level 0
    groups detailed activities into the nouns that cross the system boundary;
@@ -48,13 +52,13 @@ const ENTITIES=[
 ];
 const FLOWS=[
   {entity:'classrep',dir:'in',label:'Credentials'},
-  {entity:'classrep',dir:'in',label:'Reservation'},
+  {entity:'classrep',dir:'in',label:'Out-of-Schedule Request'},
   {entity:'classrep',dir:'in',label:'Inquiry'},
   {entity:'classrep',dir:'out',label:'Reservation Status'},
   {entity:'classrep',dir:'out',label:'Answer'},
   {entity:'classrep',dir:'out',label:'Borrowing Slip'},
   {entity:'faculty',dir:'in',label:'Credentials'},
-  {entity:'faculty',dir:'in',label:'Reservation'},
+  {entity:'faculty',dir:'in',label:'Laboratory Activity Request'},
   {entity:'faculty',dir:'in',label:'Approval Decision'},
   {entity:'faculty',dir:'in',label:'Inquiry'},
   {entity:'faculty',dir:'out',label:'Account Details'},
@@ -62,7 +66,6 @@ const FLOWS=[
   {entity:'faculty',dir:'out',label:'Answer'},
   {entity:'faculty',dir:'out',label:'Borrowing Slip'},
   {entity:'dean',dir:'in',label:'Credentials'},
-  {entity:'dean',dir:'in',label:'Out-of-Schedule Reservation'},
   {entity:'dean',dir:'in',label:'Approval Decision'},
   {entity:'dean',dir:'out',label:'Pending Request / Status'},
   {entity:'headlab',dir:'in',label:'Credentials'},

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><style>
-html,body{margin:0;background:#fff;font-family:Arial,Helvetica,sans-serif}#stage{display:inline-block}.page-tabs{position:sticky;top:0;z-index:2;display:flex;gap:4px;padding:10px 16px;background:#fff;border-bottom:1px solid #e4e5ec;font-family:'Segoe UI',Arial,sans-serif}.page-tab{padding:6px 11px;border-radius:8px;color:#5b6270;font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap}.page-tab:hover{background:#eef0f4}.page-tab.active{background:#eaf0fd;color:#2245a8}
+html,body{margin:0;background:#fff;font-family:Arial,Helvetica,sans-serif}#stage{display:inline-block}.page-tabs{position:sticky;top:0;z-index:2;display:flex;gap:4px;padding:10px 16px;background:#fff;border-bottom:1px solid #e4e5ec;font-family:'Segoe UI',Arial,sans-serif}.page-tab{padding:6px 11px;border-radius:8px;color:#5b6270;font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap}.page-tab:hover{background:#eef0f4}.page-tab.active{background:#eaf0fd;color:#2245a8}body.export-mode .page-tabs{display:none}
 </style><link rel="stylesheet" href="../../somada-navigation.css"><link rel="stylesheet" href="../diagram-interactions.css"><script src="../diagram-interactions.js"></script></head><body>
 <nav class="page-tabs somada-nav" aria-label="Primary navigation"><a class="nav-brand" href="../../../index.html" aria-label="SOMADA home"><span class="nav-brand-mark">S</span><span class="nav-brand-copy"><strong>SOMADA</strong><small>Documentation Suite</small></span></a><div class="nav-links"><a class="page-tab" href="../../../index.html">Home</a><a class="page-tab" href="../../../Docs.html">Documentation</a><a class="page-tab" href="../../../Current-System.html">Current System</a><a class="page-tab" href="../usecase-diagram-source.html">Use Case</a><a class="page-tab" href="../dfd-level0/dfd-level0-source.html">DFD Level 0</a><a class="page-tab active" href="dfd-level1-source.html">DFD Level 1</a></div><a class="page-tab nav-download" href="../../downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a></nav>
 <div id="stage"></div>
 <script>
+if (new URLSearchParams(location.search).has('export')) {
+  document.body.classList.add('export-mode');
+}
 /* DFD Level 1: strict 3-column layout based on the supplied guide.
    Left = external entities, middle = processes, right = data stores.
    Each visible external arrow is an individual, essential Level 0 noun flow. */
@@ -16,7 +19,6 @@ const D={x:1420,w:360,h:62};
 const entities=[
  {id:'classrep',name:['Class Representative'],y:220,c:'#2563eb'},
  {id:'facultyP2',name:['* Faculty'],y:350,c:'#c24152'},
- {id:'deanP2',name:['* Dean'],y:480,c:'#be3b91'},
  {id:'classrepApproval',name:['* Class Representative'],y:640,c:'#2563eb'},
  {id:'faculty',name:['Faculty'],y:770,c:'#c24152'},
  {id:'dean',name:['Dean'],y:900,c:'#be3b91'},
@@ -76,9 +78,8 @@ function leftOutputFlow(eid,pid,labelText,targetOffset,processOffset,laneX,label
 loginFlow('classrep',-40,0);loginFlow('faculty',-24,1);loginFlow('dean',-8,2);loginFlow('physics',8,3);loginFlow('circuits',24,4);loginFlow('headlab',34,5,'Credentials',-18);loginFlow('headlab',50,6,'Account Details',18);
 /* Separate, noun-labelled business flows; detailed exceptions are expanded at Level 2. */
 /* Repeated actors keep each reservation, approval, and inquiry route inside its local process corridor. */
-localEntityProcess('classrep','p2','Reservation','in',0,-30,620,548,268);
-localEntityProcess('facultyP2','p2','Reservation','in',-15,0,650,545,385);
-localEntityProcess('deanP2','p2','Out-of-Schedule Reservation','in',0,30,680,570,518);
+localEntityProcess('classrep','p2','Out-of-Schedule Request','in',0,-30,620,548,268);
+localEntityProcess('facultyP2','p2','Laboratory Activity Request','in',-15,0,650,545,385);
 leftOutputFlow('faculty','p1','Account Details',-32,30,205,650);
 localEntityProcess('classrepApproval','p3','Reservation Status','out',-20,-35,620,548,665);
 localEntityProcess('faculty','p3','Approval Decision','in',-22,-5,650,555,797);

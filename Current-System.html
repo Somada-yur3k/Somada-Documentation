@@ -165,9 +165,9 @@
 <script>
   const DATA = {
     technical: {
-      intro: `The current system used by the Physics and Circuits Laboratory at NU Fairview is entirely manual and paper-based, relying on face-to-face meetings to reserve laboratory rooms and on equipment borrowing. Students and faculty are required to fill out paper-based borrower's slips and laboratory service request forms to request equipment or reserve laboratory space. These requests are then reviewed and processed manually, often using Excel files, and in-person coordination for tracking. This current approach makes it difficult to efficiently track laboratory equipment availability, manage borrowing records, and prevent schedule conflicts.`,
+      intro: `The current system used by the Physics and Circuits Laboratory at NU Fairview is entirely manual and paper-based. The Dean's office provides the term laboratory schedule to professors. A professor files the Laboratory Service Request Form for the class's scheduled laboratory activity and chooses when the activity will be completed; a Class Representative files only when the class needs out-of-schedule laboratory use. Out-of-schedule requests require approval from the appropriate professor or the Dean. Borrowing slips, availability checks, and transaction tracking are still handled through paper, spreadsheets, and in-person coordination.`,
       phsn: [
-        { label:"People", text:`Students and faculty submit requests and borrowing slips. The Physics and Circuits laboratory head receives, reviews, and records transactions.` },
+        { label:"People", text:`Faculty submit scheduled laboratory activity requests; Class Representatives submit only out-of-schedule requests; the appropriate Faculty member or Dean approves out-of-schedule use; and the laboratory head receives and records the transactions.` },
         { label:"Hardware", text:`The current system uses papers, printers, and office computers for Excel updates. No scanners or automated devices are used.` },
         { label:"Software", text:`The laboratory head uses spreadsheet files to track inventory and reservations. There is no digitalized database.` },
         { label:"Network", text:`The process is not heavily reliant on a network, as most transactions happen in person or through manual messaging.` },
@@ -178,19 +178,20 @@
         id:"proc-room-reservation", table:"3.2.1", title:"Laboratory Room Reservation",
         rows:[
           { id:"LRR001", name:"Inquiry", steps:[
-            { text:`Students or faculty will either visit the Physics or Circuits Department or e-mail the head to inquire about the availability of the rooms.` },
+            { text:`For a regular scheduled laboratory activity, the professor uses the term laboratory schedule supplied by the Dean's office and chooses when the class will complete the activity.` },
+            { text:`A Class Representative approaches the laboratory only when the class needs an out-of-schedule laboratory session.` },
             { text:`The laboratory head will check the availability of the laboratory rooms in their Google Sheet.` },
           ]},
           { id:"LRR002", name:"Confirmation", steps:[
             { text:"", sub:[
               `If there are no available days or/and/or time slots for the laboratory rooms, the request may be declined.`,
-              `If there is an available slot, the reservation will be entertained.`,
+              `If there is an available slot, the request will be entertained. Out-of-schedule use is routed for approval to the appropriate professor or the Dean.`,
             ]},
           ]},
           { id:"LRR003", name:"Processing", steps:[
-            { text:`A laboratory service request form will be given to the requester.` },
+            { text:`A Laboratory Service Request Form will be completed by the professor for a scheduled laboratory activity, or by the Class Representative for an out-of-schedule request.` },
             { text:`The requester will need to fill in the required details in the form.` },
-            { text:`Papers given will be signed by a faculty, the assigned professor or dean, and the laboratory technician.` },
+            { text:`Only an out-of-schedule request requires academic approval from the appropriate professor or the Dean before laboratory processing.` },
             { text:`Reservation confirmed.` },
           ]},
         ],

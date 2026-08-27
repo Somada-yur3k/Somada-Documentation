@@ -35,7 +35,7 @@
 /*
  * Three-column layout based on the project's Use Case Guide:
  *   left   = requester and approver processes
- *   center = included and extended supporting use cases
+ *   center = conditional supporting use cases
  *   right  = laboratory management processes
  * Actors remain outside the SOMADA system boundary. Dashboard-only entries
  * are intentionally excluded so the diagram emphasizes business processes.
@@ -51,7 +51,7 @@ const ACTORS = [
   },
   {
     id:'dean', label:['Dean'], color:'#7b68a6', side:'left', cy:950,
-    uses:['login','chooselab','viewsched','submitres','viewstatus','approve']
+    uses:['login','approve']
   },
   {
     id:'faculty', label:['Faculty'], color:'#e08a00', side:'left', cy:1470,
@@ -72,65 +72,64 @@ const ACTORS = [
 ];
 
 const BASE_UC = [
-  {id:'login',       x:1300, cy:205,  label:['Log In'], shared:true},
+  {id:'login',       x:960, cy:205,  label:['Log In'], shared:true},
 
-  {id:'chooselab',   x:860,  cy:340,  label:['Choose Laboratory'], column:'left'},
-  {id:'viewsched',   x:860,  cy:490,  label:['View Schedule &','Availability'], column:'left'},
-  {id:'submitres',   x:860,  cy:640,  label:['Submit Laboratory','Reservation'], column:'left'},
-  {id:'cancelres',   x:860,  cy:790,  label:['Cancel Laboratory','Reservation'], column:'left'},
-  {id:'reschedres',  x:860,  cy:940,  label:['Reschedule Laboratory','Reservation'], column:'left'},
-  {id:'viewstatus',  x:860,  cy:1090, label:['View Reservation','Status'], column:'left'},
-  {id:'viewhistory', x:860,  cy:1240, label:['View Reservation','History'], column:'left'},
-  {id:'clearstatus', x:860,  cy:1390, label:['View Clearance','Status'], column:'left'},
-  {id:'approve',     x:860,  cy:1540, label:['Approve / Reject','Reservation'], column:'left'},
-  {id:'askq',        x:860,  cy:1690, label:['Ask Laboratory','Question'], column:'left'},
+  {id:'chooselab',   x:650,  cy:340,  label:['Choose Laboratory'], column:'left'},
+  {id:'viewsched',   x:650,  cy:490,  label:['View Schedule &','Availability'], column:'left'},
+  {id:'submitres',   x:650,  cy:640,  label:['Submit Laboratory','Reservation'], column:'left'},
+  {id:'cancelres',   x:650,  cy:790,  label:['Cancel Laboratory','Reservation'], column:'left'},
+  {id:'reschedres',  x:650,  cy:940,  label:['Reschedule Laboratory','Reservation'], column:'left'},
+  {id:'viewstatus',  x:650,  cy:1090, label:['View Reservation','Status'], column:'left'},
+  {id:'viewhistory', x:650,  cy:1240, label:['View Reservation','History'], column:'left'},
+  {id:'clearstatus', x:650,  cy:1390, label:['View Clearance','Status'], column:'left'},
+  {id:'approve',     x:650,  cy:1540, label:['Approve / Reject','Reservation'], column:'left'},
+  {id:'askq',        x:650,  cy:1690, label:['Ask Laboratory','Question'], column:'left'},
 
-  {id:'issueacct',   x:1740, cy:390,  label:['Issue Class','Representative Account'], column:'right'},
-  {id:'mgminv',      x:1740, cy:570,  label:['Manage Equipment','Inventory'], column:'right'},
-  {id:'issueeq',     x:1740, cy:750,  label:['Issue Equipment'], column:'right'},
-  {id:'procret',     x:1740, cy:930,  label:['Process Return'], column:'right'},
-  {id:'procclear',   x:1740, cy:1110, label:['Process Clearance'], column:'right'},
-  {id:'wastedisp',   x:1740, cy:1290, label:['Log Waste','Disposal'], column:'right'},
-  {id:'mgmlogs',     x:1740, cy:1470, label:['Manage Logs, Schedule','& Daily Tasks'], column:'right'},
-  {id:'endterm',     x:1740, cy:1650, label:['Generate End-Term','Report'], column:'right'}
+  {id:'issueacct',   x:1270, cy:390,  label:['Issue Class','Representative Account'], column:'right'},
+  {id:'mgminv',      x:1270, cy:570,  label:['Manage Equipment','Inventory'], column:'right'},
+  {id:'issueeq',     x:1270, cy:750,  label:['Issue Equipment'], column:'right'},
+  {id:'procret',     x:1270, cy:930,  label:['Process Return'], column:'right'},
+  {id:'procclear',   x:1270, cy:1110, label:['Process Clearance'], column:'right'},
+  {id:'wastedisp',   x:1270, cy:1290, label:['Log Waste','Disposal'], column:'right'},
+  {id:'mgmlogs',     x:1270, cy:1470, label:['Manage Logs, Schedule','& Daily Tasks'], column:'right'},
+  {id:'endterm',     x:1270, cy:1650, label:['Generate End-Term','Report'], column:'right'}
 ];
 
 const SUPPORT_UC = [
-  {id:'addeq',       x:1300, cy:315,  label:['Add Equipment']},
-  {id:'updateeq',    x:1300, cy:405,  label:['Update Equipment']},
-  {id:'deleteeq',    x:1300, cy:495,  label:['Remove Equipment']},
-  {id:'searcheq',    x:1300, cy:585,  label:['Search & Filter','Inventory']},
-  {id:'selectres',   x:1300, cy:685,  label:['Select Resources /','Equipment']},
-  {id:'recordblc',   x:1300, cy:900,  label:['Record Broken / Lost','/ Consumed Items']},
-  {id:'markclear',   x:1300, cy:1110, label:['Mark Clearance as','Cleared / Replaced']},
-  {id:'checkitem',   x:1300, cy:1325, label:['Check Item','Availability']},
-  {id:'checksched',  x:1300, cy:1420, label:['Check Schedule','Availability']},
-  {id:'checkstatus', x:1300, cy:1515, label:['Check Reservation','Status']},
-  {id:'checkhours',  x:1300, cy:1610, label:['Check Operating','Hours']}
+  {id:'addeq',       x:960, cy:315,  label:['Add Equipment']},
+  {id:'updateeq',    x:960, cy:405,  label:['Update Equipment']},
+  {id:'deleteeq',    x:960, cy:495,  label:['Remove Equipment']},
+  {id:'searcheq',    x:960, cy:585,  label:['Search & Filter','Inventory']},
+  {id:'selectres',   x:960, cy:685,  label:['Select Resources /','Equipment']},
+  {id:'recordblc',   x:960, cy:900,  label:['Record Broken / Lost','/ Consumed Items']},
+  {id:'markclear',   x:960, cy:1110, label:['Mark Clearance as','Cleared / Replaced']},
+  {id:'checkitem',   x:960, cy:1325, label:['Check Item','Availability']},
+  {id:'checksched',  x:960, cy:1420, label:['Check Schedule','Availability']},
+  {id:'checkstatus', x:960, cy:1515, label:['Check Reservation','Status']},
+  {id:'checkhours',  x:960, cy:1610, label:['Check Operating','Hours']}
 ];
 
 const RELATIONSHIPS = [
-  {from:'mgminv',      to:'addeq',       type:'include'},
-  {from:'mgminv',      to:'updateeq',    type:'include'},
-  {from:'mgminv',      to:'deleteeq',    type:'include'},
+  {from:'addeq',       to:'mgminv',      type:'extend'},
+  {from:'updateeq',    to:'mgminv',      type:'extend'},
+  {from:'deleteeq',    to:'mgminv',      type:'extend'},
   {from:'searcheq',    to:'mgminv',      type:'extend'},
   {from:'selectres',   to:'submitres',   type:'extend'},
-  {from:'procret',     to:'recordblc',   type:'include'},
-  {from:'procclear',   to:'recordblc',   type:'include'},
-  {from:'procclear',   to:'markclear',   type:'include'},
+  {from:'recordblc',   to:'procret',     type:'extend'},
+  {from:'markclear',   to:'procclear',   type:'extend'},
   {from:'checkitem',   to:'askq',        type:'extend'},
   {from:'checksched',  to:'askq',        type:'extend'},
   {from:'checkstatus', to:'askq',        type:'extend'},
   {from:'checkhours',  to:'askq',        type:'extend'}
 ];
 
-const CANVAS_W = 2600;
-const CANVAS_H = 1900;
-const BOUNDARY = {x:630, y:105, w:1340, h:1680};
-const BASE_SIZE = {rx:150, ry:42};
-const LOGIN_SIZE = {rx:170, ry:48};
-const SUPPORT_SIZE = {rx:130, ry:31};
-const ACTOR_X = {left:170, right:2430};
+const CANVAS_W = 1920;
+const CANVAS_H = 1825;
+const BOUNDARY = {x:485, y:105, w:950, h:1635};
+const BASE_SIZE = {rx:105, ry:36};
+const LOGIN_SIZE = {rx:120, ry:40};
+const SUPPORT_SIZE = {rx:88, ry:27};
+const ACTOR_X = {left:315, right:1605};
 
 const NS = 'http://www.w3.org/2000/svg';
 const byId = {};
@@ -162,12 +161,12 @@ function useCaseSize(useCase) {
   return SUPPORT_UC.includes(useCase) ? SUPPORT_SIZE : BASE_SIZE;
 }
 
-function ellipseBoundaryPoint(useCase, externalPoint) {
+function ellipseSidePoint(useCase, side) {
   const size = useCaseSize(useCase);
-  const dx = externalPoint.x - useCase.x;
-  const dy = externalPoint.y - useCase.cy;
-  const scale = 1 / Math.sqrt((dx * dx) / (size.rx * size.rx) + (dy * dy) / (size.ry * size.ry));
-  return {x:useCase.x + dx * scale, y:useCase.cy + dy * scale};
+  return {
+    x:useCase.x + (side === 'right' ? size.rx : -size.rx),
+    y:useCase.cy
+  };
 }
 
 function labelPill(layer, x, y, label, flowId) {
@@ -194,7 +193,7 @@ const title = el('title', {id:'diagram-title'});
 title.textContent = 'SOMADA Use Case Diagram';
 svg.appendChild(title);
 const description = el('desc', {id:'diagram-description'});
-description.textContent = 'Six large actors surround a system boundary. Request and approval use cases form the left column, include and extend use cases form the center column, and laboratory management use cases form the right column.';
+description.textContent = 'Six large actors surround a system boundary. Request and approval use cases form the left column, conditional supporting use cases form the center column, and laboratory management use cases form the right column.';
 svg.appendChild(description);
 
 const defs = el('defs');
@@ -234,7 +233,7 @@ ACTORS.forEach(actor => {
   };
   actor.uses.forEach(useCaseId => {
     const useCase = byId[useCaseId];
-    const endpoint = ellipseBoundaryPoint(useCase, hand);
+    const endpoint = ellipseSidePoint(useCase, actor.side);
     const flowId = `association-${actor.id}-${useCaseId}`;
     associationLayer.appendChild(el('path', {
       class:'diagram-connector', 'data-flow-id':flowId,
@@ -251,8 +250,9 @@ svg.appendChild(relationshipLayer);
 RELATIONSHIPS.forEach((relationship,index) => {
   const source = byId[relationship.from];
   const target = byId[relationship.to];
-  const sourceEdge = ellipseBoundaryPoint(source, {x:target.x, y:target.cy});
-  const targetEdge = ellipseBoundaryPoint(target, {x:source.x, y:source.cy});
+  const targetIsRight = target.x >= source.x;
+  const sourceEdge = ellipseSidePoint(source, targetIsRight ? 'right' : 'left');
+  const targetEdge = ellipseSidePoint(target, targetIsRight ? 'left' : 'right');
   const flowId = `relationship-${index}-${relationship.type}`;
   relationshipLayer.appendChild(el('path', {
     class:'diagram-connector', 'data-flow-id':flowId,
@@ -277,9 +277,9 @@ BASE_UC.concat(SUPPORT_UC).forEach(useCase => {
     stroke:'#1ea7e8', 'stroke-width':2
   }));
   group.appendChild(textEl(useCase.x, useCase.cy+5, useCase.label, {
-    'font-size':support ? 14 : 16,
+    'font-size':support ? 13 : 15,
     fill:'#101828', 'font-weight':support ? '500' : '600',
-    'font-family':'Arial,Helvetica,sans-serif', lineHeight:support ? 17 : 19
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:support ? 16 : 18
   }));
   useCaseLayer.appendChild(group);
 });
@@ -305,19 +305,15 @@ const actorLayer = el('g', {'aria-label':'Actors'});
 ACTORS.forEach(actor => actorLayer.appendChild(drawActor(actor)));
 svg.appendChild(actorLayer);
 
-const legend = el('g', {transform:'translate(760 1840)', 'aria-label':'Relationship legend'});
+const legend = el('g', {transform:'translate(640 1780)', 'aria-label':'Relationship legend'});
 legend.appendChild(el('line', {x1:0, y1:0, x2:55, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
-legend.appendChild(textEl(72, 5, ['«include» required supporting behavior'], {
-  'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
-}));
-legend.appendChild(el('line', {x1:460, y1:0, x2:515, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
-legend.appendChild(textEl(532, 5, ['«extend» conditional supporting behavior'], {
+legend.appendChild(textEl(72, 5, ['«extend» conditional supporting behavior'], {
   'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
 }));
 svg.appendChild(legend);
 
 document.getElementById('stage').appendChild(svg);
-window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-diagram-three-column-v1'});
+window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-diagram-three-column-compact-v4'});
 window.__done = true;
 </script>
 </body>
