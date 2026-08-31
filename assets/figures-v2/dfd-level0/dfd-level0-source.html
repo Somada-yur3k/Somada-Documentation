@@ -24,7 +24,8 @@
     <a class="page-tab" href="../../../Current-System.html">Current System</a>
     <a class="page-tab" href="../usecase-diagram-source.html">Use Case</a>
     <a class="page-tab active" href="dfd-level0-source.html">DFD Level 0</a>
-    <a class="page-tab" href="../dfd-level1/dfd-level1-source.html">DFD Level 1</a>
+    <a class="page-tab" href="../dfd-level1/dfd-level1-source.html">DFD L1 Compact</a>
+    <a class="page-tab" href="../dfd-level1-traceable/dfd-level1-traceable-source.html">DFD L1 Traceable</a>
   </div>
   <a class="page-tab nav-download" href="../../downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a>
 </nav>
@@ -40,61 +41,76 @@ if (new URLSearchParams(location.search).has('export')) {
    connect from above, Dean and Head Laboratory connect from below, and each
    laboratory staff role uses one side. This keeps Faculty and Head Laboratory
    separate and prevents crowded, crossing arrows. */
-const PROCESS={x:520,y:510,w:760,h:500,num:'0',label:['SOMADA','Web-Based Laboratory','Management System']};
-const ENTITY_SIZE={w:340,h:180};
+const PROCESS={x:540,y:560,w:1120,h:560,num:'0',label:['SOMADA','Web-Based Laboratory','Management System']};
+const ENTITY_SIZE={w:440,h:200};
 const ENTITIES=[
-  {id:'classrep',label:['Class Representative'],color:'#2563eb',placement:'top',x:530,y:120,...ENTITY_SIZE},
-  {id:'faculty',label:['Faculty'],color:'#c24152',placement:'top',x:930,y:120,...ENTITY_SIZE},
-  {id:'physics',label:['Physics Laboratory','Staff'],color:'#d97706',placement:'left',x:20,y:670,...ENTITY_SIZE},
-  {id:'circuits',label:['Circuits Laboratory','Staff'],color:'#0f9b99',placement:'right',x:1440,y:670,...ENTITY_SIZE},
-  {id:'dean',label:['Dean'],color:'#be3b91',placement:'bottom',x:500,y:1210,...ENTITY_SIZE},
-  {id:'headlab',label:['Head Laboratory'],color:'#1f9d55',placement:'bottom',x:960,y:1210,...ENTITY_SIZE},
+  {id:'classrep',label:['Class Representative'],color:'#2563eb',placement:'top',x:610,y:120,...ENTITY_SIZE},
+  {id:'faculty',label:['Faculty'],color:'#c24152',placement:'top',x:1150,y:120,...ENTITY_SIZE},
+  {id:'physics',label:['Physics Laboratory','Staff'],color:'#d97706',placement:'left',x:20,y:735,...ENTITY_SIZE},
+  {id:'circuits',label:['Circuits Laboratory','Staff'],color:'#0f9b99',placement:'right',x:1740,y:735,...ENTITY_SIZE},
+  {id:'dean',label:['Dean'],color:'#be3b91',placement:'bottom',x:500,y:1330,...ENTITY_SIZE},
+  {id:'headlab',label:['Head Laboratory'],color:'#1f9d55',placement:'bottom',x:1090,y:1330,...ENTITY_SIZE},
 ];
 const FLOWS=[
   {entity:'classrep',dir:'in',label:'Credentials'},
+  {entity:'classrep',dir:'in',label:'On-Schedule Non-Laboratory Request'},
   {entity:'classrep',dir:'in',label:'Out-of-Schedule Request'},
+  {entity:'classrep',dir:'in',label:'Reservation Change Request'},
   {entity:'classrep',dir:'in',label:'Inquiry'},
+  {entity:'classrep',dir:'out',label:'Schedule & Availability'},
   {entity:'classrep',dir:'out',label:'Reservation Status'},
+  {entity:'classrep',dir:'out',label:'Reservation History'},
   {entity:'classrep',dir:'out',label:'Answer'},
   {entity:'classrep',dir:'out',label:'Borrowing Slip'},
+  {entity:'classrep',dir:'out',label:'Clearance Status'},
   {entity:'faculty',dir:'in',label:'Credentials'},
-  {entity:'faculty',dir:'in',label:'Laboratory Activity Request'},
+  {entity:'faculty',dir:'in',label:'Scheduled Laboratory Activity'},
+  {entity:'faculty',dir:'in',label:'Out-of-Schedule Request'},
+  {entity:'faculty',dir:'in',label:'Reservation Change Request'},
   {entity:'faculty',dir:'in',label:'Approval Decision'},
   {entity:'faculty',dir:'in',label:'Inquiry'},
-  {entity:'faculty',dir:'out',label:'Account Details'},
-  {entity:'faculty',dir:'out',label:'Approval Request / Status'},
+  {entity:'faculty',dir:'out',label:'Class Representative Credentials'},
+  {entity:'faculty',dir:'out',label:'Schedule & Availability'},
+  {entity:'faculty',dir:'out',label:'Routed Approval Request'},
+  {entity:'faculty',dir:'out',label:'Reservation Status'},
+  {entity:'faculty',dir:'out',label:'Reservation History'},
   {entity:'faculty',dir:'out',label:'Answer'},
   {entity:'faculty',dir:'out',label:'Borrowing Slip'},
   {entity:'dean',dir:'in',label:'Credentials'},
   {entity:'dean',dir:'in',label:'Approval Decision'},
-  {entity:'dean',dir:'out',label:'Pending Request / Status'},
+  {entity:'dean',dir:'out',label:'Routed Approval Request'},
   {entity:'headlab',dir:'in',label:'Credentials'},
-  {entity:'headlab',dir:'in',label:'Account Details'},
-  {entity:'headlab',dir:'in',label:'Laboratory Update'},
+  {entity:'headlab',dir:'in',label:'Class Representative Account Details'},
+  {entity:'headlab',dir:'in',label:'Inventory Update'},
   {entity:'headlab',dir:'in',label:'Equipment Transaction'},
+  {entity:'headlab',dir:'in',label:'Clearance Action'},
   {entity:'headlab',dir:'in',label:'Schedule Update'},
+  {entity:'headlab',dir:'in',label:'Usage Entry'},
   {entity:'headlab',dir:'in',label:'Daily Task Entry'},
   {entity:'headlab',dir:'in',label:'Disposal Entry'},
   {entity:'headlab',dir:'in',label:'Report Request'},
-  {entity:'headlab',dir:'out',label:'Dashboard / End-Term Report'},
+  {entity:'headlab',dir:'out',label:'Laboratory Dashboard'},
+  {entity:'headlab',dir:'out',label:'End-Term Report'},
   {entity:'physics',dir:'in',label:'Credentials'},
-  {entity:'physics',dir:'in',label:'Laboratory Update'},
+  {entity:'physics',dir:'in',label:'Inventory Update'},
   {entity:'physics',dir:'in',label:'Equipment Transaction'},
+  {entity:'physics',dir:'in',label:'Usage Entry'},
   {entity:'physics',dir:'in',label:'Daily Task Entry'},
   {entity:'physics',dir:'in',label:'Disposal Entry'},
-  {entity:'physics',dir:'out',label:'Operational View'},
+  {entity:'physics',dir:'out',label:'Laboratory Dashboard'},
   {entity:'circuits',dir:'in',label:'Credentials'},
-  {entity:'circuits',dir:'in',label:'Laboratory Update'},
+  {entity:'circuits',dir:'in',label:'Inventory Update'},
   {entity:'circuits',dir:'in',label:'Equipment Transaction'},
+  {entity:'circuits',dir:'in',label:'Usage Entry'},
   {entity:'circuits',dir:'in',label:'Daily Task Entry'},
   {entity:'circuits',dir:'in',label:'Disposal Entry'},
-  {entity:'circuits',dir:'out',label:'Operational View'},
+  {entity:'circuits',dir:'out',label:'Laboratory Dashboard'},
 ];
 const byId=Object.fromEntries(ENTITIES.map(e=>[e.id,e]));
 ENTITIES.forEach(e=>e.flows=[]);
 FLOWS.forEach((f,index)=>byId[f.entity].flows.push({...f,index}));
 
-const W=1800,H=1500,NS='http://www.w3.org/2000/svg';
+const W=2200,H=1600,NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,children){const node=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=>node.setAttribute(k,v));(children||[]).forEach(child=>node.appendChild(child));return node;}
 function textEl(x,y,lines,attrs={}){const node=el('text',{x,'text-anchor':'middle',...attrs});const lineHeight=attrs.lineHeight||16;const top=y-(lines.length-1)*lineHeight/2;lines.forEach((line,i)=>{const span=el('tspan',{x,y:top+i*lineHeight});span.textContent=line;node.appendChild(span);});return node;}
 function spread(count,start,end){if(count===1)return[(start+end)/2];return Array.from({length:count},(_,i)=>start+(end-start)*i/(count-1));}
@@ -162,7 +178,7 @@ process.appendChild(textEl(PROCESS.x+PROCESS.w/2,PROCESS.y+20,[PROCESS.num],{'fo
 process.appendChild(textEl(PROCESS.x+PROCESS.w/2,PROCESS.y+PROCESS.h/2+20,PROCESS.label,{'font-size':22,fill:'#172033','font-weight':'700','font-family':'Arial,Helvetica,sans-serif',lineHeight:28}));
 boxLayer.appendChild(process);
 
-const legend=el('g',{transform:'translate(80,1444)'});
+const legend=el('g',{transform:'translate(80,1570)'});
 legend.appendChild(el('rect',{x:0,y:-15,width:25,height:18,rx:5,fill:'#f8fbff',stroke:'#65748b','stroke-width':1.4}));
 legend.appendChild(textEl(38,-2,['External entity'],{'font-size':11.5,fill:'#5f6d82','text-anchor':'start','font-family':'Arial,Helvetica,sans-serif'}));
 legend.appendChild(el('rect',{x:330,y:-19,width:28,height:27,rx:7,fill:'#f3f7ff',stroke:'#2563eb','stroke-width':1.4}));

@@ -1,144 +1,82 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><style>
-html,body{margin:0;background:#fff;font-family:Arial,Helvetica,sans-serif}#stage{display:inline-block}.page-tabs{position:sticky;top:0;z-index:2;display:flex;gap:4px;padding:10px 16px;background:#fff;border-bottom:1px solid #e4e5ec;font-family:'Segoe UI',Arial,sans-serif}.page-tab{padding:6px 11px;border-radius:8px;color:#5b6270;font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap}.page-tab:hover{background:#eef0f4}.page-tab.active{background:#eaf0fd;color:#2245a8}body.export-mode .page-tabs{display:none}
-</style><link rel="stylesheet" href="../../somada-navigation.css"><link rel="stylesheet" href="../diagram-interactions.css"><script src="../diagram-interactions.js"></script></head><body>
-<nav class="page-tabs somada-nav" aria-label="Primary navigation"><a class="nav-brand" href="../../../index.html" aria-label="SOMADA home"><span class="nav-brand-mark">S</span><span class="nav-brand-copy"><strong>SOMADA</strong><small>Documentation Suite</small></span></a><div class="nav-links"><a class="page-tab" href="../../../index.html">Home</a><a class="page-tab" href="../../../Docs.html">Documentation</a><a class="page-tab" href="../../../Current-System.html">Current System</a><a class="page-tab" href="../usecase-diagram-source.html">Use Case</a><a class="page-tab" href="../dfd-level0/dfd-level0-source.html">DFD Level 0</a><a class="page-tab active" href="dfd-level1-source.html">DFD Level 1</a></div><a class="page-tab nav-download" href="../../downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a></nav>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+html,body{margin:0;background:#fff;font-family:Arial,Helvetica,sans-serif}#stage{display:inline-block}.page-tabs{position:sticky;top:0;z-index:2;display:flex;gap:4px;padding:10px 16px;background:#fff;border-bottom:1px solid #e4e5ec;font-family:'Segoe UI',Arial,sans-serif}.page-tab{padding:6px 11px;border-radius:8px;color:#5b6270;font-size:12.5px;font-weight:600;text-decoration:none;white-space:nowrap}.page-tab:hover{background:#eef0f4}.page-tab.active{background:#eaf0fd;color:#2245a8}.grid-note{margin-left:auto;align-self:center;color:#64748b;font-size:11px;font-weight:600}body.export-mode .page-tabs,body.embed-mode .page-tabs{display:none}body.embed-mode #stage{display:block;width:100%}body.embed-mode svg{display:block;width:100%;height:auto}
+</style>
+<link rel="stylesheet" href="../../somada-navigation.css"><link rel="stylesheet" href="../diagram-interactions.css"><script src="../diagram-interactions.js"></script>
+</head>
+<body>
+<nav class="page-tabs somada-nav" aria-label="Primary navigation"><a class="nav-brand" href="../../../index.html" aria-label="SOMADA home"><span class="nav-brand-mark">S</span><span class="nav-brand-copy"><strong>SOMADA</strong><small>Documentation Suite</small></span></a><div class="nav-links"><a class="page-tab" href="../../../index.html">Home</a><a class="page-tab" href="../../../Docs.html">Documentation</a><a class="page-tab" href="../../../Current-System.html">Current System</a><a class="page-tab" href="../usecase-diagram-source.html">Use Case</a><a class="page-tab" href="../dfd-level0/dfd-level0-source.html">DFD Level 0</a><a class="page-tab active" href="dfd-level1-source.html">DFD L1 Compact</a><a class="page-tab" href="../dfd-level1-traceable/dfd-level1-traceable-source.html">DFD L1 Traceable</a></div><a class="page-tab nav-download" href="../../downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a><span class="grid-note">Add <code>?grid=1</code> to inspect routing bands</span></nav>
 <div id="stage"></div>
 <script>
-if (new URLSearchParams(location.search).has('export')) {
-  document.body.classList.add('export-mode');
-}
-/* DFD Level 1: strict 3-column layout based on the supplied guide.
-   Left = external entities, middle = processes, right = data stores.
-   Each visible external arrow is an individual, essential Level 0 noun flow. */
-const W=1900,H=2580,NS='http://www.w3.org/2000/svg';
-const C={ink:'#172033',blue:'#2563eb',gray:'#5f6f85',store:'#4d80d1',bg:'#f4f7fc'};
-const E={x:215,w:280,h:104};
-const P={x:760,w:380,h:120};
-const D={x:1420,w:360,h:62};
+const params=new URLSearchParams(location.search);if(params.has('export'))document.body.classList.add('export-mode');if(params.has('embed'))document.body.classList.add('embed-mode');const showGrid=params.get('grid')==='1'&&!params.has('export');
+/* Five-process Level 1. Peer nodes use uniform geometry; entities and stores are unique. */
+const W=3300,H=4000,NS='http://www.w3.org/2000/svg';
+const C={ink:'#172033',blue:'#2563eb',gray:'#65748a',store:'#4d80d1'};
+const E={x:80,w:440,h:250},P={x:1400,w:760,h:600},D={x:2670,w:520,h:100,idw:58};
 const entities=[
- {id:'classrep',name:['Class Representative'],y:220,c:'#2563eb'},
- {id:'facultyP2',name:['* Faculty'],y:350,c:'#c24152'},
- {id:'classrepApproval',name:['* Class Representative'],y:640,c:'#2563eb'},
- {id:'faculty',name:['Faculty'],y:770,c:'#c24152'},
- {id:'dean',name:['Dean'],y:900,c:'#be3b91'},
- {id:'classrepAsk',name:['* Class Representative'],y:1040,c:'#2563eb'},
- {id:'facultyAsk',name:['* Faculty'],y:1170,c:'#c24152'},
- {id:'physics',name:['Physics Laboratory Staff'],y:1320,c:'#d97706'},
- {id:'circuits',name:['Circuits Laboratory Staff'],y:1450,c:'#0f9b99'},
- {id:'classrepOps',name:['* Class Representative'],y:1580,c:'#2563eb'},
- {id:'facultyOps',name:['* Faculty'],y:1710,c:'#c24152'},
- {id:'physicsOps',name:['* Physics Laboratory Staff'],y:1840,c:'#d97706'},
- {id:'circuitsOps',name:['* Circuits Laboratory Staff'],y:1970,c:'#0f9b99'},
- {id:'headlab',name:['Head Laboratory'],y:2100,c:'#1f9d55'},
- {id:'physicsDash',name:['* Physics Laboratory Staff'],y:2230,c:'#d97706'},
- {id:'circuitsDash',name:['* Circuits Laboratory Staff'],y:2360,c:'#0f9b99'},
-];
+{id:'classrep',name:['Class Representative'],y:260,c:'#2563eb'},
+{id:'faculty',name:['Faculty'],y:810,c:'#c24152'},
+{id:'dean',name:['Dean'],y:1360,c:'#be3b91'},
+{id:'headlab',name:['Head Laboratory'],y:2380,c:'#1f9d55'},
+{id:'physics',name:['Physics Laboratory Staff'],y:2930,c:'#d97706'},
+{id:'circuits',name:['Circuits Laboratory Staff'],y:3480,c:'#0f9b99'}];
 const processes=[
- {id:'p1',n:'1.0',name:['Log In & Manage Accounts'],y:100},
- {id:'p2',n:'2.0',name:['Manage Reservation & Availability'],y:350},
- {id:'p3',n:'3.0',name:['Approve & Track Reservation'],y:700},
- {id:'p4',n:'4.0',name:['Answer Laboratory Question'],y:1060},
- {id:'p5',n:'5.0',name:['Manage Equipment Inventory'],y:1350},
- {id:'p6',n:'6.0',name:['Issue, Return & Process Clearance'],y:1630},
- {id:'p7',n:'7.0',name:['Manage Schedule, Usage & Daily Tasks'],y:1940},
- {id:'p8',n:'8.0',name:['Dashboard, Disposal & End-Term Report'],y:2250},
-];
+{id:'p1',n:'1.0',name:['Manage User Access','& Accounts'],y:130},
+{id:'p2',n:'2.0',name:['Manage Reservations,','Availability & Approvals'],y:880},
+{id:'p3',n:'3.0',name:['Answer Laboratory','Questions'],y:1630},
+{id:'p4',n:'4.0',name:['Manage Equipment','& Borrowing'],y:2380},
+{id:'p5',n:'5.0',name:['Manage Laboratory','Administration & Reporting'],y:3130}];
 const stores=[
- {id:'d1',n:'D1',name:['User Accounts'],y:129},
- {id:'d2',n:'D2',name:['Reservation & Approval Records'],y:400},
- {id:'d3',n:'D3',name:['Laboratory Schedule & Usage Logs'],y:620},
- {id:'d8',n:'D8',name:['Knowledge Base'],y:1030},
- {id:'d9',n:'D9',name:['Chat Interaction History'],y:1130},
- {id:'d4',n:'D4',name:['Equipment Inventory'],y:1380},
- {id:'d5',n:'D5',name:['Borrowing Slip Records'],y:1580},
- {id:'d6',n:'D6',name:['Clearance Records'],y:1680},
- {id:'d7',n:'D7',name:['Daily Task Records'],y:1970},
- {id:'d10',n:'D10',name:['Disposal Records'],y:2280},
-];
+{id:'d1',n:'D1',name:['User Accounts'],y:330},
+{id:'d2',n:'D2',name:['Reservation & Approval Records'],y:930},
+{id:'d8',n:'D8',name:['Knowledge Base'],y:1610},
+{id:'d9',n:'D9',name:['Chat Interaction History'],y:1740},
+{id:'d4',n:'D4',name:['Equipment Inventory'],y:2170},
+{id:'d5',n:'D5',name:['Borrowing Slip Records'],y:2440},
+{id:'d10',n:'D10',name:['Disposal Records'],y:2710},
+{id:'d3',n:'D3',name:['Laboratory Schedule & Usage Logs'],y:3110},
+{id:'d7',n:'D7',name:['Daily Task Records'],y:3280},
+{id:'d6',n:'D6',name:['Clearance Records'],y:3450}];
 const byE=Object.fromEntries(entities.map(v=>[v.id,v])),byP=Object.fromEntries(processes.map(v=>[v.id,v])),byD=Object.fromEntries(stores.map(v=>[v.id,v]));
-function el(tag,a={},kids=[]){const e=document.createElementNS(NS,tag);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));kids.forEach(k=>e.appendChild(k));return e}
-function tx(x,y,lines,a={}){const t=el('text',{x,'text-anchor':'middle',...a});const lh=a.lineHeight||16,top=y-(lines.length-1)*lh/2;lines.forEach((s,i)=>{const span=el('tspan',{x,y:top+i*lh});span.textContent=s;t.appendChild(span)});return t}
-function mark(id,c){const m=el('marker',{id,markerWidth:9,markerHeight:9,refX:7.5,refY:3.5,orient:'auto',markerUnits:'userSpaceOnUse'});m.appendChild(el('path',{d:'M0,0 L8,3.5 L0,7 Z',fill:c}));return m}
-let flowSequence=0,lastFlowId='';
-function label(layer,x,y,t,c,orientation='h',flowId=lastFlowId){const w=Math.max(20,t.length*5.8+4),h=16,g=el('g',{class:'diagram-flow-label','data-flow-id':flowId,...(orientation==='v'?{transform:`rotate(90 ${x} ${y})`}:{})});g.appendChild(el('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:5,fill:'#fff',stroke:'#dfe3ea','stroke-width':.7}));g.appendChild(tx(x,y+3,[t],{'font-size':10.5,fill:'#172033','font-weight':'650','font-family':'Arial,Helvetica,sans-serif'}));labels.appendChild(g)}
-const svg=el('svg',{xmlns:NS,width:W,height:H,viewBox:`0 0 ${W} ${H}`}),defs=el('defs');entities.forEach(a=>defs.appendChild(mark('a-'+a.id,a.c)));defs.appendChild(mark('a-process',C.gray));svg.appendChild(defs);svg.appendChild(el('rect',{width:W,height:H,fill:'#fff'}));
-svg.appendChild(tx(W/2,52,['SOMADA - Data Flow Diagram (Level 1)'],{'font-size':28,fill:C.ink,'font-weight':'700','font-family':'Georgia,serif'}));
-svg.appendChild(tx(W/2,82,['Three-column structure: External Entities, Processes, and Data Stores'],{'font-size':13,fill:C.gray,'font-family':'Arial,Helvetica,sans-serif'}));
-const flow=el('g'),box=el('g'),labels=el('g');svg.appendChild(flow);svg.appendChild(box);svg.appendChild(labels);
-function arrowPath(d,color,width,marker,opacity=.9,flowId=''){lastFlowId=flowId||`level1-flow-${++flowSequence}`;flow.appendChild(el('path',{class:'diagram-connector-halo','data-flow-id':lastFlowId,d,fill:'none',stroke:'#fff','stroke-width':width+4,'stroke-linejoin':'round','stroke-linecap':'round'}));flow.appendChild(el('path',{class:'diagram-connector','data-flow-id':lastFlowId,d,fill:'none',stroke:color,'stroke-width':width,opacity,'stroke-linejoin':'round','stroke-linecap':'round','marker-end':marker}));return lastFlowId}
-/* Two clean route groups: login on the left; business functions near the processes. */
-function loginFlow(eid,entryOffset,lane,labelText='Credentials',sourceOffset=0){const a=byE[eid],b=byP.p1,sy=a.y+E.h/2+sourceOffset,ty=b.y+P.h/2+entryOffset,sx=E.x,dx=P.x,laneX=E.x-32-lane*29,d=`M ${sx} ${sy} H ${laneX} V ${ty} H ${dx}`;arrowPath(d,a.c,1.6,`url(#a-${eid})`,.92);label(flow,laneX,(sy+ty)/2,labelText,a.c,'v')}
-function entityProcess(eid,pid,labelText,dir,offset=0,lane=0,labelOffset=-44,labelY=null,labelOrientation='h'){const a=byE[eid],b=byP[pid],sy=a.y+E.h/2+offset,ty=b.y+P.h/2+offset;const sx=E.x+E.w,dx=P.x,laneX=P.x-36-lane*22;const d=dir==='in'?`M ${sx} ${sy} H ${laneX} V ${ty} H ${dx}`:`M ${dx} ${ty} H ${laneX} V ${sy} H ${sx}`;arrowPath(d,a.c,1.55,`url(#a-${eid})`,.9);label(flow,laneX+labelOffset,labelY??(sy+ty)/2,labelText,a.c,labelOrientation)}
-function topTierEntityProcess(eid,pid,labelText,sourceOffset,targetOffset,tierY,departX,approachX){const a=byE[eid],b=byP[pid],sx=E.x+E.w,sy=a.y+E.h/2+sourceOffset,dx=P.x,ty=b.y+P.h/2+targetOffset,d=`M ${sx} ${sy} H ${departX} V ${tierY} H ${approachX} V ${ty} H ${dx}`;arrowPath(d,a.c,1.55,`url(#a-${eid})`,.9);label(flow,(departX+approachX)/2,tierY,labelText,a.c)}
-function lowerTierSideEntry(eid,pid,labelText,sourceOffset,targetOffset,tierY,departX,approachX){const a=byE[eid],b=byP[pid],sx=E.x+E.w,sy=a.y+E.h/2+sourceOffset,dx=P.x,ty=b.y+P.h/2+targetOffset,d=`M ${sx} ${sy} H ${departX} V ${tierY} H ${approachX} V ${ty} H ${dx}`;arrowPath(d,a.c,1.55,`url(#a-${eid})`,.9);label(flow,departX,(sy+tierY)/2,labelText,a.c,'v')}
-function localEntityProcess(eid,pid,labelText,dir,sourceOffset,targetOffset,laneX,labelX=null,labelY=null){const a=byE[eid],b=byP[pid],sx=E.x+E.w,sy=a.y+E.h/2+sourceOffset,dx=P.x,ty=b.y+P.h/2+targetOffset,d=dir==='in'?`M ${sx} ${sy} H ${laneX} V ${ty} H ${dx}`:`M ${dx} ${ty} H ${laneX} V ${sy} H ${sx}`;arrowPath(d,a.c,1.55,`url(#a-${eid})`,.9);label(flow,labelX??(sx+laneX)/2,labelY??sy-12,labelText,a.c)}
-function leftOutputFlow(eid,pid,labelText,targetOffset,processOffset,laneX,labelY){const a=byE[eid],b=byP[pid],sx=P.x,sy=b.y+P.h/2+processOffset,dx=E.x,dy=a.y+E.h/2+targetOffset,d=`M ${sx} ${sy} H ${laneX} V ${dy} H ${dx}`;arrowPath(d,a.c,1.55,`url(#a-${eid})`,.9);label(flow,laneX,labelY,labelText,a.c,'v')}
-/* Every role must log in before accessing its authorised SOMADA functions. */
-loginFlow('classrep',-40,0);loginFlow('faculty',-24,1);loginFlow('dean',-8,2);loginFlow('physics',8,3);loginFlow('circuits',24,4);loginFlow('headlab',34,5,'Credentials',-18);loginFlow('headlab',50,6,'Account Details',18);
-/* Separate, noun-labelled business flows; detailed exceptions are expanded at Level 2. */
-/* Repeated actors keep each reservation, approval, and inquiry route inside its local process corridor. */
-localEntityProcess('classrep','p2','Out-of-Schedule Request','in',0,-30,620,548,268);
-localEntityProcess('facultyP2','p2','Laboratory Activity Request','in',-15,0,650,545,385);
-leftOutputFlow('faculty','p1','Account Details',-32,30,205,650);
-localEntityProcess('classrepApproval','p3','Reservation Status','out',-20,-35,620,548,665);
-localEntityProcess('faculty','p3','Approval Decision','in',-22,-5,650,555,797);
-localEntityProcess('faculty','p3','Approval Request','out',18,15,680,565,837);
-localEntityProcess('dean','p3','Approval Decision','in',-20,35,710,570,927);
-localEntityProcess('dean','p3','Pending Request','out',20,50,740,580,967);
-localEntityProcess('classrepAsk','p4','Inquiry','in',-15,-20,650,550,1077);
-localEntityProcess('classrepAsk','p4','Answer','out',15,-5,680,560,1107);
-localEntityProcess('facultyAsk','p4','Inquiry','in',-15,10,710,570,1207);
-localEntityProcess('facultyAsk','p4','Answer','out',15,30,740,580,1237);
-/* Staff symbols marked * repeat the same actors beside Process 6.0 solely to prevent crossed or combined-looking routes. */
-entityProcess('physics','p5','Laboratory Update','in',-25,1,-52,1336);
-entityProcess('circuits','p5','Laboratory Update','in',25,0,-52,1472);
-localEntityProcess('headlab','p5','Laboratory Update','in',-40,35,750);
-localEntityProcess('headlab','p6','Equipment Transaction','in',-20,48,740);
-localEntityProcess('physicsOps','p6','Equipment Transaction','in',0,18,680);
-localEntityProcess('circuitsOps','p6','Equipment Transaction','in',0,36,660);
-/* The generated slip is returned to each eligible requester on its own route. */
-localEntityProcess('classrepOps','p6','Borrowing Slip','out',0,-36,720);
-localEntityProcess('facultyOps','p6','Borrowing Slip','out',0,-18,700);
-/* Daily activities are independent records, not aliases of session usage. */
-localEntityProcess('physicsOps','p7','Daily Task Entry','in',20,-30,720);
-localEntityProcess('circuitsOps','p7','Daily Task Entry','in',-20,-10,700);
-localEntityProcess('headlab','p7','Schedule Update','in',-20,10,680);
-localEntityProcess('headlab','p7','Daily Task Entry','in',20,30,660);
-localEntityProcess('headlab','p8','Report Request','in',-25,-45,720);
-localEntityProcess('headlab','p8','Disposal Entry','in',0,-25,700);
-localEntityProcess('headlab','p8','Dashboard / End-Term Report','out',25,25,680);
-localEntityProcess('physicsDash','p8','Disposal Entry','in',-15,-10,660);
-localEntityProcess('physicsDash','p8','Operational View','out',15,5,640);
-localEntityProcess('circuitsDash','p8','Disposal Entry','in',-15,20,620);
-localEntityProcess('circuitsDash','p8','Operational View','out',15,35,600);
-function processStore(pid,did,labelText,offset=0,lane=0,labelY=null,storeOffset=0){const a=byP[pid],b=byD[did],sx=P.x+P.w,sy=a.y+P.h/2+offset,dy=b.y+D.h/2+storeOffset,dx=D.x,laneX=D.x-48-lane*22;const d=`M ${sx} ${sy} H ${laneX} V ${dy} H ${dx}`;arrowPath(d,C.gray,1.45,'url(#a-process)',.88);label(flow,D.x-155,labelY??(sy+dy)/2,labelText,C.gray)}
-function storeProcess(did,pid,labelText,offset=0,lane=0,labelY=null,storeOffset=0){const a=byP[pid],b=byD[did],sx=D.x,sy=b.y+D.h/2+storeOffset,dy=a.y+P.h/2+offset,dx=P.x+P.w,laneX=D.x-48-lane*22;const d=`M ${sx} ${sy} H ${laneX} V ${dy} H ${dx}`;arrowPath(d,C.gray,1.45,'url(#a-process)',.88);label(flow,D.x-155,labelY??(sy+dy)/2,labelText,C.gray)}
-/* Each data-store arrow has its own lane; no process-to-store paths are merged. */
-processStore('p1','d1','Account Record',0,0,160);
-processStore('p2','d2','Reservation Record',-18,1,398,-16);
-processStore('p3','d2','Approval Record',20,2,715,16);
-processStore('p2','d3','Schedule Data',16,3,500,-16);
-storeProcess('d8','p4','Knowledge Content',-22,4,1038);
-processStore('p4','d9','Question / Answer Log',22,5,1135);
-processStore('p5','d4','Item Record',0,6,1350);
-processStore('p6','d5','Borrowing Slip Record',-18,7,1570,-12);
-processStore('p6','d6','Clearance Record',18,6,1690,12);
-processStore('p7','d3','Usage Log',18,8,1850,16);
-processStore('p7','d7','Daily Task Record',34,5,1975);
-processStore('p8','d10','Disposal Record',0,9,2280);
-function processFlow(from,to,labelText,lane=0,fromOffset=0,toOffset=0,labelY=null,labelX=null,approachGap=18,labelOrientation='h'){const a=byP[from],b=byP[to],routeX=P.x+P.w+18+lane*18,sx=P.x+P.w/2+fromOffset,tx=P.x+P.w/2+toOffset,sy=a.y+P.h,dy=b.y,approachY=dy-approachGap,d=`M ${sx} ${sy} V ${sy+18} H ${routeX} V ${approachY} H ${tx} V ${dy}`;arrowPath(d,'#8695aa',1.35,'url(#a-process)',1);label(flow,labelX??routeX+62,labelY??(sy+dy)/2,labelText,'#66758a',labelOrientation)}
-function directProcessFlow(from,to,labelText,fromOffset=0,toOffset=0,approachGap=18,labelY=null,labelX=null,labelOrientation='h'){const a=byP[from],b=byP[to],sx=P.x+P.w/2+fromOffset,tx=P.x+P.w/2+toOffset,sy=a.y+P.h,dy=b.y,approachY=dy-approachGap,d=Math.abs(sx-tx)<.1?`M ${sx} ${sy} V ${dy}`:`M ${sx} ${sy} V ${approachY} H ${tx} V ${dy}`;arrowPath(d,'#8695aa',1.35,'url(#a-process)',1);label(flow,labelX??(sx+tx)/2,labelY??approachY-12,labelText,'#66758a',labelOrientation)}
-processFlow('p2','p3','Pending Reservation',0,-42,-42,608,1030);
-/* P6 fan-in: the long P3 flow uses the higher approach tier and a right-side top port; the adjacent P5 flow stays direct. */
-processFlow('p3','p6','Approved Reservation',1,-55,150,1180,1176,50,'v');
-directProcessFlow('p5','p6','Available Item',52,-10,18,1588,971);
-/* Adjacent P6 and P7 are vertically aligned, so Session Usage uses the shortest clear route instead of leaving the process column. */
-directProcessFlow('p6','p7','Session Usage',42,42,18,1888,992,'v');
-function entityBox(a){box.appendChild(el('rect',{x:E.x,y:a.y,width:E.w,height:E.h,rx:8,fill:'#f8fbff',stroke:a.c,'stroke-width':2}));box.appendChild(tx(E.x+E.w/2,a.y+E.h/2,a.name,{'font-size':15,fill:C.ink,'font-weight':'700','font-family':'Arial,Helvetica,sans-serif',lineHeight:17}))}
-function processBox(a){box.appendChild(el('rect',{x:P.x,y:a.y,width:P.w,height:P.h,rx:10,fill:'#f3f7ff',stroke:C.blue,'stroke-width':2}));box.appendChild(el('path',{d:`M ${P.x} ${a.y+10} a 10 10 0 0 1 10 -10 h ${P.w-20} a 10 10 0 0 1 10 10 v 26 h ${-P.w} Z`,fill:C.blue}));box.appendChild(tx(P.x+P.w/2,a.y+17,[a.n],{'font-size':12,fill:'#fff','font-weight':'700'}));box.appendChild(tx(P.x+P.w/2,a.y+76,a.name,{'font-size':15,fill:C.ink,'font-weight':'700','font-family':'Arial,Helvetica,sans-serif'}))}
-function storeBox(a){box.appendChild(el('rect',{x:D.x,y:a.y,width:D.w,height:D.h,fill:'#eaf1fc',stroke:C.store,'stroke-width':1.5}));box.appendChild(el('rect',{x:D.x,y:a.y,width:48,height:D.h,fill:C.store}));box.appendChild(tx(D.x+24,a.y+D.h/2,[a.n],{'font-size':11,fill:'#fff','font-weight':'700'}));box.appendChild(tx(D.x+48+(D.w-48)/2,a.y+D.h/2,a.name,{'font-size':11.5,fill:C.ink,'font-weight':'700','font-family':'Arial,Helvetica,sans-serif'}))}
+const spread=(count,start,end)=>count===1?[(start+end)/2]:Array.from({length:count},(_,i)=>start+(end-start)*i/(count-1));
+function el(tag,a={},kids=[]){const n=document.createElementNS(NS,tag);Object.entries(a).forEach(([k,v])=>n.setAttribute(k,v));kids.forEach(k=>n.appendChild(k));return n}
+function tx(x,y,lines,a={}){const t=el('text',{x,'text-anchor':'middle',...a}),lh=a.lineHeight||16,top=y-(lines.length-1)*lh/2;lines.forEach((s,i)=>{const q=el('tspan',{x,y:top+i*lh});q.textContent=s;t.appendChild(q)});return t}
+function marker(id,color){const m=el('marker',{id,markerWidth:9,markerHeight:9,refX:7.5,refY:3.5,orient:'auto',markerUnits:'userSpaceOnUse'});m.appendChild(el('path',{d:'M0,0 L8,3.5 L0,7 Z',fill:color}));return m}
+const svg=el('svg',{xmlns:NS,width:W,height:H,viewBox:`0 0 ${W} ${H}`}),defs=el('defs');entities.forEach(a=>defs.appendChild(marker('a-'+a.id,a.c)));defs.appendChild(marker('a-system',C.gray));svg.appendChild(defs);svg.appendChild(el('rect',{width:W,height:H,fill:'#fff'}));
+svg.appendChild(tx(W/2,52,['SOMADA - Data Flow Diagram (Level 1)'],{'font-size':30,fill:C.ink,'font-weight':'700','font-family':'Georgia,serif'}));svg.appendChild(tx(W/2,84,['Five equal-sized processes; six aligned entities; ten unique data stores'],{'font-size':13,fill:C.gray}));
+const guideLayer=el('g'),flowLayer=el('g'),boxLayer=el('g'),labelLayer=el('g');svg.appendChild(guideLayer);svg.appendChild(flowLayer);svg.appendChild(boxLayer);svg.appendChild(labelLayer);let seq=0;
+function drawPath(points,color,markerId,flowId=''){const id=flowId||`level1-flow-${++seq}`,d=points.map((p,i)=>(i?'L':'M')+' '+p[0]+' '+p[1]).join(' ');flowLayer.appendChild(el('path',{class:'diagram-connector-halo','data-flow-id':id,d,fill:'none',stroke:'#fff','stroke-width':7,'stroke-linejoin':'round','stroke-linecap':'round'}));flowLayer.appendChild(el('path',{class:'diagram-connector','data-flow-id':id,d,fill:'none',stroke:color,'stroke-width':1.8,'stroke-linejoin':'round','stroke-linecap':'round','marker-end':`url(#${markerId})`}));return id}
+function drawLabel(x,y,text,flowId,orientation='h'){const w=Math.max(24,text.length*6.1+7),h=20,g=el('g',{class:'diagram-flow-label','data-flow-id':flowId,...(orientation==='v'?{transform:`rotate(90 ${x} ${y})`}:{})});g.appendChild(el('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:5,fill:'#fff',stroke:'#dfe3ea','stroke-width':.8}));g.appendChild(tx(x,y+3.5,[text],{'font-size':11.5,fill:C.ink,'font-weight':'650'}));labelLayer.appendChild(g)}
+function arrow(points,text,color,markerId,lx,ly,orientation='h',flowId=''){const id=drawPath(points,color,markerId,flowId);drawLabel(lx,ly,text,id,orientation);return id}
+const F=(key,dir,label)=>({key,dir,label});
+const externalGroups={
+p1:[{entity:'classrep',flows:[F('p1-cr-credentials','in','Credentials')]},{entity:'faculty',flows:[F('p1-fa-credentials','in','Credentials'),F('p1-fa-crcredentials','out','Class Representative Credentials')]},{entity:'dean',flows:[F('p1-de-credentials','in','Credentials')]},{entity:'headlab',flows:[F('p1-he-credentials','in','Credentials'),F('p1-he-account','in','Class Representative Account Details')]},{entity:'physics',flows:[F('p1-ph-credentials','in','Credentials')]},{entity:'circuits',flows:[F('p1-ci-credentials','in','Credentials')]}],
+p2:[{entity:'classrep',flows:[F('p2-cr-onschedule','in','On-Schedule Non-Laboratory Request'),F('p2-cr-outschedule','in','Out-of-Schedule Request'),F('p2-cr-change','in','Reservation Change Request'),F('p2-cr-availability','out','Schedule & Availability'),F('p2-cr-status','out','Reservation Status'),F('p2-cr-history','out','Reservation History')]},{entity:'faculty',flows:[F('p2-fa-scheduled','in','Scheduled Laboratory Activity'),F('p2-fa-outschedule','in','Out-of-Schedule Request'),F('p2-fa-change','in','Reservation Change Request'),F('p2-fa-decision','in','Approval Decision'),F('p2-fa-availability','out','Schedule & Availability'),F('p2-fa-routed','out','Routed Approval Request'),F('p2-fa-status','out','Reservation Status'),F('p2-fa-history','out','Reservation History')]},{entity:'dean',flows:[F('p2-de-decision','in','Approval Decision'),F('p2-de-routed','out','Routed Approval Request')]}],
+p3:[{entity:'classrep',flows:[F('p3-cr-inquiry','in','Inquiry'),F('p3-cr-answer','out','Answer')]},{entity:'faculty',flows:[F('p3-fa-inquiry','in','Inquiry'),F('p3-fa-answer','out','Answer')]}],
+p4:[{entity:'classrep',flows:[F('p4-cr-slip','out','Borrowing Slip')]},{entity:'faculty',flows:[F('p4-fa-slip','out','Borrowing Slip')]},{entity:'headlab',flows:[F('p4-he-inventory','in','Inventory Update'),F('p4-he-equipment','in','Equipment Transaction'),F('p4-he-disposal','in','Disposal Entry')]},{entity:'physics',flows:[F('p4-ph-inventory','in','Inventory Update'),F('p4-ph-equipment','in','Equipment Transaction'),F('p4-ph-disposal','in','Disposal Entry')]},{entity:'circuits',flows:[F('p4-ci-inventory','in','Inventory Update'),F('p4-ci-equipment','in','Equipment Transaction'),F('p4-ci-disposal','in','Disposal Entry')]}],
+p5:[{entity:'classrep',flows:[F('p5-cr-clearance','out','Clearance Status')]},{entity:'headlab',flows:[F('p5-he-schedule','in','Schedule Update'),F('p5-he-usage','in','Usage Entry'),F('p5-he-task','in','Daily Task Entry'),F('p5-he-clearance','in','Clearance Action'),F('p5-he-reportrequest','in','Report Request'),F('p5-he-dashboard','out','Laboratory Dashboard'),F('p5-he-report','out','End-Term Report')]},{entity:'physics',flows:[F('p5-ph-usage','in','Usage Entry'),F('p5-ph-task','in','Daily Task Entry'),F('p5-ph-dashboard','out','Laboratory Dashboard')]},{entity:'circuits',flows:[F('p5-ci-usage','in','Usage Entry'),F('p5-ci-task','in','Daily Task Entry'),F('p5-ci-dashboard','out','Laboratory Dashboard')]}]};
+/* Entity right-side ports run top-to-bottom from the shortest estimated route
+   to the longest route. Within an entity, shorter routes use the outer lane. */
+const entityFlowMeta={};entities.forEach(e=>entityFlowMeta[e.id]=[]);Object.entries(externalGroups).forEach(([pid,groups])=>groups.forEach(g=>g.flows.forEach((f,order)=>entityFlowMeta[g.entity].push({key:f.key,pid,order}))));const entityFlowKeys={};entities.forEach(e=>{const entityCenter=e.y+E.h/2;entityFlowKeys[e.id]=entityFlowMeta[e.id].sort((a,b)=>{const da=Math.abs(entityCenter-(byP[a.pid].y+P.h/2));const db=Math.abs(entityCenter-(byP[b.pid].y+P.h/2));return da-db||a.pid.localeCompare(b.pid)||a.order-b.order}).map(f=>f.key)});const entityPort={};entities.forEach(e=>spread(entityFlowKeys[e.id].length,e.y+18,e.y+E.h-18).forEach((y,i)=>entityPort[entityFlowKeys[e.id][i]]=y));const entityLane={};let entityLaneSeq=0;entities.forEach(e=>{const keys=entityFlowKeys[e.id];keys.forEach((key,index)=>entityLane[key]=550+(entityLaneSeq+keys.length-1-index)*16);entityLaneSeq+=keys.length});
+function guideBand(owner,top,bottom,side,color){if(!showGrid)return;const x=side==='left'?E.x+E.w+8:P.x+P.w,width=side==='left'?P.x-x:D.x-(P.x+P.w);guideLayer.appendChild(el('rect',{x,y:top,width,height:bottom-top,fill:color,'fill-opacity':.035,stroke:color,'stroke-opacity':.55,'stroke-width':1.2,'stroke-dasharray':'9 7'}));guideLayer.appendChild(tx(side==='left'?x+8:x+width-8,top+15,[owner],{'font-size':10,fill:color,'font-weight':'700','text-anchor':side==='left'?'start':'end'}))}
+function routeExternalBands(pid,groups){const p=byP[pid],usableTop=p.y+57,usableBottom=p.y+P.h-25,bandH=(usableBottom-usableTop)/groups.length;groups.forEach((g,gi)=>{const e=byE[g.entity],top=usableTop+gi*bandH,bottom=top+bandH,ports=spread(g.flows.length,top+14,bottom-14);guideBand(g.entity,top,bottom,'left',e.c);g.flows.forEach((f,fi)=>{const sy=entityPort[f.key],py=ports[fi],lane=entityLane[f.key],from=[E.x+E.w,sy],to=[P.x,py],geometry=[from,[lane,sy],[lane,py],to],points=f.dir==='in'?geometry:[...geometry].reverse(),leftSpan=Math.abs(lane-(E.x+E.w)),rightSpan=P.x-lane,lx=leftSpan>rightSpan?(E.x+E.w+lane)/2:(lane+P.x)/2,ly=leftSpan>rightSpan?sy:py;arrow(points,f.label,e.c,'a-'+g.entity,lx,ly,'h',f.key)})})}Object.entries(externalGroups).forEach(([pid,groups])=>routeExternalBands(pid,groups));
+const storeGroups={
+p1:[{store:'d1',flows:[F('p1-d1-write','write','Account Record'),F('p1-d1-read','read','Account Data')]}],
+p2:[{store:'d2',flows:[F('p2-d2-write','write','Reservation / Approval Record'),F('p2-d2-read','read','Reservation / Approval Data')]},{store:'d3',flows:[F('p2-d3-read','read','Schedule Data')]},{store:'d4',flows:[F('p2-d4-read','read','Item Availability Data')]}],
+p3:[{store:'d8',flows:[F('p3-d8-read','read','Knowledge Content')]},{store:'d9',flows:[F('p3-d9-write','write','Question / Answer Log')]},{store:'d2',flows:[F('p3-d2-read','read','Reservation Status Data')]},{store:'d3',flows:[F('p3-d3-read','read','Schedule Availability Data')]},{store:'d4',flows:[F('p3-d4-read','read','Item Availability Data')]}],
+p4:[{store:'d2',flows:[F('p4-d2-read','read','Authorized Reservation Data'),F('p4-d2-write','write','Reservation Status Update')]},{store:'d4',flows:[F('p4-d4-write','write','Inventory Transaction'),F('p4-d4-read','read','Available Item Data')]},{store:'d5',flows:[F('p4-d5-write','write','Borrowing Slip Record'),F('p4-d5-read','read','Borrowing Slip Data')]},{store:'d10',flows:[F('p4-d10-write','write','Disposal Record')]}],
+p5:[{store:'d2',flows:[F('p5-d2-read','read','Reservation Summary')]},{store:'d3',flows:[F('p5-d3-write','write','Schedule / Usage Record'),F('p5-d3-read','read','Schedule / Usage Data')]},{store:'d4',flows:[F('p5-d4-read','read','Inventory Summary')]},{store:'d5',flows:[F('p5-d5-read','read','Borrowing Summary')]},{store:'d6',flows:[F('p5-d6-write','write','Clearance Record'),F('p5-d6-read','read','Clearance Data')]},{store:'d7',flows:[F('p5-d7-write','write','Daily Task Record'),F('p5-d7-read','read','Daily Task Data')]},{store:'d10',flows:[F('p5-d10-read','read','Disposal Summary')]}]};
+const storeFlowKeys={};stores.forEach(s=>storeFlowKeys[s.id]=[]);Object.values(storeGroups).flat().forEach(g=>g.flows.forEach(f=>storeFlowKeys[g.store].push(f.key)));const storePort={};stores.forEach(s=>spread(storeFlowKeys[s.id].length,s.y+13,s.y+D.h-13).forEach((y,i)=>storePort[storeFlowKeys[s.id][i]]=y));const storeLane={};let storeLaneSeq=0;stores.forEach(s=>storeFlowKeys[s.id].forEach(key=>storeLane[key]=2225+(storeLaneSeq++)*15.5));
+function routeStoreBands(pid,groups){const p=byP[pid],usableTop=p.y+57,usableBottom=p.y+P.h-25,bandH=(usableBottom-usableTop)/groups.length;groups.forEach((g,gi)=>{const s=byD[g.store],top=usableTop+gi*bandH,bottom=top+bandH,ports=spread(g.flows.length,top+14,bottom-14);guideBand(g.store,top,bottom,'right',C.store);g.flows.forEach((f,fi)=>{const py=ports[fi],sy=storePort[f.key],lane=storeLane[f.key],from=[P.x+P.w,py],to=[D.x,sy],geometry=[from,[lane,py],[lane,sy],to],points=f.dir==='write'?geometry:[...geometry].reverse(),leftSpan=lane-(P.x+P.w),rightSpan=D.x-lane,lx=leftSpan>rightSpan?(P.x+P.w+lane)/2:(lane+D.x)/2,ly=leftSpan>rightSpan?py:sy;arrow(points,f.label,C.gray,'a-system',lx,ly,'h',f.key)})})}Object.entries(storeGroups).forEach(([pid,groups])=>routeStoreBands(pid,groups));
+function entityBox(a){boxLayer.appendChild(el('rect',{x:E.x,y:a.y,width:E.w,height:E.h,rx:10,fill:'#f8fbff',stroke:a.c,'stroke-width':2}));boxLayer.appendChild(tx(E.x+E.w/2,a.y+E.h/2,a.name,{'font-size':16,fill:C.ink,'font-weight':'700',lineHeight:20}))}
+function processBox(a){boxLayer.appendChild(el('rect',{x:P.x,y:a.y,width:P.w,height:P.h,rx:13,fill:'#f3f7ff',stroke:C.blue,'stroke-width':2.2}));boxLayer.appendChild(el('path',{d:`M ${P.x} ${a.y+13} a 13 13 0 0 1 13 -13 h ${P.w-26} a 13 13 0 0 1 13 13 v 39 h ${-P.w} Z`,fill:C.blue}));boxLayer.appendChild(tx(P.x+P.w/2,a.y+24,[a.n],{'font-size':14,fill:'#fff','font-weight':'700'}));boxLayer.appendChild(tx(P.x+P.w/2,a.y+320,a.name,{'font-size':20,fill:C.ink,'font-weight':'700',lineHeight:25}))}
+function storeBox(a){boxLayer.appendChild(el('rect',{x:D.x,y:a.y,width:D.w,height:D.h,fill:'#eaf1fc',stroke:C.store,'stroke-width':1.6}));boxLayer.appendChild(el('rect',{x:D.x,y:a.y,width:D.idw,height:D.h,fill:C.store}));boxLayer.appendChild(tx(D.x+D.idw/2,a.y+D.h/2,[a.n],{'font-size':12,fill:'#fff','font-weight':'700'}));boxLayer.appendChild(tx(D.x+D.idw+(D.w-D.idw)/2,a.y+D.h/2,a.name,{'font-size':12,fill:C.ink,'font-weight':'700'}))}
 entities.forEach(entityBox);processes.forEach(processBox);stores.forEach(storeBox);
-  const lg=el('g',{transform:'translate(70,2520)'});lg.appendChild(el('rect',{x:0,y:-15,width:24,height:18,rx:5,fill:'#f8fbff',stroke:'#65748b','stroke-width':1.4}));lg.appendChild(tx(38,-2,['External entity'],{'font-size':11.5,fill:C.gray,'text-anchor':'start'}));lg.appendChild(el('rect',{x:270,y:-18,width:27,height:25,rx:6,fill:'#f3f7ff',stroke:C.blue,'stroke-width':1.4}));lg.appendChild(tx(312,-2,['Process'],{'font-size':11.5,fill:C.gray,'text-anchor':'start'}));lg.appendChild(el('rect',{x:480,y:-15,width:25,height:18,fill:'#eaf1fc',stroke:C.store,'stroke-width':1.4}));lg.appendChild(tx(520,-2,['Data store'],{'font-size':11.5,fill:C.gray,'text-anchor':'start'}));lg.appendChild(el('line',{x1:700,y1:-6,x2:734,y2:-6,stroke:C.gray,'stroke-width':1.5,'marker-end':'url(#a-process)'}));lg.appendChild(tx(748,-2,['Noun-labelled data flow'],{'font-size':11.5,fill:C.gray,'text-anchor':'start'}));lg.appendChild(tx(1100,-2,['* Repeated external entity; same actor, shown again only for route clarity'],{'font-size':11.5,fill:C.gray,'text-anchor':'start','font-style':'italic'}));svg.appendChild(lg);
-document.getElementById('stage').appendChild(svg);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1'});window.__done=true;
-</script></body></html>
+const legend=el('g',{transform:'translate(70,3910)'});legend.appendChild(el('rect',{x:0,y:-15,width:26,height:20,rx:5,fill:'#f8fbff',stroke:'#65748b','stroke-width':1.4}));legend.appendChild(tx(42,-1,['External entity'],{'font-size':12,fill:C.gray,'text-anchor':'start'}));legend.appendChild(el('rect',{x:300,y:-18,width:30,height:27,rx:6,fill:'#f3f7ff',stroke:C.blue,'stroke-width':1.4}));legend.appendChild(tx(348,-1,['Process'],{'font-size':12,fill:C.gray,'text-anchor':'start'}));legend.appendChild(el('rect',{x:520,y:-15,width:28,height:20,fill:'#eaf1fc',stroke:C.store,'stroke-width':1.4}));legend.appendChild(tx(566,-1,['Data store'],{'font-size':12,fill:C.gray,'text-anchor':'start'}));legend.appendChild(el('line',{x1:780,y1:-5,x2:820,y2:-5,stroke:C.gray,'stroke-width':1.6,'marker-end':'url(#a-system)'}));legend.appendChild(tx(840,-1,['Independent noun-labelled data flow'],{'font-size':12,fill:C.gray,'text-anchor':'start'}));legend.appendChild(tx(1420,-1,['One canonical symbol per entity and store'],{'font-size':12,fill:C.gray,'text-anchor':'start','font-style':'italic'}));svg.appendChild(legend);
+document.getElementById('stage').appendChild(svg);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1-v4-five-process-compact'});window.__done=true;
+</script>
+</body>
+</html>
