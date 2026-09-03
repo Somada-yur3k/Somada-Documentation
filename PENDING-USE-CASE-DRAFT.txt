@@ -1,0 +1,70 @@
+SOMADA PENDING USE-CASE PROPOSAL
+Status: FOR DISCUSSION ONLY - NOT YET APPROVED OR APPLIED
+Recorded: August 30, 2026
+
+TOPIC
+Dean distribution of the official term schedule through SOMADA.
+
+PROPOSED USE CASES
+
+1. Publish Official Term Schedule
+   Primary actor: Dean
+   Purpose: Allow the Dean to upload or enter the official term schedule and
+   publish it to the assigned Faculty members and Head Laboratory.
+
+   Proposed result:
+   - SOMADA validates the term, class, and Faculty assignments.
+   - The official schedule is stored and versioned.
+   - The schedule becomes visible to the assigned Faculty members and Head Laboratory.
+   - SOMADA sends a notification when the schedule or a revised version is published.
+
+2. View Assigned Term Schedule
+   Primary actor: Faculty
+   Purpose: Allow a Faculty member to open and review the official term schedule
+   assigned to their classes.
+
+   Note: Automatic receipt of a notification is not a separate use case. This use
+   case applies only if Faculty actively opens and reviews the schedule in SOMADA.
+
+PROPOSED WORKFLOW
+
+Dean publishes official term schedule
+-> SOMADA validates, stores, and distributes the schedule
+-> Faculty views the assigned term schedule
+-> Head Laboratory uses the official schedule when establishing laboratory-room
+   committed blocks, availability, and vacant blocks.
+
+MODELING NOTES
+
+- "Publish Official Term Schedule" is preferred over "Send Schedule" because it
+  describes the Dean's business goal instead of a button action.
+- Do not merge "View Assigned Term Schedule" with the current "View Schedule &
+  Availability" without confirmation. The first concerns the official academic
+  or teaching schedule; the second concerns laboratory-room committed and vacant
+  blocks used for reservations.
+- Do not add <<include>> or <<extend>> between Publish and View merely because the
+  actions occur in sequence or use the same schedule record.
+- If approved, the Dean will no longer be described as strictly approval-only.
+  The Dean will still remain unable to submit laboratory reservations.
+
+ARTIFACTS TO UPDATE ONLY AFTER APPROVAL
+
+- Product Backlog
+- Event Table
+- Use Case Diagram and diagram explanation
+- Full Use Case Descriptions and table numbering
+- Project Overview and role descriptions
+- Context Diagram / DFD Level 0
+- DFD Level 1 schedule-management process and flows
+- ERD or schedule-record fields, if versioning and publication details are adopted
+
+DECISION NEEDED FROM MEMBERS AND HEAD LABORATORY
+
+- Will the Dean publish the official term schedule inside SOMADA, or will the
+  schedule continue to be sent through email/paper outside the system?
+- Should Head Laboratory receive the published schedule directly in SOMADA?
+- Should Faculty only view the schedule, or must Faculty acknowledge receipt?
+- Who may correct or replace an already published schedule?
+
+No change from this proposal has been applied to Docs.html, the diagrams, or the
+approved SOMADA workflow.

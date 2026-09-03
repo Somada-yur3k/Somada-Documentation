@@ -151,10 +151,6 @@
   .figure-frame:hover .zoom-hint{opacity:1;}
   .figure-editor-link{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 11px;border:1px solid #cbd8f1;border-radius:8px;background:#f3f7ff;color:#2455b8;font-size:12px;font-weight:700;text-decoration:none;}
   .figure-editor-link:hover{background:#e8f0ff;border-color:#9db8ea;}
-  .dfd-version-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 4px;padding:10px 12px;border:1px solid #dce5f3;border-radius:10px;background:#f8faff;font-family:'Inter',sans-serif;font-size:12px;color:var(--ink-soft);}
-  .dfd-version-nav strong{color:var(--ink);font-size:11px;text-transform:uppercase;letter-spacing:.04em;}
-  .dfd-version-nav a{padding:5px 8px;border:1px solid #cddcf4;border-radius:7px;background:#fff;font-weight:700;text-decoration:none;}
-  .dfd-version-nav a:hover{background:#eaf1ff;}
   .diagram-embed{display:block;width:100%;aspect-ratio:4500/4100;border:0;background:#fff;}
   figcaption{font-family:'Source Serif 4',serif;font-style:italic;color:var(--ink-soft);font-size:13.5px;margin-top:10px;}
 
@@ -1444,7 +1440,7 @@ function EmbeddedDiagram({ src, caption, editorHref, aspectRatio = "4500 / 4100"
   return (
     <figure className="doc-figure">
       <div className="figure-frame" style={{display:"block", cursor:"default"}}>
-        <iframe className="diagram-embed" style={{aspectRatio}} src={`${src}?embed=1`} title={caption} loading="lazy"></iframe>
+        <iframe className="diagram-embed" style={{aspectRatio}} src={`${src}${src.includes("?") ? "&" : "?"}embed=1`} title={caption} loading="lazy"></iframe>
       </div>
       <figcaption>{caption}</figcaption>
       {editorHref && <a className="figure-editor-link" href={editorHref}>Open interactive arrow editor</a>}
@@ -1452,40 +1448,41 @@ function EmbeddedDiagram({ src, caption, editorHref, aspectRatio = "4500 / 4100"
   );
 }
 
-function DfdLevel1VersionNav() {
-  return (
-    <div className="dfd-version-nav" aria-label="DFD Level 1 versions">
-      <strong>Level 1 versions</strong>
-      <a href="assets/figures-v2/dfd-level1/dfd-level1-source.html">Compact detail</a>
-      <a href="assets/figures-v2/dfd-level1-traceable/dfd-level1-traceable-source.html">Traceable flow view</a>
-    </div>
-  );
-}
-
 function DfdSection({ onZoom }) {
+  const level2Figures = [
+    { id:"p1", number:"4", title:"Process 1.0 — Manage User Access & Accounts" },
+    { id:"p2", number:"5", title:"Process 2.0 — Manage Reservations, Availability & Approvals" },
+    { id:"p3", number:"6", title:"Process 3.0 — Answer Laboratory Questions" },
+    { id:"p4", number:"7", title:"Process 4.0 — Manage Equipment & Borrowing" },
+    { id:"p5", number:"8", title:"Process 5.0 — Manage Laboratory Administration & Reporting" },
+  ];
   return (
     <section id="dfd" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.7" title="Data Flow Diagrams" id="dfd" />
 
       <section id="dfd-level1" className="doc-section sub">
         <SectionHeading level={4} title="Level 1" id="dfd-level1" />
-        <DfdLevel1VersionNav />
-        <EmbeddedDiagram src="assets/figures-v2/dfd-level1/dfd-level1-source.html" caption="Figure 3A: Level 1 Data Flow Diagram — Compact Detail View" editorHref="assets/figures-v2/dfd-level1/dfd-level1-source.html" aspectRatio="3300 / 4000" />
+        <EmbeddedDiagram src="assets/figures-v2/dfd-level1/dfd-level1-source.html" caption="Figure 3: Level 1 Data Flow Diagram" editorHref="assets/figures-v2/dfd-level1/dfd-level1-source.html" aspectRatio="3300 / 4000" />
         <div className="lede" style={{marginTop:18}}>
-          <p>Figure 3A is the compact detailed reference: it decomposes SOMADA into five primary processes and ten canonical data stores, retaining the individual boundary flows. Process 1.0 manages user access and controlled account issuance. Process 2.0 manages reservations, availability, approvals, status, and history. Process 3.0 answers authenticated laboratory questions. Process 4.0 manages inventory, equipment issuance and return, Borrowing Slip Records, and disposal. Process 5.0 manages schedules, usage and daily-task records, dashboards, Head-Laboratory-controlled clearance, and end-term reporting. Only Head Laboratory sends a Clearance Action; Laboratory Staff contribute return, usage, task, and disposal records within their assigned laboratory.</p>
-        </div>
-        <EmbeddedDiagram src="assets/figures-v2/dfd-level1-traceable/dfd-level1-traceable-source.html" caption="Figure 3B: Level 1 Data Flow Diagram — Traceable Flow View" editorHref="assets/figures-v2/dfd-level1-traceable/dfd-level1-traceable-source.html" />
-        <div className="lede" style={{marginTop:18}}>
-          <p>Figure 3B is an alternate guided view for faster tracing. It keeps the same five processes, six equal-sized external entities, and ten unique data stores, while giving each route more space and grouping closely related top-level boundary records under a readable noun label. Use its process focus controls or hover an arrow to isolate a route. Figure 3A remains the detailed individual-flow reference.</p>
+          <p>Figure 3 is the formal detailed reference: it decomposes SOMADA into five primary processes and ten canonical data stores, retaining the individual boundary flows. Process 1.0 manages user access and controlled account issuance. Process 2.0 manages reservations, availability, approvals, status, and history. Process 3.0 answers authenticated laboratory questions. Process 4.0 manages inventory, equipment issuance and return, Borrowing Slip Records, and disposal. Process 5.0 manages schedules, usage and daily-task records, dashboards, Head-Laboratory-controlled clearance, and end-term reporting. Only Head Laboratory sends a Clearance Action; Laboratory Staff contribute return, usage, task, and disposal records within their assigned laboratory.</p>
         </div>
       </section>
 
       <div className="doc-section sub">
         <SectionHeading level={4} title="Level 2" id="dfd-level2-label" />
         <div className="lede" style={{marginTop:18}}>
-          <p>Level 2 diagrams can now decompose the five-process Level 1 model. Each child diagram must preserve its parent's inputs and outputs, retain one symbol per logical external entity and data store, and keep independent noun-labelled flows. Borrowing Slip, Clearance, Daily Task, and Disposal Records remain distinct.</p>
+          <p>Figures 4 to 8 decompose the five-process formal Level 1 model. Each Level 2 figure uses a fixed canvas, a left-to-right reading direction, vertically sequenced child processes, and independent noun-labelled arrows. Borrowing Slip, Clearance, Daily Task, and Disposal Records remain distinct.</p>
         </div>
+        <a className="figure-editor-link" href="assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html">Open canonical DFD Level 2 diagrams</a>
       </div>
+      {level2Figures.map(figure => (
+        <section id={`dfd-${figure.id}`} key={figure.id} className="doc-section sub">
+          <SectionHeading level={4} title={figure.title} id={`dfd-${figure.id}`} />
+          <Figure src={`assets/figures-v2/dfd-level2-compact/png/dfd-level2-${figure.id}.png`}
+            caption={`Figure ${figure.number}: Level 2 Data Flow Diagram — ${figure.title.replace("Process ", "")}`}
+            onZoom={onZoom} editorHref={`assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=${figure.id}`} />
+        </section>
+      ))}
       {DATA.dfdProcesses.map(p => (
         <section id={p.id} key={p.id} className="doc-section sub">
           <h4 style={{fontSize:"15.5px", marginBottom:10, color:"var(--ink-soft)"}}>{p.fig} — {p.title}</h4>
@@ -1658,7 +1655,6 @@ function App() {
           <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">Use Case</a>
           <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">DFD Level 0</a>
           <a className="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">DFD L1 Compact</a>
-          <a className="page-tab" href="assets/figures-v2/dfd-level1-traceable/dfd-level1-traceable-source.html">DFD L1 Traceable</a>
         </div>
         <a className="page-tab nav-download" href="assets/downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a>
       </nav>

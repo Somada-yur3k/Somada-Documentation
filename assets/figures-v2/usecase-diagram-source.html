@@ -35,7 +35,7 @@
 /*
  * Three-column layout based on the project's Use Case Guide:
  *   left   = requester and approver processes
- *   center = conditional supporting use cases
+ *   center = supporting use cases with required <<include>> or conditional <<extend>> links
  *   right  = laboratory management processes
  * Actors remain outside the SOMADA system boundary. Dashboard-only entries
  * are intentionally excluded so the diagram emphasizes business processes.
@@ -47,7 +47,7 @@ if (new URLSearchParams(location.search).has('export')) {
 const ACTORS = [
   {
     id:'classrep', label:['Class','Representative'], color:'#2454a6', side:'left', cy:430,
-    uses:['login','chooselab','viewsched','submitres','cancelres','reschedres','viewstatus','viewhistory','clearstatus','askq']
+    uses:['login','chooselab','viewsched','submitcombined','cancelres','reschedres','viewstatus','viewhistory','clearstatus','askq']
   },
   {
     id:'dean', label:['Dean'], color:'#7b68a6', side:'left', cy:950,
@@ -55,7 +55,7 @@ const ACTORS = [
   },
   {
     id:'faculty', label:['Faculty'], color:'#e08a00', side:'left', cy:1470,
-    uses:['login','chooselab','viewsched','submitres','cancelres','reschedres','viewstatus','viewhistory','clearstatus','approve','askq']
+    uses:['login','chooselab','viewsched','submitscheduled','submitcombined','cancelres','reschedres','viewstatus','viewhistory','approve','askq']
   },
   {
     id:'headlab', label:['Head','Laboratory'], color:'#2f7d1b', side:'right', cy:430,
@@ -63,27 +63,28 @@ const ACTORS = [
   },
   {
     id:'physics', label:['Physics Laboratory','Staff'], color:'#707782', side:'right', cy:950,
-    uses:['login','mgminv','issueeq','procret','procclear','wastedisp','mgmlogs']
+    uses:['login','mgminv','issueeq','procret','wastedisp','mgmlogs']
   },
   {
     id:'circuits', label:['Circuits Laboratory','Staff'], color:'#182ed4', side:'right', cy:1470,
-    uses:['login','mgminv','issueeq','procret','procclear','wastedisp','mgmlogs']
+    uses:['login','mgminv','issueeq','procret','wastedisp','mgmlogs']
   }
 ];
 
 const BASE_UC = [
   {id:'login',       x:960, cy:205,  label:['Log In'], shared:true},
 
-  {id:'chooselab',   x:650,  cy:340,  label:['Choose Laboratory'], column:'left'},
-  {id:'viewsched',   x:650,  cy:490,  label:['View Schedule &','Availability'], column:'left'},
-  {id:'submitres',   x:650,  cy:640,  label:['Submit Laboratory','Reservation'], column:'left'},
-  {id:'cancelres',   x:650,  cy:790,  label:['Cancel Laboratory','Reservation'], column:'left'},
-  {id:'reschedres',  x:650,  cy:940,  label:['Reschedule Laboratory','Reservation'], column:'left'},
-  {id:'viewstatus',  x:650,  cy:1090, label:['View Reservation','Status'], column:'left'},
-  {id:'viewhistory', x:650,  cy:1240, label:['View Reservation','History'], column:'left'},
-  {id:'clearstatus', x:650,  cy:1390, label:['View Clearance','Status'], column:'left'},
-  {id:'approve',     x:650,  cy:1540, label:['Approve / Reject','Reservation'], column:'left'},
-  {id:'askq',        x:650,  cy:1690, label:['Ask Laboratory','Question'], column:'left'},
+  {id:'chooselab',       x:650, cy:315,  label:['Choose Laboratory'], column:'left'},
+  {id:'viewsched',       x:650, cy:425,  label:['View Schedule &','Availability'], column:'left'},
+  {id:'submitscheduled', x:650, cy:535,  label:['Submit Scheduled','Laboratory Activity'], column:'left'},
+  {id:'submitcombined',  x:650, cy:645,  label:['Submit On-Schedule','Non-Laboratory /','Out-of-Schedule Request'], column:'left', fontSize:13, lineHeight:15},
+  {id:'cancelres',       x:650, cy:755,  label:['Cancel Laboratory','Reservation'], column:'left'},
+  {id:'reschedres',      x:650, cy:865,  label:['Reschedule Laboratory','Reservation'], column:'left'},
+  {id:'viewstatus',      x:650, cy:975,  label:['View Reservation','Status'], column:'left'},
+  {id:'viewhistory',     x:650, cy:1085, label:['View Reservation','History'], column:'left'},
+  {id:'clearstatus',     x:650, cy:1195, label:['View Clearance','Status'], column:'left'},
+  {id:'approve',         x:650, cy:1305, label:['Approve / Reject','Routed Request'], column:'left'},
+  {id:'askq',            x:650, cy:1605, label:['Ask Laboratory','Question'], column:'left'},
 
   {id:'issueacct',   x:1270, cy:390,  label:['Issue Class','Representative Account'], column:'right'},
   {id:'mgminv',      x:1270, cy:570,  label:['Manage Equipment','Inventory'], column:'right'},
@@ -102,7 +103,6 @@ const SUPPORT_UC = [
   {id:'searcheq',    x:960, cy:585,  label:['Search & Filter','Inventory']},
   {id:'selectres',   x:960, cy:685,  label:['Select Resources /','Equipment']},
   {id:'recordblc',   x:960, cy:900,  label:['Record Broken / Lost','/ Consumed Items']},
-  {id:'markclear',   x:960, cy:1110, label:['Mark Clearance as','Cleared / Replaced']},
   {id:'checkitem',   x:960, cy:1325, label:['Check Item','Availability']},
   {id:'checksched',  x:960, cy:1420, label:['Check Schedule','Availability']},
   {id:'checkstatus', x:960, cy:1515, label:['Check Reservation','Status']},
@@ -110,13 +110,13 @@ const SUPPORT_UC = [
 ];
 
 const RELATIONSHIPS = [
-  {from:'addeq',       to:'mgminv',      type:'extend'},
-  {from:'updateeq',    to:'mgminv',      type:'extend'},
-  {from:'deleteeq',    to:'mgminv',      type:'extend'},
-  {from:'searcheq',    to:'mgminv',      type:'extend'},
-  {from:'selectres',   to:'submitres',   type:'extend'},
+  {from:'mgminv',      to:'addeq',       type:'include'},
+  {from:'mgminv',      to:'updateeq',    type:'include'},
+  {from:'mgminv',      to:'deleteeq',    type:'include'},
+  {from:'mgminv',      to:'searcheq',    type:'include'},
+  {from:'submitscheduled', to:'selectres', type:'include'},
+  {from:'submitcombined',  to:'selectres', type:'include'},
   {from:'recordblc',   to:'procret',     type:'extend'},
-  {from:'markclear',   to:'procclear',   type:'extend'},
   {from:'checkitem',   to:'askq',        type:'extend'},
   {from:'checksched',  to:'askq',        type:'extend'},
   {from:'checkstatus', to:'askq',        type:'extend'},
@@ -193,7 +193,7 @@ const title = el('title', {id:'diagram-title'});
 title.textContent = 'SOMADA Use Case Diagram';
 svg.appendChild(title);
 const description = el('desc', {id:'diagram-description'});
-description.textContent = 'Six large actors surround a system boundary. Request and approval use cases form the left column, conditional supporting use cases form the center column, and laboratory management use cases form the right column.';
+description.textContent = 'Six large actors surround a system boundary. Request and approval use cases form the left column, required and conditional supporting use cases form the center column, and laboratory management use cases form the right column.';
 svg.appendChild(description);
 
 const defs = el('defs');
@@ -277,9 +277,9 @@ BASE_UC.concat(SUPPORT_UC).forEach(useCase => {
     stroke:'#1ea7e8', 'stroke-width':2
   }));
   group.appendChild(textEl(useCase.x, useCase.cy+5, useCase.label, {
-    'font-size':support ? 13 : 15,
+    'font-size':support ? 13 : (useCase.fontSize || 15),
     fill:'#101828', 'font-weight':support ? '500' : '600',
-    'font-family':'Arial,Helvetica,sans-serif', lineHeight:support ? 16 : 18
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:support ? 16 : (useCase.lineHeight || 18)
   }));
   useCaseLayer.appendChild(group);
 });
@@ -305,15 +305,19 @@ const actorLayer = el('g', {'aria-label':'Actors'});
 ACTORS.forEach(actor => actorLayer.appendChild(drawActor(actor)));
 svg.appendChild(actorLayer);
 
-const legend = el('g', {transform:'translate(640 1780)', 'aria-label':'Relationship legend'});
+const legend = el('g', {transform:'translate(590 1780)', 'aria-label':'Relationship legend'});
 legend.appendChild(el('line', {x1:0, y1:0, x2:55, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
-legend.appendChild(textEl(72, 5, ['«extend» conditional supporting behavior'], {
+legend.appendChild(textEl(72, 5, ['«include» required shared behavior'], {
+  'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
+}));
+legend.appendChild(el('line', {x1:405, y1:0, x2:460, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
+legend.appendChild(textEl(477, 5, ['«extend» conditional / optional behavior'], {
   'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
 }));
 svg.appendChild(legend);
 
 document.getElementById('stage').appendChild(svg);
-window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-diagram-three-column-compact-v4'});
+window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-diagram-student-clearance-v16'});
 window.__done = true;
 </script>
 </body>
