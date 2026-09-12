@@ -71,7 +71,7 @@ const server = http.createServer((req,res) => {
     assert.deepEqual(result.duplicateIds,[]);
     assert(result.toc.every(t=>t.printed===t.actual),'TOC matches rendered pages');
     assert(result.colors.every(c=>c.background==='rgb(255, 255, 255)' && c.color==='rgb(0, 0, 0)'),'Plain black-and-white tables');
-    assert.equal(result.sourceTables,24,'All complete source tables retained for sync');
+    assert.equal(result.sourceTables,23,'20 use-case tables plus backlog, events and gap analysis retained for sync');
     assert.deepEqual(result.missingCells,[],'All table cell contents appear in preview');
     assert.deepEqual(result.overflow,[],'Content fits the page area');
     assert(result.sourceLastRow);

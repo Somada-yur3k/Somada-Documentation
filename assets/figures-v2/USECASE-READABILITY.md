@@ -14,13 +14,15 @@ Run `node integrations/google-docs/check-usecase.cjs --render` to check node tex
 
 ## Dependency evidence before drawing
 
+The documentation alignment audit maps all 20 main diagram goals one-to-one to Full Description Tables 3–22. Scheduled submission has Table 6; the combined request retains Table 7. Dashboard presentation descriptions and the dashboard-opening event are removed, without removing dashboard screens. Ten supporting goals are explicitly documented through eleven parent-table dependency entries. The Event Table has 24 single-goal entries covering every main goal and its authorized actors. Gap Analysis is Table 23. Run `node integrations/google-docs/check-usecase-alignment.cjs` to check names, permissions, references, dependency directions and numbering against the diagram source.
+
 | Base | Support | Type | Can base finish without support? / condition | Direction | Document evidence |
 | --- | --- | --- | --- | --- | --- |
 | Manage Equipment Inventory | Add Equipment | include | Required subprocess in documented management decomposition | Base → support | Table 16, maintain holdings / validation / save |
 | Manage Equipment Inventory | Update Equipment | include | Required subprocess in documented management decomposition | Base → support | Table 16, maintain holdings / validation / save |
 | Manage Equipment Inventory | Remove Equipment | include | Required subprocess in documented management decomposition | Base → support | Table 16, remove holding, outstanding-issued exception |
 | Manage Equipment Inventory | Search & Filter Inventory | include | Required subprocess in documented management decomposition | Base → support | Table 16, search or filter catalogue |
-| Submit Scheduled Laboratory Activity | Select Resources / Equipment | include | No; resource selection is part of the submission form | Base → support | Table 7, actor step 1 |
+| Submit Scheduled Laboratory Activity | Select Resources / Equipment | include | No; resource selection is part of the submission form | Base → support | Table 6, select resources and validate |
 | Submit On-Schedule Non-Laboratory / Out-of-Schedule Request | Select Resources / Equipment | include | No; same required selection step | Base → support | Table 7, actor step 1 |
 | Process Return | Record Broken / Lost / Consumed Items | extend | Yes; only on a broken, lost or consumed outcome | Support → base | Table 18, reconcile balances and classify outcomes |
 | Ask Laboratory Question | Check Item Availability | extend | Yes; detected item-availability question | Support → base | Table 14, interpret question and retrieve relevant authorized records |

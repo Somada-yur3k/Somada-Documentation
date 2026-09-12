@@ -404,452 +404,1162 @@
     ],
 
     events: [
-      { event:"A user signs in", trigger:"User enters their system username and password on the login screen", source:"Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Log In", response:"Credentials verified and a role-scoped session is established", destination:"User Accounts, role dashboard" },
-      { event:"Head Laboratory issues a Class Representative account", trigger:"Head Laboratory submits the new representative's details against a Faculty member", source:"Head Laboratory", useCase:"Issue Class Representative Account", response:"Account created and login credentials emailed to the Faculty member for hand-off", destination:"User Accounts, Faculty" },
-      { event:"An eligible requester chooses a laboratory and checks availability", trigger:"A Faculty member preparing a scheduled laboratory activity, or a Class Representative preparing an on-schedule non-laboratory or out-of-schedule request, selects Physics or Circuits Laboratory and opens its schedule", source:"Class Representative, Faculty", useCase:"Choose Laboratory, View Schedule & Availability", response:"Laboratory schedule and vacant blocks displayed for the selected laboratory", destination:"Requester" },
-      { event:"Faculty submits a scheduled laboratory activity", trigger:"Faculty completes the scheduled activity request for a class and submits it", source:"Faculty", useCase:"Submit Scheduled Laboratory Activity", response:"Request validated against the term schedule and forwarded directly to laboratory processing without another academic approval", destination:"Reservation Records, requester dashboard" },
-      { event:"Class Representative submits an on-schedule non-laboratory request", trigger:"Class Representative selects a block within the class's assigned schedule, identifies a non-laboratory academic purpose, and submits", source:"Class Representative", useCase:"Submit On-Schedule Non-Laboratory / Out-of-Schedule Request", response:"Request stored as Pending and routed to the assigned Faculty member for approval", destination:"Reservation Records, Faculty dashboard" },
-      { event:"A requester submits an out-of-schedule request", trigger:"Class Representative or Faculty selects a vacant block outside the regular schedule and submits", source:"Class Representative, Faculty", useCase:"Submit On-Schedule Non-Laboratory / Out-of-Schedule Request", response:"Request stored as Pending and routed to the appropriate Faculty member or Dean for approval", destination:"Reservation Records, approver dashboard" },
-      { event:"A requester changes plans after submitting", trigger:"Requester selects Cancel or Reschedule on an existing reservation", source:"Class Representative, Faculty", useCase:"Cancel Laboratory Reservation, Reschedule Laboratory Reservation", response:"Reservation withdrawn or moved to a new slot, held block released or reassigned", destination:"Reservation Records" },
-      { event:"Faculty decides on a routed Class Representative request", trigger:"The assigned Faculty member reviews the pending on-schedule non-laboratory or out-of-schedule request and selects Approve or Reject", source:"Faculty", useCase:"Approve / Reject Routed Request", response:"Reservation status updated to Approved or Rejected; approval record written", destination:"Reservation Records, Approval Records, Class Representative" },
-      { event:"Dean decides on a routed out-of-schedule request", trigger:"Dean reviews an out-of-schedule Faculty request, or a Class Representative request routed to the Dean, and selects Approve or Reject", source:"Dean", useCase:"Approve / Reject Routed Request", response:"Reservation status updated to Approved or Rejected; approval record written", destination:"Reservation Records, Approval Records, requester" },
-      { event:"A requester checks on a reservation", trigger:"Requester opens their dashboard", source:"Class Representative, Faculty", useCase:"View Reservation Status, View Reservation History", response:"Current status and past reservations displayed", destination:"Requester" },
-      { event:"A Class Representative checks the group's clearance", trigger:"Class Representative opens Clearance Status from the dashboard", source:"Class Representative", useCase:"View Clearance Status", response:"Any open or settled clearance raised against a student in the representative's group is displayed", destination:"Class Representative" },
-      { event:"A requester asks a question", trigger:"Requester submits a question from within their account", source:"Class Representative, Faculty", useCase:"Ask Laboratory Question", response:"Answer composed from the laboratory's own records on item, schedule, or reservation status, or operating hours", destination:"Requester" },
-      { event:"Laboratory staff issue equipment for a session", trigger:"Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued per item", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Issue Equipment", response:"Borrowing slip record created from the approved reservation; issued quantities deducted from stock; borrowing slip displayed to the requester", destination:"Borrowing Slip Records, Equipment Inventory Records, Class Representative or Faculty requester" },
-      { event:"A session ends and items are returned", trigger:"Laboratory staff record returned quantities against the issued items on the borrowing slip", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Process Return", response:"Borrowing slip quantities reconciled; unreturned consumables marked consumed; equipment not returned in working order marked broken or lost", destination:"Borrowing Slip Records, Broken/Loss/Consumed Logs" },
-      { event:"Accountability is raised for a damaged or missing item", trigger:"Head Laboratory reviews the broken or lost outcome recorded during return processing and selects the accountable student from the borrowing slip", source:"Head Laboratory", useCase:"Process Clearance", response:"Clearance record created against the accountable student and made visible to the student's Class Representative for tracking to settlement", destination:"Clearance Records, Class Representative dashboard" },
-      { event:"An item is withdrawn from the laboratory", trigger:"Laboratory staff record the item, reason, quantity and classification", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Log Waste Disposal", response:"Disposal entry created; hazardous items flagged for separate collection", destination:"Waste Disposal Records, End-Term Report" },
-      { event:"Laboratory staff maintain the equipment catalogue", trigger:"Head Laboratory or assigned Laboratory Staff add, edit, or remove a holding", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"Manage Equipment Inventory", response:"Catalogue updated and availability recomputed; a low stock flag is raised where a quantity falls below its reorder level", destination:"Equipment Inventory Records, Laboratory Dashboard" },
-      { event:"Head Laboratory records the term schedule supplied by the Dean's office", trigger:"Head Laboratory receives the official schedule and records the committed and vacant blocks for each laboratory room", source:"Head Laboratory", useCase:"Manage Laboratory Logs, Schedule & Daily Tasks", response:"Laboratory schedule updated for each room and vacant blocks published for allowed requests", destination:"Laboratory Schedule" },
-      { event:"Head Laboratory records the usage of a completed session", trigger:"The return for the session has been reconciled", source:"Head Laboratory", useCase:"Manage Laboratory Logs, Schedule & Daily Tasks", response:"Usage entry recorded in the Physics or Circuits laboratory log for the session", destination:"Physics Laboratory Logs, Circuits Laboratory Logs, End-Term Report" },
-      { event:"Head Laboratory records a daily activity", trigger:"Head Laboratory submits a completed non-transaction laboratory activity", source:"Head Laboratory", useCase:"Manage Laboratory Logs, Schedule & Daily Tasks", response:"Daily task record stored with its laboratory, activity, date, status, and recorder", destination:"Daily Task Records, End-Term Report" },
-      { event:"Laboratory staff open the dashboard", trigger:"Staff sign in and dashboard metrics load", source:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", useCase:"View Laboratory Dashboard", response:"Inventory, reservation, and usage metrics summarized for the assigned laboratory, or across both for Head Laboratory", destination:"Laboratory Dashboard" },
-      { event:"The term ends", trigger:"Head Laboratory triggers the end-of-term report", source:"Head Laboratory", useCase:"Generate End-Term Report", response:"Usage per requester, most-borrowed items, and broken, lost, and consumed totals compiled across both laboratories and exported for submission", destination:"Head Laboratory, then NU Fairview administration" },
+      {
+        "event": "A user signs in",
+        "trigger": "User enters their system username and password on the login screen",
+        "source": "Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "useCase": "Log In",
+        "response": "Credentials verified and a role-scoped session is established",
+        "destination": "User Accounts, role dashboard",
+        "diagramId": "login"
+      },
+      {
+        "event": "Head Laboratory issues a Class Representative account",
+        "trigger": "Head Laboratory submits the new representative's details against a Faculty member",
+        "source": "Head Laboratory",
+        "useCase": "Issue Class Representative Account",
+        "response": "Account created and login credentials emailed to the Faculty member for hand-off",
+        "destination": "User Accounts, Faculty",
+        "diagramId": "issueacct"
+      },
+      {
+        "event": "A requester chooses a laboratory",
+        "trigger": "A signed-in Class Representative or Faculty member selects Physics or Circuits Laboratory",
+        "source": "Class Representative, Faculty",
+        "useCase": "Choose Laboratory",
+        "response": "The selected laboratory is carried into schedule and request screens; no slot is held",
+        "destination": "Requester",
+        "diagramId": "chooselab"
+      },
+      {
+        "event": "A requester checks schedule and availability",
+        "trigger": "The signed-in requester opens the schedule for the chosen laboratory",
+        "source": "Class Representative, Faculty",
+        "useCase": "View Schedule & Availability",
+        "response": "Laboratory schedule and vacant blocks displayed for the selected laboratory",
+        "destination": "Requester",
+        "diagramId": "viewsched"
+      },
+      {
+        "event": "Faculty submits a scheduled laboratory activity",
+        "trigger": "Faculty completes the scheduled activity request for a class and submits it",
+        "source": "Faculty",
+        "useCase": "Submit Scheduled Laboratory Activity",
+        "response": "Request validated against the assigned term schedule and resource availability; stored as Approved for laboratory processing without another academic approval",
+        "destination": "Reservation Records, requester dashboard",
+        "diagramId": "submitscheduled"
+      },
+      {
+        "event": "Class Representative submits an on-schedule non-laboratory request",
+        "trigger": "Class Representative selects a block within the class's assigned schedule, identifies a non-laboratory academic purpose, and submits",
+        "source": "Class Representative",
+        "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+        "response": "Request stored as Pending and routed to the assigned Faculty member for approval",
+        "destination": "Reservation Records, Faculty dashboard",
+        "diagramId": "submitcombined"
+      },
+      {
+        "event": "A requester submits an out-of-schedule request",
+        "trigger": "Class Representative or Faculty selects a vacant block outside the regular schedule and submits",
+        "source": "Class Representative, Faculty",
+        "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+        "response": "Request stored as Pending and routed to the appropriate Faculty member or Dean for approval",
+        "destination": "Reservation Records, approver dashboard",
+        "diagramId": "submitcombined"
+      },
+      {
+        "event": "A requester cancels a reservation",
+        "trigger": "Requester confirms Cancel on their own eligible Pending or Approved reservation before the session date",
+        "source": "Class Representative, Faculty",
+        "useCase": "Cancel Laboratory Reservation",
+        "response": "Reservation set to Cancelled and its held block released",
+        "destination": "Reservation Records",
+        "diagramId": "cancelres"
+      },
+      {
+        "event": "A requester reschedules a reservation",
+        "trigger": "Requester selects and confirms a new valid block for their own eligible reservation",
+        "source": "Class Representative, Faculty",
+        "useCase": "Reschedule Laboratory Reservation",
+        "response": "New block validated, original block released, and new block held; the request returns to Pending when academic approval applies",
+        "destination": "Reservation Records",
+        "diagramId": "reschedres"
+      },
+      {
+        "event": "Faculty decides on a routed Class Representative request",
+        "trigger": "The assigned Faculty member reviews the pending on-schedule non-laboratory or out-of-schedule request and selects Approve or Reject",
+        "source": "Faculty",
+        "useCase": "Approve / Reject Routed Request",
+        "response": "Decision and approval record saved; status becomes Approved or Rejected, and rejection releases the held block",
+        "destination": "Reservation Records, Approval Records, Class Representative",
+        "diagramId": "approve"
+      },
+      {
+        "event": "Dean decides on a routed out-of-schedule request",
+        "trigger": "Dean reviews an out-of-schedule Faculty request, or a Class Representative request routed to the Dean, and selects Approve or Reject",
+        "source": "Dean",
+        "useCase": "Approve / Reject Routed Request",
+        "response": "Decision and approval record saved; status becomes Approved or Rejected, and rejection releases the held block",
+        "destination": "Reservation Records, Approval Records, requester",
+        "diagramId": "approve"
+      },
+      {
+        "event": "A requester checks a reservation status",
+        "trigger": "Requester opens one of their own reservations",
+        "source": "Class Representative, Faculty",
+        "useCase": "View Reservation Status",
+        "response": "The current reservation details and status are displayed without modifying the record",
+        "destination": "Requester",
+        "diagramId": "viewstatus"
+      },
+      {
+        "event": "A requester opens reservation history",
+        "trigger": "Requester opens Reservation History from their signed-in account",
+        "source": "Class Representative, Faculty",
+        "useCase": "View Reservation History",
+        "response": "All of the requester’s reservations are listed, including Cancelled, Rejected and Completed records",
+        "destination": "Requester",
+        "diagramId": "viewhistory"
+      },
+      {
+        "event": "A Class Representative checks the group's clearance",
+        "trigger": "Class Representative opens Clearance Status from the dashboard",
+        "source": "Class Representative",
+        "useCase": "View Clearance Status",
+        "response": "Any open or settled clearance raised against a student in the representative's group is displayed",
+        "destination": "Class Representative",
+        "diagramId": "clearstatus"
+      },
+      {
+        "event": "A requester asks a question",
+        "trigger": "Requester submits a question from within their account",
+        "source": "Class Representative, Faculty",
+        "useCase": "Ask Laboratory Question",
+        "response": "Answer composed from the laboratory's own records on item, schedule, or reservation status, or operating hours",
+        "destination": "Requester",
+        "diagramId": "askq"
+      },
+      {
+        "event": "Laboratory staff issue equipment for a session",
+        "trigger": "Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued per item",
+        "source": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "useCase": "Issue Equipment",
+        "response": "Borrowing slip record created from the approved reservation; issued quantities deducted from stock; borrowing slip displayed to the requester",
+        "destination": "Borrowing Slip Records, Equipment Inventory Records, Class Representative or Faculty requester",
+        "diagramId": "issueeq"
+      },
+      {
+        "event": "A session ends and items are returned",
+        "trigger": "Laboratory staff record returned quantities against the issued items on the borrowing slip",
+        "source": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "useCase": "Process Return",
+        "response": "Borrowing slip quantities reconciled; unreturned consumables marked consumed; equipment not returned in working order marked broken or lost",
+        "destination": "Borrowing Slip Records, Broken/Loss/Consumed Logs",
+        "diagramId": "procret"
+      },
+      {
+        "event": "Accountability is raised for a damaged or missing item",
+        "trigger": "Head Laboratory reviews the broken or lost outcome recorded during return processing and selects the accountable student from the borrowing slip",
+        "source": "Head Laboratory",
+        "useCase": "Process Clearance",
+        "response": "Clearance record created against the accountable student and made visible to the student's Class Representative for tracking to settlement",
+        "destination": "Clearance Records, Class Representative dashboard",
+        "diagramId": "procclear"
+      },
+      {
+        "event": "An item is withdrawn from the laboratory",
+        "trigger": "Laboratory staff record the item, reason, quantity and classification",
+        "source": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "useCase": "Log Waste Disposal",
+        "response": "Disposal entry created; hazardous items flagged for separate collection",
+        "destination": "Waste Disposal Records, End-Term Report",
+        "diagramId": "wastedisp"
+      },
+      {
+        "event": "Laboratory staff maintain the equipment catalogue",
+        "trigger": "Head Laboratory or assigned Laboratory Staff add, edit, or remove a holding",
+        "source": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "useCase": "Manage Equipment Inventory",
+        "response": "Catalogue updated and availability recomputed; a low stock flag is raised where a quantity falls below its reorder level",
+        "destination": "Equipment Inventory Records, Laboratory Dashboard",
+        "diagramId": "mgminv"
+      },
+      {
+        "event": "Head Laboratory records the term schedule supplied by the Dean's office",
+        "trigger": "Head Laboratory receives the official schedule and records the committed and vacant blocks for each laboratory room",
+        "source": "Head Laboratory",
+        "useCase": "Manage Logs, Schedule & Daily Tasks",
+        "response": "Laboratory schedule updated for each room and vacant blocks published for allowed requests",
+        "destination": "Laboratory Schedule",
+        "diagramId": "mgmlogs"
+      },
+      {
+        "event": "Head Laboratory records the usage of a completed session",
+        "trigger": "The return for the session has been reconciled",
+        "source": "Head Laboratory",
+        "useCase": "Manage Logs, Schedule & Daily Tasks",
+        "response": "Usage entry recorded in the Physics or Circuits laboratory log for the session",
+        "destination": "Physics Laboratory Logs, Circuits Laboratory Logs, End-Term Report",
+        "diagramId": "mgmlogs"
+      },
+      {
+        "event": "Head Laboratory records a daily activity",
+        "trigger": "Head Laboratory submits a completed non-transaction laboratory activity",
+        "source": "Head Laboratory",
+        "useCase": "Manage Logs, Schedule & Daily Tasks",
+        "response": "Daily task record stored with its laboratory, activity, date, status, and recorder",
+        "destination": "Daily Task Records, End-Term Report",
+        "diagramId": "mgmlogs"
+      },
+      {
+        "event": "The term ends",
+        "trigger": "Head Laboratory triggers the end-of-term report",
+        "source": "Head Laboratory",
+        "useCase": "Generate End-Term Report",
+        "response": "Usage per requester, most-borrowed items, and broken, lost, and consumed totals compiled across both laboratories and exported for submission",
+        "destination": "Head Laboratory, then NU Fairview administration",
+        "diagramId": "endterm"
+      }
     ],
 
     useCases: [
       {
-        id:"uc-login", table:3, title:"Log In", useCaseName:"Log In",
-        scenario:`A Class Representative, Faculty member, Dean, Head Laboratory, or Laboratory Staff needs access to their role-scoped system account.`,
-        triggeringEvent:`The user selects "Log In" and enters their username and password.`,
-        briefDescription:`The system authenticates Class Representatives, Faculty, the Dean, Head Laboratory, and laboratory-specific staff. Under the current manual process there is no system at all — a requester fills out a paper form and brings it to the laboratory in person. Every role signs in with a dedicated system account and a system-generated password: a Class Representative's username is their NU Student ID, and every other role's username is their NU Fairview email. The system verifies the credentials, establishes a session scoped to the user's role and, for Head Laboratory and Laboratory Staff, their assigned laboratory, and loads the dashboard for that role. Physics Laboratory Staff and Circuits Laboratory Staff never receive standing access to the other laboratory's data.`,
-        actors:"Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"View My Dashboard, View Laboratory Dashboard, Issue Class Representative Account",
-        stakeholders:[
-          `Class Representative and Faculty: need their own account to submit and track reservations without going to the laboratory in person.`,
-          `Dean: needs an account to review and decide out-of-schedule requests routed to the office; the Dean does not submit laboratory reservations.`,
-          `Head Laboratory and Laboratory Staff: need access scoped to the laboratory or laboratories they are assigned to.`,
-          `NU Fairview: requires every account identity-anchored to a real NU identifier.`,
+        "id": "uc-login",
+        "table": 3,
+        "title": "Log In",
+        "useCaseName": "Log In",
+        "scenario": "A Class Representative, Faculty member, Dean, Head Laboratory, or Laboratory Staff needs access to their role-scoped system account.",
+        "triggeringEvent": "The user selects \"Log In\" and enters their username and password.",
+        "briefDescription": "The system authenticates Class Representatives, Faculty, the Dean, Head Laboratory, and laboratory-specific staff. Under the current manual process there is no system at all — a requester fills out a paper form and brings it to the laboratory in person. Every role signs in with a dedicated system account and a system-generated password: a Class Representative's username is their NU Student ID, and every other role's username is their NU Fairview email. The system verifies the credentials, establishes a session scoped to the user's role and, for Head Laboratory and Laboratory Staff, their assigned laboratory, and loads the dashboard for that role. Physics Laboratory Staff and Circuits Laboratory Staff never receive standing access to the other laboratory's data.",
+        "actors": "Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "related": [
+          "Issue Class Representative Account"
         ],
-        preconditions:[`The user's account has already been issued: Class Representative accounts are created by Head Laboratory and handed to the Faculty member; all other accounts are provisioned in advance.`,`The system is reachable from the user's device.`],
-        postconditions:[`A session scoped to the user's role, and laboratory assignment where applicable, is established and the corresponding dashboard is displayed.`,`If verification fails, no session is created.`],
-        flowActor:[`User opens the login screen.`,`User enters their username and password.`,`User submits the credentials.`],
-        flowSystem:[`System validates the credentials against the stored account.`,`System establishes a session scoped to the user's role and laboratory assignment.`,`System loads the dashboard for that role.`],
-        exceptions:[
-          `If the credentials are invalid, the system reports the failure and no session is created.`,
-          `If the account is unavailable, the system displays a failure message and directs the user to the account holder responsible for reissuing it — Head Laboratory for a Class Representative account.`,
-          `If a Physics or Circuits Laboratory Staff account attempts to reach the other laboratory's screens, the system refuses access.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need their own account to submit and track reservations without going to the laboratory in person.",
+          "Dean: needs an account to review and decide out-of-schedule requests routed to the office; the Dean does not submit laboratory reservations.",
+          "Head Laboratory and Laboratory Staff: need access scoped to the laboratory or laboratories they are assigned to.",
+          "NU Fairview: requires every account identity-anchored to a real NU identifier."
         ],
+        "preconditions": [
+          "The user's account has already been issued: Class Representative accounts are created by Head Laboratory and handed to the Faculty member; all other accounts are provisioned in advance.",
+          "The system is reachable from the user's device."
+        ],
+        "postconditions": [
+          "A session scoped to the user's role, and laboratory assignment where applicable, is established and the corresponding dashboard is displayed.",
+          "If verification fails, no session is created."
+        ],
+        "flowActor": [
+          "User opens the login screen.",
+          "User enters their username and password.",
+          "User submits the credentials."
+        ],
+        "flowSystem": [
+          "System validates the credentials against the stored account.",
+          "System establishes a session scoped to the user's role and laboratory assignment.",
+          "System loads the dashboard for that role."
+        ],
+        "exceptions": [
+          "If the credentials are invalid, the system reports the failure and no session is created.",
+          "If the account is unavailable, the system displays a failure message and directs the user to the account holder responsible for reissuing it — Head Laboratory for a Class Representative account.",
+          "If a Physics or Circuits Laboratory Staff account attempts to reach the other laboratory's screens, the system refuses access."
+        ],
+        "diagramId": "login",
+        "dependencies": []
       },
       {
-        id:"uc-viewdash", table:4, title:"View My Dashboard", useCaseName:"View My Dashboard",
-        scenario:`A Class Representative or Faculty member wants a single landing page for their own reservations.`,
-        triggeringEvent:`The requester logs in and My Dashboard loads.`,
-        briefDescription:`My Dashboard is the requester-side personal landing page: it surfaces current reservation status and reservation history for both requester roles. For a Class Representative only, it also surfaces any clearance raised against a student in that representative's group. Faculty accounts do not receive or display clearance records. Because the requester is signed in, the dashboard is scoped to that person's own reservations and, where applicable, the representative's own student group.`,
-        actors:"Class Representative, Faculty", related:"Log In, View Reservation Status, View Reservation History, View Clearance Status",
-        stakeholders:[
-          `Class Representative: needs reservations, history, and any student-group clearance visible without a reference number.`,
-          `Faculty: needs personal reservation status and history; clearance records are outside the Faculty account's scope.`,
-          `Head Laboratory: benefits from fewer status enquiries handled in person.`,
+        "id": "uc-chooselab",
+        "table": 4,
+        "title": "Choose Laboratory",
+        "useCaseName": "Choose Laboratory",
+        "scenario": "A requester needs to work with one specific laboratory's schedule and resources before booking.",
+        "triggeringEvent": "The requester selects Physics Laboratory or Circuits Laboratory.",
+        "briefDescription": "The requester selects Physics or Circuits Laboratory. Every reservation, schedule view, and inventory interaction downstream is scoped to the laboratory chosen here, so a requester never has to sort Physics results out of a mixed list.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "View Schedule & Availability",
+          "Submit Scheduled Laboratory Activity",
+          "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request"
         ],
-        preconditions:[`The requester is signed in.`],
-        postconditions:[`The dashboard displays the requester's current reservation status and reservation history. If the requester is a Class Representative, it also displays clearance status for the representative's student group.`,`No stored record is changed.`],
-        flowActor:[`Requester logs in.`,`Requester reviews the dashboard summary.`,`Requester opens a specific reservation or clearance entry for detail.`],
-        flowSystem:[`System retrieves the reservations belonging to the signed-in requester. For a Class Representative, it also retrieves clearance records raised against students in that representative's group.`,`System renders the role-scoped summary on the dashboard.`],
-        exceptions:[
-          `If the requester has no reservations yet, the dashboard directs them to the scheduled activity or the combined on-schedule non-laboratory / out-of-schedule request action permitted for their role.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need to work against the correct laboratory's schedule and resources within their allowed request scope.",
+          "Physics Laboratory Staff and Circuits Laboratory Staff: rely on requests arriving already scoped to their laboratory."
         ],
+        "preconditions": [
+          "The requester is signed in."
+        ],
+        "postconditions": [
+          "The selected laboratory is carried into the schedule view and any reservation the requester goes on to submit."
+        ],
+        "flowActor": [
+          "Requester selects Physics Laboratory or Circuits Laboratory."
+        ],
+        "flowSystem": [
+          "System scopes the following schedule and reservation screens to the selected laboratory."
+        ],
+        "exceptions": [
+          "None — selection is always available to a signed-in requester."
+        ],
+        "diagramId": "chooselab",
+        "dependencies": []
       },
       {
-        id:"uc-chooselab", table:5, title:"Choose Laboratory", useCaseName:"Choose Laboratory",
-        scenario:`A requester needs to work with one specific laboratory's schedule and resources before booking.`,
-        triggeringEvent:`The requester selects Physics Laboratory or Circuits Laboratory.`,
-        briefDescription:`Choosing a laboratory is now an explicit first step rather than implied by which paper form was picked up. Every reservation, schedule view, and inventory interaction downstream is scoped to the laboratory chosen here, so a requester never has to sort Physics results out of a mixed list.`,
-        actors:"Class Representative, Faculty", related:"View Schedule & Availability, Submit Scheduled Laboratory Activity, Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
-        stakeholders:[
-          `Class Representative and Faculty: need to work against the correct laboratory's schedule and resources within their allowed request scope.`,
-          `Physics Laboratory Staff and Circuits Laboratory Staff: rely on requests arriving already scoped to their laboratory.`,
+        "id": "uc-viewsched",
+        "table": 5,
+        "title": "View Schedule & Availability",
+        "useCaseName": "View Schedule & Availability",
+        "scenario": "A requester needs to know which blocks are open before submitting a reservation.",
+        "triggeringEvent": "The requester opens the schedule for the chosen laboratory.",
+        "briefDescription": "The system displays the committed and vacant blocks for the chosen laboratory, drawn from the laboratory schedule that Head Laboratory maintains, together with equipment availability where relevant. This is a read-only view; it does not itself hold a slot.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "Choose Laboratory",
+          "Submit Scheduled Laboratory Activity",
+          "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request"
         ],
-        preconditions:[`The requester is signed in.`],
-        postconditions:[`The selected laboratory is carried into the schedule view and any reservation the requester goes on to submit.`],
-        flowActor:[`Requester selects Physics Laboratory or Circuits Laboratory.`],
-        flowSystem:[`System scopes the following schedule and reservation screens to the selected laboratory.`],
-        exceptions:[
-          `None — selection is always available to a signed-in requester.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need to see open blocks before committing to an allowed request.",
+          "Head Laboratory: needs the schedule it maintains to be the single source requesters see."
         ],
+        "preconditions": [
+          "A laboratory has been chosen."
+        ],
+        "postconditions": [
+          "The schedule and vacant blocks for the chosen laboratory are displayed. No stored record is changed."
+        ],
+        "flowActor": [
+          "Requester opens the schedule for the chosen laboratory.",
+          "Requester reviews the committed and vacant blocks."
+        ],
+        "flowSystem": [
+          "System retrieves the laboratory schedule and equipment availability for the chosen laboratory.",
+          "System displays the committed and vacant blocks."
+        ],
+        "exceptions": [
+          "If the term schedule has not yet been recorded by Head Laboratory, the system shows no vacant blocks and advises the requester to check again later."
+        ],
+        "diagramId": "viewsched",
+        "dependencies": []
       },
       {
-        id:"uc-viewsched", table:6, title:"View Schedule & Availability", useCaseName:"View Schedule & Availability",
-        scenario:`A requester needs to know which blocks are open before submitting a reservation.`,
-        triggeringEvent:`The requester opens the schedule for the chosen laboratory.`,
-        briefDescription:`The system displays the committed and vacant blocks for the chosen laboratory, drawn from the laboratory schedule that Head Laboratory maintains, together with equipment availability where relevant. This is a read-only view; it does not itself hold a slot.`,
-        actors:"Class Representative, Faculty", related:"Choose Laboratory, Submit Scheduled Laboratory Activity, Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
-        stakeholders:[
-          `Class Representative and Faculty: need to see open blocks before committing to an allowed request.`,
-          `Head Laboratory: needs the schedule it maintains to be the single source requesters see.`,
+        "id": "uc-submitscheduled",
+        "table": 6,
+        "title": "Submit Scheduled Laboratory Activity",
+        "useCaseName": "Submit Scheduled Laboratory Activity",
+        "scenario": "A Faculty member arranges a regular laboratory activity already covered by the class's term schedule.",
+        "triggeringEvent": "Faculty completes the scheduled laboratory activity form and submits it.",
+        "briefDescription": "Faculty submits a scheduled laboratory activity for their class without another academic approval; the system validates the assigned schedule and selected resources before making the reservation available for laboratory processing.",
+        "actors": "Faculty",
+        "related": [
+          "Choose Laboratory",
+          "View Schedule & Availability",
+          "Select Resources / Equipment",
+          "Issue Equipment",
+          "Cancel Laboratory Reservation",
+          "Reschedule Laboratory Reservation"
         ],
-        preconditions:[`A laboratory has been chosen.`],
-        postconditions:[`The schedule and vacant blocks for the chosen laboratory are displayed. No stored record is changed.`],
-        flowActor:[`Requester opens the schedule for the chosen laboratory.`,`Requester reviews the committed and vacant blocks.`],
-        flowSystem:[`System retrieves the laboratory schedule and equipment availability for the chosen laboratory.`,`System displays the committed and vacant blocks.`],
-        exceptions:[
-          `If the term schedule has not yet been recorded by Head Laboratory, the system shows no vacant blocks and advises the requester to check again later.`,
+        "stakeholders": [
+          "Faculty: needs to arrange the class's regular laboratory activity.",
+          "Head Laboratory and assigned Laboratory Staff: need a complete, validated reservation before processing or issuance.",
+          "Class Representative: coordinates with Faculty but cannot submit the class's scheduled laboratory activity."
         ],
+        "preconditions": [
+          "The requester is signed in and has chosen a laboratory.",
+          "The laboratory schedule for the term has been recorded."
+        ],
+        "postconditions": [
+          "The validated reservation is stored as Approved for laboratory processing without creating an additional academic approval decision. The selected block is held against conflicting reservations."
+        ],
+        "flowActor": [
+          "Faculty chooses the laboratory and the class's scheduled block.",
+          "Faculty selects the required resources and quantities.",
+          "Faculty confirms the activity details and submits the scheduled laboratory activity."
+        ],
+        "flowSystem": [
+          "System checks the signed-in Faculty role and the class's term schedule.",
+          "System performs Select Resources / Equipment using the selected laboratory's catalogue and validates requested quantities.",
+          "System validates the block and required request information.",
+          "System stores the validated reservation as Approved and makes it available to Head Laboratory / assigned Laboratory Staff for processing."
+        ],
+        "exceptions": [
+          "If a Class Representative or Dean attempts this submission, the system refuses it.",
+          "If the block is outside the class's assigned laboratory schedule, Faculty must use the out-of-schedule request flow.",
+          "If required details are missing, requested quantities exceed availability, or a conflicting reservation exists, the system requests corrections before submission."
+        ],
+        "diagramId": "submitscheduled",
+        "dependencies": [
+          {
+            "diagramId": "selectres",
+            "name": "Select Resources / Equipment",
+            "type": "include",
+            "condition": "Every completed submission requires resource selection.",
+            "behavior": "Display the selected laboratory catalogue, capture required items and quantities, and validate them against availability before submission."
+          }
+        ]
       },
       {
-        id:"uc-submitres", table:7, title:"Submit Laboratory Request — Scheduled Activity / On-Schedule Non-Lab or Out-of-Schedule", useCaseName:"Submit Scheduled Laboratory Activity / Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
-        scenario:`A requester needs a laboratory room, equipment, or both, for a session.`,
-        triggeringEvent:`The requester completes the reservation form and submits it.`,
-        briefDescription:`Renamed from "File Laboratory Service Request." The diagram presents two submission goals. For a regular laboratory activity already covered by the term schedule, the Faculty member — not the Class Representative — uses Submit Scheduled Laboratory Activity and chooses when the class will complete it; this Faculty request proceeds without another academic approval. Submit On-Schedule Non-Laboratory / Out-of-Schedule Request states its two alternative flows directly: a Class Representative may submit an on-schedule non-laboratory request within the class's assigned schedule for assigned-Faculty approval, while a Class Representative or Faculty member may submit for out-of-schedule laboratory use under the applicable Faculty or Dean approval route. The Dean is approval-only in the system and never submits a laboratory reservation. Every requester selects the needed resources from the catalogue and submits against the laboratory and schedule block already chosen.`,
-        actors:"Class Representative, Faculty", related:"Choose Laboratory, View Schedule & Availability, Approve / Reject Routed Request, Cancel Laboratory Reservation, Reschedule Laboratory Reservation",
-        stakeholders:[
-          `Class Representative: needs to submit an on-schedule non-laboratory request within the class's assigned schedule, or an out-of-schedule request, without a paper form.`,
-          `Faculty: needs to submit scheduled laboratory activities and request exceptional out-of-schedule use.`,
-          `Dean: needs approval authority over out-of-schedule requests routed to the office, without being modeled as a requester.`,
-          `Head Laboratory: needs requests to arrive complete and already scoped to the correct laboratory.`,
+        "id": "uc-submitres",
+        "table": 7,
+        "title": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+        "useCaseName": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+        "scenario": "A requester needs a laboratory room, equipment, or both, for a session.",
+        "triggeringEvent": "The requester completes the reservation form and submits it.",
+        "briefDescription": "A Class Representative submits an on-schedule non-laboratory request for assigned-Faculty approval, or a Class Representative or Faculty member submits an out-of-schedule request for the applicable Faculty/Dean review.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "Choose Laboratory",
+          "View Schedule & Availability",
+          "Approve / Reject Routed Request",
+          "Cancel Laboratory Reservation",
+          "Reschedule Laboratory Reservation",
+          "Select Resources / Equipment"
         ],
-        preconditions:[`The requester is signed in and has chosen a laboratory.`,`The laboratory schedule for the term has been recorded.`],
-        postconditions:[`The request is stored. A scheduled Faculty laboratory activity is forwarded directly to Head Laboratory / Laboratory Staff for processing. A Class Representative's on-schedule non-laboratory request is stored as Pending and routed to the assigned Faculty member. An out-of-schedule request is stored as Pending and routed to Faculty or Dean as applicable under Approve / Reject Routed Request. The selected slot is held against further reservations while the request is active.`],
-        flowActor:[
-          `Requester selects the resources the session needs from the catalogue.`,
-          `Requester confirms the laboratory, date, and time already chosen.`,
-          `Requester selects Scheduled Laboratory Activity or the combined On-Schedule Non-Laboratory / Out-of-Schedule Request; for the combined request, the requester selects the applicable variant.`,
-          `For an on-schedule Class Representative request, the requester confirms that the block belongs to the class's assigned schedule and states the non-laboratory academic purpose.`,
-          `For an out-of-schedule Class Representative reservation, the requester's group is carried from their account.`,
-          `Requester reviews the reservation and submits it.`,
+        "stakeholders": [
+          "Class Representative: needs to submit an on-schedule non-laboratory request within the class's assigned schedule, or an out-of-schedule request, without a paper form.",
+          "Faculty: needs to request exceptional out-of-schedule use and review requests from the assigned Class Representative.",
+          "Dean: needs approval authority over out-of-schedule requests routed to the office, without being modeled as a requester.",
+          "Head Laboratory: needs requests to arrive complete and already scoped to the correct laboratory."
         ],
-        flowSystem:[
-          `System displays the resource catalogue scoped to the chosen laboratory with live availability.`,
-          `System validates the selected slot against the laboratory schedule.`,
-          `System validates the requester's role and selected flow: Faculty may submit a scheduled laboratory activity or the out-of-schedule variant of the combined request; Class Representative may submit its on-schedule non-laboratory or out-of-schedule variant.`,
-          `System forwards a scheduled Faculty laboratory activity directly for laboratory processing; routes an on-schedule Class Representative non-laboratory request to the assigned Faculty member; and routes an out-of-schedule request to Faculty or Dean as applicable.`,
+        "preconditions": [
+          "The requester is signed in and has chosen a laboratory.",
+          "The laboratory schedule for the term has been recorded."
         ],
-        exceptions:[
-          `If the selected slot is already committed, the system reports the conflict and offers the remaining vacant blocks.`,
-          `If a requested resource quantity exceeds availability, the system flags it so the requester can adjust it.`,
-          `If required information is incomplete, the system requests corrections before submission.`,
-          `If a Class Representative identifies the request as the class's scheduled laboratory activity, the system blocks that type and directs the class to its Faculty member.`,
-          `If a Class Representative selects On-Schedule but the block is outside the class's assigned schedule, the system requires the request to be filed as Out-of-Schedule.`,
+        "postconditions": [
+          "The request is stored as Pending and the selected block is held. On-schedule non-laboratory Class Representative requests are routed to assigned Faculty; out-of-schedule requests are routed to Faculty or Dean as applicable. This use case does not submit scheduled Faculty laboratory activities."
         ],
+        "flowActor": [
+          "Requester chooses the laboratory and the intended block.",
+          "Requester selects required resources and quantities.",
+          "Class Representative selects On-Schedule Non-Laboratory or Out-of-Schedule; Faculty selects Out-of-Schedule.",
+          "For an on-schedule non-laboratory request, Class Representative confirms the assigned class block and states the academic purpose.",
+          "For a Class Representative request, the student group is carried from the account.",
+          "Requester reviews the information and submits."
+        ],
+        "flowSystem": [
+          "System enforces the signed-in requester's allowed variant.",
+          "System performs Select Resources / Equipment and validates item quantities.",
+          "System validates an on-schedule non-laboratory block against the Class Representative's class schedule, or validates an out-of-schedule block as vacant.",
+          "System stores the reservation as Pending, holds the block and routes it to the appropriate Faculty or Dean."
+        ],
+        "exceptions": [
+          "If the selected slot is already committed, the system reports the conflict and offers the remaining vacant blocks.",
+          "If a requested resource quantity exceeds availability, the system flags it so the requester can adjust it.",
+          "If required information is incomplete, the system requests corrections before submission.",
+          "If a Class Representative identifies the request as the class's scheduled laboratory activity, the system blocks that type and directs the class to its Faculty member.",
+          "If a Class Representative selects On-Schedule but the block is outside the class's assigned schedule, the system requires the request to be filed as Out-of-Schedule."
+        ],
+        "diagramId": "submitcombined",
+        "dependencies": [
+          {
+            "diagramId": "selectres",
+            "name": "Select Resources / Equipment",
+            "type": "include",
+            "condition": "Every completed submission requires resource selection.",
+            "behavior": "Display the selected laboratory catalogue, capture required items and quantities, and validate them against availability before submission."
+          }
+        ]
       },
       {
-        id:"uc-cancelres", table:8, title:"Cancel Laboratory Reservation", useCaseName:"Cancel Laboratory Reservation",
-        scenario:`A requester no longer needs a reservation they already submitted.`,
-        triggeringEvent:`The requester selects Cancel on an existing reservation from their dashboard.`,
-        briefDescription:`Genuinely missing from the previous request-and-track model, where a request could only run its course once filed. The requester withdraws a Pending or Approved reservation before its session date, and the block it held is released back to the schedule.`,
-        actors:"Class Representative, Faculty", related:"Submit Scheduled Laboratory Activity, Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, Reschedule Laboratory Reservation, View Reservation Status",
-        stakeholders:[
-          `Class Representative and Faculty: need to withdraw a reservation without it running to a no-show.`,
-          `Head Laboratory: needs the released block to reopen for other requesters promptly.`,
+        "id": "uc-cancelres",
+        "table": 8,
+        "title": "Cancel Laboratory Reservation",
+        "useCaseName": "Cancel Laboratory Reservation",
+        "scenario": "A requester no longer needs a reservation they already submitted.",
+        "triggeringEvent": "The requester selects Cancel on an existing reservation from their dashboard.",
+        "briefDescription": "The requester withdraws a Pending or Approved reservation before its session date, and the block it held is released back to the schedule.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "Submit Scheduled Laboratory Activity",
+          "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+          "Reschedule Laboratory Reservation",
+          "View Reservation Status"
         ],
-        preconditions:[`A reservation exists belonging to the requester, with status Pending or Approved.`,`The session date has not yet passed.`],
-        postconditions:[`The reservation status is set to Cancelled and the block it held is released back to the laboratory schedule.`],
-        flowActor:[`Requester opens the reservation from their dashboard.`,`Requester selects Cancel and confirms.`],
-        flowSystem:[`System validates that the reservation belongs to the requester and is still cancellable.`,`System sets the status to Cancelled and releases the held block.`],
-        exceptions:[
-          `If the reservation is already Completed or the session date has passed, the system refuses the cancellation.`,
-          `If the reservation was Approved, the assigned Faculty member or Dean is notified of the cancellation.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need to withdraw a reservation without it running to a no-show.",
+          "Head Laboratory: needs the released block to reopen for other requesters promptly."
         ],
+        "preconditions": [
+          "A reservation exists belonging to the requester, with status Pending or Approved.",
+          "The session date has not yet passed."
+        ],
+        "postconditions": [
+          "The reservation status is set to Cancelled and the block it held is released back to the laboratory schedule."
+        ],
+        "flowActor": [
+          "Requester opens the reservation from their dashboard.",
+          "Requester selects Cancel and confirms."
+        ],
+        "flowSystem": [
+          "System validates that the reservation belongs to the requester and is still cancellable.",
+          "System sets the status to Cancelled and releases the held block."
+        ],
+        "exceptions": [
+          "If the reservation is already Completed or the session date has passed, the system refuses the cancellation.",
+          "If the reservation was Approved, the assigned Faculty member or Dean is notified of the cancellation."
+        ],
+        "diagramId": "cancelres",
+        "dependencies": []
       },
       {
-        id:"uc-reschedres", table:9, title:"Reschedule Laboratory Reservation", useCaseName:"Reschedule Laboratory Reservation",
-        scenario:`A requester needs to move a reservation to a different date or time.`,
-        triggeringEvent:`The requester selects Reschedule on an existing reservation from their dashboard.`,
-        briefDescription:`Also genuinely missing from the previous model. The requester selects a new vacant block for the same laboratory; the original block is released and the new block is held in its place. Where the original reservation required a decision, the rescheduled reservation returns to Pending for the same approver.`,
-        actors:"Class Representative, Faculty", related:"Submit Scheduled Laboratory Activity, Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, Cancel Laboratory Reservation, View Schedule & Availability",
-        stakeholders:[
-          `Class Representative and Faculty: need to move a booking without cancelling and refiling from scratch.`,
-          `Head Laboratory: needs the schedule to reflect the move rather than holding two blocks for one session.`,
+        "id": "uc-reschedres",
+        "table": 9,
+        "title": "Reschedule Laboratory Reservation",
+        "useCaseName": "Reschedule Laboratory Reservation",
+        "scenario": "A requester needs to move a reservation to a different date or time.",
+        "triggeringEvent": "The requester selects Reschedule on an existing reservation from their dashboard.",
+        "briefDescription": "The requester selects a new vacant block for the same laboratory; the original block is released and the new block is held in its place. Where the original reservation required a decision, the rescheduled reservation returns to Pending for the same approver.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "Submit Scheduled Laboratory Activity",
+          "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+          "Cancel Laboratory Reservation",
+          "View Schedule & Availability"
         ],
-        preconditions:[`A reservation exists belonging to the requester, with status Pending or Approved.`,`The session date has not yet passed.`],
-        postconditions:[`The original block is released. The new block is held against the reservation. Where a decision applies, the reservation returns to Pending for the original approver.`],
-        flowActor:[`Requester opens the reservation from their dashboard.`,`Requester selects Reschedule and chooses a new vacant block.`,`Requester confirms the change.`],
-        flowSystem:[`System validates the new block against the laboratory schedule.`,`System releases the original block and holds the new one.`,`System resets the status to Pending where a decision applies, and routes it to the original approver.`],
-        exceptions:[
-          `If the new block is already committed, the system reports the conflict and offers the remaining vacant blocks.`,
-          `If the reservation is already Completed or the session date has passed, the system refuses the reschedule.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need to move a booking without cancelling and refiling from scratch.",
+          "Head Laboratory: needs the schedule to reflect the move rather than holding two blocks for one session."
         ],
+        "preconditions": [
+          "A reservation exists belonging to the requester, with status Pending or Approved.",
+          "The session date has not yet passed."
+        ],
+        "postconditions": [
+          "The original block is released. The new block is held against the reservation. Where a decision applies, the reservation returns to Pending for the original approver."
+        ],
+        "flowActor": [
+          "Requester opens the reservation from their dashboard.",
+          "Requester selects Reschedule and chooses a new vacant block.",
+          "Requester confirms the change."
+        ],
+        "flowSystem": [
+          "System validates the new block against the laboratory schedule.",
+          "System releases the original block and holds the new one.",
+          "System resets the status to Pending where a decision applies, and routes it to the original approver."
+        ],
+        "exceptions": [
+          "If the new block is already committed, the system reports the conflict and offers the remaining vacant blocks.",
+          "If the reservation is already Completed or the session date has passed, the system refuses the reschedule."
+        ],
+        "diagramId": "reschedres",
+        "dependencies": []
       },
       {
-        id:"uc-viewstatus", table:10, title:"View Reservation Status", useCaseName:"View Reservation Status",
-        scenario:`A requester wants to know where a specific reservation currently stands.`,
-        triggeringEvent:`The requester opens a reservation from their dashboard.`,
-        briefDescription:`Replaces the old public reference-number tracking screen. Because the requester is signed in, the system already knows which reservations are theirs — no reference number is needed. The status shown is Pending, Approved, Rejected, Ongoing, or Completed.`,
-        actors:"Class Representative, Faculty", related:"View My Dashboard, Submit Scheduled Laboratory Activity, Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, Approve / Reject Routed Request",
-        stakeholders:[
-          `Class Representative and Faculty: need progress visible without a reference number or a visit to the laboratory.`,
-          `Head Laboratory: needs routine status enquiries answered without personal attendance.`,
+        "id": "uc-viewstatus",
+        "table": 10,
+        "title": "View Reservation Status",
+        "useCaseName": "View Reservation Status",
+        "scenario": "A requester wants to know where a specific reservation currently stands.",
+        "triggeringEvent": "The requester opens a reservation from their dashboard.",
+        "briefDescription": "The signed-in requester views their own reservation details and current status: Pending, Approved, Rejected, Cancelled, Ongoing, or Completed. No public reference-number lookup is required.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "Submit Scheduled Laboratory Activity",
+          "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+          "Approve / Reject Routed Request"
         ],
-        preconditions:[`A reservation exists belonging to the requester.`],
-        postconditions:[`The current status and details of the reservation are displayed. No stored record is changed.`],
-        flowActor:[`Requester opens a reservation from their dashboard.`,`Requester reviews its status.`],
-        flowSystem:[`System retrieves the reservation and its current status.`,`System displays the status and details held on the record.`],
-        exceptions:[
-          `None beyond ordinary access control — a requester cannot view a reservation that is not theirs.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need progress visible without a reference number or a visit to the laboratory.",
+          "Head Laboratory: needs routine status enquiries answered without personal attendance."
         ],
+        "preconditions": [
+          "A reservation exists belonging to the requester."
+        ],
+        "postconditions": [
+          "The current status and details of the reservation are displayed. No stored record is changed."
+        ],
+        "flowActor": [
+          "Requester opens a reservation from their dashboard.",
+          "Requester reviews its status."
+        ],
+        "flowSystem": [
+          "System retrieves the reservation and its current status.",
+          "System displays the status and details held on the record."
+        ],
+        "exceptions": [
+          "None beyond ordinary access control — a requester cannot view a reservation that is not theirs."
+        ],
+        "diagramId": "viewstatus",
+        "dependencies": []
       },
       {
-        id:"uc-viewhistory", table:11, title:"View Reservation History", useCaseName:"View Reservation History",
-        scenario:`A requester wants to see their past reservations, not just the current one.`,
-        triggeringEvent:`The requester opens Reservation History from their dashboard.`,
-        briefDescription:`Lists every reservation the requester has submitted, including cancelled, rejected, and completed ones, so a Class Representative or Faculty member has a full record of past laboratory use without asking Head Laboratory to look it up.`,
-        actors:"Class Representative, Faculty", related:"View My Dashboard, View Reservation Status",
-        stakeholders:[
-          `Class Representative and Faculty: need a record of past reservations for their own reference.`,
+        "id": "uc-viewhistory",
+        "table": 11,
+        "title": "View Reservation History",
+        "useCaseName": "View Reservation History",
+        "scenario": "A requester wants to see their past reservations, not just the current one.",
+        "triggeringEvent": "The requester opens Reservation History from their dashboard.",
+        "briefDescription": "Lists every reservation the requester has submitted, including cancelled, rejected, and completed ones, so a Class Representative or Faculty member has a full record of past laboratory use without asking Head Laboratory to look it up.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "View Reservation Status"
         ],
-        preconditions:[`The requester is signed in.`],
-        postconditions:[`The requester's past reservations are displayed. No stored record is changed.`],
-        flowActor:[`Requester opens Reservation History.`,`Requester reviews the listed reservations.`],
-        flowSystem:[`System retrieves every reservation belonging to the requester, regardless of status.`,`System displays them in the history view.`],
-        exceptions:[
-          `If the requester has no past reservations, the history is shown empty.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need a record of past reservations for their own reference."
         ],
+        "preconditions": [
+          "The requester is signed in."
+        ],
+        "postconditions": [
+          "The requester's past reservations are displayed. No stored record is changed."
+        ],
+        "flowActor": [
+          "Requester opens Reservation History.",
+          "Requester reviews the listed reservations."
+        ],
+        "flowSystem": [
+          "System retrieves every reservation belonging to the requester, regardless of status.",
+          "System displays them in the history view."
+        ],
+        "exceptions": [
+          "If the requester has no past reservations, the history is shown empty."
+        ],
+        "diagramId": "viewhistory",
+        "dependencies": []
       },
       {
-        id:"uc-clearstatus", table:12, title:"View Clearance Status", useCaseName:"View Clearance Status",
-        scenario:`A Class Representative needs to know what accountability, if any, has been raised against a student in their group.`,
-        triggeringEvent:`The Class Representative opens Clearance Status from the dashboard.`,
-        briefDescription:`Head Laboratory's Process Clearance creates accountability records only against students identified on a borrowing slip. View Clearance Status lets the Class Representative see the item, accountable student, reason, and settlement status for their own group. Faculty accounts do not receive or display clearance records.`,
-        actors:"Class Representative", related:"View My Dashboard, Process Clearance",
-        stakeholders:[
-          `Class Representative and accountable student: need to know what is recorded against the student and how to settle it.`,
-          `Head Laboratory: needs the clearance visible to the responsible student group without a separate paper copy.`,
+        "id": "uc-clearstatus",
+        "table": 12,
+        "title": "View Clearance Status",
+        "useCaseName": "View Clearance Status",
+        "scenario": "A Class Representative needs to know what accountability, if any, has been raised against a student in their group.",
+        "triggeringEvent": "The Class Representative opens Clearance Status from the dashboard.",
+        "briefDescription": "Head Laboratory's Process Clearance creates accountability records only against students identified on a borrowing slip. View Clearance Status lets the Class Representative see the item, accountable student, reason, and settlement status for their own group. Faculty accounts do not receive or display clearance records.",
+        "actors": "Class Representative",
+        "related": [
+          "Process Clearance"
         ],
-        preconditions:[`The Class Representative is signed in.`],
-        postconditions:[`Any clearance raised against a student in the Class Representative's group is displayed with its status. No stored record is changed.`],
-        flowActor:[`Class Representative opens Clearance Status.`,`Class Representative reviews any open or settled student clearance for the group.`],
-        flowSystem:[`System retrieves clearance records raised against students in the Class Representative's group.`,`System displays the accountable student, item, reason, and settlement status.`],
-        exceptions:[
-          `If no clearance has been raised, the view shows an empty state.`,
+        "stakeholders": [
+          "Class Representative and accountable student: need to know what is recorded against the student and how to settle it.",
+          "Head Laboratory: needs the clearance visible to the responsible student group without a separate paper copy."
         ],
+        "preconditions": [
+          "The Class Representative is signed in."
+        ],
+        "postconditions": [
+          "Any clearance raised against a student in the Class Representative's group is displayed with its status. No stored record is changed."
+        ],
+        "flowActor": [
+          "Class Representative opens Clearance Status.",
+          "Class Representative reviews any open or settled student clearance for the group."
+        ],
+        "flowSystem": [
+          "System retrieves clearance records raised against students in the Class Representative's group.",
+          "System displays the accountable student, item, reason, and settlement status."
+        ],
+        "exceptions": [
+          "If no clearance has been raised, the view shows an empty state."
+        ],
+        "diagramId": "clearstatus",
+        "dependencies": []
       },
       {
-        id:"uc-approve", table:13, title:"Approve / Reject Routed Request", useCaseName:"Approve / Reject Routed Request",
-        scenario:`A submitted reservation awaits a decision from the appropriate authority.`,
-        triggeringEvent:`Faculty or Dean opens a Pending reservation from their dashboard and selects Approve or Reject.`,
-        briefDescription:`Renamed from "Approve Class Rep. Reservation" — rejecting is not a separate feature, it is the other branch of the same review. Faculty reviews every on-schedule non-laboratory request submitted by the assigned Class Representative and any out-of-schedule Class Representative request routed to that Faculty member. The Dean reviews only out-of-schedule requests routed to the office, including a Faculty member's own out-of-schedule request. Regular scheduled laboratory activities submitted by Faculty do not enter this approval step. The Dean is approval-only and never submits a reservation.`,
-        actors:"Faculty, Dean", related:"Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, View Reservation Status, Issue Equipment",
-        stakeholders:[
-          `Faculty: must authorise the assigned Class Representative's on-schedule non-laboratory request and any out-of-schedule request routed to them.`,
-          `Dean: must authorise out-of-schedule use routed to the office.`,
-          `Class Representative: needs the reservation settled without a physically routed form.`,
-          `Head Laboratory: needs a recorded decision before it processes the reservation.`,
+        "id": "uc-approve",
+        "table": 13,
+        "title": "Approve / Reject Routed Request",
+        "useCaseName": "Approve / Reject Routed Request",
+        "scenario": "A submitted reservation awaits a decision from the appropriate authority.",
+        "triggeringEvent": "Faculty or Dean opens a Pending reservation from their dashboard and selects Approve or Reject.",
+        "briefDescription": "Faculty reviews every on-schedule non-laboratory request submitted by the assigned Class Representative and any out-of-schedule Class Representative request routed to that Faculty member. The Dean reviews only out-of-schedule requests routed to the office, including a Faculty member's own out-of-schedule request. Regular scheduled laboratory activities submitted by Faculty do not enter this approval step. The Dean is approval-only and never submits a reservation.",
+        "actors": "Faculty, Dean",
+        "related": [
+          "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+          "View Reservation Status",
+          "Issue Equipment"
         ],
-        preconditions:[`A reservation exists with the status Pending.`,`The approver is signed in.`],
-        postconditions:[`The reservation status is updated to Approved or Rejected. An approval record is written carrying the decision, the approver, and the time of decision. An approved reservation becomes available to Head Laboratory / Laboratory Staff for processing; a rejected one releases its held block.`],
-        flowActor:[`Approver opens the Pending reservation from their dashboard.`,`Approver reviews the reservation details.`,`Approver selects Approve or Reject.`],
-        flowSystem:[`System displays the Pending reservation to the routed approver.`,`System records the decision and writes the approval record.`,`System updates the reservation status and notifies the requester.`],
-        exceptions:[
-          `If the reservation is rejected, the status is set to Rejected and the held block is released.`,
-          `If the approver takes no action before the session date, the reservation remains Pending and Head Laboratory follows it up outside the system.`,
+        "stakeholders": [
+          "Faculty: must authorise the assigned Class Representative's on-schedule non-laboratory request and any out-of-schedule request routed to them.",
+          "Dean: must authorise out-of-schedule use routed to the office.",
+          "Class Representative: needs the reservation settled without a physically routed form.",
+          "Head Laboratory: needs a recorded decision before it processes the reservation."
         ],
+        "preconditions": [
+          "A reservation exists with the status Pending.",
+          "The approver is signed in."
+        ],
+        "postconditions": [
+          "The reservation status is updated to Approved or Rejected. An approval record is written carrying the decision, the approver, and the time of decision. An approved reservation becomes available to Head Laboratory / Laboratory Staff for processing; a rejected one releases its held block."
+        ],
+        "flowActor": [
+          "Approver opens the Pending reservation from their dashboard.",
+          "Approver reviews the reservation details.",
+          "Approver selects Approve or Reject."
+        ],
+        "flowSystem": [
+          "System displays the Pending reservation to the routed approver.",
+          "System records the decision and writes the approval record.",
+          "System updates the reservation status and notifies the requester."
+        ],
+        "exceptions": [
+          "If the reservation is rejected, the status is set to Rejected and the held block is released.",
+          "If the approver takes no action before the session date, the reservation remains Pending and Head Laboratory follows it up outside the system."
+        ],
+        "diagramId": "approve",
+        "dependencies": []
       },
       {
-        id:"uc-askq", table:14, title:"Ask Laboratory Question", useCaseName:"Ask Laboratory Question",
-        scenario:`A Class Representative or Faculty member needs a quick answer without waiting for a reply.`,
-        triggeringEvent:`The requester submits a question from within their account.`,
-        briefDescription:`The authenticated Q&A chatbot answers questions about item availability, schedule availability, operating hours, and the requester's own reservation status. Access is limited to Class Representatives and Faculty, identified by their signed-in session. It is informational only: it never creates, modifies, approves, or rejects a reservation. Each requester's conversation history is isolated from every other requester's. If the answer is not grounded in authorized laboratory data, the chatbot states that the information is unavailable rather than inventing an answer.`,
-        actors:"Class Representative, Faculty", related:"View My Dashboard, View Reservation Status, View Schedule & Availability",
-        stakeholders:[
-          `Class Representative and Faculty: need routine answers without visiting the laboratory or waiting for office hours.`,
-          `Head Laboratory: needs the volume of repetitive enquiries reduced.`,
-          `NU Fairview: requires answers grounded in the laboratory's own records, not invented.`,
+        "id": "uc-askq",
+        "table": 14,
+        "title": "Ask Laboratory Question",
+        "useCaseName": "Ask Laboratory Question",
+        "scenario": "A Class Representative or Faculty member needs a quick answer without waiting for a reply.",
+        "triggeringEvent": "The requester submits a question from within their account.",
+        "briefDescription": "The authenticated Q&A chatbot answers questions about item availability, schedule availability, operating hours, and the requester's own reservation status. Access is limited to Class Representatives and Faculty, identified by their signed-in session. It is informational only: it never creates, modifies, approves, or rejects a reservation. Each requester's conversation history is isolated from every other requester's. If the answer is not grounded in authorized laboratory data, the chatbot states that the information is unavailable rather than inventing an answer.",
+        "actors": "Class Representative, Faculty",
+        "related": [
+          "View Reservation Status",
+          "View Schedule & Availability",
+          "Check Item Availability",
+          "Check Schedule Availability",
+          "Check Reservation Status",
+          "Check Operating Hours"
         ],
-        preconditions:[`The requester is signed in.`,`The knowledge base is populated.`],
-        postconditions:[`An answer grounded on laboratory records is returned. The exchange is written to the requester's own conversation log, isolated from other requesters. No reservation or borrowing record is created or changed.`],
-        flowActor:[`Requester opens Q&A from within their account.`,`Requester submits a question.`,`Requester reads the answer returned.`],
-        flowSystem:[`System interprets the question and retrieves the relevant laboratory records, scoped to the signed-in requester where the question concerns their own reservation.`,`System composes an answer grounded on those records.`,`System writes the exchange to the requester's own conversation log.`],
-        exceptions:[
-          `If the question asks the system to create, modify, approve, or reject a reservation, the assistant declines and directs the requester to the request action permitted for their role.`,
-          `If no matching record exists, the assistant states that the information is not held rather than composing an answer.`,
+        "stakeholders": [
+          "Class Representative and Faculty: need routine answers without visiting the laboratory or waiting for office hours.",
+          "Head Laboratory: needs the volume of repetitive enquiries reduced.",
+          "NU Fairview: requires answers grounded in the laboratory's own records, not invented."
         ],
+        "preconditions": [
+          "The requester is signed in.",
+          "The knowledge base is populated."
+        ],
+        "postconditions": [
+          "An answer grounded on laboratory records is returned. The exchange is written to the requester's own conversation log, isolated from other requesters. No reservation or borrowing record is created or changed."
+        ],
+        "flowActor": [
+          "Requester opens Q&A from within their account.",
+          "Requester submits a question.",
+          "Requester reads the answer returned."
+        ],
+        "flowSystem": [
+          "System interprets the question and retrieves the relevant laboratory records, scoped to the signed-in requester where the question concerns their own reservation.",
+          "System composes an answer grounded on those records.",
+          "System writes the exchange to the requester's own conversation log."
+        ],
+        "exceptions": [
+          "If the question asks the system to create, modify, approve, or reject a reservation, the assistant declines and directs the requester to the request action permitted for their role.",
+          "If no matching record exists, the assistant states that the information is not held rather than composing an answer."
+        ],
+        "diagramId": "askq",
+        "dependencies": [
+          {
+            "diagramId": "checkitem",
+            "name": "Check Item Availability",
+            "type": "extend",
+            "condition": "The authenticated question asks about item availability.",
+            "behavior": "Retrieve authorized inventory availability and supply it to the grounded answer."
+          },
+          {
+            "diagramId": "checksched",
+            "name": "Check Schedule Availability",
+            "type": "extend",
+            "condition": "The authenticated question asks about schedule availability.",
+            "behavior": "Retrieve the selected laboratory’s authorized schedule and vacant blocks."
+          },
+          {
+            "diagramId": "checkstatus",
+            "name": "Check Reservation Status",
+            "type": "extend",
+            "condition": "The authenticated question asks about the requester’s own reservation status.",
+            "behavior": "Retrieve only reservations belonging to the signed-in requester."
+          },
+          {
+            "diagramId": "checkhours",
+            "name": "Check Operating Hours",
+            "type": "extend",
+            "condition": "The authenticated question asks about laboratory operating hours.",
+            "behavior": "Retrieve the maintained operating-hours knowledge; state when the information is unavailable."
+          }
+        ]
       },
       {
-        id:"uc-issueacct", table:15, title:"Issue Class Representative Account", useCaseName:"Issue Class Representative Account",
-        scenario:`A class needs a Class Representative account so it can submit reservations through the system.`,
-        triggeringEvent:`Head Laboratory submits the new Class Representative's details against a Faculty member.`,
-        briefDescription:`Accounts are issued top-down, not self-registered. Head Laboratory creates the account, and the system generates the password and emails the login credentials to the Faculty member for hand-off to their Class Representative — the Faculty-to-representative leg stays a manual, outside-the-system hand-off, the same as the old registrar hand-off. The account is identity-anchored to the representative's NU Student ID.`,
-        actors:"Head Laboratory", related:"Log In, Manage Accounts & Authentication",
-        stakeholders:[
-          `Head Laboratory: needs a controlled way to bring a new class onto the system.`,
-          `Faculty: needs to receive and hand off the credentials for their own class's representative.`,
-          `Class Representative: needs a working account without self-registering.`,
+        "id": "uc-issueacct",
+        "table": 15,
+        "title": "Issue Class Representative Account",
+        "useCaseName": "Issue Class Representative Account",
+        "scenario": "A class needs a Class Representative account so it can submit reservations through the system.",
+        "triggeringEvent": "Head Laboratory submits the new Class Representative's details against a Faculty member.",
+        "briefDescription": "Accounts are issued top-down, not self-registered. Head Laboratory creates the account, and the system generates the password and emails the login credentials to the Faculty member for hand-off to their Class Representative — the Faculty-to-representative leg stays a manual, outside-the-system hand-off, the same as the old registrar hand-off. The account is identity-anchored to the representative's NU Student ID.",
+        "actors": "Head Laboratory",
+        "related": [
+          "Log In"
         ],
-        preconditions:[`Head Laboratory is signed in.`,`The Faculty member the account is issued against already has a system account.`],
-        postconditions:[`A Class Representative account is created with a system-generated password, anchored to the representative's NU Student ID. Login credentials are emailed to the Faculty member.`],
-        flowActor:[`Head Laboratory opens Issue Class Representative Account.`,`Head Laboratory enters the representative's NU Student ID and selects the assigned Faculty member.`,`Head Laboratory submits the account request.`],
-        flowSystem:[`System validates the Student ID and Faculty selection.`,`System creates the account with a system-generated password.`,`System emails the login credentials to the assigned Faculty member.`],
-        exceptions:[
-          `If an account already exists for that Student ID, the system refuses to create a duplicate.`,
-          `If the assigned Faculty member has no system account yet, the system blocks issuance until that account exists.`,
+        "stakeholders": [
+          "Head Laboratory: needs a controlled way to bring a new class onto the system.",
+          "Faculty: needs to receive and hand off the credentials for their own class's representative.",
+          "Class Representative: needs a working account without self-registering."
         ],
+        "preconditions": [
+          "Head Laboratory is signed in.",
+          "The Faculty member the account is issued against already has a system account."
+        ],
+        "postconditions": [
+          "A Class Representative account is created with a system-generated password, anchored to the representative's NU Student ID. Login credentials are emailed to the Faculty member."
+        ],
+        "flowActor": [
+          "Head Laboratory opens Issue Class Representative Account.",
+          "Head Laboratory enters the representative's NU Student ID and selects the assigned Faculty member.",
+          "Head Laboratory submits the account request."
+        ],
+        "flowSystem": [
+          "System validates the Student ID and Faculty selection.",
+          "System creates the account with a system-generated password.",
+          "System emails the login credentials to the assigned Faculty member."
+        ],
+        "exceptions": [
+          "If an account already exists for that Student ID, the system refuses to create a duplicate.",
+          "If the assigned Faculty member has no system account yet, the system blocks issuance until that account exists."
+        ],
+        "diagramId": "issueacct",
+        "dependencies": []
       },
       {
-        id:"uc-inventory", table:16, title:"Manage Equipment Inventory", useCaseName:"Manage Equipment Inventory",
-        scenario:`Laboratory staff maintain the catalogue of laboratory holdings.`,
-        triggeringEvent:`Head Laboratory or assigned Laboratory Staff open Inventory Management to add, edit, remove, or search a holding.`,
-        briefDescription:`Unchanged in function from the previous model, but the actor is now split: Head Laboratory sees and manages holdings across both laboratories, while Physics Laboratory Staff and Circuits Laboratory Staff each manage only their own laboratory's catalogue. Each holding is recorded by name together with its description, category, unit of measure, quantity, condition status, reorder level, and an optional photograph, with quantities tracked as existing, available, in use, and reserved. Equipment cannot be recorded as consumed; consumables are depletable. A low stock flag is raised when a quantity falls below its reorder level.`,
-        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Add Equipment, Update Equipment, Remove Equipment, Search & Filter Inventory, Issue Equipment, Process Return, Log Waste Disposal, View Laboratory Dashboard",
-        stakeholders:[
-          `Head Laboratory: needs stock levels visible across both laboratories.`,
-          `Physics Laboratory Staff and Circuits Laboratory Staff: need their own laboratory's catalogue accurate without visibility into the other's.`,
-          `Class Representative and Faculty: rely on the catalogue reflecting what can actually be reserved.`,
+        "id": "uc-inventory",
+        "table": 16,
+        "title": "Manage Equipment Inventory",
+        "useCaseName": "Manage Equipment Inventory",
+        "scenario": "Laboratory staff maintain the catalogue of laboratory holdings.",
+        "triggeringEvent": "Head Laboratory or assigned Laboratory Staff open Inventory Management to add, edit, remove, or search a holding.",
+        "briefDescription": "Head Laboratory sees and manages holdings across both laboratories, while Physics Laboratory Staff and Circuits Laboratory Staff each manage only their own laboratory's catalogue. Each holding is recorded by name together with its description, category, unit of measure, quantity, condition status, reorder level, and an optional photograph, with quantities tracked as existing, available, in use, and reserved. Equipment cannot be recorded as consumed; consumables are depletable. A low stock flag is raised when a quantity falls below its reorder level.",
+        "actors": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "related": [
+          "Add Equipment",
+          "Update Equipment",
+          "Remove Equipment",
+          "Search & Filter Inventory",
+          "Issue Equipment",
+          "Process Return",
+          "Log Waste Disposal"
         ],
-        preconditions:[`The user is signed in with access to the laboratory being managed.`,`The item category and unit of measure are defined.`],
-        postconditions:[`The holding is created, amended, or removed within the acting user's laboratory scope. Existing, available, in use, and reserved quantities are recomputed. A low stock flag is raised where a quantity falls below its reorder level.`],
-        flowActor:[`User opens Inventory Management for their assigned laboratory.`,`User searches or filters the catalogue.`,`User adds, edits, or removes a holding.`,`User saves the change.`],
-        flowSystem:[`System displays the catalogue scoped to the user's laboratory assignment, or both for Head Laboratory.`,`System validates the entry against category, unit, and type rules.`,`System stores the change and recomputes availability.`,`System raises a low stock flag where a quantity falls below its reorder level.`],
-        exceptions:[
-          `If removal is attempted for an item with an outstanding issued quantity, the system refuses it.`,
-          `If a Physics or Circuits Laboratory Staff account attempts to edit the other laboratory's catalogue, the system refuses access.`,
+        "stakeholders": [
+          "Head Laboratory: needs stock levels visible across both laboratories.",
+          "Physics Laboratory Staff and Circuits Laboratory Staff: need their own laboratory's catalogue accurate without visibility into the other's.",
+          "Class Representative and Faculty: rely on the catalogue reflecting what can actually be reserved."
         ],
+        "preconditions": [
+          "The user is signed in with access to the laboratory being managed.",
+          "The item category and unit of measure are defined."
+        ],
+        "postconditions": [
+          "The holding is created, amended, or removed within the acting user's laboratory scope. Existing, available, in use, and reserved quantities are recomputed. A low stock flag is raised where a quantity falls below its reorder level."
+        ],
+        "flowActor": [
+          "User opens Inventory Management for their assigned laboratory.",
+          "User searches or filters the catalogue.",
+          "User adds, edits, or removes a holding.",
+          "User saves the change."
+        ],
+        "flowSystem": [
+          "System displays the catalogue scoped to the user's laboratory assignment, or both for Head Laboratory.",
+          "System validates the entry against category, unit, and type rules.",
+          "System stores the change and recomputes availability.",
+          "System raises a low stock flag where a quantity falls below its reorder level."
+        ],
+        "exceptions": [
+          "If removal is attempted for an item with an outstanding issued quantity, the system refuses it.",
+          "If a Physics or Circuits Laboratory Staff account attempts to edit the other laboratory's catalogue, the system refuses access."
+        ],
+        "diagramId": "mgminv",
+        "dependencies": [
+          {
+            "diagramId": "addeq",
+            "name": "Add Equipment",
+            "type": "include",
+            "condition": "Required inventory-management subprocess in the documented decomposition.",
+            "behavior": "Validate and save a new holding within the authorized laboratory scope."
+          },
+          {
+            "diagramId": "updateeq",
+            "name": "Update Equipment",
+            "type": "include",
+            "condition": "Required inventory-management subprocess in the documented decomposition.",
+            "behavior": "Validate and save changes to an existing holding and recompute availability."
+          },
+          {
+            "diagramId": "deleteeq",
+            "name": "Remove Equipment",
+            "type": "include",
+            "condition": "Required inventory-management subprocess in the documented decomposition.",
+            "behavior": "Remove an eligible holding; refuse removal when an issued quantity remains outstanding."
+          },
+          {
+            "diagramId": "searcheq",
+            "name": "Search & Filter Inventory",
+            "type": "include",
+            "condition": "Required inventory-management subprocess in the documented decomposition.",
+            "behavior": "Retrieve and filter holdings only within the acting user’s laboratory scope."
+          }
+        ]
       },
       {
-        id:"uc-issueeq", table:17, title:"Issue Equipment", useCaseName:"Issue Equipment",
-        scenario:`An approved reservation requires equipment to be released for the session.`,
-        triggeringEvent:`Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued for each item.`,
-        briefDescription:`Generates a borrowing slip record from the approved reservation, with the item list constrained to the resources selected on it. The quantity issued is recorded per item against the requester and the date of the session, and issued quantities are deducted from available stock. The stored borrowing slip is made visible to the requester and becomes the source record for return and clearance processing.`,
-        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Approve / Reject Routed Request, Process Return, Manage Equipment Inventory",
-        stakeholders:[
-          `Head Laboratory and Laboratory Staff: need issuance recorded against inventory without re-encoding.`,
-          `Class Representative and Faculty: need the session supplied with the resources approved.`,
+        "id": "uc-issueeq",
+        "table": 17,
+        "title": "Issue Equipment",
+        "useCaseName": "Issue Equipment",
+        "scenario": "An approved reservation requires equipment to be released for the session.",
+        "triggeringEvent": "Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued for each item.",
+        "briefDescription": "Generates a borrowing slip record from the approved reservation, with the item list constrained to the resources selected on it. The quantity issued is recorded per item against the requester and the date of the session, and issued quantities are deducted from available stock. The stored borrowing slip is made visible to the requester and becomes the source record for return and clearance processing.",
+        "actors": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "related": [
+          "Approve / Reject Routed Request",
+          "Process Return",
+          "Manage Equipment Inventory"
         ],
-        preconditions:[`The reservation holds the status Approved.`,`The user is signed in with access to the reservation's laboratory.`,`The approved items are physically available.`],
-        postconditions:[`A borrowing slip record is created against the approved reservation, requester, and session date. Available stock is decremented by the issued quantity for each item. The reservation status is set to Ongoing.`],
-        flowActor:[`User opens the approved reservation.`,`User confirms the items and records the quantity issued for each.`,`User releases the prepared items.`],
-        flowSystem:[`System displays the item list constrained to the approved reservation.`,`System validates the issued quantity against stock on hand.`,`System writes the borrowing slip record and decrements available stock.`,`System sets the reservation status to Ongoing and displays the borrowing slip to the requester.`],
-        exceptions:[
-          `If an approved item cannot be supplied in the quantity requested, the user records a reduced quantity coordinated with the requester.`,
-          `If the reservation does not hold the status Approved, the system refuses issuance.`,
+        "stakeholders": [
+          "Head Laboratory and Laboratory Staff: need issuance recorded against inventory without re-encoding.",
+          "Class Representative and Faculty: need the session supplied with the resources approved."
         ],
+        "preconditions": [
+          "The reservation holds the status Approved.",
+          "The user is signed in with access to the reservation's laboratory.",
+          "The approved items are physically available."
+        ],
+        "postconditions": [
+          "A borrowing slip record is created against the approved reservation, requester, and session date. Available stock is decremented by the issued quantity for each item. The reservation status is set to Ongoing."
+        ],
+        "flowActor": [
+          "User opens the approved reservation.",
+          "User confirms the items and records the quantity issued for each.",
+          "User releases the prepared items."
+        ],
+        "flowSystem": [
+          "System displays the item list constrained to the approved reservation.",
+          "System validates the issued quantity against stock on hand.",
+          "System writes the borrowing slip record and decrements available stock.",
+          "System sets the reservation status to Ongoing and displays the borrowing slip to the requester."
+        ],
+        "exceptions": [
+          "If an approved item cannot be supplied in the quantity requested, the user records a reduced quantity coordinated with the requester.",
+          "If the reservation does not hold the status Approved, the system refuses issuance."
+        ],
+        "diagramId": "issueeq",
+        "dependencies": []
       },
       {
-        id:"uc-procret", table:18, title:"Process Return", useCaseName:"Process Return",
-        scenario:`A session has ended and the borrowed items are checked back in.`,
-        triggeringEvent:`Head Laboratory or assigned Laboratory Staff record the returned quantities against the quantities issued.`,
-        briefDescription:`Unchanged in function from the previous model. Returned quantities are reconciled against issued quantities; only the unreturned balance of a consumable is marked consumed. Equipment that cannot be returned in working order is marked broken, and equipment not returned at all is marked lost — equipment is never eligible to be marked consumed. The physical hand-off itself stays face-to-face; there is no requester-side use case for it, since recording the outcome is what this use case covers.`,
-        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Issue Equipment, Process Clearance, Log Waste Disposal, Manage Equipment Inventory",
-        stakeholders:[
-          `Head Laboratory and Laboratory Staff: need consumed counts to reflect genuine depletion only.`,
-          `Class Representative and Faculty: need returns credited so no accountability is recorded in error.`,
+        "id": "uc-procret",
+        "table": 18,
+        "title": "Process Return",
+        "useCaseName": "Process Return",
+        "scenario": "A session has ended and the borrowed items are checked back in.",
+        "triggeringEvent": "Head Laboratory or assigned Laboratory Staff record the returned quantities against the quantities issued.",
+        "briefDescription": "Returned quantities are reconciled against issued quantities; only the unreturned balance of a consumable is marked consumed. Equipment that cannot be returned in working order is marked broken, and equipment not returned at all is marked lost — equipment is never eligible to be marked consumed. The physical hand-off itself stays face-to-face; there is no requester-side use case for it, since recording the outcome is what this use case covers.",
+        "actors": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "related": [
+          "Issue Equipment",
+          "Process Clearance",
+          "Log Waste Disposal",
+          "Manage Equipment Inventory",
+          "Record Broken / Lost / Consumed Items"
         ],
-        preconditions:[`A borrowing slip record exists with the status Ongoing.`,`The returned items have been physically checked.`],
-        postconditions:[`Returned quantities are recorded. Unreturned balances are classified as consumed, broken, or lost. Available stock is restored for equipment returned in working order. The reservation is set to Completed where no balance remains outstanding.`],
-        flowActor:[`User checks the returned items after the session.`,`User records the returned quantity for each item.`,`User classifies unreturned equipment as broken or lost.`],
-        flowSystem:[`System displays the quantities issued on the borrowing slip record.`,`System computes the unreturned balance for each item.`,`System marks unreturned consumables as consumed and bars equipment from being marked consumed.`,`System sets the reservation to Completed where no balance remains outstanding.`],
-        exceptions:[
-          `If a returned quantity exceeds the quantity issued, the system rejects the entry.`,
-          `If a broken or lost balance remains outstanding, the reservation stays Ongoing and the recorded outcome is made available to Head Laboratory for clearance review.`,
+        "stakeholders": [
+          "Head Laboratory and Laboratory Staff: need consumed counts to reflect genuine depletion only.",
+          "Class Representative and Faculty: need returns credited so no accountability is recorded in error."
         ],
+        "preconditions": [
+          "A borrowing slip record exists with the status Ongoing.",
+          "The returned items have been physically checked."
+        ],
+        "postconditions": [
+          "Returned quantities are recorded. Unreturned balances are classified as consumed, broken, or lost. Available stock is restored for equipment returned in working order. The reservation is set to Completed where no balance remains outstanding."
+        ],
+        "flowActor": [
+          "User checks the returned items after the session.",
+          "User records the returned quantity for each item.",
+          "User classifies unreturned equipment as broken or lost."
+        ],
+        "flowSystem": [
+          "System displays the quantities issued on the borrowing slip record.",
+          "System computes the unreturned balance for each item.",
+          "System marks unreturned consumables as consumed and bars equipment from being marked consumed.",
+          "System sets the reservation to Completed where no balance remains outstanding."
+        ],
+        "exceptions": [
+          "If a returned quantity exceeds the quantity issued, the system rejects the entry.",
+          "If a broken or lost balance remains outstanding, the reservation stays Ongoing and the recorded outcome is made available to Head Laboratory for clearance review."
+        ],
+        "diagramId": "procret",
+        "dependencies": [
+          {
+            "diagramId": "recordblc",
+            "name": "Record Broken / Lost / Consumed Items",
+            "type": "extend",
+            "condition": "Return reconciliation identifies a broken, lost or consumed balance.",
+            "behavior": "Record the outcome against the borrowing slip; only consumables can be consumed, while equipment is classified as broken or lost. Make accountability outcomes available for Head Laboratory clearance review."
+          }
+        ]
       },
       {
-        id:"uc-procclear", table:19, title:"Process Clearance", useCaseName:"Process Clearance",
-        scenario:`An item is found broken or missing during the post-session check and accountability must be recorded.`,
-        triggeringEvent:`Head Laboratory reviews a broken or lost outcome from return processing and selects the accountable student from the borrowing slip record.`,
-        briefDescription:`Only Head Laboratory may raise, update, and close a clearance. Laboratory Staff record broken or lost outcomes during return processing, but they do not create or settle the clearance. The record is raised only against the accountable student identified on the borrowing slip and becomes visible through the Class Representative's View Clearance Status. Faculty accounts neither receive nor display clearance records.`,
-        actors:"Head Laboratory", related:"Process Return, View Clearance Status, Generate End-Term Report",
-        stakeholders:[
-          `Head Laboratory: needs sole control over raising, updating, and closing accountability records.`,
-          `Laboratory Staff: provide the broken or lost outcome recorded during return processing for Head Laboratory's review.`,
-          `Class Representative and accountable student: need to be told what is recorded against the student and how to settle it.`,
+        "id": "uc-procclear",
+        "table": 19,
+        "title": "Process Clearance",
+        "useCaseName": "Process Clearance",
+        "scenario": "An item is found broken or missing during the post-session check and accountability must be recorded.",
+        "triggeringEvent": "Head Laboratory reviews a broken or lost outcome from return processing and selects the accountable student from the borrowing slip record.",
+        "briefDescription": "Only Head Laboratory may raise, update, and close a clearance. Laboratory Staff record broken or lost outcomes during return processing, but they do not create or settle the clearance. The record is raised only against the accountable student identified on the borrowing slip and becomes visible through the Class Representative's View Clearance Status. Faculty accounts neither receive nor display clearance records.",
+        "actors": "Head Laboratory",
+        "related": [
+          "Process Return",
+          "View Clearance Status",
+          "Generate End-Term Report"
         ],
-        preconditions:[`A borrowing slip record identifies the accountable student and the student's Class Representative group.`,`An item is recorded as broken or lost against that record.`],
-        postconditions:[`A clearance record is created against the accountable student. It becomes visible to the student's Class Representative through View Clearance Status and is marked cleared or replaced on settlement.`],
-        flowActor:[`Head Laboratory opens the broken or lost outcome and its borrowing slip record.`,`Head Laboratory selects the accountable student.`,`Head Laboratory raises the clearance stating the item, quantity, and reason.`,`Head Laboratory marks the clearance cleared or replaced on settlement.`],
-        flowSystem:[`System displays the accountable students recorded on the borrowing slip.`,`System writes the clearance record against the selected student and makes it visible to the student's Class Representative.`,`System updates the clearance status and closes it on settlement.`],
-        exceptions:[
-          `If no accountable student is recorded on the borrowing slip, the system refuses to raise the clearance until the responsible student is identified on the source record.`,
-          `If a clearance remains unsettled at the end of the term, it stays open and is listed in the end-term report.`,
+        "stakeholders": [
+          "Head Laboratory: needs sole control over raising, updating, and closing accountability records.",
+          "Laboratory Staff: provide the broken or lost outcome recorded during return processing for Head Laboratory's review.",
+          "Class Representative and accountable student: need to be told what is recorded against the student and how to settle it."
         ],
+        "preconditions": [
+          "A borrowing slip record identifies the accountable student and the student's Class Representative group.",
+          "An item is recorded as broken or lost against that record."
+        ],
+        "postconditions": [
+          "A clearance record is created against the accountable student. It becomes visible to the student's Class Representative through View Clearance Status and is marked cleared or replaced on settlement."
+        ],
+        "flowActor": [
+          "Head Laboratory opens the broken or lost outcome and its borrowing slip record.",
+          "Head Laboratory selects the accountable student.",
+          "Head Laboratory raises the clearance stating the item, quantity, and reason.",
+          "Head Laboratory marks the clearance cleared or replaced on settlement."
+        ],
+        "flowSystem": [
+          "System displays the accountable students recorded on the borrowing slip.",
+          "System writes the clearance record against the selected student and makes it visible to the student's Class Representative.",
+          "System updates the clearance status and closes it on settlement."
+        ],
+        "exceptions": [
+          "If no accountable student is recorded on the borrowing slip, the system refuses to raise the clearance until the responsible student is identified on the source record.",
+          "If a clearance remains unsettled at the end of the term, it stays open and is listed in the end-term report."
+        ],
+        "diagramId": "procclear",
+        "dependencies": []
       },
       {
-        id:"uc-wastedisp", table:20, title:"Log Waste Disposal", useCaseName:"Log Waste Disposal",
-        scenario:`An item is withdrawn permanently from the laboratory and must be recorded and classified.`,
-        triggeringEvent:`Head Laboratory or assigned Laboratory Staff record the item, reason, quantity, and classification in the disposal log.`,
-        briefDescription:`Unchanged in function from the previous model. Items already recorded as broken, lost, or consumed are reviewed to determine which are withdrawn permanently and classified as general or hazardous waste; items that can be repaired are retained.`,
-        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Process Return, Manage Equipment Inventory, Generate End-Term Report",
-        stakeholders:[
-          `Head Laboratory and Laboratory Staff: need a traceable record of what has left the facility and why.`,
-          `NU Fairview: needs hazardous waste consolidated for institutional compliance reporting.`,
+        "id": "uc-wastedisp",
+        "table": 20,
+        "title": "Log Waste Disposal",
+        "useCaseName": "Log Waste Disposal",
+        "scenario": "An item is withdrawn permanently from the laboratory and must be recorded and classified.",
+        "triggeringEvent": "Head Laboratory or assigned Laboratory Staff record the item, reason, quantity, and classification in the disposal log.",
+        "briefDescription": "Items already recorded as broken, lost, or consumed are reviewed to determine which are withdrawn permanently and classified as general or hazardous waste; items that can be repaired are retained.",
+        "actors": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
+        "related": [
+          "Process Return",
+          "Manage Equipment Inventory",
+          "Generate End-Term Report"
         ],
-        preconditions:[`The item appears in the Broken, Loss and Consumed log or in the inventory.`,`The user is signed in.`],
-        postconditions:[`A disposal entry is created carrying reason, quantity, date, disposal method, handler, and classification. Hazardous entries are flagged for separate collection.`],
-        flowActor:[`User reviews the items recorded as broken, lost, or consumed.`,`User selects an item for withdrawal and states the reason and quantity.`,`User classifies the item as general or hazardous waste.`],
-        flowSystem:[`System displays the candidate items from the Broken, Loss and Consumed log.`,`System validates the quantity against the recorded balance.`,`System writes the disposal record and reduces the inventory.`,`System flags hazardous entries for separate collection.`],
-        exceptions:[
-          `If the quantity exceeds the recorded balance, the system rejects the entry.`,
-          `If the item can be repaired, it is retained and no disposal entry is created.`,
+        "stakeholders": [
+          "Head Laboratory and Laboratory Staff: need a traceable record of what has left the facility and why.",
+          "NU Fairview: needs hazardous waste consolidated for institutional compliance reporting."
         ],
+        "preconditions": [
+          "The item appears in the Broken, Loss and Consumed log or in the inventory.",
+          "The user is signed in."
+        ],
+        "postconditions": [
+          "A disposal entry is created carrying reason, quantity, date, disposal method, handler, and classification. Hazardous entries are flagged for separate collection."
+        ],
+        "flowActor": [
+          "User reviews the items recorded as broken, lost, or consumed.",
+          "User selects an item for withdrawal and states the reason and quantity.",
+          "User classifies the item as general or hazardous waste."
+        ],
+        "flowSystem": [
+          "System displays the candidate items from the Broken, Loss and Consumed log.",
+          "System validates the quantity against the recorded balance.",
+          "System writes the disposal record and reduces the inventory.",
+          "System flags hazardous entries for separate collection."
+        ],
+        "exceptions": [
+          "If the quantity exceeds the recorded balance, the system rejects the entry.",
+          "If the item can be repaired, it is retained and no disposal entry is created."
+        ],
+        "diagramId": "wastedisp",
+        "dependencies": []
       },
       {
-        id:"uc-mgmlogs", table:21, title:"Manage Laboratory Logs, Schedule & Daily Tasks", useCaseName:"Manage Laboratory Logs, Schedule & Daily Tasks",
-        scenario:`The term schedule, completed session usage, and non-transaction daily laboratory activities must be recorded.`,
-        triggeringEvent:`Head Laboratory records a schedule block, completed session usage, or a daily activity.`,
-        briefDescription:`Only Head Laboratory manages laboratory logs, schedules, and Daily Task Records across both laboratories. Head Laboratory records committed or vacant blocks and completed session usage after return reconciliation. Physics and Circuits Laboratory Staff do not have access to this management use case. Only Head Laboratory may record non-transaction daily activities such as laboratory preparation, cleaning, inspection, assistance, or maintenance; these records remain separate from borrowing transactions and are supplied to the end-term report.`,
-        actors:"Head Laboratory", related:"View Schedule & Availability, Process Return, Generate End-Term Report",
-        stakeholders:[
-          `Head Laboratory: has sole control over laboratory usage logs, the reservation schedule, and Daily Task Records across both laboratories.`,
-          `Physics Laboratory Staff and Circuits Laboratory Staff: record issuance and returns in their authorized borrowing workflow; management of usage logs, schedules, and daily tasks is outside their access scope.`,
-          `Class Representative and Faculty: rely on published vacant blocks when submitting allowed reservations.`,
+        "id": "uc-mgmlogs",
+        "table": 21,
+        "title": "Manage Logs, Schedule & Daily Tasks",
+        "useCaseName": "Manage Logs, Schedule & Daily Tasks",
+        "scenario": "The term schedule, completed session usage, and non-transaction daily laboratory activities must be recorded.",
+        "triggeringEvent": "Head Laboratory records a schedule block, completed session usage, or a daily activity.",
+        "briefDescription": "Only Head Laboratory manages laboratory logs, schedules, and Daily Task Records across both laboratories. Head Laboratory records committed or vacant blocks and completed session usage after return reconciliation. Physics and Circuits Laboratory Staff do not have access to this management use case. Only Head Laboratory may record non-transaction daily activities such as laboratory preparation, cleaning, inspection, assistance, or maintenance; these records remain separate from borrowing transactions and are supplied to the end-term report.",
+        "actors": "Head Laboratory",
+        "related": [
+          "View Schedule & Availability",
+          "Process Return",
+          "Generate End-Term Report"
         ],
-        preconditions:[`Head Laboratory is signed in and selects the laboratory being updated.`],
-        postconditions:[`The laboratory schedule is updated and vacant blocks are published. Session usage and daily task entries are stored separately and made available to reporting.`],
-        flowActor:[`Head Laboratory opens Laboratory Logs, Schedule and Daily Tasks for the selected laboratory.`,`Head Laboratory records committed blocks, completed session usage, or daily activities with their laboratory, date, and status.`,`Head Laboratory submits the entry or publishes the remaining vacant blocks.`],
-        flowSystem:[`System permits all laboratory log, schedule, and Daily Task actions only for Head Laboratory, validates non-overlapping committed blocks, and checks that each usage or activity entry identifies a laboratory and date.`,`System stores schedule and usage data in the laboratory logs and stores non-transaction activities in Daily Task Records.`,`System publishes vacant blocks and makes usage and activity records available to reporting.`],
-        exceptions:[
-          `If two committed blocks overlap, the system rejects the entry.`,
-          `If a block already carries an approved reservation, it cannot be recommitted until that reservation is released.`,
-          `If a daily activity has no laboratory, activity description, or date, the system rejects the entry.`,
-          `If Physics or Circuits Laboratory Staff attempt to access or change laboratory logs, schedules, or Daily Task Records through this use case, the system refuses access.`,
+        "stakeholders": [
+          "Head Laboratory: has sole control over laboratory usage logs, the reservation schedule, and Daily Task Records across both laboratories.",
+          "Physics Laboratory Staff and Circuits Laboratory Staff: record issuance and returns in their authorized borrowing workflow; management of usage logs, schedules, and daily tasks is outside their access scope.",
+          "Class Representative and Faculty: rely on published vacant blocks when submitting allowed reservations."
         ],
+        "preconditions": [
+          "Head Laboratory is signed in and selects the laboratory being updated."
+        ],
+        "postconditions": [
+          "The laboratory schedule is updated and vacant blocks are published. Session usage and daily task entries are stored separately and made available to reporting."
+        ],
+        "flowActor": [
+          "Head Laboratory opens Laboratory Logs, Schedule and Daily Tasks for the selected laboratory.",
+          "Head Laboratory records committed blocks, completed session usage, or daily activities with their laboratory, date, and status.",
+          "Head Laboratory submits the entry or publishes the remaining vacant blocks."
+        ],
+        "flowSystem": [
+          "System permits all laboratory log, schedule, and Daily Task actions only for Head Laboratory, validates non-overlapping committed blocks, and checks that each usage or activity entry identifies a laboratory and date.",
+          "System stores schedule and usage data in the laboratory logs and stores non-transaction activities in Daily Task Records.",
+          "System publishes vacant blocks and makes usage and activity records available to reporting."
+        ],
+        "exceptions": [
+          "If two committed blocks overlap, the system rejects the entry.",
+          "If a block already carries an approved reservation, it cannot be recommitted until that reservation is released.",
+          "If a daily activity has no laboratory, activity description, or date, the system rejects the entry.",
+          "If Physics or Circuits Laboratory Staff attempt to access or change laboratory logs, schedules, or Daily Task Records through this use case, the system refuses access."
+        ],
+        "diagramId": "mgmlogs",
+        "dependencies": []
       },
       {
-        id:"uc-dashboard", table:22, title:"View Laboratory Dashboard", useCaseName:"View Laboratory Dashboard",
-        scenario:`Laboratory staff need the state of their laboratory summarised on signing in.`,
-        triggeringEvent:`The user signs in and dashboard metrics load.`,
-        briefDescription:`Renamed from "View Real-Time Inventory & Dashboard" — the broader name matches its actual scope, which is inventory, reservations, and usage together, not inventory alone. Physics Laboratory Staff and Circuits Laboratory Staff each see only their own laboratory's metrics; Head Laboratory sees both. This is the same shared use case for all three roles, scoped per the acting user, not a separately named dashboard per role — consistent with how the other admin-cluster use cases already scope by actor. The AI-generated written insight summary that previously accompanied these metrics is cut from scope; the metrics themselves are unchanged.`,
-        actors:"Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff", related:"Log In, Manage Equipment Inventory, Generate End-Term Report",
-        stakeholders:[
-          `Head Laboratory: needs a cross-laboratory view.`,
-          `Physics Laboratory Staff and Circuits Laboratory Staff: need their own laboratory's metrics without the other's mixed in.`,
+        "id": "uc-endterm",
+        "table": 22,
+        "title": "Generate End-Term Report",
+        "useCaseName": "Generate End-Term Report",
+        "scenario": "The term has ended and the laboratory must report its activity to the administration.",
+        "triggeringEvent": "Head Laboratory triggers the end-of-term report.",
+        "briefDescription": "The system compiles facility usage per requester across both laboratories, the most borrowed equipment, the totals of broken, lost, and consumed items, and the waste disposal entries, and exports the result to Head Laboratory for submission.",
+        "actors": "Head Laboratory",
+        "related": [
+          "Log Waste Disposal",
+          "Process Clearance",
+          "Manage Logs, Schedule & Daily Tasks"
         ],
-        preconditions:[`The user is signed in.`,`Records exist for the current term.`],
-        postconditions:[`The dashboard metrics are displayed, scoped to the user's laboratory assignment. No stored record is changed.`],
-        flowActor:[`User signs in.`,`User reviews the dashboard metrics.`],
-        flowSystem:[`System aggregates inventory, reservation, and usage figures scoped to the user's laboratory assignment, or both for Head Laboratory.`,`System renders the metrics on the dashboard.`],
-        exceptions:[
-          `If insufficient data exists for the term, the affected metric is shown empty rather than omitted.`,
+        "stakeholders": [
+          "Head Laboratory: needs reporting that does not depend on a spreadsheet formula set.",
+          "NU Fairview administration: receives the figures required at the end of each term."
         ],
-      },
-      {
-        id:"uc-endterm", table:23, title:"Generate End-Term Report", useCaseName:"Generate End-Term Report",
-        scenario:`The term has ended and the laboratory must report its activity to the administration.`,
-        triggeringEvent:`Head Laboratory triggers the end-of-term report.`,
-        briefDescription:`Unchanged in function from the previous model. The system compiles facility usage per requester across both laboratories, the most borrowed equipment, the totals of broken, lost, and consumed items, and the waste disposal entries, and exports the result to Head Laboratory for submission.`,
-        actors:"Head Laboratory", related:"View Laboratory Dashboard, Log Waste Disposal, Process Clearance, Manage Laboratory Logs & Schedule",
-        stakeholders:[
-          `Head Laboratory: needs reporting that does not depend on a spreadsheet formula set.`,
-          `NU Fairview administration: receives the figures required at the end of each term.`,
+        "preconditions": [
+          "The term is recorded in the system and its records are complete.",
+          "Head Laboratory is signed in."
         ],
-        preconditions:[`The term is recorded in the system and its records are complete.`,`Head Laboratory is signed in.`],
-        postconditions:[`The report is compiled across both laboratories and exported to Head Laboratory. Every figure is traceable to the stored records behind it.`],
-        flowActor:[`Head Laboratory opens the reporting screens for the term.`,`Head Laboratory selects the term and triggers the report.`,`Head Laboratory exports the report for submission.`],
-        flowSystem:[`System aggregates usage per requester and per item across both laboratories.`,`System compiles the broken, loss, and consumed totals and the waste disposal entries.`,`System exports the report in the selected format.`],
-        exceptions:[
-          `If clearances remain open at the end of the term, they are listed in the report as outstanding.`,
-          `If the export fails, Head Laboratory is notified and may retry.`,
+        "postconditions": [
+          "The report is compiled across both laboratories and exported to Head Laboratory. Every figure is traceable to the stored records behind it."
         ],
-      },
+        "flowActor": [
+          "Head Laboratory opens the reporting screens for the term.",
+          "Head Laboratory selects the term and triggers the report.",
+          "Head Laboratory exports the report for submission."
+        ],
+        "flowSystem": [
+          "System aggregates usage per requester and per item across both laboratories.",
+          "System compiles the broken, loss, and consumed totals and the waste disposal entries.",
+          "System exports the report in the selected format."
+        ],
+        "exceptions": [
+          "If clearances remain open at the end of the term, they are listed in the report as outstanding.",
+          "If the export fails, Head Laboratory is notified and may retry."
+        ],
+        "diagramId": "endterm",
+        "dependencies": []
+      }
     ],
 
     gaps: [
@@ -996,19 +1706,6 @@ function DataTable({ columns, rows }) {
   );
 }
 
-// Use-case descriptions in the source data retain their full analysis detail.
-// The formal paper table shows a concise summary so each specification remains
-// readable and does not become a page-long narrative.
-function conciseText(text, maxLength = 300) {
-  if (!text) return "";
-  const cleaned = text.replace(/\s+/g, " ").trim();
-  const sentenceEnd = cleaned.search(/(?<=[.!?])\s/);
-  const firstSentence = sentenceEnd === -1 ? cleaned : cleaned.slice(0, sentenceEnd + 1);
-  if (firstSentence.length <= maxLength) return firstSentence;
-  const shortened = firstSentence.slice(0, maxLength);
-  const lastSpace = shortened.lastIndexOf(" ");
-  return (lastSpace > 0 ? shortened.slice(0, lastSpace) : shortened) + "…";
-}
 
 function Figure({ src, caption, onZoom, editorHref }) {
   return (
@@ -1252,7 +1949,7 @@ function UseCaseDiagramsSection({ onZoom }) {
 }
 
 function UseCaseSection({ uc }) {
-  const related = uc.related.split(",").map(s => s.trim()).filter(Boolean);
+  const related = uc.related;
   const actors = uc.actors.split(",").map(s => s.trim()).filter(Boolean);
   return (
     <section id={uc.id} className="doc-section sub usecase-table-section">
@@ -1266,9 +1963,15 @@ function UseCaseSection({ uc }) {
             <tr><th scope="row">Use Case Name</th><td>{uc.useCaseName}</td></tr>
             <tr><th scope="row">Scenario</th><td>{uc.scenario}</td></tr>
             <tr><th scope="row">Triggering Event</th><td>{uc.triggeringEvent}</td></tr>
-            <tr><th scope="row">Brief Description</th><td>{conciseText(uc.briefDescription)}</td></tr>
+            <tr><th scope="row">Brief Description</th><td>{uc.briefDescription}</td></tr>
             <tr><th scope="row">Actors</th><td>{actors.join(", ")}</td></tr>
             <tr><th scope="row">Related Use Cases</th><td>{related.join(", ")}</td></tr>
+            {uc.dependencies.length > 0 && <tr><th scope="row">Included / Extending Behavior</th><td>
+              <ul className="usecase-table-list">{uc.dependencies.map(dep => <li key={dep.diagramId}>
+                <strong>{dep.type === "include" ? "Includes" : "Extended by"}: {dep.name}.</strong>{" "}
+                {dep.condition}{" "}{dep.behavior}
+              </li>)}</ul>
+            </td></tr>}
             <tr className="uc-section-row"><th colSpan="2">Stakeholders</th></tr>
             <tr><th scope="row">Stakeholder Interests</th><td>
               <ul className="usecase-table-list">
@@ -1301,7 +2004,7 @@ function UseCaseFullSection() {
     <section id="usecase-full" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.4" title="Use Case Full Description" id="usecase-full" />
       <div className="lede">
-        <p>Tables 3 to 23 record the complete functional descriptions behind the system model. Figure 1 displays twenty process-focused base use cases. Submit Scheduled Laboratory Activity and Submit On-Schedule Non-Laboratory / Out-of-Schedule Request share Table 7 because they use the same request record and validation form but enforce different actors and approval outcomes. On-Schedule Non-Laboratory and Out-of-Schedule are alternative flows inside the combined request rather than separate use cases. The two dashboard presentation behaviors remain in these tables for requirements completeness but are intentionally omitted as standalone diagram nodes. Included use cases identify behavior required by a base use case every time it completes; extended use cases identify behavior invoked only under the choice or condition shown by the workflow.</p>
+        <p>Tables 3 to 22 correspond one-to-one with the twenty main use cases in Figure 1. Table 6 describes Faculty’s Submit Scheduled Laboratory Activity; Table 7 describes Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, retaining its two alternative flows. The ten supporting use cases are documented as included or extending behavior in their parent tables, covering all eleven diagram dependencies. Dashboard screens remain interface views, not standalone use cases or business events. Actor permissions and event names use the same diagram mapping.</p>
       </div>
       {DATA.useCases.map(uc => <UseCaseSection key={uc.id} uc={uc} />)}
     </section>
@@ -1318,8 +2021,8 @@ function GapAnalysisSection() {
   return (
     <section id="gap-analysis" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.5" title="Gap Analysis" id="gap-analysis" />
-      <div className="lede"><p>Table 24 sets out the gap analysis, mapping each product backlog item to the current system and to the proposed change.</p></div>
-      <p className="cap">Table 24: Gap Analysis</p>
+      <div className="lede"><p>Table 23 sets out the gap analysis, mapping each product backlog item to the current system and to the proposed change.</p></div>
+      <p className="cap">Table 23: Gap Analysis</p>
       <DataTable columns={columns} rows={DATA.gaps} />
     </section>
   );
