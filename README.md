@@ -4,6 +4,8 @@ Documentation for the NU Fairview Physics and Circuits Laboratory project. Open 
 
 Current AI scope: an authenticated, informational Q&A chatbot for Class Representatives and Faculty. It answers item availability, schedule availability, operating hours, and the requester's own reservation status from authorized records. Forecasting, AI-written report summaries, and AI-driven reservation actions are outside the current consultation scope.
 
+Head Laboratory is the sole administrator of laboratory logs, schedules and daily tasks. Physics and Circuits Staff retain their inventory, issuance/return and disposal responsibilities. The use case and all DFD levels use this same role boundary.
+
 CSS filenames, storage keys, and the internal diagram editor API retain their legacy names for compatibility; these are not the project name. The Apps Script legacy cover-title matcher is also retained to update existing Google Doc copies safely.
 
 The embedded ERD is a legacy source image pending schema revision; its forecast entity is explicitly excluded from the current scope. See the notice in the ERD section before submission.

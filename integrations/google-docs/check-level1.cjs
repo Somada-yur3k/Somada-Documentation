@@ -40,7 +40,7 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     })}));
     const issues=[],crossings=[];
     const {routes,nodes,labelBoxes,constants:c,model}=data;
-    assert.equal(routes.length,76);assert.equal(new Set(routes.map(r=>r.id)).size,76);
+    assert.equal(routes.length,74);assert.equal(new Set(routes.map(r=>r.id)).size,74);
     assert.equal(nodes.headlab.y,Math.max(...Object.values(nodes).filter(n=>n.kind==='entity').map(n=>n.y)));
     for(const side of ['left','right']){
       const horizontal=routes.filter(r=>r.side===side).flatMap(r=>segments(r.points).filter(s=>s.a[1]===s.b[1]));
@@ -90,7 +90,7 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     const fontPt=c.FONT*Math.min(174*96/25.4/c.W,220*96/25.4/c.H)*72/96;
     assert(fontPt>=7.5,'User-requested slight reduction: at least 7.5 pt flow labels');
     assert.equal(await page.locator('.diagram-flow-label rect').count(),0,'Plain labels have no background or border');
-    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),76,'Each plain label clears only its own connector stroke');
+    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),74,'Each plain label clears only its own connector stroke');
     const paint=await page.evaluate(async()=>{
       const {constants:c,labelBoxes}=window.__level1,svg=document.querySelector('#stage svg');
       const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'}));
@@ -102,7 +102,7 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
         return labelBoxes.map(b=>({id:b.id,clearLeft:white(b.x+3,b.y+b.h/2),clearRight:white(b.x+b.w-3,b.y+b.h/2),connectedLeft:!white(b.x-4,b.y+b.h/2),connectedRight:!white(b.x+b.w+4,b.y+b.h/2)}));
       } finally {URL.revokeObjectURL(url);}
     });
-    assert.deepEqual(paint.filter(p=>!p.clearLeft||!p.clearRight||!p.connectedLeft||!p.connectedRight),[],'All 76 rendered labels have white clearance and connected lines on both sides');
+    assert.deepEqual(paint.filter(p=>!p.clearLeft||!p.clearRight||!p.connectedLeft||!p.connectedRight),[],'All 74 rendered labels have white clearance and connected lines on both sides');
     for(const side of ['left','right']){
       const trunks=routes.filter(r=>r.side===side).map(r=>({x:r.points[1][0],lo:Math.min(r.points[1][1],r.points[2][1]),hi:Math.max(r.points[1][1],r.points[2][1])}));
       assert.equal(new Set(trunks.map(t=>t.x)).size,trunks.length,'Every trunk has a unique lane');
@@ -163,6 +163,6 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     await page.getByRole('button',{name:'Reset edits'}).click();
     assert.equal((await label.getAttribute('transform'))||'',before||'');
     assert.equal(await connector.getAttribute('d'),originalPath,'Reset restores authored path');
-    console.log('Level 1 audit passed: 76 flows, balanced, unique nodes/ports, no merges, white label clearances, wider actor/store lanes, hover/label and route drag/persistence/reset/authored export.');
+    console.log('Level 1 audit passed: 74 flows, balanced, unique nodes/ports, no merges, white label clearances, wider actor/store lanes, hover/label and route drag/persistence/reset/authored export.');
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>server.close());

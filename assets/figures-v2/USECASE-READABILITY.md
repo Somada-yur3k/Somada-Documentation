@@ -1,6 +1,6 @@
 # Use-case publication and relationship decisions
 
-This is a presentation-only revision. Preserve the six actors, 20 base goals, ten supporting goals, 44 actor associations and eleven dependencies in the existing source. No DFD notation replaces UML: associations have no arrowheads, and dashed dependencies use open arrowheads.
+The layout preserves the feature inventory; the subsequent user-approved role correction makes log management Head Laboratory only. Preserve the six actors, 20 base goals, ten supporting goals, 42 actor associations and eleven dependencies in the existing source. No DFD notation replaces UML: associations have no arrowheads, and dashed dependencies use open arrowheads.
 
 User overrides the guide's blue fills and generous whitespace: use white shapes with black outlines, tighter outer margins, larger text, and the existing three-column composition.
 
@@ -28,4 +28,4 @@ Run `node integrations/google-docs/check-usecase.cjs --render` to check node tex
 | Ask Laboratory Question | Check Reservation Status | extend | Yes; detected own-reservation question | Support → base | Table 14, requester-scoped status retrieval |
 | Ask Laboratory Question | Check Operating Hours | extend | Yes; detected operating-hours question | Support → base | Table 14, authorized knowledge base retrieval |
 
-The existing inventory decomposition is retained, not reclassified in a formatting task. Dean remains approval-only; clearance viewing remains Class Representative only, and processing remains Head Laboratory only. The shared logs/schedule/daily-task goal does not grant staff daily-task permission: their participation is limited to usage logs; daily-task entry is Head Laboratory only.
+The existing inventory decomposition is retained, not reclassified in a formatting task. Dean remains approval-only; clearance viewing remains Class Representative only, and processing remains Head Laboratory only. Manage Logs, Schedule & Daily Tasks is associated only with Head Laboratory. Both staff associations were removed by explicit user request; staff retain inventory, issuance/return and disposal, but no longer manage usage logs, schedules or daily tasks.

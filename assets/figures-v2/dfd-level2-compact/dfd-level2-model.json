@@ -663,7 +663,7 @@
     "id": "p5",
     "steps": [
       "Maintain Schedule",
-      "Record Usage & Head Lab Daily Tasks",
+      "Record Usage & Daily Tasks",
       "Process Clearance",
       "Compile Reporting Metrics",
       "Generate End-Term Report"
@@ -747,22 +747,6 @@
         "source": "p5.5",
         "target": "headlab",
         "label": "End-Term Report",
-        "kind": "external"
-      },
-      {
-        "id": "p5-ph-usage-child2",
-        "parentFlow": "p5-ph-usage",
-        "source": "physics",
-        "target": "p5.2",
-        "label": "Usage Entry",
-        "kind": "external"
-      },
-      {
-        "id": "p5-ci-usage-child2",
-        "parentFlow": "p5-ci-usage",
-        "source": "circuits",
-        "target": "p5.2",
-        "label": "Usage Entry",
         "kind": "external"
       },
       {

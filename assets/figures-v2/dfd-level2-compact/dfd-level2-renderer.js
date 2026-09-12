@@ -95,7 +95,7 @@
     p2:[['Retrieve','Availability'],['Validate &','Record','Reservation'],['Route','Approval','Decision'],['Update','Reservation','Status']],
     p3:[['Capture','Signed-In','Inquiry'],['Retrieve','Authorized','Records'],['Compose','Grounded','Answer'],['Record Q&A','Exchange']],
     p4:[['Maintain','Inventory'],['Retrieve','Approved','Reservation'],['Issue Items &','Create Slip'],['Reconcile','Return'],['Record','Disposal']],
-    p5:[['Maintain','Schedule'],['Record Usage','& Head Lab','Daily Tasks'],['Process','Clearance'],['Compile','Reporting','Metrics'],['Generate','End-Term','Report']]
+    p5:[['Maintain','Schedule'],['Record Usage','& Daily Tasks'],['Process','Clearance'],['Compile','Reporting','Metrics'],['Generate','End-Term','Report']]
   };
   const internalAlias={'Verified identity':'Identity','Authorized session':'Session','Availability data':'Avail. data',
     'Validated request':'Valid req.','Decision data':'Decision','Scoped inquiry':'Inquiry','Authorized data':'Auth. data',
@@ -222,7 +222,7 @@
     clearLabelStrokes(svg);
     window.__level2={model,parent,nodes,routes,labelBoxes,constants:{W,H,P,E,D,FONT}};
     if(!output){
-      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-clean-'+model.id+'-v1'});
+      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-head-only-logs-'+model.id+'-v2'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       window.addEventListener('beforeprint',()=>svg.replaceWith(authored));window.addEventListener('afterprint',()=>authored.replaceWith(svg));
     }

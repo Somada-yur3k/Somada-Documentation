@@ -428,20 +428,6 @@
       "kind": "external"
     },
     {
-      "id": "p5-ph-usage",
-      "source": "physics",
-      "target": "p5",
-      "label": "Usage Entry",
-      "kind": "external"
-    },
-    {
-      "id": "p5-ci-usage",
-      "source": "circuits",
-      "target": "p5",
-      "label": "Usage Entry",
-      "kind": "external"
-    },
-    {
       "id": "p1-d1-write",
       "source": "p1",
       "target": "d1",

@@ -17,6 +17,8 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
  });
  const issues=[];
  assert.equal(result.actors.length,6);assert.equal(result.cases.length,30);assert.equal(result.relationships.length,11);
+ assert.equal(result.paths.length-11,42);
+ assert.deepEqual(result.actors.filter(a=>a.uses.includes('mgmlogs')).map(a=>a.id),['headlab'],'Only Head Laboratory manages logs, schedule and daily tasks');
  for(const b of result.boxes){
   if((b.node||b.label)&&(b.x<0||b.x+b.w>1600||b.y<0||b.y+b.h>1770))issues.push('canvas text '+b.text);
   if(b.node){const n=result.cases.find(n=>n.id===b.node);for(const x of [b.x,b.x+b.w])for(const y of [b.y,b.y+b.h])if(((x-n.x)/n.rx)**2+((y-n.cy)/n.ry)**2>1.02)issues.push('ellipse text '+b.node+' '+b.text);}

@@ -30,4 +30,3 @@ for(const [old,target]of [['dfd-level1-traceable/dfd-level1-traceable-source.htm
 }
 assert.deepEqual(errors,[]);console.log('Seven primary menus, Google Docs target, mobile Documentation return, legacy redirects and clean exports passed.');
 }finally{await browser.close();server.close();}})().catch(e=>{console.error(e);process.exitCode=1;server.close();});
-

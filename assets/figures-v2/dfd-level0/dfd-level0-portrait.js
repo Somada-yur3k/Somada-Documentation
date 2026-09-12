@@ -1,4 +1,4 @@
-/* A4 portrait context diagram: all 48 current Level 1 boundary exchanges. */
+/* A4 portrait context diagram: all 46 current Level 1 boundary exchanges. */
 (async function(){
   'use strict';
   const params=new URLSearchParams(location.search),output=params.has('embed')||params.has('export');
@@ -125,14 +125,14 @@
     text(600,112,['0'],{'font-size':28}),
     text(600,690,['A Web-Based','Physics and Circuits','Laboratory','Management System','with AI Capabilities','for NU Fairview'],{'font-size':23,'data-line-height':35})
   ]));
-  svg.append(text(600,1445,['48 independent data flows · Full names in the flow reference'],{'font-size':20}));
+  svg.append(text(600,1445,['46 independent data flows · Full names in the flow reference'],{'font-size':20}));
   document.getElementById('stage').append(svg);
   await document.fonts.ready;clearLabelStrokes(svg);
   const labelBoxes=[...svg.querySelectorAll('.diagram-flow-label')].map(g=>{const b=g.getBBox();return{id:g.dataset.flowId,x:b.x-6,y:b.y-2,w:b.width+12,h:b.height+4};});
   window.__level0={nodes,routes,labelBoxes,flows,W,H,FONT};
   if(!output){
     const authored=svg.cloneNode(true);let editing=null;
-    window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level0-portrait-48-v1'});
+    window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level0-portrait-46-v2'});
     svg.querySelectorAll('.diagram-connector-hit').forEach(p=>p.removeAttribute('stroke-dasharray'));
     window.addEventListener('beforeprint',()=>{editing=svg;svg.replaceWith(authored);});
     window.addEventListener('afterprint',()=>{if(editing){authored.replaceWith(editing);editing=null;}});

@@ -70,11 +70,11 @@ const ACTORS = [
   },
   {
     id:'physics', label:['Physics','Lab Staff'], color:'#707782', side:'right', cy:950,
-    uses:['login','mgminv','issueeq','procret','wastedisp','mgmlogs']
+    uses:['login','mgminv','issueeq','procret','wastedisp']
   },
   {
     id:'circuits', label:['Circuits','Lab Staff'], color:'#182ed4', side:'right', cy:1470,
-    uses:['login','mgminv','issueeq','procret','wastedisp','mgmlogs']
+    uses:['login','mgminv','issueeq','procret','wastedisp']
   }
 ];
 
@@ -358,7 +358,7 @@ document.querySelectorAll('.diagram-flow-label').forEach((label,i)=>{
 });
 if(!outputMode){
   const authored=svg.cloneNode(true);
-  window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-compact-straight-v2'});
+  window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-head-only-logs-v3'});
   window.addEventListener('beforeprint',()=>svg.replaceWith(authored));
   window.addEventListener('afterprint',()=>authored.replaceWith(svg));
 }

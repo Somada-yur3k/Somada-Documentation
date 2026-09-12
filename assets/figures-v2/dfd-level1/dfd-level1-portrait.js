@@ -172,7 +172,7 @@
     model.entities.forEach((n,i)=>nodes[n.id]={...n,...E,y:96+i*336,kind:'entity',lines:entityLines[n.id]});
     model.processes.forEach((n,i)=>nodes[n.id]={...n,...P,y:70+i*410,kind:'process',lines:processLines[n.id]});
     model.stores.forEach(n=>nodes[n.id]={...n,...D,y:storeY[n.id],kind:'store',lines:storeLines[n.id]});
-    const svg=el('svg',{xmlns:NS,width:W,height:H,viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Physics and Circuits Laboratory Level 1 DFD: five processes and 76 independent data flows'});
+    const svg=el('svg',{xmlns:NS,width:W,height:H,viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Physics and Circuits Laboratory Level 1 DFD: five processes and 74 independent data flows'});
     svg.appendChild(el('rect',{width:W,height:H,fill:'#fff'}));
     const defs=el('defs');
     Object.entries({...colors,store:'#27272a'}).forEach(([key,color])=>{
@@ -265,7 +265,7 @@
       group.appendChild(text(x,n.y+n.h/2+(n.kind==='process'?22:9),n.lines,{'font-size':n.kind==='process'?28.8:29,'font-weight':n.kind==='process'?700:500}));
       shapes.appendChild(group);
     });
-    svg.appendChild(text(W/2,2144,['76 separate flows · Crossings without dots are NOT junctions'],{'font-size':29}));
+    svg.appendChild(text(W/2,2144,['74 separate flows · Crossings without dots are NOT junctions'],{'font-size':29}));
     svg.appendChild(text(W/2,2176,['Rep. = Class Representative; res. = reservation; appr. = approval; acct. = account; txn. = transaction.'],{'font-size':29}));
     svg.appendChild(text(W/2,2208,['Non-lab request = on-schedule non-laboratory request; sched. = scheduled; avail. = availability.'],{'font-size':29}));
     const table=document.querySelector('#flow-reference tbody');
@@ -282,7 +282,7 @@
     if(!output) {
       const authored=svg.cloneNode(true);
       authored.querySelector('[data-routing-guides]').replaceChildren();
-      window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1-a4-portrait-76-clear-rows-v2'});
+      window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1-a4-portrait-74-head-only-logs-v3'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       // Ctrl+P and the Print button both print the checked authored geometry,
       // not potentially overlapping edits saved by an individual browser.

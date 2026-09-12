@@ -10,6 +10,9 @@ assert(!/\bSOMADA\b/.test(html));
 assert(!data.entities.some(e=>e.name==='FORECAST_RESULT'));
 assert(data.useCases.find(u=>u.id==='uc-askq').briefDescription.startsWith('The authenticated Q&A chatbot'));
 assert.equal(data.useCases.find(u=>u.id==='uc-askq').actors,'Class Representative, Faculty');
+assert.equal(data.useCases.find(u=>u.id==='uc-mgmlogs').actors,'Head Laboratory');
+assert.equal(data.backlog.find(u=>u.id==='15').role,'Head Laboratory');
+assert(data.events.filter(e=>e.useCase==='Manage Laboratory Logs, Schedule & Daily Tasks').every(e=>e.source==='Head Laboratory'));
 assert(data.gaps.find(g=>g.id==='14').proposed.includes('outside the current AI scope'));
 assert(data.gaps.find(g=>g.id==='16').proposed.includes('do not generate AI-written'));
 const server=http.createServer((req,res)=>{
