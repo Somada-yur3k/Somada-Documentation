@@ -25,6 +25,20 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
     for(const n of Object.values(nodes))if(n.id!==r.source&&n.id!==r.target&&segs(r.points).some(s=>hits(s,n)))issues.push('line/node '+r.id+'/'+n.id);
    }
    assert.equal(new Set(ports).size,ports.length,'No shared ports');
+   for(const side of ['left','right']){
+    const ordered=routes.filter(r=>r.side===side).sort((a,b)=>a.py-b.py);
+    for(let i=1;i<ordered.length;i++){
+     const previous=ordered[i-1].points[1][0],current=ordered[i].points[1][0];
+     assert(side==='left'?current-previous>=16:previous-current>=16,'Mirrored process-ordered vertical lanes: '+side);
+    }
+   }
+   for(const n of Object.values(nodes).filter(n=>n.kind!=='process')){
+    const links=routes.filter(r=>r.peer===n.id).sort((a,b)=>a.sy-b.sy);
+    for(let i=1;i<links.length;i++){
+     assert(nodes[links[i-1].process].y<=nodes[links[i].process].y,'Top-to-bottom process order at '+n.id);
+     assert(links[i-1].py<links[i].py,'Peer rows preserve process approach order at '+n.id);
+    }
+   }
    for(const [i,a]of labelBoxes.entries()){
     for(const b of labelBoxes.slice(i+1))if(overlap(a,b))issues.push('labels '+a.id+'/'+b.id);
     for(const n of Object.values(nodes))if(overlap(a,n))issues.push('label/node '+a.id+'/'+n.id);

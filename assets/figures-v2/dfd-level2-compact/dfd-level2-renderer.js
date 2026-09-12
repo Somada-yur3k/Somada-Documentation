@@ -4,7 +4,7 @@
 (async function(){
   'use strict';
   const params=new URLSearchParams(location.search),output=params.has('embed')||params.has('export');
-  const NS='http://www.w3.org/2000/svg',W=1770,H=1401.25,FONT=27,LABEL_GAP=6;
+  const NS='http://www.w3.org/2000/svg',W=1834,H=1451.9166666667,FONT=27,LABEL_GAP=6;
   document.body.classList.toggle('output-mode',output);
   const aliases={
     'Class Representative Credentials':'Rep. credentials',
@@ -132,7 +132,7 @@
     const targets={};
     [...actors,...stores].forEach(n=>{const links=model.flows.filter(f=>f.source===n.id||f.target===n.id);targets[n.id]=links.reduce((sum,f)=>sum+centre(nodes[f.source===n.id?f.target:f.source]),0)/links.length;});
     const E={x:14,w:170,h:Math.max(170,...actors.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20))};
-    const D={x:1504,w:250,h:120,idw:64};
+    const D={x:1568,w:250,h:120,idw:64};
     // Actor order follows the approved role column; Head Laboratory remains last.
     place(actors,targets,E.h).forEach(n=>nodes[n.id]={...n,...E,kind:'entity',lines:entityLines[n.id]});
     place(stores.slice().sort((a,b)=>targets[a.id]-targets[b.id]),targets,D.h).forEach(n=>nodes[n.id]={...n,...D,kind:'store',lines:storeLines[n.id]});
@@ -158,7 +158,10 @@
       [...actors,...stores].filter(n=>(kind==='external'?actors:stores).includes(n)).forEach(n=>{
         const box=nodes[n.id],process=f=>nodes[f.source===n.id?f.target:f.source];
         const own=model.flows.filter(f=>f.source===n.id||f.target===n.id);
-        own.sort((a,b)=>Math.abs(centre(process(a))-centre(box))-Math.abs(centre(process(b))-centre(box))||process(a).y-process(b).y||model.flows.indexOf(a)-model.flows.indexOf(b));
+        // User-approved order: highest subprocess first on BOTH peer columns,
+        // regardless of direction or distance. Within a subprocess, preserve
+        // its approach-port order so paired read/write flows do not swap rows.
+        own.sort((a,b)=>process(a).y-process(b).y||flowPorts[a.id].py-flowPorts[b.id].py||model.flows.indexOf(a)-model.flows.indexOf(b));
         let previous=box.y+8;
         own.forEach((f,i)=>{
           const preferred=box.y+20+(i+.5)*(box.h-40)/own.length;let sy=null;
@@ -171,16 +174,15 @@
         });
       });
     }
-    const left=model.flows.filter(f=>f.kind==='external').sort((a,b)=>nodes[flowPorts[a.id].peer].y-nodes[flowPorts[b.id].peer].y||flowPorts[a.id].peerOrder-flowPorts[b.id].peerOrder);
-    const laneById={};left.forEach((f,i)=>laneById[f.id]=200+(left.length-1-i)*16);
-    const right=model.flows.filter(f=>f.kind==='store').sort((a,b)=>Math.min(flowPorts[a.id].py,flowPorts[a.id].sy)-Math.min(flowPorts[b.id].py,flowPorts[b.id].sy));
-    const occupied=[];
-    right.forEach((f,i)=>{
-      const {py,sy}=flowPorts[f.id],lo=Math.min(py,sy),hi=Math.max(py,sy);
-      const column=Array.from({length:9},(_,j)=>j).find(j=>occupied.every(o=>o.column!==j||Math.min(hi,o.hi)+12<Math.max(lo,o.lo)));
-      if(column===undefined)throw Error('Store lanes need more room: '+f.id);
-      occupied.push({column,lo,hi});laneById[f.id]=1358+column*16+(i+1)*.01;
-    });
+    // Mirror the vertical lane order across the process column. Earlier
+    // process ports get the outermost lane: leftmost for entities, rightmost
+    // for stores. Each flow owns a distinct lane, even for disjoint spans.
+    const processOrder=(a,b)=>flowPorts[a.id].py-flowPorts[b.id].py;
+    const left=model.flows.filter(f=>f.kind==='external').sort(processOrder);
+    const right=model.flows.filter(f=>f.kind==='store').sort(processOrder);
+    const laneById={};
+    left.forEach((f,i)=>laneById[f.id]=200+i*16);
+    right.forEach((f,i)=>laneById[f.id]=1358+(right.length-1-i)*16);
     function draw(f,points,lx,ly,label,colorKey,side){
       const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),fill:'none',stroke:colors[colorKey]||'#27272a','stroke-width':2.2,'marker-end':'url(#arrow-'+colorKey+')'});
       const title=el('title');title.textContent=f.label;path.appendChild(title);paths.appendChild(path);
@@ -222,7 +224,7 @@
     clearLabelStrokes(svg);
     window.__level2={model,parent,nodes,routes,labelBoxes,constants:{W,H,P,E,D,FONT}};
     if(!output){
-      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-head-only-logs-'+model.id+'-v2'});
+      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-mirrored-process-lanes-'+model.id+'-v4'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       window.addEventListener('beforeprint',()=>svg.replaceWith(authored));window.addEventListener('afterprint',()=>authored.replaceWith(svg));
     }
