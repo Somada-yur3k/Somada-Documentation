@@ -3,10 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SOMADA Use Case Diagram</title>
+<title>Physics and Circuits Laboratory — Use Case Diagram</title>
 <style>
   html,body{margin:0;padding:0;background:#fff;font-family:Arial,Helvetica,sans-serif;}
-  #stage{display:inline-block;line-height:0;}
+  #stage{width:210mm;margin:auto;padding:18mm;box-sizing:border-box;line-height:0;}
+  #stage svg{display:block;width:100%;height:auto;}
+  body.export-mode #stage{width:1600px;margin:0;padding:0;}
+  @page{size:A4 portrait;margin:20mm 18mm;}
+  @media print{.page-tabs,.diagram-editor-toolbar{display:none!important;}#stage{width:100%;padding:0;margin:0;}}
   .page-tabs{position:sticky;top:0;background:#fff;border-bottom:1px solid #e4e5ec;display:flex;align-items:center;gap:4px;padding:10px 16px;z-index:10;overflow-x:auto;font-family:'Segoe UI',Arial,sans-serif;}
   .page-tab{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:#5b6270;white-space:nowrap;flex:0 0 auto;text-decoration:none;}
   .page-tab:hover{background:#eef0f4;color:#1c2029;}
@@ -19,16 +23,18 @@
 </head>
 <body>
 <nav class="page-tabs somada-nav" aria-label="Primary navigation">
-  <a class="nav-brand" href="../../index.html" aria-label="SOMADA home"><span class="nav-brand-mark">S</span><span class="nav-brand-copy"><strong>SOMADA</strong><small>Documentation Suite</small></span></a>
+  <a class="nav-brand" href="../../index.html" aria-label="Laboratory documentation home"><span class="nav-brand-mark">NU</span><span class="nav-brand-copy"><strong>NU Fairview Labs</strong><small>Documentation Suite</small></span></a>
   <div class="nav-links">
     <a class="page-tab" href="../../index.html">Home</a>
     <a class="page-tab" href="../../Docs.html">Documentation</a>
     <a class="page-tab" href="../../Current-System.html">Current System</a>
-    <a class="page-tab active" href="usecase-diagram-source.html">Use Case</a>
-    <a class="page-tab" href="dfd-level0/dfd-level0-source.html">DFD Level 0</a>
-    <a class="page-tab" href="dfd-level1/dfd-level1-source.html">DFD Level 1</a>
+    <a class="page-tab active" href="../../assets/figures-v2/usecase-diagram-source.html" aria-current="page">Use Case</a>
+    <a class="page-tab" href="../../assets/figures-v2/dfd-level0/dfd-level0-source.html">DFD Level 0</a>
+    <a class="page-tab" href="../../assets/figures-v2/dfd-level1/dfd-level1-source.html">DFD Level 1</a>
+    <a class="page-tab" href="../../assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html">DFD Level 2</a>
+    <a class="page-tab" href="../downloads/use-case-guide-layout-skill.zip" download="use-case-guide-layout-skill.zip">Download Use Case Skill</a>
   </div>
-  <a class="page-tab nav-download" href="../downloads/use-case-guide-layout-skill.zip" download="use-case-guide-layout-skill.zip">Download Use Case Skill</a>
+  <a class="page-tab nav-google-docs" href="https://docs.google.com/document/d/11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM/edit?tab=t.0#heading=h.6lc8m3z0ynuc" target="_blank" rel="noopener noreferrer" title="Open Google Docs in a new tab">Google Docs ↗</a>
 </nav>
 <div id="stage"></div>
 <script>
@@ -37,16 +43,17 @@
  *   left   = requester and approver processes
  *   center = supporting use cases with required <<include>> or conditional <<extend>> links
  *   right  = laboratory management processes
- * Actors remain outside the SOMADA system boundary. Dashboard-only entries
+ * Actors remain outside the laboratory system boundary. Dashboard-only entries
  * are intentionally excluded so the diagram emphasizes business processes.
  */
-if (new URLSearchParams(location.search).has('export')) {
+const outputMode=['export','embed'].some(key=>new URLSearchParams(location.search).has(key));
+if (outputMode) {
   document.body.classList.add('export-mode');
 }
 
 const ACTORS = [
   {
-    id:'classrep', label:['Class','Representative'], color:'#2454a6', side:'left', cy:430,
+    id:'classrep', label:['Class Rep.'], color:'#2454a6', side:'left', cy:430,
     uses:['login','chooselab','viewsched','submitcombined','cancelres','reschedres','viewstatus','viewhistory','clearstatus','askq']
   },
   {
@@ -62,11 +69,11 @@ const ACTORS = [
     uses:['login','issueacct','mgminv','issueeq','procret','procclear','wastedisp','mgmlogs','endterm']
   },
   {
-    id:'physics', label:['Physics Laboratory','Staff'], color:'#707782', side:'right', cy:950,
+    id:'physics', label:['Physics','Lab Staff'], color:'#707782', side:'right', cy:950,
     uses:['login','mgminv','issueeq','procret','wastedisp','mgmlogs']
   },
   {
-    id:'circuits', label:['Circuits Laboratory','Staff'], color:'#182ed4', side:'right', cy:1470,
+    id:'circuits', label:['Circuits','Lab Staff'], color:'#182ed4', side:'right', cy:1470,
     uses:['login','mgminv','issueeq','procret','wastedisp','mgmlogs']
   }
 ];
@@ -123,14 +130,30 @@ const RELATIONSHIPS = [
   {from:'checkhours',  to:'askq',        type:'extend'}
 ];
 
-const CANVAS_W = 1920;
-const CANVAS_H = 1825;
-const BOUNDARY = {x:485, y:105, w:950, h:1635};
-const BASE_SIZE = {rx:105, ry:36};
-const LOGIN_SIZE = {rx:120, ry:40};
-const SUPPORT_SIZE = {rx:88, ry:27};
-const ACTOR_X = {left:315, right:1605};
+const CANVAS_W = 1600;
+const CANVAS_H = 1660;
+const BOUNDARY = {x:220, y:90, w:1160, h:1515};
+const BASE_SIZE = {rx:125, ry:55};
+const LOGIN_SIZE = {rx:125, ry:55};
+const SUPPORT_SIZE = {rx:115, ry:55};
+const ACTOR_X = {left:75, right:1525};
 
+// Compact coordinates preserve the same actors, goals and dependencies.
+BASE_UC.filter(u=>u.column==='left').forEach((u,i)=>{u.x=450;u.cy=300+i*118;});
+BASE_UC.filter(u=>u.column==='right').forEach((u,i)=>{u.x=1150;u.cy=400+i*160;});
+BASE_UC.find(u=>u.id==='login').x=800;
+BASE_UC.find(u=>u.id==='login').cy=210;
+SUPPORT_UC.forEach((u,i)=>{u.x=800;u.cy=[340,458,576,694,812,958,1100,1218,1336,1454][i];});
+ACTORS.find(a=>a.id==='faculty').cy=950;
+ACTORS.find(a=>a.id==='dean').cy=1470;
+const shortLabels={
+  submitcombined:['Submit Request:','On-Schedule Non-Lab','or Out-of-Schedule'],
+  reschedres:['Reschedule','Laboratory','Reservation'],
+  issueacct:['Issue Class Rep.','Account'],
+  recordblc:['Record Broken,','Lost or Consumed','Items'],
+  mgmlogs:['Manage Logs,','Schedule &','Daily Tasks']
+};
+BASE_UC.concat(SUPPORT_UC).forEach(u=>{u.fullName=u.label.join(' ');if(shortLabels[u.id])u.label=shortLabels[u.id];});
 const NS = 'http://www.w3.org/2000/svg';
 const byId = {};
 BASE_UC.concat(SUPPORT_UC).forEach(item => { byId[item.id] = item; });
@@ -169,16 +192,11 @@ function ellipseSidePoint(useCase, side) {
   };
 }
 
-function labelPill(layer, x, y, label, flowId) {
-  const width = Math.max(76, 22 + label.length * 7.2);
-  const group = el('g', {class:'diagram-flow-label', 'data-flow-id':flowId});
-  group.appendChild(el('rect', {
-    x:x-width/2, y:y-14, width, height:28, rx:14,
-    fill:'#ffffff', stroke:'#98a2b3', 'stroke-width':1
-  }));
-  group.appendChild(textEl(x, y+4, [`«${label}»`], {
-    'font-size':14, fill:'#344054', 'font-weight':'700',
-    'font-family':'Arial,Helvetica,sans-serif'
+function labelPill(layer, x, y, label, flowId, angle) {
+  const group = el('g', {class:'diagram-flow-label', 'data-flow-id':flowId,transform:`rotate(${angle} ${x} ${y})`});
+  const index=Number(flowId.split('-')[1]);
+  group.appendChild(textEl(x, y+(index===2?7:([1,5,8,9,10].includes(index)?24:-7)), [`«${label}»`], {
+    'font-size':20, fill:'#111', 'font-family':'Arial,Helvetica,sans-serif'
   }));
   layer.appendChild(group);
 }
@@ -190,7 +208,7 @@ const svg = el('svg', {
 });
 
 const title = el('title', {id:'diagram-title'});
-title.textContent = 'SOMADA Use Case Diagram';
+title.textContent = 'Physics and Circuits Laboratory — Use Case Diagram';
 svg.appendChild(title);
 const description = el('desc', {id:'diagram-description'});
 description.textContent = 'Six large actors surround a system boundary. Request and approval use cases form the left column, required and conditional supporting use cases form the center column, and laboratory management use cases form the right column.';
@@ -202,23 +220,23 @@ const openArrow = el('marker', {
   orient:'auto', markerUnits:'userSpaceOnUse'
 });
 openArrow.appendChild(el('path', {
-  d:'M 1 1 L 10 6 L 1 11', fill:'#ffffff', stroke:'#667085',
+  d:'M 1 1 L 10 6 L 1 11', fill:'none', stroke:'#111',
   'stroke-width':1.5, 'stroke-linejoin':'round'
 }));
 defs.appendChild(openArrow);
 svg.appendChild(defs);
 
-svg.appendChild(el('rect', {x:0, y:0, width:CANVAS_W, height:CANVAS_H, fill:'#f8fafc'}));
-svg.appendChild(textEl(CANVAS_W/2, 48, ['SOMADA Use Case Diagram'], {
+svg.appendChild(el('rect', {x:0, y:0, width:CANVAS_W, height:CANVAS_H, fill:'#fff'}));
+svg.appendChild(textEl(CANVAS_W/2, 48, ['Physics and Circuits Laboratory — Use Case Diagram'], {
   'font-size':30, fill:'#101828', 'font-weight':'700',
   'font-family':'Georgia,Times New Roman,serif'
 }));
 svg.appendChild(el('rect', {
   x:BOUNDARY.x, y:BOUNDARY.y, width:BOUNDARY.w, height:BOUNDARY.h,
-  fill:'#e9eef5', stroke:'#9fb0c5', 'stroke-width':2
+  fill:'#fff', stroke:'#111', 'stroke-width':2
 }));
-svg.appendChild(textEl(BOUNDARY.x+18, BOUNDARY.y+26, ['SOMADA – Laboratory Reservation and Management System'], {
-  'font-size':14, fill:'#344054', 'font-weight':'700', 'text-anchor':'start',
+svg.appendChild(textEl(CANVAS_W/2, BOUNDARY.y+40, ['A Web-Based Physics and Circuits Laboratory Management System', 'with AI Capabilities for NU Fairview'], {
+  'font-size':24, fill:'#111', 'font-weight':'700', lineHeight:28,
   'font-family':'Arial,Helvetica,sans-serif'
 }));
 
@@ -235,10 +253,14 @@ ACTORS.forEach(actor => {
     const useCase = byId[useCaseId];
     const endpoint = ellipseSidePoint(useCase, actor.side);
     const flowId = `association-${actor.id}-${useCaseId}`;
+    const i=ACTORS.indexOf(actor),left=actor.side==='left';
+    const outer=left?180-i*7:1420+i*7,inner=endpoint.x+(left?-22-i*7:22+i*7),top=158+i*8;
     associationLayer.appendChild(el('path', {
       class:'diagram-connector', 'data-flow-id':flowId,
-      d:`M ${hand.x} ${hand.y} L ${endpoint.x.toFixed(1)} ${endpoint.y.toFixed(1)}`,
-      fill:'none', stroke:'#667085', 'stroke-width':1.45, opacity:.86
+      d:useCaseId==='login'
+        ? `M ${hand.x} ${hand.y} L ${outer} ${hand.y} L ${outer} ${top} L ${inner} ${top} L ${endpoint.x} ${endpoint.y}`
+        : `M ${hand.x} ${hand.y} L ${endpoint.x.toFixed(1)} ${endpoint.y.toFixed(1)}`,
+      fill:'none', stroke:'#111', 'stroke-width':1.8
     }));
   });
 });
@@ -254,15 +276,17 @@ RELATIONSHIPS.forEach((relationship,index) => {
   const sourceEdge = ellipseSidePoint(source, targetIsRight ? 'right' : 'left');
   const targetEdge = ellipseSidePoint(target, targetIsRight ? 'left' : 'right');
   const flowId = `relationship-${index}-${relationship.type}`;
+  const points=[sourceEdge,targetEdge],t=index===2?.59:([6,10].includes(index)?.5:(relationship.type==='include'?.65:.35));
+  const lx=sourceEdge.x+(targetEdge.x-sourceEdge.x)*t,ly=sourceEdge.y+(targetEdge.y-sourceEdge.y)*t;
+  let angle=Math.atan2(targetEdge.y-sourceEdge.y,targetEdge.x-sourceEdge.x)*180/Math.PI;
+  if(angle>90)angle-=180;if(angle<-90)angle+=180;
   relationshipLayer.appendChild(el('path', {
     class:'diagram-connector', 'data-flow-id':flowId,
-    d:`M ${sourceEdge.x.toFixed(1)} ${sourceEdge.y.toFixed(1)} L ${targetEdge.x.toFixed(1)} ${targetEdge.y.toFixed(1)}`,
-    fill:'none', stroke:'#667085', 'stroke-width':1.6,
+    d:points.map((p,i)=>(i?'L ':'M ')+p.x+' '+p.y).join(' '),
+    fill:'none', stroke:'#111', 'stroke-width':1.8,
     'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'
   }));
-  const lx = sourceEdge.x + (targetEdge.x-sourceEdge.x)*.5;
-  const ly = sourceEdge.y + (targetEdge.y-sourceEdge.y)*.5;
-  labelPill(relationshipLayer, lx, ly, relationship.type, flowId);
+  labelPill(relationshipLayer, lx, ly, relationship.type, flowId, angle);
 });
 
 const useCaseLayer = el('g', {'aria-label':'Use cases'});
@@ -271,15 +295,16 @@ BASE_UC.concat(SUPPORT_UC).forEach(useCase => {
   const size = useCaseSize(useCase);
   const support = SUPPORT_UC.includes(useCase);
   const group = el('g', {id:`usecase-${useCase.id}`});
+  const fullTitle=el('title');fullTitle.textContent=useCase.fullName;group.appendChild(fullTitle);
   group.appendChild(el('ellipse', {
     cx:useCase.x, cy:useCase.cy, rx:size.rx, ry:size.ry,
-    fill:support ? '#dcecf8' : '#cde7f8',
-    stroke:'#1ea7e8', 'stroke-width':2
+    fill:'#fff',
+    stroke:'#111', 'stroke-width':2
   }));
   group.appendChild(textEl(useCase.x, useCase.cy+5, useCase.label, {
-    'font-size':support ? 13 : (useCase.fontSize || 15),
+    'font-size':22,
     fill:'#101828', 'font-weight':support ? '500' : '600',
-    'font-family':'Arial,Helvetica,sans-serif', lineHeight:support ? 16 : (useCase.lineHeight || 18)
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:23
   }));
   useCaseLayer.appendChild(group);
 });
@@ -287,7 +312,7 @@ BASE_UC.concat(SUPPORT_UC).forEach(useCase => {
 function drawActor(actor) {
   const x = ACTOR_X[actor.side];
   const y = actor.cy;
-  const color = actor.color;
+  const color = '#111';
   const group = el('g', {id:`actor-${actor.id}`});
   group.appendChild(el('circle', {cx:x, cy:y-76, r:24, fill:'none', stroke:color, 'stroke-width':7}));
   group.appendChild(el('line', {x1:x, y1:y-52, x2:x, y2:y+22, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
@@ -295,8 +320,8 @@ function drawActor(actor) {
   group.appendChild(el('line', {x1:x, y1:y+22, x2:x-43, y2:y+86, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
   group.appendChild(el('line', {x1:x, y1:y+22, x2:x+43, y2:y+86, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
   group.appendChild(textEl(x, y+126, actor.label, {
-    'font-size':19, fill:'#101828', 'font-weight':'700',
-    'font-family':'Arial,Helvetica,sans-serif', lineHeight:22
+    'font-size':26, fill:'#111', 'font-weight':'700',
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:29
   }));
   return group;
 }
@@ -305,19 +330,38 @@ const actorLayer = el('g', {'aria-label':'Actors'});
 ACTORS.forEach(actor => actorLayer.appendChild(drawActor(actor)));
 svg.appendChild(actorLayer);
 
-const legend = el('g', {transform:'translate(590 1780)', 'aria-label':'Relationship legend'});
-legend.appendChild(el('line', {x1:0, y1:0, x2:55, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
+const legend = el('g', {transform:'translate(250 1635)', 'aria-label':'Relationship legend'});
+legend.appendChild(el('line', {x1:0, y1:0, x2:55, y2:0, stroke:'#111', 'stroke-width':1.8, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
 legend.appendChild(textEl(72, 5, ['«include» required shared behavior'], {
-  'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
+  'font-size':20, fill:'#111', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
 }));
-legend.appendChild(el('line', {x1:405, y1:0, x2:460, y2:0, stroke:'#667085', 'stroke-width':1.6, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
-legend.appendChild(textEl(477, 5, ['«extend» conditional / optional behavior'], {
-  'font-size':14, fill:'#475467', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
+legend.appendChild(el('line', {x1:540, y1:0, x2:595, y2:0, stroke:'#111', 'stroke-width':1.8, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
+legend.appendChild(textEl(612, 5, ['«extend» conditional / optional behavior'], {
+  'font-size':20, fill:'#111', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
 }));
 svg.appendChild(legend);
 
 document.getElementById('stage').appendChild(svg);
-window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-diagram-student-clearance-v16'});
+// Mask only a dependency's own dashed stroke behind its plain label.
+// Other associations remain visible; no white label box covers the diagram.
+document.querySelectorAll('.diagram-flow-label').forEach((label,i)=>{
+  const mask=el('mask',{id:'dependency-gap-'+i,maskUnits:'userSpaceOnUse',x:0,y:0,width:CANVAS_W,height:CANVAS_H});
+  mask.appendChild(el('rect',{x:0,y:0,width:CANVAS_W,height:CANVAS_H,fill:'#fff'}));
+  const gap=el('rect',{fill:'#000'});mask.appendChild(gap);defs.appendChild(mask);
+  const path=svg.querySelector('.diagram-connector[data-flow-id="'+label.dataset.flowId+'"]');
+  path.setAttribute('mask','url(#dependency-gap-'+i+')');
+  const update=()=>{
+    const b=label.getBBox();Object.entries({x:b.x-3,y:b.y-2,width:b.width+6,height:b.height+4}).forEach(([k,v])=>gap.setAttribute(k,v));
+    const transform=label.getAttribute('transform');if(transform)gap.setAttribute('transform',transform);else gap.removeAttribute('transform');
+  };update();
+  if(!outputMode)new MutationObserver(update).observe(label,{attributes:true,attributeFilter:['transform']});
+});
+if(!outputMode){
+  const authored=svg.cloneNode(true);
+  window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-compact-straight-v2'});
+  window.addEventListener('beforeprint',()=>svg.replaceWith(authored));
+  window.addEventListener('afterprint',()=>authored.replaceWith(svg));
+}
 window.__done = true;
 </script>
 </body>

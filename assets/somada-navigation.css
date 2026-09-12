@@ -147,4 +147,9 @@
   .topbar{top:61px !important;}
 }
 
+.somada-nav .nav-google-docs{flex:0 0 auto;color:#fff;background:#1d4ed8;border-color:#1d4ed8;}
+.somada-nav .nav-google-docs:hover{color:#fff;background:#173da8;}
+.somada-nav a:focus-visible{outline:3px solid #60a5fa;outline-offset:-3px;}
+.diagram-page header{flex-wrap:wrap;}
+@media(max-width:640px){.diagram-page .nav-brand{display:none;}}
 @media print{.somada-nav{display:none !important;}}

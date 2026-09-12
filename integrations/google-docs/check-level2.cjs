@@ -1,0 +1,92 @@
+// Five Level 2 figures: canonical balancing, geometry, rendering, no Google writes.
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const root=path.resolve(__dirname,'../..'),dir='assets/figures-v2/dfd-level2-compact/';
+const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new URL(req.url,'http://localhost').pathname);if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}fs.readFile(file,(e,data)=>{if(e){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'application/octet-stream');res.end(data);});});
+const segs=points=>points.slice(1).map((b,i)=>({a:points[i],b}));
+const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
+const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.b[0])>b.x&&Math.min(s.a[0],s.b[0])<b.x+b.w:s.a[0]>b.x&&s.a[0]<b.x+b.w&&Math.max(s.a[1],s.b[1])>b.y&&Math.min(s.a[1],s.b[1])<b.y+b.h;
+(async()=>{
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({channel:'msedge',headless:true});
+ try{
+  const page=await browser.newPage({viewport:{width:1200,height:950},deviceScaleFactor:2}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  for(const id of ['p1','p2','p3','p4','p5']){
+   await page.goto(`http://127.0.0.1:${server.address().port}/${dir}dfd-level2-compact.html?process=${id}&export=1`);
+   await page.waitForFunction(()=>window.__done||window.__error);assert.equal(await page.evaluate(()=>window.__error),undefined,id);
+   const d=await page.evaluate(()=>({...window.__level2,nodeText:[...document.querySelectorAll('[data-node-id] text')].map(t=>{const b=t.getBBox();return{id:t.closest('[data-node-id]').dataset.nodeId,text:t.textContent,x:b.x,y:b.y,w:b.width,h:b.height};})}));
+   const {model,parent,nodes,routes,labelBoxes}=d,issues=[],ports=[];
+   const expected=parent.flows.filter(f=>f.source===id||f.target===id);
+   assert.deepEqual([...new Set(model.flows.map(f=>f.parentFlow))].sort(),expected.map(f=>f.id).sort(),'Every parent flow retained');
+   for(const f of model.flows){const p=expected.find(p=>p.id===f.parentFlow);assert(p);assert.equal(f.label,p.label);assert.equal(nodes[f.source].kind==='process'?id:f.source,p.source);assert.equal(nodes[f.target].kind==='process'?id:f.target,p.target);}
+   for(const kind of ['entity','process','store'])assert.equal(new Set(Object.values(nodes).filter(n=>n.kind===kind).map(n=>n.w+'x'+n.h)).size,1);
+   for(const [i,a]of Object.values(nodes).entries())for(const b of Object.values(nodes).slice(i+1))if(overlap(a,b))issues.push('node overlap '+a.id+'/'+b.id);
+   for(const r of routes){
+    for(const [pt,id]of [[r.points[0],r.source],[r.points.at(-1),r.target]]){const n=nodes[id];assert(((pt[0]===n.x||pt[0]===n.x+n.w)&&pt[1]>=n.y&&pt[1]<=n.y+n.h)||((pt[1]===n.y||pt[1]===n.y+n.h)&&pt[0]>=n.x&&pt[0]<=n.x+n.w),'Attached '+r.id);ports.push(id+':'+pt.join(','));}
+    for(const n of Object.values(nodes))if(n.id!==r.source&&n.id!==r.target&&segs(r.points).some(s=>hits(s,n)))issues.push('line/node '+r.id+'/'+n.id);
+   }
+   assert.equal(new Set(ports).size,ports.length,'No shared ports');
+   for(const [i,a]of labelBoxes.entries()){
+    for(const b of labelBoxes.slice(i+1))if(overlap(a,b))issues.push('labels '+a.id+'/'+b.id);
+    for(const n of Object.values(nodes))if(overlap(a,n))issues.push('label/node '+a.id+'/'+n.id);
+    for(const r of routes)if(r.id!==a.id&&segs(r.points).some(s=>hits(s,a)))issues.push('label/line '+a.id+'/'+r.id);
+    const r=routes.find(r=>r.id===a.id),host=segs(r.points).find(s=>s.a[1]===s.b[1]&&s.a[1]>=a.y&&s.a[1]<=a.y+a.h&&Math.min(s.a[0],s.b[0])+12<=a.x&&Math.max(s.a[0],s.b[0])-12>=a.x+a.w);
+    if(!host)issues.push({kind:'label host clearance',id:a.id,box:a,points:r.points});
+   }
+   for(const [i,a]of routes.entries())for(const b of routes.slice(i+1))for(const s of segs(a.points))for(const t of segs(b.points)){
+    const axis=s.a[0]===s.b[0]?0:1;if(t.a[axis]===t.b[axis]&&Math.abs(s.a[axis]-t.a[axis])<1e-6&&Math.min(Math.max(s.a[1-axis],s.b[1-axis]),Math.max(t.a[1-axis],t.b[1-axis]))>=Math.max(Math.min(s.a[1-axis],s.b[1-axis]),Math.min(t.a[1-axis],t.b[1-axis])))issues.push('shared run '+a.id+'/'+b.id);
+   }
+   for(const t of d.nodeText){const n=nodes[t.id];if(t.x<n.x+3||t.x+t.w>n.x+n.w-3||t.y<n.y+3||t.y+t.h>n.y+n.h-3)issues.push('node text '+t.id+' '+t.text);}
+   assert.equal(await page.locator('.diagram-flow-label rect').count(),0);
+   assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),routes.length);
+   await page.locator('#diagram').screenshot({path:path.join(os.tmpdir(),'level2-'+id+'-audit.png')});
+   console.log(JSON.stringify({id,boundary:model.flows.length,internal:model.internal.length,issues}));
+   assert.deepEqual(issues,[]);
+   if(process.argv.includes('--render'))await page.locator('#diagram').screenshot({path:path.join(root,dir,'png/dfd-level2-'+id+'.png')});
+  }
+  for(const id of ['p1','p2','p3','p4','p5']){
+    const base=`http://127.0.0.1:${server.address().port}/${dir}dfd-level2-compact.html?process=${id}`;
+    // Every interactive trace and edit affects just its own flow, with fixed endpoints.
+    await page.goto(base);await page.waitForFunction(()=>window.__done);
+    const label=page.locator('.diagram-flow-label').first();
+    await label.hover();
+    assert.equal(await page.locator('.diagram-connector.is-active').count(),1);
+    const before=await label.getAttribute('transform');
+    const authoredGap=await page.locator('.diagram-connector').first().getAttribute('stroke-dasharray');
+    const box=await label.boundingBox();await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+10,box.y+box.height/2+8);await page.mouse.up();
+    assert.notEqual(await label.getAttribute('transform'),before);
+    assert.notEqual(await page.locator('.diagram-connector').first().getAttribute('stroke-dasharray'),authoredGap,'Transparent stroke gap follows the dragged label');
+    const movedLabel=await label.getAttribute('transform');
+    const connector=page.locator('.diagram-connector').first();
+    const originalPath=await connector.getAttribute('d');
+    await page.locator('.diagram-connector-hit').first().dispatchEvent('click');
+    const handle=page.locator('.diagram-segment-handle').first();
+    await handle.scrollIntoViewIfNeeded();
+    const h=await handle.boundingBox();
+    await page.mouse.move(h.x+h.width/2,h.y+h.height/2);await page.mouse.down();await page.mouse.move(h.x+h.width/2+9,h.y+h.height/2);await page.mouse.up();
+    const editedPath=await connector.getAttribute('d');
+    assert.notEqual(editedPath,originalPath,'Internal route handle changes its own path');
+    const coords=d=>d.match(/-?\d+(?:\.\d+)?/g).map(Number);
+    assert.deepEqual(coords(editedPath).slice(0,2),coords(originalPath).slice(0,2),'Source stays fixed');
+    assert.deepEqual(coords(editedPath).slice(-2),coords(originalPath).slice(-2),'Destination stays fixed');
+    await page.reload();await page.waitForFunction(()=>window.__done);
+    assert.equal(await connector.getAttribute('d'),editedPath,'Route edit persists');
+    assert.equal(await label.getAttribute('transform'),movedLabel,'Label edit persists');
+    await page.evaluate(()=>window.dispatchEvent(new Event('beforeprint')));
+    assert.equal(await connector.getAttribute('d'),originalPath,'Print uses authored routes');
+    assert.equal(await label.getAttribute('transform'),null,'Print uses authored labels');
+    await page.evaluate(()=>window.dispatchEvent(new Event('afterprint')));
+    assert.equal(await connector.getAttribute('d'),editedPath,'Editor is restored after printing');
+    await page.goto(base+'&embed=1');await page.waitForFunction(()=>window.__done);
+    assert.equal(await connector.getAttribute('d'),originalPath,'Google Docs embed ignores saved edits');
+    assert.equal(await label.getAttribute('transform'),null);
+    assert.equal(await page.locator('.diagram-editor-toolbar,.diagram-segment-handle').count(),0);
+    await page.goto(base+'&export=1');await page.waitForFunction(()=>window.__done);
+    assert.equal(await connector.getAttribute('d'),originalPath,'Static export ignores saved edits');
+    await page.goto(base);await page.waitForFunction(()=>window.__done);
+    await page.getByRole('button',{name:'Reset edits'}).click();
+    assert.equal((await label.getAttribute('transform'))||'',before||'');
+    assert.equal(await connector.getAttribute('d'),originalPath,'Reset restores authored path');
+  }
+  assert.deepEqual(errors,[]);console.log('All five Level 2 models, figures, editor interactions and authored exports passed.');
+ }finally{await browser.close();server.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;server.close();});

@@ -1,0 +1,641 @@
+{
+  "entities": [
+    {
+      "id": "classrep",
+      "name": "Class Representative"
+    },
+    {
+      "id": "faculty",
+      "name": "Faculty"
+    },
+    {
+      "id": "dean",
+      "name": "Dean"
+    },
+    {
+      "id": "physics",
+      "name": "Physics Laboratory Staff"
+    },
+    {
+      "id": "circuits",
+      "name": "Circuits Laboratory Staff"
+    },
+    {
+      "id": "headlab",
+      "name": "Head Laboratory"
+    }
+  ],
+  "processes": [
+    {
+      "id": "p1",
+      "number": "1.0",
+      "name": "Manage User Access & Accounts"
+    },
+    {
+      "id": "p2",
+      "number": "2.0",
+      "name": "Manage Reservations, Availability & Approvals"
+    },
+    {
+      "id": "p3",
+      "number": "3.0",
+      "name": "Answer Laboratory Questions"
+    },
+    {
+      "id": "p4",
+      "number": "4.0",
+      "name": "Manage Equipment & Borrowing"
+    },
+    {
+      "id": "p5",
+      "number": "5.0",
+      "name": "Manage Laboratory Administration & Reporting"
+    }
+  ],
+  "stores": [
+    {
+      "id": "d1",
+      "number": "D1",
+      "name": "User Accounts"
+    },
+    {
+      "id": "d2",
+      "number": "D2",
+      "name": "Reservation & Approval Records"
+    },
+    {
+      "id": "d8",
+      "number": "D8",
+      "name": "Knowledge Base"
+    },
+    {
+      "id": "d9",
+      "number": "D9",
+      "name": "Chat Interaction History"
+    },
+    {
+      "id": "d4",
+      "number": "D4",
+      "name": "Equipment Inventory"
+    },
+    {
+      "id": "d5",
+      "number": "D5",
+      "name": "Borrowing Slip Records"
+    },
+    {
+      "id": "d10",
+      "number": "D10",
+      "name": "Disposal Records"
+    },
+    {
+      "id": "d3",
+      "number": "D3",
+      "name": "Laboratory Schedule & Usage Logs"
+    },
+    {
+      "id": "d7",
+      "number": "D7",
+      "name": "Daily Task Records"
+    },
+    {
+      "id": "d6",
+      "number": "D6",
+      "name": "Clearance Records"
+    }
+  ],
+  "flows": [
+    {
+      "id": "p1-cr-credentials",
+      "source": "classrep",
+      "target": "p1",
+      "label": "Credentials",
+      "kind": "external"
+    },
+    {
+      "id": "p1-fa-credentials",
+      "source": "faculty",
+      "target": "p1",
+      "label": "Credentials",
+      "kind": "external"
+    },
+    {
+      "id": "p1-fa-crcredentials",
+      "source": "p1",
+      "target": "faculty",
+      "label": "Class Representative Credentials",
+      "kind": "external"
+    },
+    {
+      "id": "p1-de-credentials",
+      "source": "dean",
+      "target": "p1",
+      "label": "Credentials",
+      "kind": "external"
+    },
+    {
+      "id": "p1-he-credentials",
+      "source": "headlab",
+      "target": "p1",
+      "label": "Credentials",
+      "kind": "external"
+    },
+    {
+      "id": "p1-he-account",
+      "source": "headlab",
+      "target": "p1",
+      "label": "Class Representative Account Details",
+      "kind": "external"
+    },
+    {
+      "id": "p1-ph-credentials",
+      "source": "physics",
+      "target": "p1",
+      "label": "Credentials",
+      "kind": "external"
+    },
+    {
+      "id": "p1-ci-credentials",
+      "source": "circuits",
+      "target": "p1",
+      "label": "Credentials",
+      "kind": "external"
+    },
+    {
+      "id": "p2-cr-onschedule",
+      "source": "classrep",
+      "target": "p2",
+      "label": "On-Schedule Non-Laboratory Request",
+      "kind": "external"
+    },
+    {
+      "id": "p2-cr-outschedule",
+      "source": "classrep",
+      "target": "p2",
+      "label": "Out-of-Schedule Request",
+      "kind": "external"
+    },
+    {
+      "id": "p2-cr-change",
+      "source": "classrep",
+      "target": "p2",
+      "label": "Reservation Change Request",
+      "kind": "external"
+    },
+    {
+      "id": "p2-cr-availability",
+      "source": "p2",
+      "target": "classrep",
+      "label": "Schedule & Availability",
+      "kind": "external"
+    },
+    {
+      "id": "p2-cr-status",
+      "source": "p2",
+      "target": "classrep",
+      "label": "Reservation Status",
+      "kind": "external"
+    },
+    {
+      "id": "p2-cr-history",
+      "source": "p2",
+      "target": "classrep",
+      "label": "Reservation History",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-scheduled",
+      "source": "faculty",
+      "target": "p2",
+      "label": "Scheduled Laboratory Activity",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-outschedule",
+      "source": "faculty",
+      "target": "p2",
+      "label": "Out-of-Schedule Request",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-change",
+      "source": "faculty",
+      "target": "p2",
+      "label": "Reservation Change Request",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-decision",
+      "source": "faculty",
+      "target": "p2",
+      "label": "Approval Decision",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-availability",
+      "source": "p2",
+      "target": "faculty",
+      "label": "Schedule & Availability",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-routed",
+      "source": "p2",
+      "target": "faculty",
+      "label": "Routed Approval Request",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-status",
+      "source": "p2",
+      "target": "faculty",
+      "label": "Reservation Status",
+      "kind": "external"
+    },
+    {
+      "id": "p2-fa-history",
+      "source": "p2",
+      "target": "faculty",
+      "label": "Reservation History",
+      "kind": "external"
+    },
+    {
+      "id": "p2-de-decision",
+      "source": "dean",
+      "target": "p2",
+      "label": "Approval Decision",
+      "kind": "external"
+    },
+    {
+      "id": "p2-de-routed",
+      "source": "p2",
+      "target": "dean",
+      "label": "Routed Approval Request",
+      "kind": "external"
+    },
+    {
+      "id": "p3-cr-inquiry",
+      "source": "classrep",
+      "target": "p3",
+      "label": "Inquiry",
+      "kind": "external"
+    },
+    {
+      "id": "p3-cr-answer",
+      "source": "p3",
+      "target": "classrep",
+      "label": "Answer",
+      "kind": "external"
+    },
+    {
+      "id": "p3-fa-inquiry",
+      "source": "faculty",
+      "target": "p3",
+      "label": "Inquiry",
+      "kind": "external"
+    },
+    {
+      "id": "p3-fa-answer",
+      "source": "p3",
+      "target": "faculty",
+      "label": "Answer",
+      "kind": "external"
+    },
+    {
+      "id": "p4-cr-slip",
+      "source": "p4",
+      "target": "classrep",
+      "label": "Borrowing Slip",
+      "kind": "external"
+    },
+    {
+      "id": "p4-fa-slip",
+      "source": "p4",
+      "target": "faculty",
+      "label": "Borrowing Slip",
+      "kind": "external"
+    },
+    {
+      "id": "p4-he-inventory",
+      "source": "headlab",
+      "target": "p4",
+      "label": "Inventory Update",
+      "kind": "external"
+    },
+    {
+      "id": "p4-he-equipment",
+      "source": "headlab",
+      "target": "p4",
+      "label": "Equipment Transaction",
+      "kind": "external"
+    },
+    {
+      "id": "p4-he-disposal",
+      "source": "headlab",
+      "target": "p4",
+      "label": "Disposal Entry",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ph-inventory",
+      "source": "physics",
+      "target": "p4",
+      "label": "Inventory Update",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ph-equipment",
+      "source": "physics",
+      "target": "p4",
+      "label": "Equipment Transaction",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ph-disposal",
+      "source": "physics",
+      "target": "p4",
+      "label": "Disposal Entry",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ci-inventory",
+      "source": "circuits",
+      "target": "p4",
+      "label": "Inventory Update",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ci-equipment",
+      "source": "circuits",
+      "target": "p4",
+      "label": "Equipment Transaction",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ci-disposal",
+      "source": "circuits",
+      "target": "p4",
+      "label": "Disposal Entry",
+      "kind": "external"
+    },
+    {
+      "id": "p5-cr-clearance",
+      "source": "p5",
+      "target": "classrep",
+      "label": "Clearance Status",
+      "kind": "external"
+    },
+    {
+      "id": "p5-he-schedule",
+      "source": "headlab",
+      "target": "p5",
+      "label": "Schedule Update",
+      "kind": "external"
+    },
+    {
+      "id": "p5-he-usage",
+      "source": "headlab",
+      "target": "p5",
+      "label": "Usage Entry",
+      "kind": "external"
+    },
+    {
+      "id": "p5-he-task",
+      "source": "headlab",
+      "target": "p5",
+      "label": "Daily Task Entry",
+      "kind": "external"
+    },
+    {
+      "id": "p5-he-clearance",
+      "source": "headlab",
+      "target": "p5",
+      "label": "Clearance Action",
+      "kind": "external"
+    },
+    {
+      "id": "p5-he-reportrequest",
+      "source": "headlab",
+      "target": "p5",
+      "label": "Report Request",
+      "kind": "external"
+    },
+    {
+      "id": "p5-he-report",
+      "source": "p5",
+      "target": "headlab",
+      "label": "End-Term Report",
+      "kind": "external"
+    },
+    {
+      "id": "p5-ph-usage",
+      "source": "physics",
+      "target": "p5",
+      "label": "Usage Entry",
+      "kind": "external"
+    },
+    {
+      "id": "p5-ci-usage",
+      "source": "circuits",
+      "target": "p5",
+      "label": "Usage Entry",
+      "kind": "external"
+    },
+    {
+      "id": "p1-d1-write",
+      "source": "p1",
+      "target": "d1",
+      "label": "Account Record",
+      "kind": "store"
+    },
+    {
+      "id": "p1-d1-read",
+      "source": "d1",
+      "target": "p1",
+      "label": "Account Data",
+      "kind": "store"
+    },
+    {
+      "id": "p2-d2-write",
+      "source": "p2",
+      "target": "d2",
+      "label": "Reservation / Approval Record",
+      "kind": "store"
+    },
+    {
+      "id": "p2-d2-read",
+      "source": "d2",
+      "target": "p2",
+      "label": "Reservation / Approval Data",
+      "kind": "store"
+    },
+    {
+      "id": "p2-d3-read",
+      "source": "d3",
+      "target": "p2",
+      "label": "Schedule Data",
+      "kind": "store"
+    },
+    {
+      "id": "p2-d4-read",
+      "source": "d4",
+      "target": "p2",
+      "label": "Item Availability Data",
+      "kind": "store"
+    },
+    {
+      "id": "p3-d8-read",
+      "source": "d8",
+      "target": "p3",
+      "label": "Knowledge Content",
+      "kind": "store"
+    },
+    {
+      "id": "p3-d9-write",
+      "source": "p3",
+      "target": "d9",
+      "label": "Question / Answer Log",
+      "kind": "store"
+    },
+    {
+      "id": "p3-d2-read",
+      "source": "d2",
+      "target": "p3",
+      "label": "Reservation Status Data",
+      "kind": "store"
+    },
+    {
+      "id": "p3-d3-read",
+      "source": "d3",
+      "target": "p3",
+      "label": "Schedule Availability Data",
+      "kind": "store"
+    },
+    {
+      "id": "p3-d4-read",
+      "source": "d4",
+      "target": "p3",
+      "label": "Item Availability Data",
+      "kind": "store"
+    },
+    {
+      "id": "p4-d2-read",
+      "source": "d2",
+      "target": "p4",
+      "label": "Authorized Reservation Data",
+      "kind": "store"
+    },
+    {
+      "id": "p4-d2-write",
+      "source": "p4",
+      "target": "d2",
+      "label": "Reservation Status Update",
+      "kind": "store"
+    },
+    {
+      "id": "p4-d4-write",
+      "source": "p4",
+      "target": "d4",
+      "label": "Inventory Transaction",
+      "kind": "store"
+    },
+    {
+      "id": "p4-d4-read",
+      "source": "d4",
+      "target": "p4",
+      "label": "Available Item Data",
+      "kind": "store"
+    },
+    {
+      "id": "p4-d5-write",
+      "source": "p4",
+      "target": "d5",
+      "label": "Borrowing Slip Record",
+      "kind": "store"
+    },
+    {
+      "id": "p4-d5-read",
+      "source": "d5",
+      "target": "p4",
+      "label": "Borrowing Slip Data",
+      "kind": "store"
+    },
+    {
+      "id": "p4-d10-write",
+      "source": "p4",
+      "target": "d10",
+      "label": "Disposal Record",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d2-read",
+      "source": "d2",
+      "target": "p5",
+      "label": "Reservation Summary",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d3-write",
+      "source": "p5",
+      "target": "d3",
+      "label": "Schedule / Usage Record",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d3-read",
+      "source": "d3",
+      "target": "p5",
+      "label": "Schedule / Usage Data",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d4-read",
+      "source": "d4",
+      "target": "p5",
+      "label": "Inventory Summary",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d5-read",
+      "source": "d5",
+      "target": "p5",
+      "label": "Borrowing Summary",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d6-write",
+      "source": "p5",
+      "target": "d6",
+      "label": "Clearance Record",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d6-read",
+      "source": "d6",
+      "target": "p5",
+      "label": "Clearance Data",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d7-write",
+      "source": "p5",
+      "target": "d7",
+      "label": "Daily Task Record",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d7-read",
+      "source": "d7",
+      "target": "p5",
+      "label": "Daily Task Data",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d10-read",
+      "source": "d10",
+      "target": "p5",
+      "label": "Disposal Summary",
+      "kind": "store"
+    }
+  ]
+}

@@ -1,0 +1,858 @@
+[
+  {
+    "id": "p1",
+    "steps": [
+      "Validate Credentials",
+      "Establish Role-Scoped Session",
+      "Issue Class Representative Account"
+    ],
+    "internal": [
+      {
+        "id": "p1-internal1",
+        "source": "p1.1",
+        "target": "p1.2",
+        "label": "Verified identity",
+        "kind": "internal"
+      },
+      {
+        "id": "p1-internal2",
+        "source": "p1.2",
+        "target": "p1.3",
+        "label": "Authorized session",
+        "kind": "internal"
+      }
+    ],
+    "name": "Manage User Access & Accounts",
+    "flows": [
+      {
+        "id": "p1-cr-credentials-child1",
+        "parentFlow": "p1-cr-credentials",
+        "source": "classrep",
+        "target": "p1.1",
+        "label": "Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-fa-credentials-child1",
+        "parentFlow": "p1-fa-credentials",
+        "source": "faculty",
+        "target": "p1.1",
+        "label": "Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-fa-crcredentials-child3",
+        "parentFlow": "p1-fa-crcredentials",
+        "source": "p1.3",
+        "target": "faculty",
+        "label": "Class Representative Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-de-credentials-child1",
+        "parentFlow": "p1-de-credentials",
+        "source": "dean",
+        "target": "p1.1",
+        "label": "Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-he-credentials-child1",
+        "parentFlow": "p1-he-credentials",
+        "source": "headlab",
+        "target": "p1.1",
+        "label": "Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-he-account-child3",
+        "parentFlow": "p1-he-account",
+        "source": "headlab",
+        "target": "p1.3",
+        "label": "Class Representative Account Details",
+        "kind": "external"
+      },
+      {
+        "id": "p1-ph-credentials-child1",
+        "parentFlow": "p1-ph-credentials",
+        "source": "physics",
+        "target": "p1.1",
+        "label": "Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-ci-credentials-child1",
+        "parentFlow": "p1-ci-credentials",
+        "source": "circuits",
+        "target": "p1.1",
+        "label": "Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-d1-write-child3",
+        "parentFlow": "p1-d1-write",
+        "source": "p1.3",
+        "target": "d1",
+        "label": "Account Record",
+        "kind": "store"
+      },
+      {
+        "id": "p1-d1-read-child1",
+        "parentFlow": "p1-d1-read",
+        "source": "d1",
+        "target": "p1.1",
+        "label": "Account Data",
+        "kind": "store"
+      }
+    ]
+  },
+  {
+    "id": "p2",
+    "steps": [
+      "Retrieve Availability",
+      "Validate & Record Reservation",
+      "Route Approval Decision",
+      "Update Reservation Status"
+    ],
+    "internal": [
+      {
+        "id": "p2-internal1",
+        "source": "p2.1",
+        "target": "p2.2",
+        "label": "Availability data",
+        "kind": "internal"
+      },
+      {
+        "id": "p2-internal2",
+        "source": "p2.2",
+        "target": "p2.3",
+        "label": "Validated request",
+        "kind": "internal"
+      },
+      {
+        "id": "p2-internal3",
+        "source": "p2.3",
+        "target": "p2.4",
+        "label": "Decision data",
+        "kind": "internal"
+      }
+    ],
+    "name": "Manage Reservations, Availability & Approvals",
+    "flows": [
+      {
+        "id": "p2-cr-onschedule-child2",
+        "parentFlow": "p2-cr-onschedule",
+        "source": "classrep",
+        "target": "p2.2",
+        "label": "On-Schedule Non-Laboratory Request",
+        "kind": "external"
+      },
+      {
+        "id": "p2-cr-outschedule-child2",
+        "parentFlow": "p2-cr-outschedule",
+        "source": "classrep",
+        "target": "p2.2",
+        "label": "Out-of-Schedule Request",
+        "kind": "external"
+      },
+      {
+        "id": "p2-cr-change-child2",
+        "parentFlow": "p2-cr-change",
+        "source": "classrep",
+        "target": "p2.2",
+        "label": "Reservation Change Request",
+        "kind": "external"
+      },
+      {
+        "id": "p2-cr-availability-child1",
+        "parentFlow": "p2-cr-availability",
+        "source": "p2.1",
+        "target": "classrep",
+        "label": "Schedule & Availability",
+        "kind": "external"
+      },
+      {
+        "id": "p2-cr-status-child4",
+        "parentFlow": "p2-cr-status",
+        "source": "p2.4",
+        "target": "classrep",
+        "label": "Reservation Status",
+        "kind": "external"
+      },
+      {
+        "id": "p2-cr-history-child4",
+        "parentFlow": "p2-cr-history",
+        "source": "p2.4",
+        "target": "classrep",
+        "label": "Reservation History",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-scheduled-child2",
+        "parentFlow": "p2-fa-scheduled",
+        "source": "faculty",
+        "target": "p2.2",
+        "label": "Scheduled Laboratory Activity",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-outschedule-child2",
+        "parentFlow": "p2-fa-outschedule",
+        "source": "faculty",
+        "target": "p2.2",
+        "label": "Out-of-Schedule Request",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-change-child2",
+        "parentFlow": "p2-fa-change",
+        "source": "faculty",
+        "target": "p2.2",
+        "label": "Reservation Change Request",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-decision-child3",
+        "parentFlow": "p2-fa-decision",
+        "source": "faculty",
+        "target": "p2.3",
+        "label": "Approval Decision",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-availability-child1",
+        "parentFlow": "p2-fa-availability",
+        "source": "p2.1",
+        "target": "faculty",
+        "label": "Schedule & Availability",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-routed-child3",
+        "parentFlow": "p2-fa-routed",
+        "source": "p2.3",
+        "target": "faculty",
+        "label": "Routed Approval Request",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-status-child4",
+        "parentFlow": "p2-fa-status",
+        "source": "p2.4",
+        "target": "faculty",
+        "label": "Reservation Status",
+        "kind": "external"
+      },
+      {
+        "id": "p2-fa-history-child4",
+        "parentFlow": "p2-fa-history",
+        "source": "p2.4",
+        "target": "faculty",
+        "label": "Reservation History",
+        "kind": "external"
+      },
+      {
+        "id": "p2-de-decision-child3",
+        "parentFlow": "p2-de-decision",
+        "source": "dean",
+        "target": "p2.3",
+        "label": "Approval Decision",
+        "kind": "external"
+      },
+      {
+        "id": "p2-de-routed-child3",
+        "parentFlow": "p2-de-routed",
+        "source": "p2.3",
+        "target": "dean",
+        "label": "Routed Approval Request",
+        "kind": "external"
+      },
+      {
+        "id": "p2-d2-write-child2",
+        "parentFlow": "p2-d2-write",
+        "source": "p2.2",
+        "target": "d2",
+        "label": "Reservation / Approval Record",
+        "kind": "store"
+      },
+      {
+        "id": "p2-d2-write-child3",
+        "parentFlow": "p2-d2-write",
+        "source": "p2.3",
+        "target": "d2",
+        "label": "Reservation / Approval Record",
+        "kind": "store"
+      },
+      {
+        "id": "p2-d2-write-child4",
+        "parentFlow": "p2-d2-write",
+        "source": "p2.4",
+        "target": "d2",
+        "label": "Reservation / Approval Record",
+        "kind": "store"
+      },
+      {
+        "id": "p2-d2-read-child2",
+        "parentFlow": "p2-d2-read",
+        "source": "d2",
+        "target": "p2.2",
+        "label": "Reservation / Approval Data",
+        "kind": "store"
+      },
+      {
+        "id": "p2-d2-read-child4",
+        "parentFlow": "p2-d2-read",
+        "source": "d2",
+        "target": "p2.4",
+        "label": "Reservation / Approval Data",
+        "kind": "store"
+      },
+      {
+        "id": "p2-d3-read-child1",
+        "parentFlow": "p2-d3-read",
+        "source": "d3",
+        "target": "p2.1",
+        "label": "Schedule Data",
+        "kind": "store"
+      },
+      {
+        "id": "p2-d4-read-child1",
+        "parentFlow": "p2-d4-read",
+        "source": "d4",
+        "target": "p2.1",
+        "label": "Item Availability Data",
+        "kind": "store"
+      }
+    ]
+  },
+  {
+    "id": "p3",
+    "steps": [
+      "Capture Authenticated Inquiry",
+      "Retrieve Authorized Records",
+      "Compose Grounded Answer",
+      "Record Question / Answer Exchange"
+    ],
+    "internal": [
+      {
+        "id": "p3-internal1",
+        "source": "p3.1",
+        "target": "p3.2",
+        "label": "Scoped inquiry",
+        "kind": "internal"
+      },
+      {
+        "id": "p3-internal2",
+        "source": "p3.2",
+        "target": "p3.3",
+        "label": "Authorized data",
+        "kind": "internal"
+      },
+      {
+        "id": "p3-internal3",
+        "source": "p3.3",
+        "target": "p3.4",
+        "label": "Q&A exchange",
+        "kind": "internal"
+      }
+    ],
+    "name": "Answer Laboratory Questions",
+    "flows": [
+      {
+        "id": "p3-cr-inquiry-child1",
+        "parentFlow": "p3-cr-inquiry",
+        "source": "classrep",
+        "target": "p3.1",
+        "label": "Inquiry",
+        "kind": "external"
+      },
+      {
+        "id": "p3-cr-answer-child3",
+        "parentFlow": "p3-cr-answer",
+        "source": "p3.3",
+        "target": "classrep",
+        "label": "Answer",
+        "kind": "external"
+      },
+      {
+        "id": "p3-fa-inquiry-child1",
+        "parentFlow": "p3-fa-inquiry",
+        "source": "faculty",
+        "target": "p3.1",
+        "label": "Inquiry",
+        "kind": "external"
+      },
+      {
+        "id": "p3-fa-answer-child3",
+        "parentFlow": "p3-fa-answer",
+        "source": "p3.3",
+        "target": "faculty",
+        "label": "Answer",
+        "kind": "external"
+      },
+      {
+        "id": "p3-d8-read-child2",
+        "parentFlow": "p3-d8-read",
+        "source": "d8",
+        "target": "p3.2",
+        "label": "Knowledge Content",
+        "kind": "store"
+      },
+      {
+        "id": "p3-d9-write-child4",
+        "parentFlow": "p3-d9-write",
+        "source": "p3.4",
+        "target": "d9",
+        "label": "Question / Answer Log",
+        "kind": "store"
+      },
+      {
+        "id": "p3-d2-read-child2",
+        "parentFlow": "p3-d2-read",
+        "source": "d2",
+        "target": "p3.2",
+        "label": "Reservation Status Data",
+        "kind": "store"
+      },
+      {
+        "id": "p3-d3-read-child2",
+        "parentFlow": "p3-d3-read",
+        "source": "d3",
+        "target": "p3.2",
+        "label": "Schedule Availability Data",
+        "kind": "store"
+      },
+      {
+        "id": "p3-d4-read-child2",
+        "parentFlow": "p3-d4-read",
+        "source": "d4",
+        "target": "p3.2",
+        "label": "Item Availability Data",
+        "kind": "store"
+      }
+    ]
+  },
+  {
+    "id": "p4",
+    "steps": [
+      "Maintain Inventory",
+      "Retrieve Approved Reservation",
+      "Issue Equipment & Create Slip",
+      "Reconcile Return",
+      "Record Disposal"
+    ],
+    "internal": [
+      {
+        "id": "p4-internal1",
+        "source": "p4.1",
+        "target": "p4.2",
+        "label": "Inventory data",
+        "kind": "internal"
+      },
+      {
+        "id": "p4-internal2",
+        "source": "p4.2",
+        "target": "p4.3",
+        "label": "Approved request",
+        "kind": "internal"
+      },
+      {
+        "id": "p4-internal3",
+        "source": "p4.3",
+        "target": "p4.4",
+        "label": "Borrowing data",
+        "kind": "internal"
+      },
+      {
+        "id": "p4-internal4",
+        "source": "p4.4",
+        "target": "p4.5",
+        "label": "Return outcome",
+        "kind": "internal"
+      }
+    ],
+    "name": "Manage Equipment & Borrowing",
+    "flows": [
+      {
+        "id": "p4-cr-slip-child3",
+        "parentFlow": "p4-cr-slip",
+        "source": "p4.3",
+        "target": "classrep",
+        "label": "Borrowing Slip",
+        "kind": "external"
+      },
+      {
+        "id": "p4-fa-slip-child3",
+        "parentFlow": "p4-fa-slip",
+        "source": "p4.3",
+        "target": "faculty",
+        "label": "Borrowing Slip",
+        "kind": "external"
+      },
+      {
+        "id": "p4-he-inventory-child1",
+        "parentFlow": "p4-he-inventory",
+        "source": "headlab",
+        "target": "p4.1",
+        "label": "Inventory Update",
+        "kind": "external"
+      },
+      {
+        "id": "p4-he-equipment-child3",
+        "parentFlow": "p4-he-equipment",
+        "source": "headlab",
+        "target": "p4.3",
+        "label": "Equipment Transaction",
+        "kind": "external"
+      },
+      {
+        "id": "p4-he-disposal-child5",
+        "parentFlow": "p4-he-disposal",
+        "source": "headlab",
+        "target": "p4.5",
+        "label": "Disposal Entry",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ph-inventory-child1",
+        "parentFlow": "p4-ph-inventory",
+        "source": "physics",
+        "target": "p4.1",
+        "label": "Inventory Update",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ph-equipment-child3",
+        "parentFlow": "p4-ph-equipment",
+        "source": "physics",
+        "target": "p4.3",
+        "label": "Equipment Transaction",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ph-disposal-child5",
+        "parentFlow": "p4-ph-disposal",
+        "source": "physics",
+        "target": "p4.5",
+        "label": "Disposal Entry",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ci-inventory-child1",
+        "parentFlow": "p4-ci-inventory",
+        "source": "circuits",
+        "target": "p4.1",
+        "label": "Inventory Update",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ci-equipment-child3",
+        "parentFlow": "p4-ci-equipment",
+        "source": "circuits",
+        "target": "p4.3",
+        "label": "Equipment Transaction",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ci-disposal-child5",
+        "parentFlow": "p4-ci-disposal",
+        "source": "circuits",
+        "target": "p4.5",
+        "label": "Disposal Entry",
+        "kind": "external"
+      },
+      {
+        "id": "p4-d2-read-child2",
+        "parentFlow": "p4-d2-read",
+        "source": "d2",
+        "target": "p4.2",
+        "label": "Authorized Reservation Data",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d2-write-child3",
+        "parentFlow": "p4-d2-write",
+        "source": "p4.3",
+        "target": "d2",
+        "label": "Reservation Status Update",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d2-write-child4",
+        "parentFlow": "p4-d2-write",
+        "source": "p4.4",
+        "target": "d2",
+        "label": "Reservation Status Update",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d4-write-child1",
+        "parentFlow": "p4-d4-write",
+        "source": "p4.1",
+        "target": "d4",
+        "label": "Inventory Transaction",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d4-write-child3",
+        "parentFlow": "p4-d4-write",
+        "source": "p4.3",
+        "target": "d4",
+        "label": "Inventory Transaction",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d4-write-child4",
+        "parentFlow": "p4-d4-write",
+        "source": "p4.4",
+        "target": "d4",
+        "label": "Inventory Transaction",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d4-write-child5",
+        "parentFlow": "p4-d4-write",
+        "source": "p4.5",
+        "target": "d4",
+        "label": "Inventory Transaction",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d4-read-child1",
+        "parentFlow": "p4-d4-read",
+        "source": "d4",
+        "target": "p4.1",
+        "label": "Available Item Data",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d5-write-child3",
+        "parentFlow": "p4-d5-write",
+        "source": "p4.3",
+        "target": "d5",
+        "label": "Borrowing Slip Record",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d5-write-child4",
+        "parentFlow": "p4-d5-write",
+        "source": "p4.4",
+        "target": "d5",
+        "label": "Borrowing Slip Record",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d5-read-child4",
+        "parentFlow": "p4-d5-read",
+        "source": "d5",
+        "target": "p4.4",
+        "label": "Borrowing Slip Data",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d10-write-child5",
+        "parentFlow": "p4-d10-write",
+        "source": "p4.5",
+        "target": "d10",
+        "label": "Disposal Record",
+        "kind": "store"
+      }
+    ]
+  },
+  {
+    "id": "p5",
+    "steps": [
+      "Maintain Schedule",
+      "Record Usage & Head Lab Daily Tasks",
+      "Process Clearance",
+      "Compile Reporting Metrics",
+      "Generate End-Term Report"
+    ],
+    "internal": [
+      {
+        "id": "p5-internal1",
+        "source": "p5.1",
+        "target": "p5.2",
+        "label": "Schedule data",
+        "kind": "internal"
+      },
+      {
+        "id": "p5-internal3",
+        "source": "p5.3",
+        "target": "p5.4",
+        "label": "Clearance data",
+        "kind": "internal"
+      },
+      {
+        "id": "p5-internal4",
+        "source": "p5.4",
+        "target": "p5.5",
+        "label": "Report metrics",
+        "kind": "internal"
+      }
+    ],
+    "name": "Manage Laboratory Administration & Reporting",
+    "flows": [
+      {
+        "id": "p5-cr-clearance-child3",
+        "parentFlow": "p5-cr-clearance",
+        "source": "p5.3",
+        "target": "classrep",
+        "label": "Clearance Status",
+        "kind": "external"
+      },
+      {
+        "id": "p5-he-schedule-child1",
+        "parentFlow": "p5-he-schedule",
+        "source": "headlab",
+        "target": "p5.1",
+        "label": "Schedule Update",
+        "kind": "external"
+      },
+      {
+        "id": "p5-he-usage-child2",
+        "parentFlow": "p5-he-usage",
+        "source": "headlab",
+        "target": "p5.2",
+        "label": "Usage Entry",
+        "kind": "external"
+      },
+      {
+        "id": "p5-he-task-child2",
+        "parentFlow": "p5-he-task",
+        "source": "headlab",
+        "target": "p5.2",
+        "label": "Daily Task Entry",
+        "kind": "external"
+      },
+      {
+        "id": "p5-he-clearance-child3",
+        "parentFlow": "p5-he-clearance",
+        "source": "headlab",
+        "target": "p5.3",
+        "label": "Clearance Action",
+        "kind": "external"
+      },
+      {
+        "id": "p5-he-reportrequest-child5",
+        "parentFlow": "p5-he-reportrequest",
+        "source": "headlab",
+        "target": "p5.5",
+        "label": "Report Request",
+        "kind": "external"
+      },
+      {
+        "id": "p5-he-report-child5",
+        "parentFlow": "p5-he-report",
+        "source": "p5.5",
+        "target": "headlab",
+        "label": "End-Term Report",
+        "kind": "external"
+      },
+      {
+        "id": "p5-ph-usage-child2",
+        "parentFlow": "p5-ph-usage",
+        "source": "physics",
+        "target": "p5.2",
+        "label": "Usage Entry",
+        "kind": "external"
+      },
+      {
+        "id": "p5-ci-usage-child2",
+        "parentFlow": "p5-ci-usage",
+        "source": "circuits",
+        "target": "p5.2",
+        "label": "Usage Entry",
+        "kind": "external"
+      },
+      {
+        "id": "p5-d2-read-child4",
+        "parentFlow": "p5-d2-read",
+        "source": "d2",
+        "target": "p5.4",
+        "label": "Reservation Summary",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d3-write-child1",
+        "parentFlow": "p5-d3-write",
+        "source": "p5.1",
+        "target": "d3",
+        "label": "Schedule / Usage Record",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d3-write-child2",
+        "parentFlow": "p5-d3-write",
+        "source": "p5.2",
+        "target": "d3",
+        "label": "Schedule / Usage Record",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d3-read-child4",
+        "parentFlow": "p5-d3-read",
+        "source": "d3",
+        "target": "p5.4",
+        "label": "Schedule / Usage Data",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d4-read-child4",
+        "parentFlow": "p5-d4-read",
+        "source": "d4",
+        "target": "p5.4",
+        "label": "Inventory Summary",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d5-read-child4",
+        "parentFlow": "p5-d5-read",
+        "source": "d5",
+        "target": "p5.4",
+        "label": "Borrowing Summary",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d6-write-child3",
+        "parentFlow": "p5-d6-write",
+        "source": "p5.3",
+        "target": "d6",
+        "label": "Clearance Record",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d6-read-child3",
+        "parentFlow": "p5-d6-read",
+        "source": "d6",
+        "target": "p5.3",
+        "label": "Clearance Data",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d7-write-child2",
+        "parentFlow": "p5-d7-write",
+        "source": "p5.2",
+        "target": "d7",
+        "label": "Daily Task Record",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d7-read-child4",
+        "parentFlow": "p5-d7-read",
+        "source": "d7",
+        "target": "p5.4",
+        "label": "Daily Task Data",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d10-read-child5",
+        "parentFlow": "p5-d10-read",
+        "source": "d10",
+        "target": "p5.5",
+        "label": "Disposal Summary",
+        "kind": "store"
+      }
+    ]
+  }
+]
