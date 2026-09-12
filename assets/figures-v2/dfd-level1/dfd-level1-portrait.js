@@ -176,8 +176,8 @@
     svg.appendChild(el('rect',{width:W,height:H,fill:'#fff'}));
     const defs=el('defs');
     Object.entries({...colors,store:'#27272a'}).forEach(([key,color])=>{
-      const marker=el('marker',{id:'arrow-'+key,markerWidth:10,markerHeight:10,refX:9,refY:4.5,orient:'auto',markerUnits:'userSpaceOnUse'});
-      marker.appendChild(el('path',{d:'M0 0 L9 4.5 L0 9 Z',fill:color}));defs.appendChild(marker);
+      const marker=el('marker',{id:'arrow-'+key,markerWidth:13,markerHeight:13,refX:12,refY:6,orient:'auto',markerUnits:'userSpaceOnUse'});
+      marker.appendChild(el('path',{d:'M0 0 L12 6 L0 12 Z',fill:color}));defs.appendChild(marker);
     });
     svg.appendChild(defs);
     svg.appendChild(text(W/2,36,['Physics and Circuits Laboratory — Data Flow Diagram, Level 1'],{'font-size':34,'font-weight':700}));
@@ -219,15 +219,19 @@
     [...model.entities,...model.stores].sort((a,b)=>nodes[a.id].y-nodes[b.id].y).forEach(peer=>{
       const n=nodes[peer.id];
       const flows=model.flows.filter(f=>f.source===peer.id||f.target===peer.id).sort(orderedByPeer);
-      flows.forEach((f,i)=>{
+      const peerRows=[];
+      // Reserve incoming heads first; outgoing tails need less edge clearance.
+      flows.slice().sort((a,b)=>Number(b.target===peer.id)-Number(a.target===peer.id)).forEach(f=>{
+        const i=flows.indexOf(f);
         const preferred=n.y+12+(i+.5)*(n.h-24)/flows.length;
         let sy=null;
         for(let shift=0;shift<=n.h*2 && sy===null;shift++) for(const sign of [1,-1]) {
           const candidate=preferred+sign*shift*.5;
-          if(candidate>=n.y+12 && candidate<=n.y+n.h-12 && usedY[f.kind].every(y=>Math.abs(y-candidate)>=8)) {sy=candidate;break;}
+          if(candidate>=n.y+12 && candidate<=n.y+n.h-12 && usedY[f.kind].every(y=>Math.abs(y-candidate)>=8) && (f.target!==peer.id||peerRows.every(y=>Math.abs(y-candidate)>=14))) {sy=candidate;break;}
         }
         if(sy===null)throw new Error('Cannot separate horizontal approach rows for '+f.id);
         usedY[f.kind].push(sy);
+        if(f.target===peer.id)peerRows.push(sy);
         const p=port[f.id],external=f.kind==='external';
         const lane=external?200+(externalLane++)*EXTERNAL_LANE_STEP:1342+(storeLane++)*STORE_LANE_STEP;
         const process=nodes[nodes[f.source].kind==='process'?f.source:f.target];
@@ -252,12 +256,13 @@
     Object.values(nodes).forEach(n=>{
       const group=el('g',{'data-node-id':n.id,'data-node-kind':n.kind,'data-canonical-name':n.name});
       const title=el('title');title.textContent=n.name;group.appendChild(title);
-      group.appendChild(el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.kind==='process'?9:0,fill:'#fff',stroke:'#111','stroke-width':2.3}));
+      group.appendChild(el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.kind==='process'?9:0,fill:'#fff',stroke:n.kind==='store'?'none':'#111','stroke-width':2.3}));
       if(n.kind==='process') {
         group.appendChild(el('line',{x1:n.x,y1:n.y+40,x2:n.x+n.w,y2:n.y+40,stroke:'#111','stroke-width':2}));
         group.appendChild(text(n.x+n.w/2,n.y+29,[n.number],{'font-size':29,'font-weight':700}));
       }
       if(n.kind==='store') {
+        group.appendChild(el('path',{'data-store-outline':'open-right',d:`M${n.x+n.w} ${n.y} H${n.x} V${n.y+n.h} H${n.x+n.w}`,fill:'none',stroke:'#111','stroke-width':2.3}));
         group.appendChild(el('line',{x1:n.x+n.idw,y1:n.y,x2:n.x+n.idw,y2:n.y+n.h,stroke:'#111','stroke-width':2}));
         group.appendChild(text(n.x+n.idw/2,n.y+n.h/2+9,[n.number],{'font-size':29,'font-weight':700}));
       }
@@ -282,7 +287,7 @@
     if(!output) {
       const authored=svg.cloneNode(true);
       authored.querySelector('[data-routing-guides]').replaceChildren();
-      window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1-a4-portrait-74-head-only-logs-v3'});
+      window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1-a4-portrait-74-large-heads-v4'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       // Ctrl+P and the Print button both print the checked authored geometry,
       // not potentially overlapping edits saved by an individual browser.

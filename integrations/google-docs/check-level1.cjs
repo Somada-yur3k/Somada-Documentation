@@ -50,6 +50,11 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     }
     assert.equal(Object.values(nodes).filter(n=>n.kind==='entity').length,6);
     assert.equal(Object.values(nodes).filter(n=>n.kind==='store').length,10);
+    for(const n of Object.values(nodes).filter(n=>n.kind==='store')){
+      const group=page.locator('[data-node-id="'+n.id+'"]');
+      assert.equal(await group.locator('rect').getAttribute('stroke'),'none');
+      assert.equal(await group.locator('[data-store-outline]').getAttribute('d'),`M${n.x+n.w} ${n.y} H${n.x} V${n.y+n.h} H${n.x+n.w}`,'Open right edge');
+    }
     for(const kind of ['entity','process','store'])assert.equal(new Set(Object.values(nodes).filter(n=>n.kind===kind).map(n=>n.w+'x'+n.h)).size,1);
     const ports=[];
     for(const r of routes){
@@ -68,6 +73,10 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
       assert.deepEqual(owners.map(id=>nodes[id].y),owners.map(id=>nodes[id].y).sort((a,b)=>a-b),'Bands follow peer-node order');
     }
     assert.equal(new Set(ports).size,ports.length,'No shared ports');
+    for(const [i,a]of routes.entries())for(const b of routes.slice(i+1)){
+      const tip=a.points.at(-1),other=b.points.at(-1);
+      if(a.target===b.target&&tip[0]===other[0])assert(Math.abs(tip[1]-other[1])>=12,'Larger arrowhead separation '+a.id+'/'+b.id);
+    }
     for(let i=0;i<routes.length;i++)for(let j=i+1;j<routes.length;j++)for(const a of segments(routes[i].points))for(const b of segments(routes[j].points)){
       const hit=intersect(a,b);if(hit==='crossing')crossings.push([routes[i].id,routes[j].id]);else if(hit)issues.push({kind:hit,flows:[routes[i].id,routes[j].id]});
     }

@@ -18,6 +18,21 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
  const issues=[];
  assert.equal(result.actors.length,6);assert.equal(result.cases.length,30);assert.equal(result.relationships.length,11);
  assert.equal(result.paths.length-11,42);
+ for(const side of ['left','right']){
+  const actors=result.actors.filter(a=>a.side===side && a.uses.includes('login')).sort((a,b)=>a.cy-b.cy);
+  assert.equal(actors.length,3);
+  if(side==='left')assert.deepEqual(actors.map(a=>a.id),['classrep','faculty','dean']);
+  const horizontalRows=actors.map(a=>result.paths.find(p=>p.id===`association-${a.id}-login`).points[2][1]);
+  for(let i=1;i<horizontalRows.length;i++)assert(horizontalRows[i]-horizontalRows[i-1]>=8,'Login horizontal rows follow visual actor order');
+  const lanes=actors.map(actor=>{
+   const p=result.paths.find(p=>p.id===`association-${actor.id}-login`);
+   assert.equal(p.points[1][0],p.points[2][0],'Login lane must be vertical');
+   const login=result.cases.find(n=>n.id==='login');
+   assert.deepEqual(p.points.at(-1),[login.x+(side==='left'?-login.rx:login.rx),login.cy]);
+   return p.points[1][0];
+  });
+  for(let i=1;i<lanes.length;i++)assert((lanes[i]-lanes[i-1])*(side==='left'?1:-1)>=14,`${side}: Log In lanes follow visual actor order with 14-unit spacing`);
+ }
  assert.deepEqual(result.actors.filter(a=>a.uses.includes('mgmlogs')).map(a=>a.id),['headlab'],'Only Head Laboratory manages logs, schedule and daily tasks');
  for(const b of result.boxes){
   if((b.node||b.label)&&(b.x<0||b.x+b.w>1600||b.y<0||b.y+b.h>1770))issues.push('canvas text '+b.text);

@@ -4,7 +4,7 @@
 (async function(){
   'use strict';
   const params=new URLSearchParams(location.search),output=params.has('embed')||params.has('export');
-  const NS='http://www.w3.org/2000/svg',W=1834,H=1451.9166666667,FONT=27,LABEL_GAP=6;
+  const NS='http://www.w3.org/2000/svg',W=1878,H=1486.75,FONT=27,LABEL_GAP=6,LANE_GAP=20;
   document.body.classList.toggle('output-mode',output);
   const aliases={
     'Class Representative Credentials':'Rep. credentials',
@@ -132,7 +132,7 @@
     const targets={};
     [...actors,...stores].forEach(n=>{const links=model.flows.filter(f=>f.source===n.id||f.target===n.id);targets[n.id]=links.reduce((sum,f)=>sum+centre(nodes[f.source===n.id?f.target:f.source]),0)/links.length;});
     const E={x:14,w:170,h:Math.max(170,...actors.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20))};
-    const D={x:1568,w:250,h:120,idw:64};
+    const D={x:1612,w:250,h:120,idw:64};
     // Actor order follows the approved role column; Head Laboratory remains last.
     place(actors,targets,E.h).forEach(n=>nodes[n.id]={...n,...E,kind:'entity',lines:entityLines[n.id]});
     place(stores.slice().sort((a,b)=>targets[a.id]-targets[b.id]),targets,D.h).forEach(n=>nodes[n.id]={...n,...D,kind:'store',lines:storeLines[n.id]});
@@ -142,8 +142,8 @@
     svg.appendChild(text(W/2,34,['Process '+model.id.slice(1)+'.0 — '+model.name],{'font-size':30,'font-weight':700}));
     const defs=el('defs');
     Object.entries({...colors,store:'#27272a',internal:'#27272a'}).forEach(([id,color])=>{
-      const marker=el('marker',{id:'arrow-'+id,markerWidth:10,markerHeight:10,refX:9,refY:4.5,orient:'auto',markerUnits:'userSpaceOnUse'});
-      marker.appendChild(el('path',{d:'M0 0 L9 4.5 L0 9 Z',fill:color}));defs.appendChild(marker);
+      const marker=el('marker',{id:'arrow-'+id,markerWidth:13,markerHeight:13,refX:12,refY:6,orient:'auto',markerUnits:'userSpaceOnUse'});
+      marker.appendChild(el('path',{d:'M0 0 L12 6 L0 12 Z',fill:color}));defs.appendChild(marker);
     });svg.appendChild(defs);
     const paths=el('g'),shapes=el('g'),labels=el('g');svg.append(paths,shapes,labels);
     document.getElementById('stage').replaceChildren(svg);
@@ -167,22 +167,28 @@
           const preferred=box.y+20+(i+.5)*(box.h-40)/own.length;let sy=null;
           for(let shift=0;shift<=box.h*2&&sy===null;shift++)for(const sign of [1,-1]){
             const candidate=preferred+sign*shift*.5;
-            if(candidate>=previous+8&&candidate>=box.y+12&&candidate<=box.y+box.h-12&&allY[kind].every(y=>Math.abs(y-candidate)>=8)){sy=candidate;break;}
+            if(candidate>=previous+14&&candidate>=box.y+12&&candidate<=box.y+box.h-12&&allY[kind].every(y=>Math.abs(y-candidate)>=8)){sy=candidate;break;}
           }
           if(sy===null)throw Error('Cannot separate port rows: '+f.id);
           previous=sy;allY[kind].push(sy);Object.assign(flowPorts[f.id],{sy,peer:n.id,process:process(f).id,peerOrder:i});
         });
       });
     }
-    // Mirror the vertical lane order across the process column. Earlier
-    // process ports get the outermost lane: leftmost for entities, rightmost
-    // for stores. Each flow owns a distinct lane, even for disjoint spans.
+    // Mirror lanes across BOTH axes: a peer above the process needs the
+    // opposite staircase from a peer below it. Arrow direction is unchanged.
+    // Keep upward/downward geometric runs in separate lane bands.
     const processOrder=(a,b)=>flowPorts[a.id].py-flowPorts[b.id].py;
     const left=model.flows.filter(f=>f.kind==='external').sort(processOrder);
     const right=model.flows.filter(f=>f.kind==='store').sort(processOrder);
     const laneById={};
-    left.forEach((f,i)=>laneById[f.id]=200+i*16);
-    right.forEach((f,i)=>laneById[f.id]=1358+(right.length-1-i)*16);
+    function assignLanes(flows,start,isLeft){
+      const below=flows.filter(f=>flowPorts[f.id].sy>flowPorts[f.id].py);
+      const above=flows.filter(f=>flowPorts[f.id].sy<=flowPorts[f.id].py);
+      const ordered=isLeft?below.concat(above.reverse()):above.concat(below.reverse());
+      ordered.forEach((f,i)=>laneById[f.id]=start+i*LANE_GAP);
+    }
+    assignLanes(left,200,true);
+    assignLanes(right,1358,false);
     function draw(f,points,lx,ly,label,colorKey,side){
       const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),fill:'none',stroke:colors[colorKey]||'#27272a','stroke-width':2.2,'marker-end':'url(#arrow-'+colorKey+')'});
       const title=el('title');title.textContent=f.label;path.appendChild(title);paths.appendChild(path);
@@ -203,12 +209,13 @@
     });
     Object.values(nodes).forEach(n=>{
       const group=el('g',{'data-node-id':n.id,'data-node-kind':n.kind});
-      group.appendChild(el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.kind==='process'?9:0,fill:'#fff',stroke:'#111','stroke-width':2.3}));
+      group.appendChild(el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.kind==='process'?9:0,fill:'#fff',stroke:n.kind==='store'?'none':'#111','stroke-width':2.3}));
       if(n.kind==='process'){
         group.appendChild(el('line',{x1:n.x,y1:n.y+40,x2:n.x+n.w,y2:n.y+40,stroke:'#111','stroke-width':2}));
         group.appendChild(text(n.x+n.w/2,n.y+31,[n.number],{'font-size':29,'font-weight':700}));
       }
       if(n.kind==='store'){
+        group.appendChild(el('path',{'data-store-outline':'open-right',d:`M${n.x+n.w} ${n.y} H${n.x} V${n.y+n.h} H${n.x+n.w}`,fill:'none',stroke:'#111','stroke-width':2.3}));
         group.appendChild(el('line',{x1:n.x+n.idw,y1:n.y,x2:n.x+n.idw,y2:n.y+n.h,stroke:'#111','stroke-width':2}));
         group.appendChild(text(n.x+n.idw/2,n.y+n.h/2+9,[n.number],{'font-size':29,'font-weight':700}));
       }
@@ -222,9 +229,9 @@
     });
     document.getElementById('heading').textContent='DFD Level 2 — Process '+model.id.slice(1)+'.0';
     clearLabelStrokes(svg);
-    window.__level2={model,parent,nodes,routes,labelBoxes,constants:{W,H,P,E,D,FONT}};
+    window.__level2={model,parent,nodes,routes,labelBoxes,constants:{W,H,P,E,D,FONT,LANE_GAP}};
     if(!output){
-      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-mirrored-process-lanes-'+model.id+'-v4'});
+      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-large-heads-'+model.id+'-v7'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       window.addEventListener('beforeprint',()=>svg.replaceWith(authored));window.addEventListener('afterprint',()=>authored.replaceWith(svg));
     }

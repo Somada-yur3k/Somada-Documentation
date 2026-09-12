@@ -244,6 +244,10 @@ svg.appendChild(textEl(CANVAS_W/2, BOUNDARY.y+40, ['A Web-Based Physics and Circ
 // to the base use cases in which they directly participate.
 const associationLayer = el('g', {'aria-label':'Actor associations'});
 svg.appendChild(associationLayer);
+// Visual order differs from ACTORS array order after Faculty and Dean move.
+const loginActorsBySide = Object.fromEntries(['left','right'].map(side => [side,
+  ACTORS.filter(actor => actor.side===side && actor.uses.includes('login')).sort((a,b)=>a.cy-b.cy)
+]));
 ACTORS.forEach(actor => {
   const hand = {
     x:ACTOR_X[actor.side] + (actor.side === 'left' ? 58 : -58),
@@ -253,8 +257,11 @@ ACTORS.forEach(actor => {
     const useCase = byId[useCaseId];
     const endpoint = ellipseSidePoint(useCase, actor.side);
     const flowId = `association-${actor.id}-${useCaseId}`;
-    const i=ACTORS.indexOf(actor),left=actor.side==='left';
-    const outer=left?180-i*7:1420+i*7,inner=endpoint.x+(left?-22-i*7:22+i*7),top=158+i*8;
+    const left=actor.side==='left';
+    const loginRank=loginActorsBySide[actor.side].indexOf(actor);
+    const i=loginRank+(left?0:loginActorsBySide.left.length);
+    const outer=left?152+loginRank*14:1448-loginRank*14;
+    const inner=endpoint.x+(left?-22-i*7:22+i*7),top=158+i*8;
     associationLayer.appendChild(el('path', {
       class:'diagram-connector', 'data-flow-id':flowId,
       d:useCaseId==='login'
@@ -358,7 +365,7 @@ document.querySelectorAll('.diagram-flow-label').forEach((label,i)=>{
 });
 if(!outputMode){
   const authored=svg.cloneNode(true);
-  window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-head-only-logs-v3'});
+  window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-ordered-login-lanes-v5'});
   window.addEventListener('beforeprint',()=>svg.replaceWith(authored));
   window.addEventListener('afterprint',()=>authored.replaceWith(svg));
 }

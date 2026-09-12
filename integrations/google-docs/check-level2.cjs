@@ -15,6 +15,12 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
    await page.waitForFunction(()=>window.__done||window.__error);assert.equal(await page.evaluate(()=>window.__error),undefined,id);
    const d=await page.evaluate(()=>({...window.__level2,nodeText:[...document.querySelectorAll('[data-node-id] text')].map(t=>{const b=t.getBBox();return{id:t.closest('[data-node-id]').dataset.nodeId,text:t.textContent,x:b.x,y:b.y,w:b.width,h:b.height};})}));
    const {model,parent,nodes,routes,labelBoxes}=d,issues=[],ports=[];
+   assert.equal(d.constants.LANE_GAP,20);
+   for(const n of Object.values(nodes).filter(n=>n.kind==='store')){
+    const group=page.locator('[data-node-id="'+n.id+'"]');
+    assert.equal(await group.locator('rect').getAttribute('stroke'),'none');
+    assert.equal(await group.locator('[data-store-outline]').getAttribute('d'),`M${n.x+n.w} ${n.y} H${n.x} V${n.y+n.h} H${n.x+n.w}`,'Open right edge');
+   }
    const expected=parent.flows.filter(f=>f.source===id||f.target===id);
    assert.deepEqual([...new Set(model.flows.map(f=>f.parentFlow))].sort(),expected.map(f=>f.id).sort(),'Every parent flow retained');
    for(const f of model.flows){const p=expected.find(p=>p.id===f.parentFlow);assert(p);assert.equal(f.label,p.label);assert.equal(nodes[f.source].kind==='process'?id:f.source,p.source);assert.equal(nodes[f.target].kind==='process'?id:f.target,p.target);}
@@ -25,12 +31,31 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
     for(const n of Object.values(nodes))if(n.id!==r.source&&n.id!==r.target&&segs(r.points).some(s=>hits(s,n)))issues.push('line/node '+r.id+'/'+n.id);
    }
    assert.equal(new Set(ports).size,ports.length,'No shared ports');
+   for(const [i,a]of routes.entries())for(const b of routes.slice(i+1)){
+    const tip=a.points.at(-1),other=b.points.at(-1);
+    if(a.target===b.target&&tip[0]===other[0])assert(Math.abs(tip[1]-other[1])>=12,'Larger arrowhead separation '+a.id+'/'+b.id);
+   }
    for(const side of ['left','right']){
-    const ordered=routes.filter(r=>r.side===side).sort((a,b)=>a.py-b.py);
-    for(let i=1;i<ordered.length;i++){
-     const previous=ordered[i-1].points[1][0],current=ordered[i].points[1][0];
-     assert(side==='left'?current-previous>=16:previous-current>=16,'Mirrored process-ordered vertical lanes: '+side);
+    const all=routes.filter(r=>r.side===side);
+    const lanes=all.map(r=>r.points[1][0]).sort((a,b)=>a-b);
+    for(let i=1;i<lanes.length;i++)assert(lanes[i]-lanes[i-1]>=20,'Wider distinct lanes with clearance');
+    for(const peerBelow of [true,false]){
+     const ordered=all.filter(r=>(r.sy>r.py)===peerBelow).sort((a,b)=>a.py-b.py);
+     for(let i=1;i<ordered.length;i++){
+      const previous=ordered[i-1].points[1][0],current=ordered[i].points[1][0];
+      const increasing=(side==='left')===peerBelow;
+      assert(increasing?current-previous>=20:previous-current>=20,'Two-axis mirrored lanes: '+side+' peerBelow='+peerBelow);
+     }
     }
+   }
+   if(id==='p5'){
+    const inputs=['d3','d7','d2'].map(peer=>routes.find(r=>r.source===peer&&r.target==='p5.4'));
+    assert(inputs.every(Boolean));
+    assert(inputs[0].points[1][0]<inputs[1].points[1][0]&&inputs[1].points[1][0]<inputs[2].points[1][0],'D3/D7/D2 staircase into 5.4');
+    const report=routes.find(r=>r.source==='p5.5'&&r.target==='headlab');
+    const request=routes.find(r=>r.source==='headlab'&&r.target==='p5.5');
+    assert(report&&request);
+    assert(report.points[1][0]<request.points[1][0],'Report return is outside the request lane');
    }
    for(const n of Object.values(nodes).filter(n=>n.kind!=='process')){
     const links=routes.filter(r=>r.peer===n.id).sort((a,b)=>a.sy-b.sy);
