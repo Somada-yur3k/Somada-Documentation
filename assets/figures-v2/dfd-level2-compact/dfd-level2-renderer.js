@@ -132,7 +132,8 @@
     const targets={};
     [...actors,...stores].forEach(n=>{const links=model.flows.filter(f=>f.source===n.id||f.target===n.id);targets[n.id]=links.reduce((sum,f)=>sum+centre(nodes[f.source===n.id?f.target:f.source]),0)/links.length;});
     const E={x:14,w:170,h:Math.max(170,...actors.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20))};
-    const D={x:1612,w:250,h:120,idw:64};
+    // Uniform store peers within each figure, sized for its busiest port group.
+    const D={x:1612,w:250,h:Math.max(120,...stores.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20)),idw:64};
     // Actor order follows the approved role column; Head Laboratory remains last.
     place(actors,targets,E.h).forEach(n=>nodes[n.id]={...n,...E,kind:'entity',lines:entityLines[n.id]});
     place(stores.slice().sort((a,b)=>targets[a.id]-targets[b.id]),targets,D.h).forEach(n=>nodes[n.id]={...n,...D,kind:'store',lines:storeLines[n.id]});
@@ -231,7 +232,7 @@
     clearLabelStrokes(svg);
     window.__level2={model,parent,nodes,routes,labelBoxes,constants:{W,H,P,E,D,FONT,LANE_GAP}};
     if(!output){
-      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-large-heads-'+model.id+'-v7'});
+      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-traceability-'+model.id+'-v8'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       window.addEventListener('beforeprint',()=>svg.replaceWith(authored));window.addEventListener('afterprint',()=>authored.replaceWith(svg));
     }

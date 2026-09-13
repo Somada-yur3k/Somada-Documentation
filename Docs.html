@@ -382,7 +382,7 @@
     },
 
     backlog: [
-      { id:"01", role:"Class Representative / Faculty", want:`log in to a personal system account`, soThat:`I can submit and track my own laboratory reservations without going to the laboratory in person to file a paper form`, priority:"Must", sprint:1, status:"Not Started" },
+      { id:"01", role:"Class Representative / Faculty / Dean / Head Laboratory / Laboratory Staff", want:`log in to a personal, role-scoped system account`, soThat:`I can access only the reservation, approval, or laboratory operations permitted for my role and laboratory assignment`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"02", role:"Head Laboratory", want:`issue a system account to a new Class Representative`, soThat:`the representative and their assigned Faculty member can start using the system for their class`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"03", role:"Class Representative / Faculty", want:`choose Physics or Circuits Laboratory and view its schedule and availability before filing an allowed request`, soThat:`I only see the slots and resources that actually apply to the laboratory I need`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"04A", role:"Faculty", want:`submit a scheduled laboratory activity covered by the term schedule, selecting any resources the class needs`, soThat:`I can arrange the regular class laboratory activity without another academic approval`, priority:"Must", sprint:2, status:"Not Started" },
@@ -732,7 +732,7 @@
           "Requester reviews the committed and vacant blocks."
         ],
         "flowSystem": [
-          "System retrieves the laboratory schedule and equipment availability for the chosen laboratory.",
+          "System combines the term schedule and usage records in D3 with active reservation holds in D2 and item availability in D4 for the chosen laboratory. D3 describes the base schedule; D2 records holds and their release through reservation status changes.",
           "System displays the committed and vacant blocks."
         ],
         "exceptions": [
@@ -907,7 +907,7 @@
         "useCaseName": "Reschedule Laboratory Reservation",
         "scenario": "A requester needs to move a reservation to a different date or time.",
         "triggeringEvent": "The requester selects Reschedule on an existing reservation from their dashboard.",
-        "briefDescription": "The requester selects a new vacant block for the same laboratory; the original block is released and the new block is held in its place. Where the original reservation required a decision, the rescheduled reservation returns to Pending for the same approver.",
+        "briefDescription": "The requester selects a new eligible block for the same laboratory. The system revalidates the request type, class schedule, role, and resources before replacing the old hold. Where the new request requires academic approval, it returns to Pending for the applicable approver; an earlier approval does not authorize a different schedule category.",
         "actors": "Class Representative, Faculty",
         "related": [
           "Submit Scheduled Laboratory Activity",
@@ -924,7 +924,7 @@
           "The session date has not yet passed."
         ],
         "postconditions": [
-          "The original block is released. The new block is held against the reservation. Where a decision applies, the reservation returns to Pending for the original approver."
+          "The original hold is replaced only after the new block passes validation. The request returns to Pending for the applicable approver when academic approval is required."
         ],
         "flowActor": [
           "Requester opens the reservation from their dashboard.",
@@ -932,9 +932,9 @@
           "Requester confirms the change."
         ],
         "flowSystem": [
-          "System validates the new block against the laboratory schedule.",
+          "System revalidates the new block, resources, requester role, request type and class schedule using the same submission rules.",
           "System releases the original block and holds the new one.",
-          "System resets the status to Pending where a decision applies, and routes it to the original approver."
+          "System resets the status to Pending where a decision applies, and routes it to the applicable approver."
         ],
         "exceptions": [
           "If the new block is already committed, the system reports the conflict and offers the remaining vacant blocks.",
@@ -1438,7 +1438,7 @@
         "useCaseName": "Log Waste Disposal",
         "scenario": "An item is withdrawn permanently from the laboratory and must be recorded and classified.",
         "triggeringEvent": "Head Laboratory or assigned Laboratory Staff record the item, reason, quantity, and classification in the disposal log.",
-        "briefDescription": "Items already recorded as broken, lost, or consumed are reviewed to determine which are withdrawn permanently and classified as general or hazardous waste; items that can be repaired are retained.",
+        "briefDescription": "Physically present items or waste are reviewed for permanent withdrawal and classified as general or hazardous waste; repairable items are retained. A lost item is not physically disposed of. Broken, lost and consumed outcomes remain traceable to the borrowing slip and inventory; disposal does not deduct the same quantity twice.",
         "actors": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
         "related": [
           "Process Return",
@@ -1450,21 +1450,21 @@
           "NU Fairview: needs hazardous waste consolidated for institutional compliance reporting."
         ],
         "preconditions": [
-          "The item appears in the Broken, Loss and Consumed log or in the inventory.",
+          "The item or waste is physically present and traceable to inventory or a borrowing return outcome.",
           "The user is signed in."
         ],
         "postconditions": [
           "A disposal entry is created carrying reason, quantity, date, disposal method, handler, and classification. Hazardous entries are flagged for separate collection."
         ],
         "flowActor": [
-          "User reviews the items recorded as broken, lost, or consumed.",
+          "User reviews physically present items or waste eligible for disposal.",
           "User selects an item for withdrawal and states the reason and quantity.",
           "User classifies the item as general or hazardous waste."
         ],
         "flowSystem": [
-          "System displays the candidate items from the Broken, Loss and Consumed log.",
+          "System displays eligible inventory and return outcomes; the Broken, Loss and Consumed log is a view of these records, not an additional DFD store.",
           "System validates the quantity against the recorded balance.",
-          "System writes the disposal record and reduces the inventory.",
+          "System writes the disposal record and deducts only quantities not already removed from existing stock by an earlier transaction.",
           "System flags hazardous entries for separate collection."
         ],
         "exceptions": [
@@ -1550,7 +1550,7 @@
         ],
         "flowSystem": [
           "System aggregates usage per requester and per item across both laboratories.",
-          "System compiles the broken, loss, and consumed totals and the waste disposal entries.",
+          "System compiles broken, lost and consumed totals, disposal entries, daily task records, and outstanding clearances from the stored records. These are non-AI report calculations.",
           "System exports the report in the selected format."
         ],
         "exceptions": [
@@ -1573,7 +1573,7 @@
       { id:"08", current:`Availability is checked against weekly grids kept per laboratory room; a grid for the Circuits room does not yet exist.`, proposed:`Provide a calendar with per-room conflict detection covering every laboratory room.`, impact:`Conflicts are prevented at filing rather than discovered afterwards.` },
       { id:"09", current:`Approval is a signature on a printed form; the signed copy is stored on the university SharePoint service and reached from the request register through a stored link.`, proposed:`Record approval or rejection through the assigned Faculty or Dean account, with the decision, approver, and time retained.`, impact:`Removes physical routing of forms and the dependency on external file storage.` },
       { id:"10", current:`Out-of-schedule use is arranged in person or by email against vacant blocks. The two-day advance requirement is applied by the laboratory head but is not recorded or enforced anywhere in the workbook.`, proposed:`Allow out-of-schedule requests to be filed against vacant blocks with the two-day requirement enforced by the system.`, impact:`Removes on-the-spot requests and makes the advance requirement auditable.` },
-      { id:"11", current:`Recurrence is written as free text in the remarks column of the request register, for example EVERY SATURDAY.`, proposed:`Type each request as whole-term or one-time and handle the request lifecycle accordingly.`, impact:`Completion counts are no longer distorted by recurring requests.` },
+      { id:"11", current:`Recurrence is written as free text in the remarks column of the request register, for example EVERY SATURDAY.`, proposed:`Whole-term versus one-time recurrence remains pending consultation: define per-session approval, cancellation, borrowing and completion rules before treating recurrence as a finalized feature.`, impact:`Makes the remaining lifecycle decision explicit rather than claiming recurrence is already fully specified.` },
       { id:"12", current:`The usage logs carry a quantity column and a consumed column with a type marker, but nothing prevents an equipment item from being marked consumed.`, proposed:`Record issued and returned quantities separately and bar equipment from being marked consumed.`, impact:`Consumed counts reflect genuine depletion only, and unreturned equipment is recorded as broken or lost.` },
       { id:"13", current:`The hazardous waste disposal worksheet exists as a prepared template in which no disposal has been recorded.`, proposed:`Provide a disposal log linked to the inventory, recording reason, quantity, unit, date and classification.`, impact:`Withdrawals from the laboratory become traceable and hazardous items become reportable.` },
       { id:"14", current:`Consumable levels are known only from the last manual decrement, so a shortage surfaces when a scheduled session already requires the item.`, proposed:`Display current consumable quantities and flag stock below the configured reorder level; demand forecasting is outside the current AI scope.`, impact:`Staff can identify low stock from recorded quantities and configured thresholds without a predictive model.` },
@@ -1875,9 +1875,9 @@ function MethodologySection({ onZoom }) {
       <SectionHeading title="II. Methodology" id="methodology" />
       <div className="lede">
         <p>The system is developed under the Agile methodology, following the Scrum Framework. Agile was selected because the requirements of this project continued to change throughout requirements gathering.</p>
-        <p>This project spans three (3) terms, each term running thirteen and a half (13.5) weeks and corresponding to one subject and one release: MNTSDEV in the second year third term, MYSADD1 in the third year first term, and MCSPROJ in the third year second term.</p>
+        <p>This project spans three (3) terms, each term running thirteen and a half (13.5) weeks and corresponding to one subject and one release: MNTSDEV in the second year third term, MSYADD1 in the third year first term, and MCSPROJ in the third year second term.</p>
       </div>
-      <Figure src="assets/figures/fig-scrum.png" caption="Figure 1: Scrum Framework" onZoom={onZoom} />
+      <Figure src="assets/figures/fig-scrum.png" caption="Methodology illustration: Scrum Framework" onZoom={onZoom} />
       <div className="lede" style={{marginTop:18}}>
         <p><strong>Product Vision.</strong> The product vision was formed during MNTSDEV from the operational problems of the Physics and Circuits Laboratory and the Product Owner: paper borrower's slips and laboratory service request forms re-encoded by hand, a Google Sheet and several workbooks whose borrowing records are not linked to its inventory, room availability checked against a separate weekly grid for each room, approvals signed on paper and stored outside the workbook, and consumable quantities that cannot be established without a physical count.</p>
         <p><strong>Product Backlog and User Stories.</strong> From that vision the team wrote the objectives as user stories and organized them into the product backlog presented in Table 1: to digitalize inventory and equipment borrowing, to provide reservation with conflict detection, to replace paper-based clearance, to record approval through authenticated Faculty and Dean accounts and publish request status, to provide an authenticated laboratory Q&A chatbot, and to record waste disposal. The backlog is a living artifact and is refined continuously as consultation produces new information.</p>
@@ -2021,7 +2021,7 @@ function GapAnalysisSection() {
   return (
     <section id="gap-analysis" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.5" title="Gap Analysis" id="gap-analysis" />
-      <div className="lede"><p>Table 23 sets out the gap analysis, mapping each product backlog item to the current system and to the proposed change.</p></div>
+      <div className="lede"><p>Table 23 groups the current-system gaps and proposed changes. These groups are not a one-to-one numbering of the product backlog; recurrence remains a consultation item. The Analytics page provides the explicit backlog-to-use-case and DFD traceability matrix.</p></div>
       <p className="cap">Table 23: Gap Analysis</p>
       <DataTable columns={columns} rows={DATA.gaps} />
     </section>
@@ -2101,17 +2101,7 @@ function ErdSection({ onZoom }) {
   return (
     <section id="erd" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.8" title="Entity-Relationship Diagram" id="erd" />
-      <Figure src="assets/figures/fig-erd.png" caption="Figure 14: Legacy Entity Relationship Diagram — Pending Revision" onZoom={onZoom} />
-      <div className="lede" style={{marginTop:18}}><p><strong>Legacy ERD — pending revision.</strong> The image above comes from the earlier design and is not the final schema for the current Q&A-only AI scope. Its FORECAST_RESULT entity is excluded. Account roles and approval-token fields also require alignment with the authenticated workflows before final submission. The reference below excludes the forecasting entity but is not a replacement for a revised ERD.</p></div>
-      <div className="entity-note">Entity reference — pending schema alignment</div>
-      <div className="entity-grid">
-        {DATA.entities.map(e => (
-          <div className="entity-card" key={e.name}>
-            <div className="ename">{e.name}</div>
-            <div className="efields">{e.fields}</div>
-          </div>
-        ))}
-      </div>
+      <div className="lede"><p><strong>ERD — pending design and validation.</strong> There is no current approved ERD. The previous image and entity reference are excluded from the submitted paper and sync content; the original files remain archived in the repository. They must not be treated as the current database schema.</p><p>The new ERD must map all ten canonical DFD data stores, role and laboratory access, reservation and approval records, borrowing and student accountability, clearance, daily tasks, disposal, and the Q&amp;A knowledge and conversation records. Keys, relationships, cardinalities, and integrity constraints still require design and review. Forecasting entities and email approval tokens are outside the current scope.</p></div>
     </section>
   );
 }
@@ -2296,6 +2286,7 @@ function App() {
   <div className="nav-links">
     <a className="page-tab" href="index.html">Home</a>
     <a className="page-tab active" href="Docs.html" aria-current="page">Documentation</a>
+    <a className="page-tab" href="Analytics.html">Analytics</a>
     <a className="page-tab" href="Current-System.html">Current System</a>
     <a className="page-tab" href="assets/figures-v2/usecase-diagram-source.html">Use Case</a>
     <a className="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">DFD Level 0</a>

@@ -8,10 +8,20 @@ Head Laboratory is the sole administrator of laboratory logs, schedules and dail
 
 CSS filenames, storage keys, and the internal diagram editor API retain their legacy names for compatibility; these are not the project name. The Apps Script legacy cover-title matcher is also retained to update existing Google Doc copies safely.
 
-The embedded ERD is a legacy source image pending schema revision; its forecast entity is explicitly excluded from the current scope. See the notice in the ERD section before submission.
+There is no current approved ERD. The paper shows a pending-design notice instead of the old schema image or entity list. The original image and legacy data remain archived in the repository, but are not presented as current schema or included in Google Docs sync content.
 
 ## Navigation and publication checks
 
 The primary menu links directly to Documentation, Use Case, DFD Levels 0–2 and the Google Doc copy. Traceable views are retired; old URLs redirect to the canonical compact pages. The Google Docs link only opens the document; the separate Update Google Docs action performs a sync.
 
-Run `node integrations/google-docs/check-navigation.cjs` with Playwright available to check all seven menus, mobile return links, redirects and clean exports. The diagram and A4 checks in the same directory are read-only unless passed `--render` to regenerate local PNGs.
+Run `node integrations/google-docs/check-navigation.cjs` with Playwright available to check all eight menus, mobile return links, redirects and clean exports. The diagram and A4 checks in the same directory are read-only unless passed `--render` to regenerate local PNGs.
+
+## System Alignment Analytics
+
+Open `Analytics.html` from any primary menu. This is a design-audit page, not an application usage dashboard or an AI feature. It shows traceability for 20 main use cases, explicit structural checks, the six planned artifact categories, recorded backlog status, fixes, and unresolved consultation decisions. ERD is pending; no database-completion score or production-readiness claim is made.
+
+With Playwright and Edge available, run `node integrations/system-audit/build.cjs --write` to regenerate `assets/system-audit.json`, then `node integrations/system-audit/build.cjs --check` and `node integrations/system-audit/check.cjs`. Set `PLAYWRIGHT_MODULE` if Playwright is installed outside the workspace. The build renders DFD 0 for comparison and reads the documentation, use-case source and canonical DFD models. Percentages use the formulas listed on the page; they are not a panel grade. The page verifies source fingerprints and refuses to display stale percentages. Rebuild after source changes and include the generated JSON when publishing.
+
+The current review adds seven Level 2 realizations of existing parent flows: D2 reads at 2.1 and 2.3; three laboratory-role return inputs at 4.4; D4 stock at 4.3; D5 borrower evidence at 5.3. Level 1 remains at 74 flows and Level 0 at 46. No actor, main use case, or parent boundary exchange was added or removed.
+
+Live Server is supported: fingerprint verification ignores only its recognized, marked auto-reload script immediately before the closing body tag. Authored HTML, other scripts and comments remain fingerprinted, so actual source edits still require an audit rebuild. CRLF/LF differences are normalized on both build and browser sides.

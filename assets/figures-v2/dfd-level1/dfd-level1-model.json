@@ -585,7 +585,7 @@
       "id": "p5-d5-read",
       "source": "d5",
       "target": "p5",
-      "label": "Borrowing Summary",
+      "label": "Borrowing Slip Data",
       "kind": "store"
     },
     {

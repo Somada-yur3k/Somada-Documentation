@@ -322,6 +322,22 @@
         "target": "p2.1",
         "label": "Item Availability Data",
         "kind": "store"
+      },
+      {
+        "id": "p2-d2-read-child1",
+        "parentFlow": "p2-d2-read",
+        "source": "d2",
+        "target": "p2.1",
+        "label": "Reservation / Approval Data",
+        "kind": "store"
+      },
+      {
+        "id": "p2-d2-read-child3",
+        "parentFlow": "p2-d2-read",
+        "source": "d2",
+        "target": "p2.3",
+        "label": "Reservation / Approval Data",
+        "kind": "store"
       }
     ]
   },
@@ -656,6 +672,38 @@
         "target": "d10",
         "label": "Disposal Record",
         "kind": "store"
+      },
+      {
+        "id": "p4-he-equipment-child4",
+        "parentFlow": "p4-he-equipment",
+        "source": "headlab",
+        "target": "p4.4",
+        "label": "Equipment Transaction",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ph-equipment-child4",
+        "parentFlow": "p4-ph-equipment",
+        "source": "physics",
+        "target": "p4.4",
+        "label": "Equipment Transaction",
+        "kind": "external"
+      },
+      {
+        "id": "p4-ci-equipment-child4",
+        "parentFlow": "p4-ci-equipment",
+        "source": "circuits",
+        "target": "p4.4",
+        "label": "Equipment Transaction",
+        "kind": "external"
+      },
+      {
+        "id": "p4-d4-read-child3",
+        "parentFlow": "p4-d4-read",
+        "source": "d4",
+        "target": "p4.3",
+        "label": "Available Item Data",
+        "kind": "store"
       }
     ]
   },
@@ -794,7 +842,7 @@
         "parentFlow": "p5-d5-read",
         "source": "d5",
         "target": "p5.4",
-        "label": "Borrowing Summary",
+        "label": "Borrowing Slip Data",
         "kind": "store"
       },
       {
@@ -835,6 +883,14 @@
         "source": "d10",
         "target": "p5.5",
         "label": "Disposal Summary",
+        "kind": "store"
+      },
+      {
+        "id": "p5-d5-read-child3",
+        "parentFlow": "p5-d5-read",
+        "source": "d5",
+        "target": "p5.3",
+        "label": "Borrowing Slip Data",
         "kind": "store"
       }
     ]

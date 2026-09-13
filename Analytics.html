@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>System Alignment Analytics · NU Fairview Labs</title>
+  <meta name="description" content="Evidence-based design traceability across the documentation, use cases and DFDs. ERD and consultation decisions remain explicitly pending.">
+  <link rel="stylesheet" href="assets/somada-navigation.css">
+  <link rel="stylesheet" href="assets/system-analytics.css">
+  <script src="assets/system-analytics.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to analytics</a>
+<nav class="page-tabs somada-nav" aria-label="Primary navigation">
+  <a class="nav-brand" href="index.html" aria-label="Laboratory documentation home"><span class="nav-brand-mark">NU</span><span class="nav-brand-copy"><strong>NU Fairview Labs</strong><small>Documentation Suite</small></span></a>
+  <div class="nav-links">
+    <a class="page-tab" href="index.html">Home</a>
+    <a class="page-tab" href="Docs.html">Documentation</a>
+    <a class="page-tab active" href="Analytics.html" aria-current="page">Analytics</a>
+    <a class="page-tab" href="Current-System.html">Current System</a>
+    <a class="page-tab" href="assets/figures-v2/usecase-diagram-source.html">Use Case</a>
+    <a class="page-tab" href="assets/figures-v2/dfd-level0/dfd-level0-source.html">DFD Level 0</a>
+    <a class="page-tab" href="assets/figures-v2/dfd-level1/dfd-level1-source.html">DFD Level 1</a>
+    <a class="page-tab" href="assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html">DFD Level 2</a>
+  </div>
+  <a class="page-tab nav-google-docs" href="https://docs.google.com/document/d/11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM/edit?tab=t.0#heading=h.6lc8m3z0ynuc" target="_blank" rel="noopener noreferrer">Google Docs ↗</a>
+</nav>
+<main id="main" class="analytics-shell">
+  <header class="page-heading">
+    <div><p class="eyebrow">Design review / traceability</p><h1>One system. Connected models.</h1><p class="intro">See what aligns, what changed, and what still needs a decision.</p></div>
+    <a class="button secondary" href="Docs.html">Open documentation ↗</a>
+  </header>
+  <p id="load-state" role="status" class="notice">Loading audit evidence…</p>
+  <noscript><p class="notice">Enable JavaScript to view calculated metrics, or download the <a href="assets/system-audit.json">audit data</a>.</p></noscript>
+  <div id="audit-content" hidden>
+    <section class="metrics" id="metrics" aria-label="Audit summary"></section>
+    <div class="scope-note"><span class="status pending">Design audit only</span><p>These percentages measure documented connections and artifact availability—not software completion, AI accuracy, panel approval, or production readiness. <a href="#method">How we calculate</a></p></div>
+    <section class="panel" aria-labelledby="models-heading">
+      <div class="section-heading"><div><p class="eyebrow">01 / Model alignment</p><h2 id="models-heading">The documentation chain</h2></div><span class="muted">Select a model to review its evidence</span></div>
+      <div class="model-grid" id="model-grid"></div>
+      <div class="inventory" id="inventory"></div>
+    </section>
+    <section class="panel" aria-labelledby="trace-heading">
+      <div class="section-heading"><div><p class="eyebrow">02 / Feature traceability</p><h2 id="trace-heading">From requirement to data flow</h2></div><p class="muted" id="trace-count" role="status"></p></div>
+      <div class="filters">
+        <label class="search">Search features or actors<input id="feature-search" type="search" placeholder="Try clearance, Faculty, or p4.4…"></label>
+        <label>Process<select id="process-filter"><option value="">All five processes</option></select></label>
+      </div>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Feature traceability table, scroll horizontally on small screens"><table><caption class="sr-only">Use cases mapped to their documentation, events, backlog, DFD processes and data stores</caption><thead><tr><th>Use case / documentation</th><th>Actors</th><th>Requirement evidence</th><th>DFD mapping</th><th>Trace</th></tr></thead><tbody id="features"></tbody></table></div>
+      <p class="footnote">Supporting use cases are covered through their 11 include/extend relationships. Backlog 16 is a dashboard presentation requirement, intentionally not an extra diagram node. DFD Levels 0 and 1 use broader data exchanges; Level 2 identifies their child-process use.</p>
+    </section>
+    <section class="panel" aria-labelledby="findings-heading">
+      <div class="section-heading"><div><p class="eyebrow">03 / Review log</p><h2 id="findings-heading">Decisions before final submission</h2></div><label>Show<select id="finding-filter"><option value="pending">Pending decisions</option><option value="fixed">Fixed in this review</option><option value="all">All findings</option></select></label></div>
+      <div class="findings" id="findings"></div>
+    </section>
+    <div class="two-panels">
+      <section class="panel" aria-labelledby="scope-heading"><p class="eyebrow">04 / Approved scope</p><h2 id="scope-heading">What this system does</h2>
+        <ul class="scope-list"><li><strong>Request & approval</strong><span>Faculty submits scheduled activities. Class Representatives submit non-lab or out-of-schedule requests. Dean is approval-only.</span></li><li><strong>Laboratory operations</strong><span>Head Laboratory and assigned staff manage inventory, issuance, returns and disposal. Only Head Laboratory manages logs, schedules, daily tasks and clearance.</span></li><li><strong>Informational Q&A</strong><span>Class Representatives and Faculty ask about items, schedules, operating hours and their own reservation status. No AI reservation actions, forecasts or generated report summaries.</span></li></ul>
+      </section>
+      <section class="panel" aria-labelledby="schema-heading"><p class="eyebrow">05 / Schema preparation</p><h2 id="schema-heading">Ten stores. ERD still pending.</h2><p class="muted">These are logical DFD stores, not ten finalized database tables. No current ERD is included in the paper.</p><div id="stores" class="store-list"></div></section>
+    </div>
+    <section class="panel" id="method" aria-labelledby="method-heading"><p class="eyebrow">06 / Method & evidence</p><h2 id="method-heading">Transparent measurements</h2>
+      <dl class="method-list"><dt>Feature trace coverage</dt><dd>Fully linked main use cases ÷ all main use cases. A link requires a full description, matching actor set and event coverage, backlog references, and the expected directional Level 2 exchanges.</dd><dt>Artifact availability</dt><dd>Available current artifacts ÷ six planned artifact categories: Documentation, Use Case, DFD 0, DFD 1, DFD 2, ERD. The five Level 2 images form one category. Available does not mean finalized.</dd><dt>Model checks</dt><dd>Passing automated checks ÷ all defined checks for that model. Each check and source link is listed below. The ERD has no current model and receives “Pending”, not a fabricated validation score.</dd><dt>Recorded implementation</dt><dd>Backlog items marked Done or Completed ÷ all backlog items. This uses the paper’s recorded status; it does not inspect or certify application code.</dd><dt>Limits</dt><dd>Structural matching does not prove every business rule is correct. Pending consultation items remain separate blockers even if all automated checks pass. Crossing connectors are permitted under the existing layout decision; print legibility still needs a physical-paper review. This audit reads local website sources, not the live Google Doc.</dd></dl>
+      <details><summary>Browse automated checks</summary><label>Model<select id="check-filter"><option value="">All models</option></select></label><ul id="checks" class="check-list"></ul></details>
+      <details><summary>Source fingerprint & rebuild instructions</summary><p>Regenerate after source edits: <code>node integrations/system-audit/build.cjs --write</code>. Verify with <code>--check</code>. Playwright and Edge are required for the rendered context-diagram comparison.</p><ul id="sources" class="source-list"></ul><a href="assets/system-audit.json" download>Download audit evidence (JSON)</a></details>
+    </section>
+    <footer id="audit-footer"></footer>
+  </div>
+</main>
+</body>
+</html>

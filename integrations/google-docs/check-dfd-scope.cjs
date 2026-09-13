@@ -52,6 +52,6 @@ const server=http.createServer((req,res)=>{
     await page.locator('#stage svg').screenshot({path:path.join(os.tmpdir(),'somada-level0-scope.png')});
     if(process.argv.includes('--render'))await page.locator('#stage svg').screenshot({path:path.join(root,dir,'dfd-level0/dfd-level0-draft.png')});
     assert.deepEqual(errors,[]);
-    console.log('Scope passed: 74 L1 flows, 46 L0 flows, 17 P5 parent flows realized by 18 child exchanges; only Head Lab logs, schedules and Daily Tasks, Head Lab last.');
+    console.log('Scope passed: 74 L1 flows, 46 L0 flows, 17 P5 parent flows realized by '+child.flows.length+' child exchanges; only Head Lab logs, schedules and Daily Tasks, Head Lab last.');
   } finally {await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});

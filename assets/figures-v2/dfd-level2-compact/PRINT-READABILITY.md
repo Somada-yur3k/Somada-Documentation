@@ -1,6 +1,6 @@
 # Level 2 publication figures
 
-Level 1 and Level 2 arrowheads are now 12 × 12 internal units (previously 9 × 9), with the marker reference at the triangle tip so endpoints remain attached. Level 1 reserves incoming peer ports first with 14-unit head spacing; Level 2 peer ports keep at least 14 units. Both audits check head separation. Editor storage versions are Level 1 v4 and Level 2 v7, superseding older keys mentioned below.
+Level 1 and Level 2 arrowheads are now 12 × 12 internal units (previously 9 × 9), with the marker reference at the triangle tip so endpoints remain attached. Level 1 reserves incoming peer ports first with 14-unit head spacing; Level 2 peer ports keep at least 14 units. Both audits check head separation. Editor storage versions are Level 1 v4 and Level 2 v8, superseding older keys mentioned below.
 
 All Level 1 and Level 2 stores use an open-right outline: top, left and bottom borders plus the identifier divider. The white fill has no rectangular stroke, so no right border remains. Store dimensions, labels and left-edge arrow endpoints are preserved. Both geometry audits assert this outline for every store before rendering publication PNGs.
 
@@ -13,10 +13,12 @@ All 74 current Level 1 flows are mapped by stable parent IDs. Repeated store rea
 | Parent | Child boundary exchanges | Internal exchanges |
 | --- | ---: | ---: |
 | 1 | 10 | 2 |
-| 2 | 23 | 3 |
+| 2 | 25 | 3 |
 | 3 | 9 | 3 |
-| 4 | 23 | 4 |
-| 5 | 18 | 3 |
+| 4 | 27 | 4 |
+| 5 | 19 | 3 |
+
+The cross-model audit adds D2 reads to 2.1 and 2.3, separate laboratory-role return inputs to 4.4, a D4 read to 4.3, and a D5 read to 5.3. These seven child exchanges realize existing parent flows; the parent contract remains unchanged. See `../../../Analytics.html` for the measured checks and pending consultation decisions.
 
 Short print aliases have full canonical names in the interactive flow reference. Each figure has unique peers, uniform dimensions within each node class, separate ports and paths, and a vertically ordered process column. Logs, schedules and daily tasks remain Head Laboratory only; Q&A remains informational.
 

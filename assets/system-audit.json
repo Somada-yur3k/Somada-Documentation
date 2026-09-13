@@ -1,0 +1,3661 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-13T16:39:33.309Z",
+  "title": "A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview",
+  "sources": [
+    {
+      "path": "Docs.html",
+      "sha256": "e62d7fff9b7cfd7c3427831e1c8838cce0cf0e5f08aad135ec791482204caefd"
+    },
+    {
+      "path": "assets/figures-v2/usecase-diagram-source.html",
+      "sha256": "d2cfa33858d5266c2b884f4d03845388d91813cec2c9b75a0f566aa1aa73e94b"
+    },
+    {
+      "path": "assets/figures-v2/dfd-level1/dfd-level1-model.json",
+      "sha256": "744636c41be9c7bf94c5b5e8c872cb87423337ea2feef2817652acced23801eb"
+    },
+    {
+      "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-model.json",
+      "sha256": "e1bbd20f9daf25f181dfb6f432becefb9dd5aecf6657825097682559828e1ce7"
+    },
+    {
+      "path": "assets/figures-v2/dfd-level0/dfd-level0-portrait.js",
+      "sha256": "48b31653115048a71bd13b1f67d5b2c0d346062b63df1e33a11bc94b352fec3b"
+    },
+    {
+      "path": "assets/figures-v2/dfd-level1/dfd-level1-portrait.js",
+      "sha256": "f69a49321645c3ad6246f9fee638fd9280609d8fcbf2832219f82c4130ba471f"
+    },
+    {
+      "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-renderer.js",
+      "sha256": "06daa89ca91961278f8105726f9d67a34af676e47bfbec24ff258346ca60624f"
+    },
+    {
+      "path": "integrations/system-audit/build.cjs",
+      "sha256": "a9bce98887ffabea115b12247caf07285435ac3ae5655a4919b5315504110c53"
+    }
+  ],
+  "groups": [
+    {
+      "id": "documentation",
+      "name": "Documentation",
+      "href": "Docs.html",
+      "passed": 65,
+      "total": 65,
+      "percent": 100,
+      "status": "pass"
+    },
+    {
+      "id": "usecase",
+      "name": "Use Case",
+      "href": "assets/figures-v2/usecase-diagram-source.html",
+      "passed": 32,
+      "total": 32,
+      "percent": 100,
+      "status": "pass"
+    },
+    {
+      "id": "dfd0",
+      "name": "DFD Level 0",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html",
+      "passed": 48,
+      "total": 48,
+      "percent": 100,
+      "status": "pass"
+    },
+    {
+      "id": "dfd1",
+      "name": "DFD Level 1",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html",
+      "passed": 86,
+      "total": 86,
+      "percent": 100,
+      "status": "pass"
+    },
+    {
+      "id": "dfd2",
+      "name": "DFD Level 2",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html",
+      "passed": 119,
+      "total": 119,
+      "percent": 100,
+      "status": "pass"
+    },
+    {
+      "id": "erd",
+      "name": "ERD",
+      "href": "Docs.html#erd",
+      "passed": 0,
+      "total": 0,
+      "percent": null,
+      "status": "pending"
+    }
+  ],
+  "features": [
+    {
+      "id": "login",
+      "name": "Log In",
+      "docId": "uc-login",
+      "table": 3,
+      "actors": [
+        "Class Representative",
+        "Dean",
+        "Faculty",
+        "Head Laboratory",
+        "Physics Laboratory Staff",
+        "Circuits Laboratory Staff"
+      ],
+      "events": 1,
+      "backlog": [
+        "01"
+      ],
+      "parent": "p1",
+      "steps": [
+        "p1.1",
+        "p1.2"
+      ],
+      "stores": [
+        "d1"
+      ],
+      "flowIds": [
+        "p1-cr-credentials-child1",
+        "p1-fa-credentials-child1",
+        "p1-de-credentials-child1",
+        "p1-he-credentials-child1",
+        "p1-ph-credentials-child1",
+        "p1-ci-credentials-child1",
+        "p1-d1-read-child1"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "chooselab",
+      "name": "Choose Laboratory",
+      "docId": "uc-chooselab",
+      "table": 4,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "03"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.1"
+      ],
+      "stores": [
+        "d2",
+        "d3",
+        "d4"
+      ],
+      "flowIds": [
+        "p2-cr-availability-child1",
+        "p2-fa-availability-child1",
+        "p2-d3-read-child1",
+        "p2-d4-read-child1",
+        "p2-d2-read-child1"
+      ],
+      "status": "pass",
+      "note": "Laboratory choice is a UI filter carried into the schedule/request, not a separate persisted record."
+    },
+    {
+      "id": "viewsched",
+      "name": "View Schedule & Availability",
+      "docId": "uc-viewsched",
+      "table": 5,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "03"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.1"
+      ],
+      "stores": [
+        "d2",
+        "d3",
+        "d4"
+      ],
+      "flowIds": [
+        "p2-cr-availability-child1",
+        "p2-fa-availability-child1",
+        "p2-d3-read-child1",
+        "p2-d4-read-child1",
+        "p2-d2-read-child1"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "submitscheduled",
+      "name": "Submit Scheduled Laboratory Activity",
+      "docId": "uc-submitscheduled",
+      "table": 6,
+      "actors": [
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "04A"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.2"
+      ],
+      "stores": [
+        "d2"
+      ],
+      "flowIds": [
+        "p2-cr-onschedule-child2",
+        "p2-cr-outschedule-child2",
+        "p2-cr-change-child2",
+        "p2-fa-scheduled-child2",
+        "p2-fa-outschedule-child2",
+        "p2-fa-change-child2",
+        "p2-d2-write-child2",
+        "p2-d2-read-child2"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "submitcombined",
+      "name": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+      "docId": "uc-submitres",
+      "table": 7,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 2,
+      "backlog": [
+        "04B",
+        "04C"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.2",
+        "p2.3"
+      ],
+      "stores": [
+        "d2"
+      ],
+      "flowIds": [
+        "p2-cr-onschedule-child2",
+        "p2-cr-outschedule-child2",
+        "p2-cr-change-child2",
+        "p2-fa-scheduled-child2",
+        "p2-fa-outschedule-child2",
+        "p2-fa-change-child2",
+        "p2-fa-decision-child3",
+        "p2-fa-routed-child3",
+        "p2-de-decision-child3",
+        "p2-de-routed-child3",
+        "p2-d2-write-child2",
+        "p2-d2-write-child3",
+        "p2-d2-read-child2",
+        "p2-d2-read-child3"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "cancelres",
+      "name": "Cancel Laboratory Reservation",
+      "docId": "uc-cancelres",
+      "table": 8,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "05"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.2",
+        "p2.4"
+      ],
+      "stores": [
+        "d2"
+      ],
+      "flowIds": [
+        "p2-cr-onschedule-child2",
+        "p2-cr-outschedule-child2",
+        "p2-cr-change-child2",
+        "p2-cr-status-child4",
+        "p2-cr-history-child4",
+        "p2-fa-scheduled-child2",
+        "p2-fa-outschedule-child2",
+        "p2-fa-change-child2",
+        "p2-fa-status-child4",
+        "p2-fa-history-child4",
+        "p2-d2-write-child2",
+        "p2-d2-write-child4",
+        "p2-d2-read-child2",
+        "p2-d2-read-child4"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "reschedres",
+      "name": "Reschedule Laboratory Reservation",
+      "docId": "uc-reschedres",
+      "table": 9,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "05"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.2",
+        "p2.4"
+      ],
+      "stores": [
+        "d2"
+      ],
+      "flowIds": [
+        "p2-cr-onschedule-child2",
+        "p2-cr-outschedule-child2",
+        "p2-cr-change-child2",
+        "p2-cr-status-child4",
+        "p2-cr-history-child4",
+        "p2-fa-scheduled-child2",
+        "p2-fa-outschedule-child2",
+        "p2-fa-change-child2",
+        "p2-fa-status-child4",
+        "p2-fa-history-child4",
+        "p2-d2-write-child2",
+        "p2-d2-write-child4",
+        "p2-d2-read-child2",
+        "p2-d2-read-child4"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "viewstatus",
+      "name": "View Reservation Status",
+      "docId": "uc-viewstatus",
+      "table": 10,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "08"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.4"
+      ],
+      "stores": [
+        "d2"
+      ],
+      "flowIds": [
+        "p2-cr-status-child4",
+        "p2-cr-history-child4",
+        "p2-fa-status-child4",
+        "p2-fa-history-child4",
+        "p2-d2-write-child4",
+        "p2-d2-read-child4"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "viewhistory",
+      "name": "View Reservation History",
+      "docId": "uc-viewhistory",
+      "table": 11,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "08"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.4"
+      ],
+      "stores": [
+        "d2"
+      ],
+      "flowIds": [
+        "p2-cr-status-child4",
+        "p2-cr-history-child4",
+        "p2-fa-status-child4",
+        "p2-fa-history-child4",
+        "p2-d2-write-child4",
+        "p2-d2-read-child4"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "clearstatus",
+      "name": "View Clearance Status",
+      "docId": "uc-clearstatus",
+      "table": 12,
+      "actors": [
+        "Class Representative"
+      ],
+      "events": 1,
+      "backlog": [
+        "08"
+      ],
+      "parent": "p5",
+      "steps": [
+        "p5.3"
+      ],
+      "stores": [
+        "d5",
+        "d6"
+      ],
+      "flowIds": [
+        "p5-cr-clearance-child3",
+        "p5-he-clearance-child3",
+        "p5-d6-write-child3",
+        "p5-d6-read-child3",
+        "p5-d5-read-child3"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "approve",
+      "name": "Approve / Reject Routed Request",
+      "docId": "uc-approve",
+      "table": 13,
+      "actors": [
+        "Dean",
+        "Faculty"
+      ],
+      "events": 2,
+      "backlog": [
+        "06",
+        "07"
+      ],
+      "parent": "p2",
+      "steps": [
+        "p2.3"
+      ],
+      "stores": [
+        "d2"
+      ],
+      "flowIds": [
+        "p2-fa-decision-child3",
+        "p2-fa-routed-child3",
+        "p2-de-decision-child3",
+        "p2-de-routed-child3",
+        "p2-d2-write-child3",
+        "p2-d2-read-child3"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "askq",
+      "name": "Ask Laboratory Question",
+      "docId": "uc-askq",
+      "table": 14,
+      "actors": [
+        "Class Representative",
+        "Faculty"
+      ],
+      "events": 1,
+      "backlog": [
+        "09"
+      ],
+      "parent": "p3",
+      "steps": [
+        "p3.1",
+        "p3.2",
+        "p3.3",
+        "p3.4"
+      ],
+      "stores": [
+        "d2",
+        "d3",
+        "d4",
+        "d8",
+        "d9"
+      ],
+      "flowIds": [
+        "p3-cr-inquiry-child1",
+        "p3-cr-answer-child3",
+        "p3-fa-inquiry-child1",
+        "p3-fa-answer-child3",
+        "p3-d8-read-child2",
+        "p3-d9-write-child4",
+        "p3-d2-read-child2",
+        "p3-d3-read-child2",
+        "p3-d4-read-child2"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "issueacct",
+      "name": "Issue Class Representative Account",
+      "docId": "uc-issueacct",
+      "table": 15,
+      "actors": [
+        "Head Laboratory"
+      ],
+      "events": 1,
+      "backlog": [
+        "02"
+      ],
+      "parent": "p1",
+      "steps": [
+        "p1.3"
+      ],
+      "stores": [
+        "d1"
+      ],
+      "flowIds": [
+        "p1-fa-crcredentials-child3",
+        "p1-he-account-child3",
+        "p1-d1-write-child3"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "mgminv",
+      "name": "Manage Equipment Inventory",
+      "docId": "uc-inventory",
+      "table": 16,
+      "actors": [
+        "Head Laboratory",
+        "Physics Laboratory Staff",
+        "Circuits Laboratory Staff"
+      ],
+      "events": 1,
+      "backlog": [
+        "10"
+      ],
+      "parent": "p4",
+      "steps": [
+        "p4.1"
+      ],
+      "stores": [
+        "d4"
+      ],
+      "flowIds": [
+        "p4-he-inventory-child1",
+        "p4-ph-inventory-child1",
+        "p4-ci-inventory-child1",
+        "p4-d4-write-child1",
+        "p4-d4-read-child1"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "issueeq",
+      "name": "Issue Equipment",
+      "docId": "uc-issueeq",
+      "table": 17,
+      "actors": [
+        "Head Laboratory",
+        "Physics Laboratory Staff",
+        "Circuits Laboratory Staff"
+      ],
+      "events": 1,
+      "backlog": [
+        "11"
+      ],
+      "parent": "p4",
+      "steps": [
+        "p4.2",
+        "p4.3"
+      ],
+      "stores": [
+        "d2",
+        "d4",
+        "d5"
+      ],
+      "flowIds": [
+        "p4-cr-slip-child3",
+        "p4-fa-slip-child3",
+        "p4-he-equipment-child3",
+        "p4-ph-equipment-child3",
+        "p4-ci-equipment-child3",
+        "p4-d2-read-child2",
+        "p4-d2-write-child3",
+        "p4-d4-write-child3",
+        "p4-d5-write-child3",
+        "p4-d4-read-child3"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "procret",
+      "name": "Process Return",
+      "docId": "uc-procret",
+      "table": 18,
+      "actors": [
+        "Head Laboratory",
+        "Physics Laboratory Staff",
+        "Circuits Laboratory Staff"
+      ],
+      "events": 1,
+      "backlog": [
+        "11",
+        "12"
+      ],
+      "parent": "p4",
+      "steps": [
+        "p4.4"
+      ],
+      "stores": [
+        "d2",
+        "d4",
+        "d5"
+      ],
+      "flowIds": [
+        "p4-d2-write-child4",
+        "p4-d4-write-child4",
+        "p4-d5-write-child4",
+        "p4-d5-read-child4",
+        "p4-he-equipment-child4",
+        "p4-ph-equipment-child4",
+        "p4-ci-equipment-child4"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "procclear",
+      "name": "Process Clearance",
+      "docId": "uc-procclear",
+      "table": 19,
+      "actors": [
+        "Head Laboratory"
+      ],
+      "events": 1,
+      "backlog": [
+        "13"
+      ],
+      "parent": "p5",
+      "steps": [
+        "p5.3"
+      ],
+      "stores": [
+        "d5",
+        "d6"
+      ],
+      "flowIds": [
+        "p5-cr-clearance-child3",
+        "p5-he-clearance-child3",
+        "p5-d6-write-child3",
+        "p5-d6-read-child3",
+        "p5-d5-read-child3"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "wastedisp",
+      "name": "Log Waste Disposal",
+      "docId": "uc-wastedisp",
+      "table": 20,
+      "actors": [
+        "Head Laboratory",
+        "Physics Laboratory Staff",
+        "Circuits Laboratory Staff"
+      ],
+      "events": 1,
+      "backlog": [
+        "14"
+      ],
+      "parent": "p4",
+      "steps": [
+        "p4.5"
+      ],
+      "stores": [
+        "d10",
+        "d4"
+      ],
+      "flowIds": [
+        "p4-he-disposal-child5",
+        "p4-ph-disposal-child5",
+        "p4-ci-disposal-child5",
+        "p4-d4-write-child5",
+        "p4-d10-write-child5"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "mgmlogs",
+      "name": "Manage Logs, Schedule & Daily Tasks",
+      "docId": "uc-mgmlogs",
+      "table": 21,
+      "actors": [
+        "Head Laboratory"
+      ],
+      "events": 3,
+      "backlog": [
+        "15"
+      ],
+      "parent": "p5",
+      "steps": [
+        "p5.1",
+        "p5.2"
+      ],
+      "stores": [
+        "d3",
+        "d7"
+      ],
+      "flowIds": [
+        "p5-he-schedule-child1",
+        "p5-he-usage-child2",
+        "p5-he-task-child2",
+        "p5-d3-write-child1",
+        "p5-d3-write-child2",
+        "p5-d7-write-child2"
+      ],
+      "status": "pass",
+      "note": ""
+    },
+    {
+      "id": "endterm",
+      "name": "Generate End-Term Report",
+      "docId": "uc-endterm",
+      "table": 22,
+      "actors": [
+        "Head Laboratory"
+      ],
+      "events": 1,
+      "backlog": [
+        "17"
+      ],
+      "parent": "p5",
+      "steps": [
+        "p5.4",
+        "p5.5"
+      ],
+      "stores": [
+        "d10",
+        "d2",
+        "d3",
+        "d4",
+        "d5",
+        "d7"
+      ],
+      "flowIds": [
+        "p5-he-reportrequest-child5",
+        "p5-he-report-child5",
+        "p5-d2-read-child4",
+        "p5-d3-read-child4",
+        "p5-d4-read-child4",
+        "p5-d5-read-child4",
+        "p5-d7-read-child4",
+        "p5-d10-read-child5"
+      ],
+      "status": "pass",
+      "note": ""
+    }
+  ],
+  "checks": [
+    {
+      "group": "documentation",
+      "id": "inventory",
+      "label": "No duplicate or orphaned full descriptions",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "documentation",
+      "id": "table-order",
+      "label": "Full-description table numbers are consecutive",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "support-coverage",
+      "label": "Every supporting use case participates in a dependency",
+      "status": "pass",
+      "href": "assets/figures-v2/usecase-diagram-source.html"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-login",
+      "label": "Log In — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-login"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-login",
+      "label": "Log In — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-login"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-chooselab",
+      "label": "Choose Laboratory — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-chooselab"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-chooselab",
+      "label": "Choose Laboratory — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-chooselab"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-viewsched",
+      "label": "View Schedule & Availability — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-viewsched"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-viewsched",
+      "label": "View Schedule & Availability — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-viewsched"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-submitscheduled",
+      "label": "Submit Scheduled Laboratory Activity — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-submitscheduled"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-submitscheduled",
+      "label": "Submit Scheduled Laboratory Activity — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-submitscheduled"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-submitcombined",
+      "label": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-submitres"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-submitcombined",
+      "label": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-submitres"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-cancelres",
+      "label": "Cancel Laboratory Reservation — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-cancelres"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-cancelres",
+      "label": "Cancel Laboratory Reservation — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-cancelres"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-reschedres",
+      "label": "Reschedule Laboratory Reservation — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-reschedres"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-reschedres",
+      "label": "Reschedule Laboratory Reservation — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-reschedres"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-viewstatus",
+      "label": "View Reservation Status — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-viewstatus"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-viewstatus",
+      "label": "View Reservation Status — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-viewstatus"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-viewhistory",
+      "label": "View Reservation History — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-viewhistory"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-viewhistory",
+      "label": "View Reservation History — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-viewhistory"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-clearstatus",
+      "label": "View Clearance Status — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-clearstatus"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-clearstatus",
+      "label": "View Clearance Status — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-clearstatus"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-approve",
+      "label": "Approve / Reject Routed Request — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-approve"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-approve",
+      "label": "Approve / Reject Routed Request — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-approve"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-askq",
+      "label": "Ask Laboratory Question — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-askq"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-askq",
+      "label": "Ask Laboratory Question — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-askq"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-issueacct",
+      "label": "Issue Class Representative Account — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-issueacct"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-issueacct",
+      "label": "Issue Class Representative Account — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-issueacct"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-mgminv",
+      "label": "Manage Equipment Inventory — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-inventory"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-mgminv",
+      "label": "Manage Equipment Inventory — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-inventory"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-issueeq",
+      "label": "Issue Equipment — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-issueeq"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-issueeq",
+      "label": "Issue Equipment — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-issueeq"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-procret",
+      "label": "Process Return — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-procret"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-procret",
+      "label": "Process Return — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-procret"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-procclear",
+      "label": "Process Clearance — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-procclear"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-procclear",
+      "label": "Process Clearance — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-procclear"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-wastedisp",
+      "label": "Log Waste Disposal — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-wastedisp"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-wastedisp",
+      "label": "Log Waste Disposal — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-wastedisp"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-mgmlogs",
+      "label": "Manage Logs, Schedule & Daily Tasks — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-mgmlogs"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-mgmlogs",
+      "label": "Manage Logs, Schedule & Daily Tasks — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-mgmlogs"
+    },
+    {
+      "group": "documentation",
+      "id": "doc-endterm",
+      "label": "Generate End-Term Report — full specification",
+      "status": "pass",
+      "href": "Docs.html#uc-endterm"
+    },
+    {
+      "group": "usecase",
+      "id": "trace-endterm",
+      "label": "Generate End-Term Report — role / event / DFD trace",
+      "status": "pass",
+      "href": "Docs.html#uc-endterm"
+    },
+    {
+      "group": "documentation",
+      "id": "event-0",
+      "label": "A user signs in",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-1",
+      "label": "Head Laboratory issues a Class Representative account",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-2",
+      "label": "A requester chooses a laboratory",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-3",
+      "label": "A requester checks schedule and availability",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-4",
+      "label": "Faculty submits a scheduled laboratory activity",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-5",
+      "label": "Class Representative submits an on-schedule non-laboratory request",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-6",
+      "label": "A requester submits an out-of-schedule request",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-7",
+      "label": "A requester cancels a reservation",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-8",
+      "label": "A requester reschedules a reservation",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-9",
+      "label": "Faculty decides on a routed Class Representative request",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-10",
+      "label": "Dean decides on a routed out-of-schedule request",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-11",
+      "label": "A requester checks a reservation status",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-12",
+      "label": "A requester opens reservation history",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-13",
+      "label": "A Class Representative checks the group's clearance",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-14",
+      "label": "A requester asks a question",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-15",
+      "label": "Laboratory staff issue equipment for a session",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-16",
+      "label": "A session ends and items are returned",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-17",
+      "label": "Accountability is raised for a damaged or missing item",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-18",
+      "label": "An item is withdrawn from the laboratory",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-19",
+      "label": "Laboratory staff maintain the equipment catalogue",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-20",
+      "label": "Head Laboratory records the term schedule supplied by the Dean's office",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-21",
+      "label": "Head Laboratory records the usage of a completed session",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-22",
+      "label": "Head Laboratory records a daily activity",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-23",
+      "label": "The term ends",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-01",
+      "label": "Backlog 01 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-02",
+      "label": "Backlog 02 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-03",
+      "label": "Backlog 03 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-04A",
+      "label": "Backlog 04A — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-04B",
+      "label": "Backlog 04B — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-04C",
+      "label": "Backlog 04C — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-05",
+      "label": "Backlog 05 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-06",
+      "label": "Backlog 06 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-07",
+      "label": "Backlog 07 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-08",
+      "label": "Backlog 08 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-09",
+      "label": "Backlog 09 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-10",
+      "label": "Backlog 10 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-11",
+      "label": "Backlog 11 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-12",
+      "label": "Backlog 12 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-13",
+      "label": "Backlog 13 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-14",
+      "label": "Backlog 14 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-15",
+      "label": "Backlog 15 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-16",
+      "label": "Backlog 16 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-17",
+      "label": "Backlog 17 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-0",
+      "label": "include: Manage Equipment Inventory → Add Equipment",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-1",
+      "label": "include: Manage Equipment Inventory → Update Equipment",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-2",
+      "label": "include: Manage Equipment Inventory → Remove Equipment",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-3",
+      "label": "include: Manage Equipment Inventory → Search & Filter Inventory",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-4",
+      "label": "include: Submit Scheduled Laboratory Activity → Select Resources / Equipment",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-5",
+      "label": "include: Submit On-Schedule Non-Laboratory / Out-of-Schedule Request → Select Resources / Equipment",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-6",
+      "label": "extend: Record Broken / Lost / Consumed Items → Process Return",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-7",
+      "label": "extend: Check Item Availability → Ask Laboratory Question",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-8",
+      "label": "extend: Check Schedule Availability → Ask Laboratory Question",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-9",
+      "label": "extend: Check Reservation Status → Ask Laboratory Question",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-10",
+      "label": "extend: Check Operating Hours → Ask Laboratory Question",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "dfd1",
+      "id": "admin-scope",
+      "label": "Only Head Laboratory sends logs, schedule, task and clearance actions",
+      "status": "pass",
+      "href": "Docs.html#uc-mgmlogs"
+    },
+    {
+      "group": "dfd1",
+      "id": "dean-scope",
+      "label": "Dean exchanges only login and approval data",
+      "status": "pass",
+      "href": "Docs.html#uc-approve"
+    },
+    {
+      "group": "dfd1",
+      "id": "qa-scope",
+      "label": "Q&A is requester-only and writes only its conversation log",
+      "status": "pass",
+      "href": "Docs.html#uc-askq"
+    },
+    {
+      "group": "dfd2",
+      "id": "parent-inventory",
+      "label": "Exactly one decomposition for every parent",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd2",
+      "id": "unique-child-flows",
+      "label": "Every child flow has a unique identity",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd0",
+      "id": "actors",
+      "label": "Exactly six canonical external entities",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-cr-credentials",
+      "label": "Credentials — classrep → p1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-fa-credentials",
+      "label": "Credentials — faculty → p1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-fa-crcredentials",
+      "label": "Class Representative Credentials — p1 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-de-credentials",
+      "label": "Credentials — dean → p1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-he-credentials",
+      "label": "Credentials — headlab → p1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-he-account",
+      "label": "Class Representative Account Details — headlab → p1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-ph-credentials",
+      "label": "Credentials — physics → p1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p1-ci-credentials",
+      "label": "Credentials — circuits → p1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-cr-onschedule",
+      "label": "On-Schedule Non-Laboratory Request — classrep → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-cr-outschedule",
+      "label": "Out-of-Schedule Request — classrep → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-cr-change",
+      "label": "Reservation Change Request — classrep → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-cr-availability",
+      "label": "Schedule & Availability — p2 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-cr-status",
+      "label": "Reservation Status — p2 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-cr-history",
+      "label": "Reservation History — p2 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-scheduled",
+      "label": "Scheduled Laboratory Activity — faculty → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-outschedule",
+      "label": "Out-of-Schedule Request — faculty → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-change",
+      "label": "Reservation Change Request — faculty → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-decision",
+      "label": "Approval Decision — faculty → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-availability",
+      "label": "Schedule & Availability — p2 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-routed",
+      "label": "Routed Approval Request — p2 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-status",
+      "label": "Reservation Status — p2 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-fa-history",
+      "label": "Reservation History — p2 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-de-decision",
+      "label": "Approval Decision — dean → p2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p2-de-routed",
+      "label": "Routed Approval Request — p2 → dean",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p3-cr-inquiry",
+      "label": "Inquiry — classrep → p3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p3-cr-answer",
+      "label": "Answer — p3 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p3-fa-inquiry",
+      "label": "Inquiry — faculty → p3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p3-fa-answer",
+      "label": "Answer — p3 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-cr-slip",
+      "label": "Borrowing Slip — p4 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-fa-slip",
+      "label": "Borrowing Slip — p4 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-he-inventory",
+      "label": "Inventory Update — headlab → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-he-equipment",
+      "label": "Equipment Transaction — headlab → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-he-disposal",
+      "label": "Disposal Entry — headlab → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-ph-inventory",
+      "label": "Inventory Update — physics → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-ph-equipment",
+      "label": "Equipment Transaction — physics → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-ph-disposal",
+      "label": "Disposal Entry — physics → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-ci-inventory",
+      "label": "Inventory Update — circuits → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-ci-equipment",
+      "label": "Equipment Transaction — circuits → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-ci-disposal",
+      "label": "Disposal Entry — circuits → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p5-cr-clearance",
+      "label": "Clearance Status — p5 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p5-he-schedule",
+      "label": "Schedule Update — headlab → p5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p5-he-usage",
+      "label": "Usage Entry — headlab → p5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p5-he-task",
+      "label": "Daily Task Entry — headlab → p5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p5-he-clearance",
+      "label": "Clearance Action — headlab → p5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p5-he-reportrequest",
+      "label": "Report Request — headlab → p5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p5-he-report",
+      "label": "End-Term Report — p5 → headlab",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "no-extra-flows",
+      "label": "No extra context exchanges",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "entities",
+      "label": "Unique entities",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "processes",
+      "label": "Unique processes",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "stores",
+      "label": "Unique stores",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-cr-credentials",
+      "label": "Credentials — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-fa-credentials",
+      "label": "Credentials — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-fa-crcredentials",
+      "label": "Class Representative Credentials — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-de-credentials",
+      "label": "Credentials — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-he-credentials",
+      "label": "Credentials — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-he-account",
+      "label": "Class Representative Account Details — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-ph-credentials",
+      "label": "Credentials — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-ci-credentials",
+      "label": "Credentials — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-cr-onschedule",
+      "label": "On-Schedule Non-Laboratory Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-cr-outschedule",
+      "label": "Out-of-Schedule Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-cr-change",
+      "label": "Reservation Change Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-cr-availability",
+      "label": "Schedule & Availability — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-cr-status",
+      "label": "Reservation Status — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-cr-history",
+      "label": "Reservation History — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-scheduled",
+      "label": "Scheduled Laboratory Activity — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-outschedule",
+      "label": "Out-of-Schedule Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-change",
+      "label": "Reservation Change Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-decision",
+      "label": "Approval Decision — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-availability",
+      "label": "Schedule & Availability — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-routed",
+      "label": "Routed Approval Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-status",
+      "label": "Reservation Status — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-fa-history",
+      "label": "Reservation History — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-de-decision",
+      "label": "Approval Decision — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-de-routed",
+      "label": "Routed Approval Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-cr-inquiry",
+      "label": "Inquiry — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-cr-answer",
+      "label": "Answer — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-fa-inquiry",
+      "label": "Inquiry — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-fa-answer",
+      "label": "Answer — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-cr-slip",
+      "label": "Borrowing Slip — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-fa-slip",
+      "label": "Borrowing Slip — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-he-inventory",
+      "label": "Inventory Update — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-he-equipment",
+      "label": "Equipment Transaction — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-he-disposal",
+      "label": "Disposal Entry — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-ph-inventory",
+      "label": "Inventory Update — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-ph-equipment",
+      "label": "Equipment Transaction — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-ph-disposal",
+      "label": "Disposal Entry — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-ci-inventory",
+      "label": "Inventory Update — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-ci-equipment",
+      "label": "Equipment Transaction — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-ci-disposal",
+      "label": "Disposal Entry — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-cr-clearance",
+      "label": "Clearance Status — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-he-schedule",
+      "label": "Schedule Update — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-he-usage",
+      "label": "Usage Entry — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-he-task",
+      "label": "Daily Task Entry — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-he-clearance",
+      "label": "Clearance Action — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-he-reportrequest",
+      "label": "Report Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-he-report",
+      "label": "End-Term Report — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-d1-write",
+      "label": "Account Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p1-d1-read",
+      "label": "Account Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-d2-write",
+      "label": "Reservation / Approval Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-d2-read",
+      "label": "Reservation / Approval Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-d3-read",
+      "label": "Schedule Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p2-d4-read",
+      "label": "Item Availability Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-d8-read",
+      "label": "Knowledge Content — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-d9-write",
+      "label": "Question / Answer Log — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-d2-read",
+      "label": "Reservation Status Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-d3-read",
+      "label": "Schedule Availability Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p3-d4-read",
+      "label": "Item Availability Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d2-read",
+      "label": "Authorized Reservation Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d2-write",
+      "label": "Reservation Status Update — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d4-write",
+      "label": "Inventory Transaction — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d4-read",
+      "label": "Available Item Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d5-write",
+      "label": "Borrowing Slip Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d5-read",
+      "label": "Borrowing Slip Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d10-write",
+      "label": "Disposal Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d2-read",
+      "label": "Reservation Summary — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d3-write",
+      "label": "Schedule / Usage Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d3-read",
+      "label": "Schedule / Usage Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d4-read",
+      "label": "Inventory Summary — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d5-read",
+      "label": "Borrowing Slip Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d6-write",
+      "label": "Clearance Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d6-read",
+      "label": "Clearance Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d7-write",
+      "label": "Daily Task Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d7-read",
+      "label": "Daily Task Data — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p5-d10-read",
+      "label": "Disposal Summary — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "role-classrep",
+      "label": "Class Representative — canonical use-case role",
+      "status": "pass",
+      "href": "assets/figures-v2/usecase-diagram-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "role-faculty",
+      "label": "Faculty — canonical use-case role",
+      "status": "pass",
+      "href": "assets/figures-v2/usecase-diagram-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "role-dean",
+      "label": "Dean — canonical use-case role",
+      "status": "pass",
+      "href": "assets/figures-v2/usecase-diagram-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "role-physics",
+      "label": "Physics Laboratory Staff — canonical use-case role",
+      "status": "pass",
+      "href": "assets/figures-v2/usecase-diagram-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "role-circuits",
+      "label": "Circuits Laboratory Staff — canonical use-case role",
+      "status": "pass",
+      "href": "assets/figures-v2/usecase-diagram-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "role-headlab",
+      "label": "Head Laboratory — canonical use-case role",
+      "status": "pass",
+      "href": "assets/figures-v2/usecase-diagram-source.html"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-parent",
+      "label": "p1 — named parent and complete boundary",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-cr-credentials-child1",
+      "label": "Credentials — classrep → p1.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-fa-credentials-child1",
+      "label": "Credentials — faculty → p1.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-fa-crcredentials-child3",
+      "label": "Class Representative Credentials — p1.3 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-de-credentials-child1",
+      "label": "Credentials — dean → p1.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-he-credentials-child1",
+      "label": "Credentials — headlab → p1.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-he-account-child3",
+      "label": "Class Representative Account Details — headlab → p1.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-ph-credentials-child1",
+      "label": "Credentials — physics → p1.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-ci-credentials-child1",
+      "label": "Credentials — circuits → p1.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-d1-write-child3",
+      "label": "Account Record — p1.3 → d1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-d1-read-child1",
+      "label": "Account Data — d1 → p1.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-internal1",
+      "label": "Verified identity — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-internal2",
+      "label": "Authorized session — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-parent",
+      "label": "p2 — named parent and complete boundary",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-cr-onschedule-child2",
+      "label": "On-Schedule Non-Laboratory Request — classrep → p2.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-cr-outschedule-child2",
+      "label": "Out-of-Schedule Request — classrep → p2.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-cr-change-child2",
+      "label": "Reservation Change Request — classrep → p2.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-cr-availability-child1",
+      "label": "Schedule & Availability — p2.1 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-cr-status-child4",
+      "label": "Reservation Status — p2.4 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-cr-history-child4",
+      "label": "Reservation History — p2.4 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-scheduled-child2",
+      "label": "Scheduled Laboratory Activity — faculty → p2.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-outschedule-child2",
+      "label": "Out-of-Schedule Request — faculty → p2.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-change-child2",
+      "label": "Reservation Change Request — faculty → p2.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-decision-child3",
+      "label": "Approval Decision — faculty → p2.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-availability-child1",
+      "label": "Schedule & Availability — p2.1 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-routed-child3",
+      "label": "Routed Approval Request — p2.3 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-status-child4",
+      "label": "Reservation Status — p2.4 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-fa-history-child4",
+      "label": "Reservation History — p2.4 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-de-decision-child3",
+      "label": "Approval Decision — dean → p2.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-de-routed-child3",
+      "label": "Routed Approval Request — p2.3 → dean",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d2-write-child2",
+      "label": "Reservation / Approval Record — p2.2 → d2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d2-write-child3",
+      "label": "Reservation / Approval Record — p2.3 → d2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d2-write-child4",
+      "label": "Reservation / Approval Record — p2.4 → d2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d2-read-child2",
+      "label": "Reservation / Approval Data — d2 → p2.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d2-read-child4",
+      "label": "Reservation / Approval Data — d2 → p2.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d3-read-child1",
+      "label": "Schedule Data — d3 → p2.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d4-read-child1",
+      "label": "Item Availability Data — d4 → p2.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d2-read-child1",
+      "label": "Reservation / Approval Data — d2 → p2.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-d2-read-child3",
+      "label": "Reservation / Approval Data — d2 → p2.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-internal1",
+      "label": "Availability data — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-internal2",
+      "label": "Validated request — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p2-internal3",
+      "label": "Decision data — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-parent",
+      "label": "p3 — named parent and complete boundary",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-cr-inquiry-child1",
+      "label": "Inquiry — classrep → p3.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-cr-answer-child3",
+      "label": "Answer — p3.3 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-fa-inquiry-child1",
+      "label": "Inquiry — faculty → p3.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-fa-answer-child3",
+      "label": "Answer — p3.3 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-d8-read-child2",
+      "label": "Knowledge Content — d8 → p3.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-d9-write-child4",
+      "label": "Question / Answer Log — p3.4 → d9",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-d2-read-child2",
+      "label": "Reservation Status Data — d2 → p3.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-d3-read-child2",
+      "label": "Schedule Availability Data — d3 → p3.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-d4-read-child2",
+      "label": "Item Availability Data — d4 → p3.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-internal1",
+      "label": "Scoped inquiry — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-internal2",
+      "label": "Authorized data — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p3-internal3",
+      "label": "Q&A exchange — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-parent",
+      "label": "p4 — named parent and complete boundary",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-cr-slip-child3",
+      "label": "Borrowing Slip — p4.3 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-fa-slip-child3",
+      "label": "Borrowing Slip — p4.3 → faculty",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-he-inventory-child1",
+      "label": "Inventory Update — headlab → p4.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-he-equipment-child3",
+      "label": "Equipment Transaction — headlab → p4.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-he-disposal-child5",
+      "label": "Disposal Entry — headlab → p4.5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ph-inventory-child1",
+      "label": "Inventory Update — physics → p4.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ph-equipment-child3",
+      "label": "Equipment Transaction — physics → p4.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ph-disposal-child5",
+      "label": "Disposal Entry — physics → p4.5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ci-inventory-child1",
+      "label": "Inventory Update — circuits → p4.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ci-equipment-child3",
+      "label": "Equipment Transaction — circuits → p4.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ci-disposal-child5",
+      "label": "Disposal Entry — circuits → p4.5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d2-read-child2",
+      "label": "Authorized Reservation Data — d2 → p4.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d2-write-child3",
+      "label": "Reservation Status Update — p4.3 → d2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d2-write-child4",
+      "label": "Reservation Status Update — p4.4 → d2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d4-write-child1",
+      "label": "Inventory Transaction — p4.1 → d4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d4-write-child3",
+      "label": "Inventory Transaction — p4.3 → d4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d4-write-child4",
+      "label": "Inventory Transaction — p4.4 → d4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d4-write-child5",
+      "label": "Inventory Transaction — p4.5 → d4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d4-read-child1",
+      "label": "Available Item Data — d4 → p4.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d5-write-child3",
+      "label": "Borrowing Slip Record — p4.3 → d5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d5-write-child4",
+      "label": "Borrowing Slip Record — p4.4 → d5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d5-read-child4",
+      "label": "Borrowing Slip Data — d5 → p4.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d10-write-child5",
+      "label": "Disposal Record — p4.5 → d10",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-he-equipment-child4",
+      "label": "Equipment Transaction — headlab → p4.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ph-equipment-child4",
+      "label": "Equipment Transaction — physics → p4.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-ci-equipment-child4",
+      "label": "Equipment Transaction — circuits → p4.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d4-read-child3",
+      "label": "Available Item Data — d4 → p4.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-internal1",
+      "label": "Inventory data — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-internal2",
+      "label": "Approved request — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-internal3",
+      "label": "Borrowing data — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-internal4",
+      "label": "Return outcome — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-parent",
+      "label": "p5 — named parent and complete boundary",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-cr-clearance-child3",
+      "label": "Clearance Status — p5.3 → classrep",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-he-schedule-child1",
+      "label": "Schedule Update — headlab → p5.1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-he-usage-child2",
+      "label": "Usage Entry — headlab → p5.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-he-task-child2",
+      "label": "Daily Task Entry — headlab → p5.2",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-he-clearance-child3",
+      "label": "Clearance Action — headlab → p5.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-he-reportrequest-child5",
+      "label": "Report Request — headlab → p5.5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-he-report-child5",
+      "label": "End-Term Report — p5.5 → headlab",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d2-read-child4",
+      "label": "Reservation Summary — d2 → p5.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d3-write-child1",
+      "label": "Schedule / Usage Record — p5.1 → d3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d3-write-child2",
+      "label": "Schedule / Usage Record — p5.2 → d3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d3-read-child4",
+      "label": "Schedule / Usage Data — d3 → p5.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d4-read-child4",
+      "label": "Inventory Summary — d4 → p5.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d5-read-child4",
+      "label": "Borrowing Slip Data — d5 → p5.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d6-write-child3",
+      "label": "Clearance Record — p5.3 → d6",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d6-read-child3",
+      "label": "Clearance Data — d6 → p5.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d7-write-child2",
+      "label": "Daily Task Record — p5.2 → d7",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d7-read-child4",
+      "label": "Daily Task Data — d7 → p5.4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d10-read-child5",
+      "label": "Disposal Summary — d10 → p5.5",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-d5-read-child3",
+      "label": "Borrowing Slip Data — d5 → p5.3",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-internal1",
+      "label": "Schedule data — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-internal3",
+      "label": "Clearance data — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "p5-internal4",
+      "label": "Report metrics — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
+    },
+    {
+      "group": "dfd2",
+      "id": "required-d2-p2.1",
+      "label": "Required workflow input d2 → p2.1",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd2",
+      "id": "required-d2-p2.3",
+      "label": "Required workflow input d2 → p2.3",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd2",
+      "id": "required-headlab-p4.4",
+      "label": "Required workflow input headlab → p4.4",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd2",
+      "id": "required-physics-p4.4",
+      "label": "Required workflow input physics → p4.4",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd2",
+      "id": "required-circuits-p4.4",
+      "label": "Required workflow input circuits → p4.4",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd2",
+      "id": "required-d4-p4.3",
+      "label": "Required workflow input d4 → p4.3",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    },
+    {
+      "group": "dfd2",
+      "id": "required-d5-p5.3",
+      "label": "Required workflow input d5 → p5.3",
+      "status": "pass",
+      "href": "Docs.html#dfd"
+    }
+  ],
+  "findings": [
+    {
+      "status": "fixed",
+      "id": "L2-01",
+      "title": "Approval and availability reads",
+      "detail": "Added D2 reads to 2.1 (active holds) and 2.3 (the stored pending request).",
+      "href": "Docs.html#uc-viewsched"
+    },
+    {
+      "status": "fixed",
+      "id": "L2-02",
+      "title": "Return transaction inputs",
+      "detail": "Added separate Head Laboratory, Physics Staff and Circuits Staff inputs to 4.4; previously they reached issuance only.",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "status": "fixed",
+      "id": "L2-03",
+      "title": "Live stock at issuance",
+      "detail": "Added D4 → 4.3 to verify stock before releasing items.",
+      "href": "Docs.html#uc-issueeq"
+    },
+    {
+      "status": "fixed",
+      "id": "L2-04",
+      "title": "Borrower evidence for clearance",
+      "detail": "Added D5 → 5.3. Renamed the matching L1/L2 exchange to Borrowing Slip Data: clearance needs student and return details, not only aggregate totals.",
+      "href": "Docs.html#uc-procclear"
+    },
+    {
+      "status": "fixed",
+      "id": "DOC-01",
+      "title": "Login backlog coverage",
+      "detail": "Backlog 01 now covers all six diagram actors, not just the two requester roles.",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "status": "fixed",
+      "id": "DOC-02",
+      "title": "Reschedule validation",
+      "detail": "Revalidate role, schedule category and resources; an old approval must not authorize a different request category.",
+      "href": "Docs.html#uc-reschedres"
+    },
+    {
+      "status": "fixed",
+      "id": "DOC-03",
+      "title": "Disposal accounting",
+      "detail": "Only physically present items/waste are disposed of; never deduct already-written-off quantities twice. BLC logs are views of source records, not an undeclared extra DFD store.",
+      "href": "Docs.html#uc-wastedisp"
+    },
+    {
+      "status": "fixed",
+      "id": "DOC-04",
+      "title": "Report contents",
+      "detail": "Made Daily Task Records and outstanding clearances explicit in the report flow; calculations remain non-AI.",
+      "href": "Docs.html#uc-endterm"
+    },
+    {
+      "status": "fixed",
+      "id": "PUB-01",
+      "title": "Current model publication",
+      "detail": "Corrected the Home flow count to 74 and removed the legacy ERD image/reference from the current paper. Archived source files are retained.",
+      "href": "Docs.html#erd"
+    },
+    {
+      "status": "fixed",
+      "id": "DOC-05",
+      "title": "Document reference cleanup",
+      "detail": "Corrected MSYADD1 spelling, removed the duplicate Figure 1 label from the methodology illustration, and clarified that gap rows are not one-to-one backlog IDs.",
+      "href": "Docs.html#gap-analysis"
+    },
+    {
+      "status": "pending",
+      "id": "ERD-01",
+      "title": "Current ERD is not designed",
+      "detail": "Map all 10 stores to entities, keys, relationships, cardinalities and constraints. No current ERD or schema score is claimed.",
+      "href": "Docs.html#erd"
+    },
+    {
+      "status": "pending",
+      "id": "POL-01",
+      "title": "Class Representative → Dean routing",
+      "detail": "Specify exactly when an out-of-schedule Class Representative request goes to Dean, whether Faculty approval comes first, and whether one or two decisions are required.",
+      "href": "Docs.html#uc-approve"
+    },
+    {
+      "status": "pending",
+      "id": "POL-02",
+      "title": "Two-day advance rule",
+      "detail": "Gap 10 requires two days; calendar/business days, cutoff time, exceptions and reschedule handling still need consultation and matching acceptance criteria.",
+      "href": "Docs.html#gap-analysis"
+    },
+    {
+      "status": "pending",
+      "id": "POL-03",
+      "title": "Recurring reservations",
+      "detail": "Define per-session approval, cancellation, rescheduling, borrowing and completion for whole-term requests before finalizing recurrence.",
+      "href": "Docs.html#gap-analysis"
+    },
+    {
+      "status": "pending",
+      "id": "POL-04",
+      "title": "Room-only session lifecycle",
+      "detail": "Requests can use a room without items, but Ongoing/Completed transitions currently rely on issuance/return. Confirm the responsible role and trigger for room-only sessions.",
+      "href": "Docs.html#uc-submitres"
+    },
+    {
+      "status": "pending",
+      "id": "POL-05",
+      "title": "Completion after clearance settlement",
+      "detail": "Returns with broken/lost balances remain Ongoing, while clearance settlement only closes the clearance. Confirm who updates the borrowing/reservation and when.",
+      "href": "Docs.html#uc-procclear"
+    },
+    {
+      "status": "pending",
+      "id": "POL-06",
+      "title": "Quantity ledger and reservation holds",
+      "detail": "Specify atomic hold/release rules and equations for existing, available, reserved and in-use stock, including partial issue, return and replacement.",
+      "href": "Docs.html#uc-inventory"
+    },
+    {
+      "status": "pending",
+      "id": "POL-07",
+      "title": "Knowledge base ownership",
+      "detail": "Q&A assumes D8 is populated. Confirm who maintains approved operating hours/content and how updates are authorized; do not invent a new actor permission yet.",
+      "href": "Docs.html#uc-askq"
+    }
+  ],
+  "counts": {
+    "actors": 6,
+    "mainUseCases": 20,
+    "supportingUseCases": 10,
+    "associations": 42,
+    "dependencies": 11,
+    "backlog": 19,
+    "events": 24,
+    "l0": 46,
+    "l1": 74,
+    "stores": 10,
+    "parents": 5,
+    "children": 21,
+    "l2": 90
+  },
+  "backlog": [
+    {
+      "id": "01",
+      "status": "Not Started",
+      "features": [
+        "Log In"
+      ],
+      "note": ""
+    },
+    {
+      "id": "02",
+      "status": "Not Started",
+      "features": [
+        "Issue Class Representative Account"
+      ],
+      "note": ""
+    },
+    {
+      "id": "03",
+      "status": "Not Started",
+      "features": [
+        "Choose Laboratory",
+        "View Schedule & Availability"
+      ],
+      "note": ""
+    },
+    {
+      "id": "04A",
+      "status": "Not Started",
+      "features": [
+        "Submit Scheduled Laboratory Activity"
+      ],
+      "note": ""
+    },
+    {
+      "id": "04B",
+      "status": "Not Started",
+      "features": [
+        "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request"
+      ],
+      "note": ""
+    },
+    {
+      "id": "04C",
+      "status": "Not Started",
+      "features": [
+        "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request"
+      ],
+      "note": ""
+    },
+    {
+      "id": "05",
+      "status": "Not Started",
+      "features": [
+        "Cancel Laboratory Reservation",
+        "Reschedule Laboratory Reservation"
+      ],
+      "note": ""
+    },
+    {
+      "id": "06",
+      "status": "Not Started",
+      "features": [
+        "Approve / Reject Routed Request"
+      ],
+      "note": ""
+    },
+    {
+      "id": "07",
+      "status": "Not Started",
+      "features": [
+        "Approve / Reject Routed Request"
+      ],
+      "note": ""
+    },
+    {
+      "id": "08",
+      "status": "Not Started",
+      "features": [
+        "View Reservation Status",
+        "View Reservation History",
+        "View Clearance Status"
+      ],
+      "note": ""
+    },
+    {
+      "id": "09",
+      "status": "Not Started",
+      "features": [
+        "Ask Laboratory Question"
+      ],
+      "note": ""
+    },
+    {
+      "id": "10",
+      "status": "Not Started",
+      "features": [
+        "Manage Equipment Inventory"
+      ],
+      "note": ""
+    },
+    {
+      "id": "11",
+      "status": "Not Started",
+      "features": [
+        "Issue Equipment",
+        "Process Return"
+      ],
+      "note": ""
+    },
+    {
+      "id": "12",
+      "status": "Not Started",
+      "features": [
+        "Process Return"
+      ],
+      "note": ""
+    },
+    {
+      "id": "13",
+      "status": "Not Started",
+      "features": [
+        "Process Clearance"
+      ],
+      "note": ""
+    },
+    {
+      "id": "14",
+      "status": "Not Started",
+      "features": [
+        "Log Waste Disposal"
+      ],
+      "note": ""
+    },
+    {
+      "id": "15",
+      "status": "Not Started",
+      "features": [
+        "Manage Logs, Schedule & Daily Tasks"
+      ],
+      "note": ""
+    },
+    {
+      "id": "16",
+      "status": "Not Started",
+      "features": [],
+      "note": "Presentation-only dashboard: supported by inventory/reservation/log data; no standalone use case or DFD arrow, as requested."
+    },
+    {
+      "id": "17",
+      "status": "Not Started",
+      "features": [
+        "Generate End-Term Report"
+      ],
+      "note": ""
+    }
+  ],
+  "stores": [
+    {
+      "id": "d1",
+      "number": "D1",
+      "name": "User Accounts",
+      "readers": [
+        "p1"
+      ],
+      "writers": [
+        "p1"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d2",
+      "number": "D2",
+      "name": "Reservation & Approval Records",
+      "readers": [
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "writers": [
+        "p2",
+        "p4"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d8",
+      "number": "D8",
+      "name": "Knowledge Base",
+      "readers": [
+        "p3"
+      ],
+      "writers": [],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d9",
+      "number": "D9",
+      "name": "Chat Interaction History",
+      "readers": [],
+      "writers": [
+        "p3"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d4",
+      "number": "D4",
+      "name": "Equipment Inventory",
+      "readers": [
+        "p2",
+        "p3",
+        "p4",
+        "p5"
+      ],
+      "writers": [
+        "p4"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d5",
+      "number": "D5",
+      "name": "Borrowing Slip Records",
+      "readers": [
+        "p4",
+        "p5"
+      ],
+      "writers": [
+        "p4"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d10",
+      "number": "D10",
+      "name": "Disposal Records",
+      "readers": [
+        "p5"
+      ],
+      "writers": [
+        "p4"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d3",
+      "number": "D3",
+      "name": "Laboratory Schedule & Usage Logs",
+      "readers": [
+        "p2",
+        "p3",
+        "p5"
+      ],
+      "writers": [
+        "p5"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d7",
+      "number": "D7",
+      "name": "Daily Task Records",
+      "readers": [
+        "p5"
+      ],
+      "writers": [
+        "p5"
+      ],
+      "schemaStatus": "Pending ERD"
+    },
+    {
+      "id": "d6",
+      "number": "D6",
+      "name": "Clearance Records",
+      "readers": [
+        "p5"
+      ],
+      "writers": [
+        "p5"
+      ],
+      "schemaStatus": "Pending ERD"
+    }
+  ]
+}

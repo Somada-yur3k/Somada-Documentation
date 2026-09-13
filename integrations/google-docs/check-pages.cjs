@@ -75,7 +75,8 @@ const server = http.createServer((req,res) => {
     assert.deepEqual(result.missingCells,[],'All table cell contents appear in preview');
     assert.deepEqual(result.overflow,[],'Content fits the page area');
     assert(result.sourceLastRow);
-    assert.equal(await page.locator('.doc-pages figure img').count(),10,'All ten diagrams included');
+    assert.equal(await page.locator('.doc-pages figure img').count(),9,'Nine current figures retained; legacy ERD excluded');
+    assert.equal(await page.locator('.doc-source #erd img').count(),0,'No obsolete ERD is submitted or synced');
     const level1=page.locator('.doc-pages .dfd-level1-figure');
     assert.equal(await level1.count(),1,'Level 1 figure is not split or duplicated');
     const level1Page=level1.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
