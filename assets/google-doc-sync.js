@@ -187,6 +187,33 @@
     return { id, blocks };
   }
 
+  const SETTINGS_KEY = 'lab-google-doc-private-connection';
+  const validEndpoint = value => /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(value);
+
+  function loadConnection(form) {
+    try {
+      form.elements.endpoint.value=localStorage.getItem('lab-google-doc-endpoint')||'';
+      const saved=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
+      if(saved && saved.endpoint===form.elements.endpoint.value && validEndpoint(saved.endpoint) &&
+        typeof saved.key==='string' && saved.key.length>=32) {
+        form.elements.key.value=saved.key;
+        form.elements.remember.checked=true;
+      }
+    } catch(ignored) { /* Blocked or malformed storage must not prevent manual sync. */ }
+  }
+
+  function saveConnection(form) {
+    const endpoint=form.elements.endpoint.value.trim(), key=form.elements.key.value.trim();
+    if(!validEndpoint(endpoint) || key.length<32) throw new Error('Enter your /exec URL and its matching sync key first.');
+    try {
+      // Store the key only after explicit opt-in, bound to this exact deployment.
+      if(form.elements.remember.checked) localStorage.setItem(SETTINGS_KEY,JSON.stringify({endpoint,key}));
+      else localStorage.removeItem(SETTINGS_KEY);
+      localStorage.setItem('lab-google-doc-endpoint',endpoint);
+      return form.elements.remember.checked ? 'Connection saved on this browser only.' : 'URL saved; sync key is not remembered after reload.';
+    } catch(ignored) { return 'Browser storage is unavailable. Settings could not be saved; manual sync is still available.'; }
+  }
+
   async function send(form, status) {
     const selected = Array.from(form.querySelectorAll('[name=section]:checked'), input => input.value);
     const includeTitle = form.elements.cover.checked;
@@ -195,10 +222,12 @@
       throw new Error('Enter the deployed Apps Script Web App URL ending in /exec. See the setup guide.');
     }
     if (form.elements.key.value.trim().length < 32) throw new Error('Enter the sync key from your Apps Script setup.');
+    const endpoint=form.elements.endpoint.value.trim(), syncKey=form.elements.key.value.trim();
     if (!/^https?:$/.test(location.protocol)) throw new Error('Open Docs.html through Live Server or localhost so images can be read.');
     const popupName = `labDocsSync${Date.now()}`;
     const popup = window.open('about:blank', popupName);
     if (!popup) throw new Error('Allow popups for this page, then retry.');
+    const settingsMessage=saveConnection(form);
     popup.document.body.textContent = 'Preparing documentation. Google will show the actual sync result here.';
     try {
       const sections = [];
@@ -210,14 +239,13 @@
       const payload = JSON.stringify({ version:2, documentId:DOCUMENT_ID, title:includeTitle ? title : null, sections });
       if (new Blob([payload]).size > 25 * 1024 * 1024) throw new Error('This update exceeds 25 MB. Select fewer sections per update.');
       const post = document.createElement('form');
-      post.method='POST'; post.action=form.elements.endpoint.value.trim(); post.target=popupName;
+      post.method='POST'; post.action=endpoint; post.target=popupName;
       post.hidden=true;
-      for (const [name,value] of Object.entries({ payload, syncKey:form.elements.key.value.trim() })) {
+      for (const [name,value] of Object.entries({ payload, syncKey })) {
         const input=document.createElement('input'); input.type='hidden'; input.name=name; input.value=value; post.append(input);
       }
       document.body.append(post); post.submit(); post.remove();
-      localStorage.setItem('lab-google-doc-endpoint', form.elements.endpoint.value.trim());
-      status.textContent = 'Update sent. Check the Google result window for success or errors; this page cannot verify the result.';
+      status.textContent = 'Update sent. Check the Google result window for success or errors; this page cannot verify the result. '+settingsMessage;
     } catch(error) { popup.close(); throw error; }
   }
 
@@ -230,6 +258,10 @@
         <p><a href="integrations/google-docs/SETUP.md" target="_blank" rel="noopener">One-time Google connection setup</a></p>
         <label>Apps Script Web App URL<input name="endpoint" type="url" required placeholder="https://script.google.com/macros/s/…/exec"></label>
         <label>Sync key<input name="key" type="password" required autocomplete="off" minlength="32"></label>
+        <label><input name="remember" type="checkbox"> Remember sync key on this browser</label>
+        <p class="gdoc-security">Personal, trusted devices only. Saved keys are not encrypted and can be read by scripts on this website. They are not added to GitHub. Changing the deployment URL clears the key field.</p>
+        <div class="gdoc-settings"><button type="button" data-save>Save connection</button> <button type="button" data-forget>Forget saved key</button></div>
+        <p>Member cannot connect? An “Only myself” deployment accepts only its owner's Google account. Each member needs Editor access to the target document and their own private deployment with its matching key. See the setup guide; do not make this web app public.</p>
         <fieldset><legend>Content to update</legend><div class="gdoc-sections">
         <label><input name="cover" type="checkbox" checked> Cover title</label>
         ${SECTIONS.map(([id,label])=>`<label><input type="checkbox" name="section" value="${id}" ${id==='overview'?'checked':''}> ${label}</label>`).join('')}
@@ -239,7 +271,31 @@
         <div class="gdoc-actions"><button type="button" data-close>Close</button><button type="submit">Update selected content</button></div></form>`;
       document.body.append(dialog);
       const form=dialog.querySelector('form'), status=dialog.querySelector('.gdoc-status');
-      form.elements.endpoint.value=localStorage.getItem('lab-google-doc-endpoint')||'';
+      loadConnection(form);
+      form.elements.endpoint.addEventListener('input',()=>{
+        form.elements.key.value=''; form.elements.remember.checked=false;
+      });
+      const forgetKey=()=>{
+        form.elements.key.value=''; form.elements.remember.checked=false;
+        try {
+          localStorage.removeItem(SETTINGS_KEY);
+          status.dataset.error='false'; status.textContent='Saved key removed from this browser. This does not revoke the server key.';
+        } catch(ignored) {
+          status.dataset.error='true'; status.textContent='Key field cleared, but storage could not be accessed. Clear this site’s browser data to remove any saved key.';
+        }
+      };
+      dialog.querySelector('[data-forget]').onclick=forgetKey;
+      form.elements.remember.addEventListener('change',()=>{
+        if(!form.elements.remember.checked) {
+          const currentKey=form.elements.key.value;
+          forgetKey(); form.elements.key.value=currentKey;
+        }
+      });
+      dialog.querySelector('[data-save]').onclick=()=>{
+        status.dataset.error='false';
+        try { status.textContent=saveConnection(form); }
+        catch(error) { status.dataset.error='true'; status.textContent=error.message; }
+      };
       dialog.querySelector('[data-close]').onclick=()=>dialog.close();
       dialog.addEventListener('cancel',event=>{ if(busy) event.preventDefault(); });
       form.onsubmit=async event=>{
