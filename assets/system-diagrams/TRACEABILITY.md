@@ -1,6 +1,6 @@
 # System Diagrams — additive UML supplement
 
-Open [System-Diagrams.html](../../System-Diagrams.html) or [the A4 landscape PDF](diagrams.pdf). The publication contains exactly three sheets: ACT-01 (one whole-system Activity diagram), SEQ-01 (one whole-system Sequence diagram), and DEP-01 (Deployment). `models.js` retains the detailed workflow evidence catalog; `overview.js` renders the unified Activity and Sequence views, while `render.js` renders Deployment and the page shell.
+Open [System-Diagrams.html](../../System-Diagrams.html) or [the A4 landscape PDF](diagrams.pdf). The publication contains eight sheets: SWIM-01 (the complete whole-system Swimlane), ACT-01–ACT-05 (one Activity diagram per DFD Level 1 parent), SEQ-01 (whole-system Sequence), and DEP-01 (Deployment). `models.js` retains the detailed workflow evidence catalog; `overview.js` renders the whole-system views, `process-activities.js` renders the five parent activities, and `render.js` renders Deployment and the page shell.
 
 ## Source authority
 
@@ -15,7 +15,19 @@ Archived entity arrays, archived ERD figures, retired traceable DFDs and the pau
 
 ## Activity → Sequence mapping
 
-ACT-01 and SEQ-01 cover the same whole-system operation selection. Authentication leads to five alternative branches corresponding to DFD processes 1.0–5.0; these are not five mandatory consecutive transactions. Initial/final nodes mean the start/end of an operation attempt, not logout or termination of the entire system. Human partitions denote one eligible acting role per invocation; the complete eligible role list appears above each page. Persistent-record partitions/lifelines represent existing DFD stores, not an additional human actor or physical schema.
+SWIM-01 and SEQ-01 cover the same whole-system operation selection. Authentication leads to five alternative branches corresponding to DFD processes 1.0–5.0; these are not five mandatory consecutive transactions. Initial/final nodes mean the start/end of an operation attempt, not logout or termination of the entire system. Human partitions denote one eligible acting role per invocation; the complete eligible role list appears above each page. Persistent-record partitions/lifelines represent existing DFD stores, not an additional human actor or physical schema.
+
+ACT-01–ACT-05 expand those five branches on separate landscape pages. Each contains only its parent's canonical subprocesses, with the exact numbers and names loaded from the Level 2 model. Initial nodes, guarded decisions, merges, action nodes and activity finals show the control flow; these are not copies of DFD data-flow arrows. Validation failures are summarized in actions, outcomes and page notes where a dedicated exception branch would overcrowd the page. They never authorize saving invalid input.
+
+| Sheet | Activity focus | Canonical children |
+| --- | --- | --- |
+| ACT-01 | Login versus Head-Laboratory account issuance | 1.1–1.3 |
+| ACT-02 | Availability, reservation/change validation, routed approval and tracking | 2.1–2.4 |
+| ACT-03 | Scoped inquiry → evidence → grounded answer/refusal → conversation history | 3.1–3.4 |
+| ACT-04 | Catalogue, issuance, return and disposal as alternative operations | 4.1–4.5 |
+| ACT-05 | Schedule, usage/tasks, clearance and end-term reporting as alternative operations | 5.1–5.5 |
+
+Every process page links directly to its matching Level 2 diagram and back to the complete Swimlane. The Sequence remains one whole-system sheet; it has not been split into five sequences.
 
 The following 17 rows are the supporting workflow evidence catalog, NOT separate printed pages. Their details are grouped into the five process branches; all full conditions remain authoritative in Tables 3–22. The Activity swimlane loads the canonical Level 2 JSON and shows all 21 exact subprocess names and numbers once. Names within a grouped action identify the covered subprocesses, not a claim that all listed operations execute on every invocation. The selected workflow determines the applicable actions and order.
 
@@ -69,8 +81,8 @@ Exact Class Representative → Dean routing, the two-day advance cutoff, whole-t
 
 ## Print and verification
 
-Use A4 Landscape, 100% scale, browser headers/footers off. The supplement supplies its own page numbers. Each of the three pages has 10 mm margins and scalable vector content. Activity fits wholly on page 1, Sequence wholly on page 2, and Deployment on page 3. On phones, each sheet scrolls horizontally while the collection scrolls vertically.
+Use A4 Landscape, 100% scale, browser headers/footers off. The supplement supplies its own page numbers. Each of the eight pages has 10 mm margins and scalable vector content. The complete Swimlane is page 1; process Activities 1.0–5.0 occupy pages 2–6; Sequence is page 7; Deployment is page 8. No individual diagram is split across sheets. On phones, each sheet scrolls horizontally while the collection scrolls vertically.
 
-Run `node integrations/system-diagrams/check.cjs --render` with Playwright and Edge available (`PLAYWRIGHT_MODULE` may point to an existing installation). This checks evidence-catalog role/use-case/process/store coverage, the five branches in each unified overview, source preservation apart from the added menu item, text bounds and collisions, mobile overflow and the three-page PDF count. It also regenerates the PDF and three preview PNGs. These checks do not replace review of the summarized UML semantics. The original diagrams and Google Doc are never modified by this check.
+Run `node integrations/system-diagrams/check.cjs --render` with Playwright and Edge available (`PLAYWRIGHT_MODULE` may point to an existing installation). This checks evidence-catalog coverage, all 21 canonical children in the complete Swimlane and their respective process pages, control-flow reachability from initial to final, matching DFD links, source preservation, text bounds and collisions, mobile overflow and the eight-page PDF count. It regenerates the PDF and eight preview PNGs. These checks do not replace review of summarized UML semantics. The original diagrams and Google Doc are never modified by this check.
 
 The existing Analytics snapshot is refreshed for changed source fingerprints, including navigation and the full-label publication update. Its metrics and scope are not redesigned to claim UML semantic correctness. DFD Level 0–2 publication labels now display their complete canonical names; the models, flow counts, directions and role permissions are unchanged. Footer crossing/abbreviation notes are removed from printed diagrams. The single-sheet Level 1 remains dense: its fitted labels are approximately 5–6.3 pt within the existing A4 margins; inspect an actual-size print before submission. Full names take priority over the previous abbreviated-label font threshold.

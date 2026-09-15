@@ -88,21 +88,35 @@ function deployment(id){
 function html(tag,cls,value){const n=document.createElement(tag);if(cls)n.className=cls;if(value)n.textContent=value;return n;}
 let pageNo=0;
 function sheet(group,type,s){
- const code=type==='deployment'?'DEP-01':type==='activity'?'ACT-01':'SEQ-01';
- const id=type==='deployment'?'deployment-view':type+'-'+s.id;
+ const processPage=type==='process';
+ const code=processPage?'ACT-0'+s.id.slice(1):type==='deployment'?'DEP-01':type==='activity'?'SWIM-01':'SEQ-01';
+ const id=type==='deployment'?'deployment-view':(processPage?'activity':type)+'-'+s.id;
  const wrap=html('div','sheet-scroll'),paper=html('article','sheet');paper.id=id;
- const header=html('header','sheet-head'),titles=html('div');titles.append(html('small','',type+' diagram · NU Fairview laboratory system'),html('h2','',type==='deployment'?'Deployment — technology-neutral design':s.title));header.append(titles,html('span','page-code',code));paper.append(header);
+ const header=html('header','sheet-head'),titles=html('div');titles.append(html('small','',(processPage?'activity':type==='activity'?'whole-system swimlane':type)+' diagram · NU Fairview laboratory system'),html('h2','',type==='deployment'?'Deployment — technology-neutral design':s.title));header.append(titles,html('span','page-code',code));paper.append(header);
  const subtitle=type==='deployment'?'Documented functions; candidate node placement. No implementation or hosting selection is asserted.':s.actors.join(' · ')+(s.recipient?' | Recipient: '+s.recipient:'');
- paper.append(html('p','sheet-subtitle',subtitle));const canvas=html('div','canvas');canvas.append(type==='deployment'?deployment(id):window.SystemDiagramOverview[type](id));paper.append(canvas);
+ paper.append(html('p','sheet-subtitle',subtitle));const canvas=html('div','canvas');canvas.append(processPage?window.SystemProcessActivity(s.model):type==='deployment'?deployment(id):window.SystemDiagramOverview[type](id));paper.append(canvas);
  paper.append(html('p','sheet-note',type==='deployment'?'The current paper says construction has not begun and the ERD is pending. The documentation site’s hosting and the paused collaboration-workspace draft are not the proposed laboratory application stack.':s.note));
  const foot=html('footer','sheet-foot');const link=html('a','',type==='deployment'?'Sources: Project Overview · Tables 3–22 · DFD 1.0–5.0':'Whole system · DFD 1.0–5.0 · Tables 3–22 · D1–D10');link.href=type==='deployment'?'Docs.html#overview':'assets/figures-v2/dfd-level1/dfd-level1-source.html';
- foot.append(link);if(type!=='deployment'){const pair=html('a','',type==='activity'?'Matching sequence →':'← Matching activity');pair.href='#'+(type==='activity'?'sequence-':'activity-')+s.id;foot.append(pair);}foot.append(html('span','','A4 landscape · '+(++pageNo)));paper.append(foot);wrap.append(paper);document.getElementById(group).append(wrap);
+ if(processPage){link.textContent='DFD Level 2 · Process '+s.id.slice(1)+'.0 · Canonical subprocesses';link.href='assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process='+s.id;}
+ foot.append(link);if(type!=='deployment'){const pair=html('a','',processPage?'← Whole-system Swimlane':type==='activity'?'Matching sequence →':'← Whole-system Swimlane');pair.href=processPage?'#activity-system':'#'+(type==='activity'?'sequence-':'activity-')+s.id;foot.append(pair);}foot.append(html('span','','A4 landscape · '+(++pageNo)));paper.append(foot);wrap.append(paper);document.getElementById(group).append(wrap);
 }
 const whole={id:'system',title:'Whole-system workflow',actors:['Class Representative','Faculty','Dean','Head Laboratory','Physics Laboratory Staff','Circuits Laboratory Staff'],note:'Branches are alternative authorized operations, not mandatory sequential stages. Validate before saving; errors do not create valid transactions. Faculty scheduled activities need no extra approval; routed requests stay Pending until decided. ¹ Only Head manages logs/tasks/clearance; Class Representative only views own-group clearance. Full conditions remain in Tables 3–22.'};
 const decompositionResponse=await fetch('assets/figures-v2/dfd-level2-compact/dfd-level2-model.json');
 if(!decompositionResponse.ok)throw new Error('Cannot load the canonical DFD Level 2 subprocesses.');
 window.SystemDiagramChildProcesses=await decompositionResponse.json();
 sheet('activity','activity',whole);
+for(const model of window.SystemDiagramChildProcesses){
+ const evidence=window.SystemDiagramModels.filter(s=>s.processes.some(p=>p.startsWith(model.id+'.')));
+ const actors=[...new Set(evidence.flatMap(s=>s.actors))];
+ const notes={
+  p1:'Login and account issuance are alternative operations. Only an already signed-in Head Laboratory issues representative accounts. Faculty delivers emailed credentials outside the system. Invalid credentials create no session; invalid account details create no account.',
+  p2:'Availability alone is read-only. Submit / reschedule continues through validation; cancellation enters validation directly. Faculty scheduled activities need no extra approval. Routed requests remain Pending until decided; wrong-role, conflicting or incomplete inputs return correction without a valid change. Exact Class Representative-to-Dean escalation remains pending.',
+  p3:'Class Representative and Faculty only. Question scope determines which records are read; no reservation is submitted, changed or approved. Unsupported questions are declined and missing evidence is reported as unavailable. Knowledge-base ownership remains pending.',
+  p4:'Branches are alternative operations, not a mandatory inventory → issue → return → disposal chain. Validate authorization, status, quantities and physical condition before committing changes. Broken / lost equipment goes to Head Laboratory for clearance review. Staff cannot raise or settle clearance; equipment cannot be consumed.',
+  p5:'Schedule, usage / daily tasks, clearance and reporting are independently selected operations. Only Head Laboratory manages or settles records; Class Representative only views own-group clearance. Faculty and Laboratory Staff do not access these administration actions. Reporting is non-AI; completion after clearance settlement remains pending.'
+ };
+ sheet('process-activities','process',{id:model.id,title:'Process '+model.id.slice(1)+'.0 — '+model.name,model,actors,note:notes[model.id]});
+}
 sheet('sequence','sequence',whole);
 sheet('deployment','deployment');
 document.getElementById('print').onclick=()=>window.print();

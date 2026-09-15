@@ -22,7 +22,25 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;try{
  browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:'+server.address().port+'/System-Diagrams.html');await page.waitForFunction(()=>window.__systemDiagramsReady);
- assert.equal(await page.locator('.sheet').count(),3);assert.deepEqual(errors,[]);
+ assert.equal(await page.locator('.sheet').count(),8);assert.deepEqual(errors,[]);
+ assert.deepEqual(await page.locator('.sheet').evaluateAll(nodes=>nodes.map(n=>n.id)),['activity-system','activity-p1','activity-p2','activity-p3','activity-p4','activity-p5','sequence-system','deployment-view']);
+ for(const model of l2){
+  const section=page.locator('#activity-'+model.id);
+  assert.equal(await section.locator('svg').count(),1);
+  const children=await section.locator('[data-child-process]').evaluateAll(nodes=>nodes.map(n=>({id:n.dataset.childProcess,name:n.dataset.childName})).sort((a,b)=>a.id.localeCompare(b.id)));
+  assert.deepEqual(children,model.steps.map((name,i)=>({id:model.id+'.'+(i+1),name})),model.id+' retains every canonical child exactly once');
+  assert.equal(await section.locator('.sheet-foot a').first().getAttribute('href'),'assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process='+model.id);
+  const geometry=await page.evaluate(id=>window.SystemActivityGeometry[id],model.id);
+  for(const route of geometry.routes){
+   const onBoundary=(p,n)=>((p[0]===n.x||p[0]===n.x+n.w)&&p[1]>=n.y&&p[1]<=n.y+n.h)||((p[1]===n.y||p[1]===n.y+n.h)&&p[0]>=n.x&&p[0]<=n.x+n.w);
+   assert(onBoundary(route.points[0],geometry.nodes[route.from])&&onBoundary(route.points.at(-1),geometry.nodes[route.to]),'Attached control-flow endpoints');
+   route.points.slice(1).forEach((p,i)=>assert(p[0]===route.points[i][0]||p[1]===route.points[i][1],'Orthogonal control flow'));
+  }
+  const reachable=new Set(['start']);for(let i=0;i<Object.keys(geometry.nodes).length;i++)for(const r of geometry.routes)if(reachable.has(r.from))reachable.add(r.to);
+  assert.deepEqual([...reachable].sort(),Object.keys(geometry.nodes).sort(),'All activity nodes connected to the initial node: '+model.id);
+  const reachesEnd=new Set(['end']);for(let i=0;i<Object.keys(geometry.nodes).length;i++)for(const r of geometry.routes)if(reachesEnd.has(r.to))reachesEnd.add(r.from);
+  assert.deepEqual([...reachesEnd].sort(),Object.keys(geometry.nodes).sort(),'All branches reach an activity final: '+model.id);
+ }
  const deploymentKinds=['database','desktop','laptop','mail','phone','server'];
  for(const attribute of ['node','icon'])assert.deepEqual(await page.locator('#deployment-view [data-'+attribute+']').evaluateAll((nodes,attribute)=>nodes.map(n=>n.dataset[attribute]).sort(),attribute),deploymentKinds,'Deployment has six distinct illustrated nodes and icons');
  assert.match(await page.locator('#deployment-view').innerText(),/Actual unit counts: TBD/);
@@ -41,6 +59,10 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    if(sheet.scrollHeight>sheet.clientHeight+1)out.push([sheet.id,'sheet overflow']);
    const svg=sheet.querySelector('svg');
    const view=svg.viewBox.baseVal;
+   for(const group of svg.querySelectorAll('g[data-activity-node]')){
+    const shape=group.querySelector('rect').getBBox();
+    for(const t of group.querySelectorAll('text')){const b=t.getBBox();if(b.x<shape.x+3||b.x+b.width>shape.x+shape.width-3||b.y<shape.y+3||b.y+b.height>shape.y+shape.height-3)out.push([sheet.id,'text outside action',t.textContent]);}
+   }
    for(const text of svg.querySelectorAll('text')){const b=text.getBBox();if(b.x<0||b.y<0||b.x+b.width>view.width+.5||b.y+b.height>view.height+.5)out.push([sheet.id,'text outside',text.textContent,b.x,b.y,b.width,b.height]);}
    if(Number(svg.dataset.bottom)>675)out.push([sheet.id,'sequence too tall',svg.dataset.bottom]);
    {
@@ -54,15 +76,17 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  });
  console.log('Geometry issues:',JSON.stringify(problems));assert.deepEqual(problems,[]);
  await page.locator('a[href="#deployment"]').click();assert.equal(new URL(page.url()).hash,'#deployment');
+ for(const model of l2){await page.locator('.section-nav a[href="#activity-'+model.id+'"]').click();assert.equal(new URL(page.url()).hash,'#activity-'+model.id);}
  await page.setViewportSize({width:390,height:844});assert(await page.locator('.section-nav').isVisible());
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Page-level mobile overflow');
  await page.setViewportSize({width:1440,height:1000});
  if(process.argv.includes('--render')){
   await page.pdf({path:path.join(root,'assets/system-diagrams/diagrams.pdf'),preferCSSPageSize:true,printBackground:true});
-  const pdf=fs.readFileSync(path.join(root,'assets/system-diagrams/diagrams.pdf')).toString('latin1');assert.equal((pdf.match(/\/Type \/Page\b/g)||[]).length,3);
+  const pdf=fs.readFileSync(path.join(root,'assets/system-diagrams/diagrams.pdf')).toString('latin1');assert.equal((pdf.match(/\/Type \/Page\b/g)||[]).length,8);
+  for(const model of l2)await page.locator('#activity-'+model.id).screenshot({path:path.join(root,'assets/system-diagrams/preview-activity-'+model.id+'.png')});
   await page.locator('#activity-system').screenshot({path:path.join(root,'assets/system-diagrams/preview-activity.png')});
   await page.locator('#sequence-system').screenshot({path:path.join(root,'assets/system-diagrams/preview-sequence.png')});
   await page.locator('#deployment-view').screenshot({path:path.join(root,'assets/system-diagrams/preview-deployment.png')});
  }
- console.log('PASS: 20 use cases, 21 visible canonical subprocesses, 10 logical stores; only authorized navigation/reference changes; one Activity swimlane and three A4 landscape PDF pages.');
+ console.log('PASS: whole-system Swimlane + five connected process Activity diagrams + Sequence + Deployment; 21 canonical children, eight A4 landscape PDF pages.');
 }finally{await browser?.close();await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exitCode=1;server.close();});
