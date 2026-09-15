@@ -4,37 +4,8 @@
 (async function(){
   'use strict';
   const params=new URLSearchParams(location.search),output=params.has('embed')||params.has('export');
-  const NS='http://www.w3.org/2000/svg',W=1878,H=1486.75,FONT=27,LABEL_GAP=6,LANE_GAP=20;
+  const NS='http://www.w3.org/2000/svg',W=2010,H=1486.75,FONT=24,LABEL_GAP=6,LANE_GAP=20;
   document.body.classList.toggle('output-mode',output);
-  const aliases={
-    'Class Representative Credentials':'Rep. credentials',
-    'Class Representative Account Details':'Rep. acct. details',
-    'On-Schedule Non-Laboratory Request':'Non-lab request',
-    'Out-of-Schedule Request':'Off-sched. req.',
-    'Reservation Change Request':'Res.change req.',
-    'Schedule & Availability':'Sched. / avail.',
-    'Reservation Status':'Res. status', 'Reservation History':'Res. history',
-    'Scheduled Laboratory Activity':'Sched. lab act.',
-    'Approval Decision':'Appr. decision', 'Routed Approval Request':'Routed appr.',
-    'Equipment Transaction':'Equipment txn.', 'Laboratory Dashboard':'Lab dashboard',
-    'Reservation / Approval Record':'Res./appr. rec.',
-    'Reservation / Approval Data':'Res./appr. data',
-    'Item Availability Data':'Item availability', 'Knowledge Content':'Knowledge data',
-    'Question / Answer Log':'Q&A log', 'Reservation Status Data':'Res. status data',
-    'Schedule Availability Data':'Schedule avail.', 'Authorized Reservation Data':'Authorized res.',
-    'Reservation Status Update':'Res. status upd.', 'Inventory Transaction':'Inventory txn.',
-    'Available Item Data':'Available items', 'Borrowing Slip Record':'Slip record',
-    'Borrowing Slip Data':'Slip data', 'Reservation Summary':'Res. summary',
-    'Schedule / Usage Record':'Sched./use rec.', 'Schedule / Usage Data':'Sched./use data',
-    'Inventory Summary':'Inventory totals','Borrowing Summary':'Borrowing totals',
-    'Daily Task Record':'Daily task rec.','Daily Task Data':'Daily task data',
-    'Disposal Record':'Disposal rec.',
-    'Disposal Summary':'Disposal totals', 'Clearance Record':'Clearance rec.',
-    'Schedule Update':'Schedule upd.', 'Inventory Update':'Inventory upd.',
-    'Daily Task Entry':'Daily task entry', 'Report Request':'Report request',
-    'End-Term Report':'End-term rpt.', 'Account Record':'Account rec.', 'Clearance Action':'Clearance act.',
-    'Clearance Status':'Clearance status'
-  };
   const entityLines={classrep:['Class Rep.'],faculty:['Faculty'],dean:['Dean'],
     headlab:['Head','Laboratory'],physics:['Physics','Lab Staff'],circuits:['Circuits','Lab Staff']};
   const storeLines={d1:['User','accounts'],d2:['Reservations','& approvals'],d3:['Lab schedule','& usage logs'],
@@ -97,10 +68,6 @@
     p4:[['Maintain','Inventory'],['Retrieve','Approved','Reservation'],['Issue Items &','Create Slip'],['Reconcile','Return'],['Record','Disposal']],
     p5:[['Maintain','Schedule'],['Record Usage','& Daily Tasks'],['Process','Clearance'],['Compile','Reporting','Metrics'],['Generate','End-Term','Report']]
   };
-  const internalAlias={'Verified identity':'Identity','Authorized session':'Session','Availability data':'Avail. data',
-    'Validated request':'Valid req.','Decision data':'Decision','Scoped inquiry':'Inquiry','Authorized data':'Auth. data',
-    'Q&A exchange':'Q&A data','Inventory data':'Stock data','Approved request':'Appr. req.','Borrowing data':'Slip data',
-    'Return outcome':'Return log','Schedule data':'Schedule','Clearance data':'Clearance','Report metrics':'Metrics'};
   const centre=n=>n.y+n.h/2;
   function place(items,targets,height){
     const top=90,bottom=H-85,gap=24;
@@ -133,7 +100,7 @@
     [...actors,...stores].forEach(n=>{const links=model.flows.filter(f=>f.source===n.id||f.target===n.id);targets[n.id]=links.reduce((sum,f)=>sum+centre(nodes[f.source===n.id?f.target:f.source]),0)/links.length;});
     const E={x:14,w:170,h:Math.max(170,...actors.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20))};
     // Uniform store peers within each figure, sized for its busiest port group.
-    const D={x:1612,w:250,h:Math.max(120,...stores.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20)),idw:64};
+    const D={x:1744,w:250,h:Math.max(120,...stores.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20)),idw:64};
     // Actor order follows the approved role column; Head Laboratory remains last.
     place(actors,targets,E.h).forEach(n=>nodes[n.id]={...n,...E,kind:'entity',lines:entityLines[n.id]});
     place(stores.slice().sort((a,b)=>targets[a.id]-targets[b.id]),targets,D.h).forEach(n=>nodes[n.id]={...n,...D,kind:'store',lines:storeLines[n.id]});
@@ -189,12 +156,21 @@
       ordered.forEach((f,i)=>laneById[f.id]=start+i*LANE_GAP);
     }
     assignLanes(left,200,true);
-    assignLanes(right,1358,false);
+    assignLanes(right,1490,false);
     function draw(f,points,lx,ly,label,colorKey,side){
       const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),fill:'none',stroke:colors[colorKey]||'#27272a','stroke-width':2.2,'marker-end':'url(#arrow-'+colorKey+')'});
       const title=el('title');title.textContent=f.label;path.appendChild(title);paths.appendChild(path);
       const group=el('g',{class:'diagram-flow-label','data-flow-id':f.id,'data-full-label':f.label});
-      const t=text(lx,ly+9,[label],{'font-size':FONT});group.appendChild(t);labels.appendChild(group);
+      const parts=[label];
+      if(side==='internal'){
+        const words=label.split(' '),middle=Math.ceil(words.length/2);
+        if(words.length>1)parts.splice(0,1,words.slice(0,middle).join(' '),words.slice(middle).join(' '));
+      }
+      const t=text(lx,ly,parts,{'font-size':FONT,'data-line-height':25});group.appendChild(t);labels.appendChild(group);
+      const maxWidth=side==='internal'?136:side==='left'?396:330;
+      t.setAttribute('font-size',Math.min(FONT,FONT*maxWidth/t.getBBox().width));
+      const initial=t.getBBox(),offset=ly-initial.y-initial.height/2;
+      t.querySelectorAll('tspan').forEach(span=>span.setAttribute('y',Number(span.getAttribute('y'))+offset));
       const b=t.getBBox();labelBoxes.push({id:f.id,x:b.x-LABEL_GAP,y:b.y-2,w:b.width+2*LABEL_GAP,h:b.height+4});
       routes.push({...f,points,side,...flowPorts[f.id]});
     }
@@ -202,11 +178,11 @@
       const {py,sy,peer:peerId,process:processId}=flowPorts[f.id],n=nodes[peerId],p=nodes[processId],lane=laneById[f.id],external=f.kind==='external';
       let points=external?[[n.x+n.w,sy],[lane,sy],[lane,py],[p.x,py]]:[[p.x+p.w,py],[lane,py],[lane,sy],[n.x,sy]];
       if((external&&f.source===p.id)||(!external&&f.source===n.id))points.reverse();
-      draw(f,points,external?683:1241,py,aliases[f.label]||f.label,external?peerId:'store',external?'left':'right');
+      draw(f,points,external?700:1297,py,f.label,external?peerId:'store',external?'left':'right');
     });
     model.internal.forEach(f=>{
       const a=nodes[f.source],b=nodes[f.target],y=(a.y+a.h+b.y)/2,x1=P.x+10,x2=P.x+P.w-10;
-      draw(f,[[x1,a.y+a.h],[x1,y],[x2,y],[x2,b.y]],(x1+x2)/2,y,internalAlias[f.label]||f.label,'internal','internal');
+      draw(f,[[x1,a.y+a.h],[x1,y],[x2,y],[x2,b.y]],(x1+x2)/2,y,f.label,'internal','internal');
     });
     Object.values(nodes).forEach(n=>{
       const group=el('g',{'data-node-id':n.id,'data-node-kind':n.kind});
@@ -223,16 +199,15 @@
       const x=n.kind==='store'?n.x+n.idw+(n.w-n.idw)/2:n.x+n.w/2;
       group.appendChild(text(x,n.y+n.h/2+(n.kind==='process'?22:9),n.lines,{'font-size':n.kind==='process'?27:29,'font-weight':n.kind==='process'?700:500}));shapes.appendChild(group);
     });
-    svg.appendChild(text(W/2,H-25,['Crossings without dots are not junctions. Full flow names: editable source reference.'],{'font-size':25}));
     const tbody=document.querySelector('#flow-reference tbody');
     [...model.flows,...model.internal].forEach(f=>{
-      const row=document.createElement('tr');[f.parentFlow||'Internal',nodes[f.source].name,aliases[f.label]||internalAlias[f.label]||f.label,f.label,nodes[f.target].name].forEach(value=>{const td=document.createElement('td');td.textContent=value;row.appendChild(td);});tbody.appendChild(row);
+      const row=document.createElement('tr');[f.parentFlow||'Internal',nodes[f.source].name,f.label,f.label,nodes[f.target].name].forEach(value=>{const td=document.createElement('td');td.textContent=value;row.appendChild(td);});tbody.appendChild(row);
     });
     document.getElementById('heading').textContent='DFD Level 2 — Process '+model.id.slice(1)+'.0';
     clearLabelStrokes(svg);
     window.__level2={model,parent,nodes,routes,labelBoxes,constants:{W,H,P,E,D,FONT,LANE_GAP}};
     if(!output){
-      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-traceability-'+model.id+'-v8'});
+      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-traceability-'+model.id+'-full-labels-v9'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       window.addEventListener('beforeprint',()=>svg.replaceWith(authored));window.addEventListener('afterprint',()=>authored.replaceWith(svg));
     }

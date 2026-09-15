@@ -2,37 +2,8 @@
 (async function(){
   'use strict';
   const params=new URLSearchParams(location.search),output=params.has('embed')||params.has('export');
-  const NS='http://www.w3.org/2000/svg',W=1200,H=1500,FONT=22,LABEL_GAP=6;
+  const NS='http://www.w3.org/2000/svg',W=1200,H=1500,FONT=20,LABEL_GAP=6;
   document.body.classList.toggle('export-mode',output);
-  const aliases={
-    'Class Representative Credentials':'Rep. credentials',
-    'Class Representative Account Details':'Rep. acct. details',
-    'On-Schedule Non-Laboratory Request':'Non-lab request',
-    'Out-of-Schedule Request':'Off-sched. req.',
-    'Reservation Change Request':'Res.change req.',
-    'Schedule & Availability':'Sched. / avail.',
-    'Reservation Status':'Res. status', 'Reservation History':'Res. history',
-    'Scheduled Laboratory Activity':'Sched. lab act.',
-    'Approval Decision':'Appr. decision', 'Routed Approval Request':'Routed appr.',
-    'Equipment Transaction':'Equipment txn.', 'Laboratory Dashboard':'Lab dashboard',
-    'Reservation / Approval Record':'Res./appr. rec.',
-    'Reservation / Approval Data':'Res./appr. data',
-    'Item Availability Data':'Item availability', 'Knowledge Content':'Knowledge data',
-    'Question / Answer Log':'Q&A log', 'Reservation Status Data':'Res. status data',
-    'Schedule Availability Data':'Schedule avail.', 'Authorized Reservation Data':'Authorized res.',
-    'Reservation Status Update':'Res. status upd.', 'Inventory Transaction':'Inventory txn.',
-    'Available Item Data':'Available items', 'Borrowing Slip Record':'Slip record',
-    'Borrowing Slip Data':'Slip data', 'Reservation Summary':'Res. summary',
-    'Schedule / Usage Record':'Sched./use rec.', 'Schedule / Usage Data':'Sched./use data',
-    'Inventory Summary':'Inventory totals','Borrowing Summary':'Borrowing totals',
-    'Daily Task Record':'Daily task rec.','Daily Task Data':'Daily task data',
-    'Disposal Record':'Disposal rec.',
-    'Disposal Summary':'Disposal totals', 'Clearance Record':'Clearance rec.',
-    'Schedule Update':'Schedule upd.', 'Inventory Update':'Inventory upd.',
-    'Daily Task Entry':'Daily task entry', 'Report Request':'Report request',
-    'End-Term Report':'End-term rpt.', 'Account Record':'Account rec.', 'Clearance Action':'Clearance act.',
-    'Clearance Status':'Clearance status'
-  };
   const entityLines={classrep:['Class Rep.'],faculty:['Faculty'],dean:['Dean'],
     headlab:['Head','Laboratory'],physics:['Physics','Lab Staff'],circuits:['Circuits','Lab Staff']};
   const storeLines={d1:['User','accounts'],d2:['Reservations','& approvals'],d3:['Lab schedule','& usage logs'],
@@ -102,6 +73,7 @@
   model.entities.forEach(e=>defs.appendChild(el('marker',{id:'arrow-'+e.id,markerWidth:10,markerHeight:10,refX:9,refY:4,orient:'auto',markerUnits:'userSpaceOnUse'},[el('path',{d:'M0,0 L9,4 L0,8 Z',fill:colors[e.id]})])));
   svg.append(defs,el('rect',{width:W,height:H,fill:'#fff'}),text(W/2,40,['Context Diagram — DFD Level 0'],{'font-size':28,'font-weight':'700'}));
   const routes=[],flowLayer=el('g'),nodeLayer=el('g');svg.append(flowLayer,nodeLayer);
+  document.getElementById('stage').append(svg);
   const reference=document.getElementById('flow-reference');
   for(const entity of model.entities){
     const n=nodes[entity.id],left=n.x<system.x,own=flows.filter(f=>f.entity===entity.id);
@@ -111,11 +83,13 @@
       const points=f.dir==='in'?[a,b]:[b,a];
       const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:`M ${points[0].join(' ')} L ${points[1].join(' ')}`,fill:'none',stroke:colors[entity.id],'stroke-width':2.2,'marker-end':'url(#arrow-'+entity.id+')'});
       const title=el('title');title.textContent=f.label;path.append(title);
-      const label=el('g',{class:'diagram-flow-label','data-flow-id':f.id},[text((a[0]+b[0])/2,y+7,[aliases[f.label]||f.label])]);
+      const label=el('g',{class:'diagram-flow-label','data-flow-id':f.id,'data-full-label':f.label},[text((a[0]+b[0])/2,y+6,[f.label])]);
       flowLayer.append(path,label);
+      const t=label.querySelector('text'),maxWidth=Math.abs(a[0]-b[0])-52;
+      t.setAttribute('font-size',Math.min(FONT,FONT*maxWidth/t.getBBox().width));
       routes.push({id:f.id,source:f.dir==='in'?entity.id:'system',target:f.dir==='in'?'system':entity.id,points});
       const row=document.createElement('tr');
-      [f.id,f.dir==='in'?entity.name:'System',aliases[f.label]||f.label,f.label,f.dir==='in'?'System':entity.name].forEach(value=>{const td=document.createElement('td');td.textContent=value;row.append(td);});reference.append(row);
+      [f.id,f.dir==='in'?entity.name:'System',f.label,f.label,f.dir==='in'?'System':entity.name].forEach(value=>{const td=document.createElement('td');td.textContent=value;row.append(td);});reference.append(row);
     });
     const group=el('g',{'data-node-id':entity.id},[el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,fill:'#fff',stroke:'#111','stroke-width':2.3}),text(n.x+n.w/2,n.y+n.h/2,entityLines[entity.id],{'font-size':24,'data-line-height':29})]);nodeLayer.append(group);
   }
@@ -125,14 +99,13 @@
     text(600,112,['0'],{'font-size':28}),
     text(600,690,['A Web-Based','Physics and Circuits','Laboratory','Management System','with AI Capabilities','for NU Fairview'],{'font-size':23,'data-line-height':35})
   ]));
-  svg.append(text(600,1445,['46 independent data flows · Full names in the flow reference'],{'font-size':20}));
   document.getElementById('stage').append(svg);
   await document.fonts.ready;clearLabelStrokes(svg);
   const labelBoxes=[...svg.querySelectorAll('.diagram-flow-label')].map(g=>{const b=g.getBBox();return{id:g.dataset.flowId,x:b.x-6,y:b.y-2,w:b.width+12,h:b.height+4};});
   window.__level0={nodes,routes,labelBoxes,flows,W,H,FONT};
   if(!output){
     const authored=svg.cloneNode(true);let editing=null;
-    window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level0-portrait-46-v2'});
+    window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level0-full-labels-v3'});
     svg.querySelectorAll('.diagram-connector-hit').forEach(p=>p.removeAttribute('stroke-dasharray'));
     window.addEventListener('beforeprint',()=>{editing=svg;svg.replaceWith(authored);});
     window.addEventListener('afterprint',()=>{if(editing){authored.replaceWith(editing);editing=null;}});

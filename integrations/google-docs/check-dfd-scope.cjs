@@ -37,6 +37,8 @@ const server=http.createServer((req,res)=>{
     assert.equal(flows.length,46);
     assert.deepEqual(flows.map(f=>signature({source:f.dir==='in'?f.entity:'system',target:f.dir==='in'?'system':f.entity,label:f.label})).sort(),model.flows.filter(f=>f.kind==='external').map(f=>signature({...f,source:f.source.startsWith('p')&&!['physics'].includes(f.source)?'system':f.source,target:f.target.startsWith('p')&&!['physics'].includes(f.target)?'system':f.target})).sort());
     const geometry=await page.evaluate(()=>window.__level0);
+    for(const f of flows)assert.equal(await page.locator('.diagram-flow-label[data-flow-id="'+f.id+'"] text').textContent(),f.label,'Full canonical Level 0 label');
+    assert(!/Full names in the flow reference/.test(await page.locator('#stage svg').textContent()));
     const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     assert.equal(Object.keys(geometry.nodes).length,7,'Six entities, one process, no duplicated nodes');
     assert.equal(new Set(Object.values(geometry.nodes).filter(n=>n.id!=='system').map(n=>n.w+'x'+n.h)).size,1);

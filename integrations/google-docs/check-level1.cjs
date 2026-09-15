@@ -97,7 +97,10 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     for(let i=0;i<labelBoxes.length;i++)for(let j=i+1;j<labelBoxes.length;j++)if(overlap(labelBoxes[i],labelBoxes[j]))issues.push({kind:'label-label',labels:[labelBoxes[i].id,labelBoxes[j].id]});
     for(const t of data.nodeText){const n=nodes[t.id];if(t.x<n.x+3||t.x+t.w>n.x+n.w-3||t.y<n.y+3||t.y+t.h>n.y+n.h-3)issues.push({kind:'node-text',...t});}
     const fontPt=c.FONT*Math.min(174*96/25.4/c.W,220*96/25.4/c.H)*72/96;
-    assert(fontPt>=7.5,'User-requested slight reduction: at least 7.5 pt flow labels');
+    const smallestFontPt=Math.min(...labelBoxes.map(b=>b.fontSize))*Math.min(174*96/25.4/c.W,220*96/25.4/c.H)*72/96;
+    assert(smallestFontPt>=5,'Complete labels must remain at least 5 pt in the dense single-A4 reference');
+    for(const f of model.flows)assert.equal(await page.locator('.diagram-flow-label[data-flow-id="'+f.id+'"] text').textContent(),f.label,'Visible canonical label, not an abbreviation');
+    assert(!/74 separate flows|Crossings without dots|Rep\. =/.test(await page.locator('#stage svg').textContent()),'No printed crossing or abbreviation footer');
     assert.equal(await page.locator('.diagram-flow-label rect').count(),0,'Plain labels have no background or border');
     assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),74,'Each plain label clears only its own connector stroke');
     const paint=await page.evaluate(async()=>{
@@ -145,6 +148,7 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     const movedLabel=await label.getAttribute('transform');
     const connector=page.locator('.diagram-connector').first();
     const originalPath=await connector.getAttribute('d');
+    await page.locator('.diagram-connector-hit').first().dispatchEvent('click');
     const handle=page.locator('.diagram-segment-handle').first();
     await handle.scrollIntoViewIfNeeded();
     const h=await handle.boundingBox();

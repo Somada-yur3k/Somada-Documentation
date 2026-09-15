@@ -83,8 +83,8 @@ const server = http.createServer((req,res) => {
     assert.equal(await level1Page.locator('[data-section-id="dfd-level1"]').count(),1,'Level 1 heading stays with its diagram');
     assert.equal(await level1Page.locator('figcaption').filter({hasText:'Figure 3: Level 1 Data Flow Diagram'}).count(),1);
     const imageSize=await level1.locator('img').evaluate(img=>({width:img.getBoundingClientRect().width,height:img.getBoundingClientRect().height,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight}));
-    assert.equal(imageSize.naturalWidth/imageSize.naturalHeight,1770/2220,'Preview uses the portrait export');
-    assert(28.8*Math.min(imageSize.width/1770,imageSize.height/2220)*72/96>=8,'Smallest node text remains at least 8 pt on the A4 page');
+    assert(Math.abs(imageSize.naturalWidth/imageSize.naturalHeight-1880/2140)<0.001,'Preview uses the full-label portrait export');
+    assert(28.8*Math.min(imageSize.width/1880,imageSize.height/2140)*72/96>=7.5,'Node text remains at least 7.5 pt on the A4 page');
     await page.emulateMedia({media:'print'});
     await level1Page.screenshot({path:path.join(os.tmpdir(),'somada-a4-level1.png')});
     await page.emulateMedia({media:'screen'});
@@ -105,7 +105,7 @@ const server = http.createServer((req,res) => {
     assert.equal(await contextSheet.locator('[data-section-id="context-diagram"]').count(),1,'Context heading stays with image');
     const contextSize=await context.locator('img').evaluate(img=>({w:img.getBoundingClientRect().width,nw:img.naturalWidth,nh:img.naturalHeight}));
     assert.equal(contextSize.nw,2400);assert.equal(contextSize.nh,3000);
-    assert(22*contextSize.w/1200*.75>=8,'Level 0 printed labels at least 8 pt');
+    assert(20*contextSize.w/1200*.75>=7.2,'Level 0 full-name base label size; long-label fitting is checked by the DFD geometry audit');
     await page.emulateMedia({media:'print'});
     await contextSheet.screenshot({path:path.join(os.tmpdir(),'laboratory-a4-level0.png')});
     for(const id of ['p1','p2','p3','p4','p5']){
@@ -115,7 +115,7 @@ const server = http.createServer((req,res) => {
       assert.equal(await sheet.locator('[data-section-id="dfd-'+id+'"]').count(),1,'Level 2 heading stays with image: '+id);
       const size=await figure.locator('img').evaluate(img=>({w:img.getBoundingClientRect().width,h:img.getBoundingClientRect().height,nw:img.naturalWidth,nh:img.naturalHeight}));
       assert.equal(size.nw,2400);assert.equal(size.nh,1900);
-      assert(27*size.w/1770*.75>=7.5,'Level 2 printed label size: '+id);
+      assert(24*size.w/2010*.75>=5.8,'Level 2 full-name base label size: '+id);
       await sheet.screenshot({path:path.join(os.tmpdir(),'laboratory-a4-level2-'+id+'.png')});
     }
     await page.emulateMedia({media:'screen'});
@@ -128,9 +128,9 @@ const server = http.createServer((req,res) => {
       return blocks.filter(b=>b.kind==='image').map(b=>({width:b.width,height:b.height,caption:b.caption,png:b.data.startsWith('iVBORw0KGgo')}));
     });
     assert.equal(captured.length,6,'Sync retains Level 1 and all five Level 2 images');
-    assert.equal(captured[0].width,1770);assert.equal(captured[0].height,2220);
+    assert.equal(captured[0].width,1880);assert.equal(captured[0].height,2140);
     assert(captured.every(image=>image.png),'Every DFD exports as a PNG');
-    console.log('Read-only Google Docs capture passed: six diagrams; Level 1 portrait 1770 x 2220.');
+    console.log('Read-only Google Docs capture passed: six diagrams; Level 1 portrait 1880 x 2140 with full labels.');
     await page.locator('.doc-pages .toc-row[href="#backlog"]').click();
     await page.waitForTimeout(700);
     const screenshot = path.join(os.tmpdir(),'somada-a4-backlog.png');

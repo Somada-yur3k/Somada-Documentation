@@ -1,15 +1,15 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-13T16:39:33.309Z",
+  "generatedAt": "2026-09-15T03:41:49.783Z",
   "title": "A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview",
   "sources": [
     {
       "path": "Docs.html",
-      "sha256": "e62d7fff9b7cfd7c3427831e1c8838cce0cf0e5f08aad135ec791482204caefd"
+      "sha256": "d5f4ac90f63f37040f4cadc0d8b6b4bfa9c403ac9f4a3435c1a469becc754034"
     },
     {
       "path": "assets/figures-v2/usecase-diagram-source.html",
-      "sha256": "d2cfa33858d5266c2b884f4d03845388d91813cec2c9b75a0f566aa1aa73e94b"
+      "sha256": "ae9c2c65e51d90a9bfea86b93bbe78b4dcdcb3f49173f20b79996062a4ecbe9b"
     },
     {
       "path": "assets/figures-v2/dfd-level1/dfd-level1-model.json",
@@ -21,15 +21,15 @@
     },
     {
       "path": "assets/figures-v2/dfd-level0/dfd-level0-portrait.js",
-      "sha256": "48b31653115048a71bd13b1f67d5b2c0d346062b63df1e33a11bc94b352fec3b"
+      "sha256": "9bf6f8cb1aa2c6d0365a11eb85854bedf86f88907c73c9d63bde148f6f457696"
     },
     {
       "path": "assets/figures-v2/dfd-level1/dfd-level1-portrait.js",
-      "sha256": "f69a49321645c3ad6246f9fee638fd9280609d8fcbf2832219f82c4130ba471f"
+      "sha256": "f9fb6f17bafc2daabd3e42dba15dca3866d7db0afa3b4fe2f3ce26cb2a5f6b18"
     },
     {
       "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-renderer.js",
-      "sha256": "06daa89ca91961278f8105726f9d67a34af676e47bfbec24ff258346ca60624f"
+      "sha256": "035f2cf645f953225fa4019f9d951a57a5a5fb31b0ac056084d55709687e8a7b"
     },
     {
       "path": "integrations/system-audit/build.cjs",

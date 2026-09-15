@@ -1,7 +1,7 @@
 /* A4 portrait authoring layout. Each canonical flow remains an independent path.
  * User-approved exception: crossings without junctions are allowed; shared runs
  * and ports are not. Plain labels (no white pills) are also user-requested.
- * Short print labels map one-to-one to full names in the model.
+ * Visible labels retain the complete canonical flow names.
  */
 (async function () {
   'use strict';
@@ -9,37 +9,8 @@
   const output = params.has('export') || params.has('embed');
   document.body.classList.toggle('output-mode', output);
   const NS = 'http://www.w3.org/2000/svg';
-  const W=1770, H=2220, FONT=27, EXTERNAL_LANE_STEP=5.5, STORE_LANE_STEP=5.2, LABEL_GAP=6;
-  const E={x:14,w:170,h:264}, P={x:920,w:195,h:390}, D={x:1504,w:250,h:96,idw:64};
-  const aliases={
-    'Class Representative Credentials':'Rep. credentials',
-    'Class Representative Account Details':'Rep. acct. details',
-    'On-Schedule Non-Laboratory Request':'Non-lab request',
-    'Out-of-Schedule Request':'Off-sched. req.',
-    'Reservation Change Request':'Res.change req.',
-    'Schedule & Availability':'Sched. / avail.',
-    'Reservation Status':'Res. status', 'Reservation History':'Res. history',
-    'Scheduled Laboratory Activity':'Sched. lab act.',
-    'Approval Decision':'Appr. decision', 'Routed Approval Request':'Routed appr.',
-    'Equipment Transaction':'Equipment txn.', 'Laboratory Dashboard':'Lab dashboard',
-    'Reservation / Approval Record':'Res./appr. rec.',
-    'Reservation / Approval Data':'Res./appr. data',
-    'Item Availability Data':'Item availability', 'Knowledge Content':'Knowledge data',
-    'Question / Answer Log':'Q&A log', 'Reservation Status Data':'Res. status data',
-    'Schedule Availability Data':'Schedule avail.', 'Authorized Reservation Data':'Authorized res.',
-    'Reservation Status Update':'Res. status upd.', 'Inventory Transaction':'Inventory txn.',
-    'Available Item Data':'Available items', 'Borrowing Slip Record':'Slip record',
-    'Borrowing Slip Data':'Slip data', 'Reservation Summary':'Res. summary',
-    'Schedule / Usage Record':'Sched./use rec.', 'Schedule / Usage Data':'Sched./use data',
-    'Inventory Summary':'Inventory totals','Borrowing Summary':'Borrowing totals',
-    'Daily Task Record':'Daily task rec.','Daily Task Data':'Daily task data',
-    'Disposal Record':'Disposal rec.',
-    'Disposal Summary':'Disposal totals', 'Clearance Record':'Clearance rec.',
-    'Schedule Update':'Schedule upd.', 'Inventory Update':'Inventory upd.',
-    'Daily Task Entry':'Daily task entry', 'Report Request':'Report request',
-    'End-Term Report':'End-term rpt.', 'Account Record':'Account rec.', 'Clearance Action':'Clearance act.',
-    'Clearance Status':'Clearance status'
-  };
+  const W=1880, H=2140, FONT=24, EXTERNAL_LANE_STEP=5.5, STORE_LANE_STEP=5.2, LABEL_GAP=6;
+  const E={x:14,w:170,h:264}, P={x:920,w:195,h:390}, D={x:1614,w:250,h:96,idw:64};
   const entityLines={classrep:['Class Rep.'],faculty:['Faculty'],dean:['Dean'],
     headlab:['Head','Laboratory'],physics:['Physics','Lab Staff'],circuits:['Circuits','Lab Staff']};
   const processLines={p1:['Manage User','Access &','Accounts'],p2:['Manage','Reservations,','Availability','& Approvals'],
@@ -136,7 +107,7 @@
       // Give simultaneously visible vertical runs substantially more space.
       // Runs in separate Y regions may use nearby (never identical) X values;
       // no two paths share a lane, segment, bend, port, or arrowhead.
-      const base=side==='left'?200:1342, step=side==='left'?10:9, slots=side==='left'?29:16;
+      const base=side==='left'?200:1452, step=side==='left'?10:9, slots=side==='left'?29:16;
       const close=(a,b)=>Math.min(Math.max(a.a,a.b),Math.max(b.a,b.b))+12>=Math.max(Math.min(a.a,a.b),Math.min(b.a,b.b));
       let placedBest=null, placedScore=Infinity;
       const orders=[best,
@@ -233,7 +204,7 @@
         usedY[f.kind].push(sy);
         if(f.target===peer.id)peerRows.push(sy);
         const p=port[f.id],external=f.kind==='external';
-        const lane=external?200+(externalLane++)*EXTERNAL_LANE_STEP:1342+(storeLane++)*STORE_LANE_STEP;
+        const lane=external?200+(externalLane++)*EXTERNAL_LANE_STEP:1452+(storeLane++)*STORE_LANE_STEP;
         const process=nodes[nodes[f.source].kind==='process'?f.source:f.target];
         const from=[external?n.x+n.w:process.x+process.w,external?sy:p.py];
         const to=[external?process.x:n.x,external?p.py:sy];
@@ -243,13 +214,17 @@
         const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:points.map((v,j)=>(j?'L':'M')+v.join(' ')).join(' '),
           fill:'none',stroke:color,'stroke-width':2.2,'stroke-linejoin':'round','marker-end':'url(#arrow-'+(external?peer.id:'store')+')'});
         const title=el('title');title.textContent=nodes[f.source].name+' → '+f.label+' → '+nodes[f.target].name;path.appendChild(title);paths.appendChild(path);
-        const lx=external?(p.count>=10?(p.order%2?801:600):683):1241;
-        const label=aliases[f.label]||f.label;
+        const lx=external?700:1289;
+        const label=f.label;
         const group=el('g',{class:'diagram-flow-label','data-flow-id':f.id,'data-full-label':f.label});
-        const labelText=text(lx,p.py+9,[label],{'font-size':FONT});group.appendChild(labelText);labels.appendChild(group);
-        const width=labelText.getBBox().width+2*LABEL_GAP, height=32;
+        const labelText=text(lx,p.py,[label],{'font-size':FONT});group.appendChild(labelText);labels.appendChild(group);
+        const maxWidth=external?384:292, rowHeight=(P.h-48)/Math.max(1,p.count-1);
+        const size=Math.min(FONT,FONT*maxWidth/labelText.getBBox().width,(rowHeight-1)/1.1);
+        labelText.setAttribute('font-size',size);
+        const initial=labelText.getBBox();labelText.querySelector('tspan').setAttribute('y',p.py-initial.y-initial.height/2+p.py);
+        const box=labelText.getBBox(),width=box.width+2*LABEL_GAP,height=box.height;
         routes.push({...f,points,peer:peer.id,process:process.id,side:external?'left':'right'});
-        labelBoxes.push({id:f.id,x:lx-width/2,y:p.py-height/2,w:width,h:height,text:label,fontSize:FONT});
+        labelBoxes.push({id:f.id,x:lx-width/2,y:p.py-height/2,w:width,h:height,text:label,fontSize:size});
       });
     });
     orderLanes(routes,paths);
@@ -259,7 +234,7 @@
       group.appendChild(el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.kind==='process'?9:0,fill:'#fff',stroke:n.kind==='store'?'none':'#111','stroke-width':2.3}));
       if(n.kind==='process') {
         group.appendChild(el('line',{x1:n.x,y1:n.y+40,x2:n.x+n.w,y2:n.y+40,stroke:'#111','stroke-width':2}));
-        group.appendChild(text(n.x+n.w/2,n.y+29,[n.number],{'font-size':29,'font-weight':700}));
+        group.appendChild(text(n.x+n.w/2,n.y+31,[n.number],{'font-size':29,'font-weight':700}));
       }
       if(n.kind==='store') {
         group.appendChild(el('path',{'data-store-outline':'open-right',d:`M${n.x+n.w} ${n.y} H${n.x} V${n.y+n.h} H${n.x+n.w}`,fill:'none',stroke:'#111','stroke-width':2.3}));
@@ -270,13 +245,10 @@
       group.appendChild(text(x,n.y+n.h/2+(n.kind==='process'?22:9),n.lines,{'font-size':n.kind==='process'?28.8:29,'font-weight':n.kind==='process'?700:500}));
       shapes.appendChild(group);
     });
-    svg.appendChild(text(W/2,2144,['74 separate flows · Crossings without dots are NOT junctions'],{'font-size':29}));
-    svg.appendChild(text(W/2,2176,['Rep. = Class Representative; res. = reservation; appr. = approval; acct. = account; txn. = transaction.'],{'font-size':29}));
-    svg.appendChild(text(W/2,2208,['Non-lab request = on-schedule non-laboratory request; sched. = scheduled; avail. = availability.'],{'font-size':29}));
     const table=document.querySelector('#flow-reference tbody');
     model.flows.forEach(f=>{
       const row=document.createElement('tr');
-      [f.id,nodes[f.source].name,aliases[f.label]||f.label,f.label,nodes[f.target].name].forEach(value=>{
+      [f.id,nodes[f.source].name,f.label,f.label,nodes[f.target].name].forEach(value=>{
         const cell=document.createElement('td');cell.textContent=value;row.appendChild(cell);
       });table.appendChild(row);
     });
@@ -287,7 +259,7 @@
     if(!output) {
       const authored=svg.cloneNode(true);
       authored.querySelector('[data-routing-guides]').replaceChildren();
-      window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1-a4-portrait-74-large-heads-v4'});
+      window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level1-full-labels-v5'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       // Ctrl+P and the Print button both print the checked authored geometry,
       // not potentially overlapping edits saved by an individual browser.
