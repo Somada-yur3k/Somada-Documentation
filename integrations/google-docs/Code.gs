@@ -1,17 +1,21 @@
 /* Deploy under your own Google account. Never make this web app public.
  * This integration is pinned to the NEW copy, never the original document. */
 const TARGET_ID = '11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM';
-const SYNC_BUILD = '2026-09-11-image-sizing-1';
+const SYNC_BUILD = '2026-09-16-activity-swimlane-font11';
+const DOC_FONT_SIZE = 11;
 // Migration-only match for older copies; never used as the current project title.
 const OLD_TITLE = 'SOMADA: A Web-Based Laboratory Management System';
 const SECTION_ORDER = ['overview','methodology','requirements','backlog','events',
-  'usecase-diagrams','usecase-full','gap-analysis','context-diagram','dfd','erd'];
+  'usecase-diagrams','usecase-full','gap-analysis','context-diagram','dfd','erd','activity-diagrams','swimlane-diagram'];
 const SECTION_NAMES = {
   overview:'project overview', methodology:'methodology', requirements:'requirements analysis',
   backlog:'product backlog', events:'event tables', 'usecase-diagrams':'use case diagrams',
   'usecase-full':'use case full description', 'gap-analysis':'gap analysis',
-  'context-diagram':'context diagram', dfd:'data flow diagrams', erd:'entity-relationship diagram'
+  'context-diagram':'context diagram', dfd:'data flow diagrams', erd:'entity-relationship diagram',
+  'activity-diagrams':'activity diagrams', 'swimlane-diagram':'swimlane diagram'
 };
+// Only these new, explicitly selected sections may be created if absent.
+const NEW_SECTIONS = {'activity-diagrams':'3.1.9 Activity Diagrams','swimlane-diagram':'3.1.10 Swimlane Diagram'};
 
 // Run once in the Apps Script editor, authorize, then copy the key from the execution log.
 function setupSync() {
@@ -63,6 +67,9 @@ function doPost(event) {
     const prepared = {};
     payload.sections.forEach(section => {
       const start = stageBody.getNumChildren();
+      if (plan.sections.find(change=>change.id===section.id).create) {
+        appendBlock_(stageBody,{kind:'heading',text:NEW_SECTIONS[section.id],level:3,pageBreakBefore:true},width,height,null);
+      }
       section.blocks.forEach(block => appendBlock_(stageBody,block,width,height,sectionStyles[section.id]));
       const elements = [];
       for (let i=start; i<stageBody.getNumChildren(); i++) elements.push(stageBody.getChild(i).copy());
@@ -84,7 +91,7 @@ function doPost(event) {
     const backup = sourceFile.makeCopy(sourceFile.getName() + ' — backup ' + new Date().toISOString());
     backupUrl = backup.getUrl();
     // Apply from bottom to top so original section indexes remain valid.
-    const changes = writePlan.sections.slice().sort((a,b)=>b.start-a.start);
+    const changes = writePlan.sections.slice().sort((a,b)=>b.start-a.start || SECTION_ORDER.indexOf(b.id)-SECTION_ORDER.indexOf(a.id));
     changes.forEach(change => {
       phase = 'replacing ' + SECTION_NAMES[change.id];
       replaceSection_(writeBody, change, prepared[change.id], () => { mutationStarted = true; });
@@ -95,12 +102,15 @@ function doPost(event) {
       mutationStarted = true;
       updateTitle_(paragraph, payload.title);
     }
+    phase = 'setting first-tab text to 11 pt';
+    mutationStarted = true;
+    normalizeFont_(writeTarget.getTabs()[0].asDocumentTab());
     phase = 'saving the target';
     writeTarget.saveAndClose();
     return page_('Google Doc updated',
       'Updated ' + (payload.title ? 'cover title' : '') + (payload.title && payload.sections.length ? ' and ' : '') +
       payload.sections.map(section=>SECTION_NAMES[section.id]).join(', ') +
-      '. Review formatting, page breaks, and the table of contents in Google Docs. Unselected sections were preserved.', backupUrl);
+      '. First-tab body, header and footer text is now 11 pt. Bold and italic were preserved; text inside images is unchanged. Review page breaks and refresh the table of contents. Unselected content was preserved apart from font size.', backupUrl);
   } catch(error) {
     console.error('Sync failed while ' + phase + ': ' + String(error.stack || error));
     return page_(mutationStarted ? 'Update interrupted — check the backup' : 'Update not applied',
@@ -125,11 +135,12 @@ function replaceSection_(body,change,elements,onMutation) {
   onMutation();
   // Keep a final paragraph even when replacing the last section with a table.
   if (change.end === body.getNumChildren()) body.appendParagraph('');
-  let cursor = change.start+1;
+  let cursor = change.create ? change.start : change.start+1;
   copies.forEach(copy => {
     if (copy.type === DocumentApp.ElementType.TABLE) body.insertTable(cursor++,copy.element);
     else body.insertParagraph(cursor++,copy.element);
   });
+  if (change.create) return; // New sections insert only; never remove nearby content.
   // Only remove originals once ALL replacement elements have been inserted.
   // If insertion fails midway, the old section is still available beside any
   // partially inserted content. The complete pre-update backup is also retained.
@@ -139,8 +150,8 @@ function replaceSection_(body,change,elements,onMutation) {
 }
 
 function validatePayload_(payload) {
-  if (!payload || ![1,2].includes(payload.version) || payload.documentId !== TARGET_ID) throw new Error('Wrong document or unsupported update format. Update Code.gs and deploy a new version.');
-  if (!Array.isArray(payload.sections) || payload.sections.length > 10) throw new Error('Invalid section list.');
+  if (!payload || ![1,2,3].includes(payload.version) || payload.documentId !== TARGET_ID) throw new Error('Wrong document or unsupported update format. Update Code.gs and deploy a new version.');
+  if (!Array.isArray(payload.sections) || payload.sections.length > SECTION_ORDER.length-1) throw new Error('Invalid section list.');
   if (payload.title !== null && (typeof payload.title !== 'string' || !payload.title.trim() || payload.title.length > 400)) throw new Error('Invalid cover title.');
   if (!payload.title && !payload.sections.length) throw new Error('Nothing selected.');
   const seen = {};
@@ -149,6 +160,7 @@ function validatePayload_(payload) {
     seen[section.id]=true;
     if (!Array.isArray(section.blocks) || !section.blocks.length || section.blocks.length>1500) throw new Error('Invalid section content.');
     section.blocks.forEach(block => {
+      if (block.pageBreakBefore !== undefined && (typeof block.pageBreakBefore!=='boolean' || (block.pageBreakBefore && block.kind!=='heading'))) throw new Error('Invalid page break.');
       if (block.kind==='paragraph' || block.kind==='heading') {
         if(typeof block.text!=='string' || block.text.length>50000) throw new Error('Invalid paragraph.');
         if(block.kind==='heading' && ![1,2,3,4,5].includes(block.level)) throw new Error('Invalid heading level.');
@@ -190,15 +202,37 @@ function planSections_(body,payload) {
     if(element.getType()!==DocumentApp.ElementType.PARAGRAPH) continue;
     const text=element.asParagraph().getText().replace(/\s+/g,' ').trim();
     if(text===OLD_TITLE || (payload.title && text===payload.title)) titles.push(i);
-    const match=Object.keys(SECTION_NAMES).find(key=>SECTION_NAMES[key]===headingName_(text));
+    let normalized=headingName_(text);
+    if(normalized==='activity diagram') normalized='activity diagrams';
+    if(normalized==='swimlane diagrams') normalized='swimlane diagram';
+    const match=Object.keys(SECTION_NAMES).find(key=>SECTION_NAMES[key]===normalized);
     if(match) (indexes[match]||(indexes[match]=[])).push(i);
   }
   if(payload.title && titles.length!==1) throw new Error('Expected exactly one cover title in the first tab. No change was made.');
+  if(payload.sections.some(section=>section.id==='erd'||NEW_SECTIONS[section.id])) {
+    let previous=-1;
+    ['erd','activity-diagrams','swimlane-diagram'].forEach(id=>{
+      if(!indexes[id]) return;
+      if(indexes[id].length!==1) throw new Error('Cannot uniquely locate '+SECTION_NAMES[id]+'.');
+      if(indexes[id][0]<=previous) throw new Error('Unexpected new diagram section order.');
+      previous=indexes[id][0];
+    });
+  }
   const sections=payload.sections.map(section=>{
-    const at=SECTION_ORDER.indexOf(section.id),next=SECTION_ORDER[at+1];
+    const at=SECTION_ORDER.indexOf(section.id);
+    let end=body.getNumChildren();
+    for(let i=at+1;i<SECTION_ORDER.length;i++) {
+      const next=SECTION_ORDER[i];
+      if(indexes[next] && indexes[next].length===1){end=indexes[next][0];break;}
+      if(indexes[next] || !NEW_SECTIONS[next]) throw new Error('Cannot uniquely locate the end of '+SECTION_NAMES[section.id]+'.');
+    }
+    if(!indexes[section.id] && NEW_SECTIONS[section.id]) {
+      if(!indexes.erd || indexes.erd.length!==1 || indexes.erd[0]>=end) throw new Error('Cannot safely locate ERD before the new diagram section.');
+      return{id:section.id,start:end,end,create:true};
+    }
     if(!indexes[section.id]||indexes[section.id].length!==1) throw new Error('Cannot uniquely locate '+SECTION_NAMES[section.id]+' in the first document tab.');
-    if(next && (!indexes[next]||indexes[next].length!==1)) throw new Error('Cannot uniquely locate the end of '+SECTION_NAMES[section.id]+'.');
-    const start=indexes[section.id][0],end=next?indexes[next][0]:body.getNumChildren();
+    const start=indexes[section.id][0];
+    if(NEW_SECTIONS[section.id] && (!indexes.erd || indexes.erd.length!==1 || start<=indexes.erd[0])) throw new Error('Unexpected new diagram section order.');
     if(end<=start) throw new Error('Unexpected section order.');
     return{id:section.id,start,end};
   });
@@ -234,7 +268,14 @@ function updateTitle_(paragraph,title) {
   const paragraphAttributes=paragraph.getAttributes();
   paragraph.setText(title);
   paragraph.setAttributes(paragraphAttributes);
-  paragraph.editAsText().setAttributes(attributes).setBold(true);
+  paragraph.editAsText().setAttributes(attributes).setBold(true).setFontSize(DOC_FONT_SIZE);
+}
+
+function normalizeFont_(tab) {
+  // One font-size operation per text container; no setText, so emphasis survives.
+  [tab.getBody(),tab.getHeader(),tab.getFooter()].forEach(section=>{
+    if(section && section.getText()) section.editAsText().setFontSize(DOC_FONT_SIZE);
+  });
 }
 
 function validateRuns_(runs,text) {
@@ -281,7 +322,7 @@ function appendBlock_(body,block,maxWidth,maxHeight,bodyStyle) {
     image.setWidth(Math.max(1,Math.round(width*scale))).setHeight(Math.max(1,Math.round(height*scale)));
     image.setAltDescription(block.caption);
     const caption=body.appendParagraph(block.caption); caption.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
-    caption.editAsText().setFontSize(10).setItalic(true);
+    caption.editAsText().setFontSize(DOC_FONT_SIZE).setItalic(true);
   } else if(block.kind==='table') {
     const table=body.appendTable(block.rows);
     table.setBorderColor('#000000').setBorderWidth(0.5);
@@ -289,7 +330,7 @@ function appendBlock_(body,block,maxWidth,maxHeight,bodyStyle) {
     // then visit only cells with emphasis instead of restyling every plain cell.
     const A=DocumentApp.Attribute;
     table.editAsText().setAttributes({
-      [A.FONT_FAMILY]:'Arial', [A.FONT_SIZE]:9, [A.FOREGROUND_COLOR]:'#000000',
+      [A.FONT_FAMILY]:'Arial', [A.FONT_SIZE]:DOC_FONT_SIZE, [A.FOREGROUND_COLOR]:'#000000',
       [A.BOLD]:false, [A.ITALIC]:false
     });
     for(let row=0;row<block.rows.length;row++) {
@@ -309,7 +350,10 @@ function appendBlock_(body,block,maxWidth,maxHeight,bodyStyle) {
       }
     }
   } else {
-    const paragraph=body.appendParagraph(block.text);
+    const paragraph=body.appendParagraph(block.pageBreakBefore ? '' : block.text);
+    // Keep the break inside the heading paragraph so section matching and repeat
+    // updates retain it. DocumentApp has no PAGE_BREAK_BEFORE attribute.
+    if(block.pageBreakBefore){paragraph.appendPageBreak();paragraph.appendText(block.text);}
     if(block.kind==='heading') {
       paragraph.setHeading(DocumentApp.ParagraphHeading['HEADING'+Math.min(6,block.level)]);
       paragraph.setAlignment(DocumentApp.HorizontalAlignment.LEFT);
@@ -329,6 +373,7 @@ function appendBlock_(body,block,maxWidth,maxHeight,bodyStyle) {
       } else paragraph.setAlignment(DocumentApp.HorizontalAlignment.JUSTIFY);
     }
     applyRuns_(paragraph.editAsText(),block.runs);
+    paragraph.editAsText().setFontSize(DOC_FONT_SIZE);
   }
 }
 

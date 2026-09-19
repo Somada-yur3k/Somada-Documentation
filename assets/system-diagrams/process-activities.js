@@ -1,100 +1,128 @@
-/* One UML Activity view per Level 1 parent. DFD records are evidence, not
- * control-flow arrows: independent operations are alternatives, not forced jobs. */
+/* A4 portrait UML activities. Uniform action/decision symbols; no partitions.
+ * Exclusive user operations remain choices, never parallel branches.
+ * P5's fork/join models independent READ-ONLY reporting inputs already present
+ * at DFD 5.4 (D2/D3 and D4/D5). This is logical concurrency, not a claim that
+ * an implemented server executes simultaneous database queries. Both reads
+ * return evidence or unavailable results; the join cannot mask missing data.
+ */
 (function(){
 'use strict';
 const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs||{}))n.setAttribute(k,v);parent?.append(n);return n;}
-function wrap(value,max){return String(value).split('\n').flatMap(part=>{const rows=[];let row='';for(const word of part.split(' ')){if(row&&(row+' '+word).length>max){rows.push(row);row=word;}else row+=(row?' ':'')+word;}rows.push(row);return rows;});}
 function draw(model){
- const id='activity-'+model.id,svg=el('svg',{xmlns:NS,viewBox:'0 0 1200 720',role:'img','aria-label':'Activity Diagram — '+model.name,'data-parent':model.id});
- const defs=el('defs',{},svg),marker=el('marker',{id:id+'-arrow',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:6,markerHeight:6,orient:'auto'},defs);
- el('path',{d:'M1 1 L9 5 L1 9 Z',fill:'#253f58'},marker);
- const edges=el('g',{},svg),shapes=el('g',{},svg),labels=el('g',{},svg),nodes={},routes=[];
- function text(parent,x,y,value,size=18,max=36,bold=false){const rows=wrap(value,max),t=el('text',{'text-anchor':'middle','font-size':size,'font-weight':bold?700:400},parent);rows.forEach((row,i)=>{el('tspan',{x,y:y+i*size*1.14},t).textContent=row;});return rows.length*size*1.14;}
- function action(key,x,y,w,h,title,detail='',child){
-  nodes[key]={x:x-w/2,y:y-h/2,w,h,kind:'action'};
-  const g=el('g',{'data-activity-node':key,...(child!==undefined?{'data-child-process':model.id+'.'+(child+1),'data-child-name':model.steps[child]}:{})},shapes);
-  el('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:10,class:'activity-action'},g);
-  const heading=child===undefined?title:model.id.slice(1)+'.'+(child+1)+' '+model.steps[child];
-  const size=child===undefined?18:19,max=Math.floor((w-24)/(size*.55));
-  const used=text(g,x,y-h/2+25,heading,size,max,true);
-  if(detail)text(g,x,y-h/2+29+used,detail,17,Math.floor((w-24)/9.2));
+ const id='activity-'+model.id,width=1200,height=model.id==='p2'?2357:1697,ACTION_W=260,ACTION_H=68;
+ const svg=el('svg',{xmlns:NS,viewBox:`0 0 ${width} ${height}`,role:'img','aria-label':model.name+' — portrait UML Activity Diagram','data-parent':model.id});
+ const defs=el('defs',{},svg),marker=el('marker',{id:id+'-arrow',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:8.5,markerHeight:8.5,orient:'auto'},defs);
+ el('style',{},defs).textContent='text{font-family:Arial,Helvetica,sans-serif;fill:#000}.line{fill:none;stroke:#000;stroke-width:2.2}';
+ el('path',{d:'M1 1 L9 5 L1 9 Z',fill:'#000'},marker);
+ const edges=el('g',{},svg),shapes=el('g',{},svg),labels=el('g',{},svg),nodes={},routes=[],mapped=new Set();
+ function text(parent,x,y,value,size=22,bold=false){const rows=value.split('\n'),t=el('text',{'text-anchor':'middle','font-size':size,'font-weight':bold?700:400,style:'fill:#000'},parent);rows.forEach((row,i)=>el('tspan',{x,y:y+(i-(rows.length-1)/2)*size*1.16+size*.34},t).textContent=row);return t;}
+ const titles={p1:'User Access & Accounts',p2:'Reservations, Availability & Approvals',p3:'Laboratory Questions',p4:'Equipment & Borrowing',p5:'Laboratory Administration & Reporting'};
+ text(labels,600,32,titles[model.id]+' — Activity Diagram',29,true);
+ const precondition={p1:'Login: any role. Create / update Faculty or Class Rep. accounts: signed-in Head Laboratory only.',p2:'Precondition: signed-in requester or routed Faculty / Dean; permitted operations only.',p3:'Precondition: signed-in Class Representative or Faculty; informational Q&A only.',p4:'Precondition: signed-in Head Laboratory or Staff within the assigned laboratory.',p5:'Precondition: signed-in Head Laboratory; Class Representative: own-group clearance only.'}[model.id];
+ if(model.id==='p2') text(labels,600,77,'Class Rep.: choose Group or Student Only for BOTH schedule variants. Student Only = signed-in representative.\nOn-schedule → Faculty; out-of-schedule → Faculty, then Dean. Faculty request rules remain unchanged.',16);
+ else text(labels,600,83,precondition,20);
+ function action(key,x,y,title,child){
+  const g=el('g',{'data-activity-node':key,'data-uml-kind':'action'},shapes);nodes[key]={x:x-ACTION_W/2,y:y-ACTION_H/2,w:ACTION_W,h:ACTION_H,kind:'action',title};
+  if(child!==undefined){const ref=model.id+'.'+(child+1);g.setAttribute(mapped.has(ref)?'data-child-ref':'data-child-process',ref);g.setAttribute('data-child-name',model.steps[child]);mapped.add(ref);}
+  el('rect',{x:x-ACTION_W/2,y:y-ACTION_H/2,width:ACTION_W,height:ACTION_H,rx:10,fill:'#fff',stroke:'#000','stroke-width':2.2},g);text(g,x,y,title,21,true);
  }
- function child(key,index,x,y,w,h,detail){action(key,x,y,w,h,'',detail,index);}
- function decision(key,x,y,title){nodes[key]={x:x-25,y:y-22,w:50,h:44,kind:'decision'};el('path',{d:'M'+x+' '+(y-22)+' L'+(x+25)+' '+y+' L'+x+' '+(y+22)+' L'+(x-25)+' '+y+' Z',class:'activity-action','data-activity-node':key},shapes);if(title)text(labels,Math.min(x+180,1060),y-(wrap(title,28).length>1?37:16),title,18,28,true);}
- function terminal(key,x,y,final=false){nodes[key]={x:x-9,y:y-9,w:18,h:18,kind:final?'final':'initial'};if(final)el('circle',{cx:x,cy:y,r:9,fill:'white',stroke:'#253f58','stroke-width':2},shapes);el('circle',{cx:x,cy:y,r:final?5:8,fill:'#253f58','data-activity-node':key},shapes);}
- function point(key,side){const n=nodes[key];return side==='l'?[n.x,n.y+n.h/2]:side==='r'?[n.x+n.w,n.y+n.h/2]:side==='t'?[n.x+n.w/2,n.y]:[n.x+n.w/2,n.y+n.h];}
- function link(from,fromSide,to,toSide,bends=[],guard){const points=[point(from,fromSide),...bends,point(to,toSide)];el('path',{d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),class:'line','marker-end':'url(#'+id+'-arrow)','data-control-from':from,'data-control-to':to},edges);routes.push({from,to,points});if(guard)text(labels,guard[0],guard[1],guard[2],17,46);}
+ function decision(key,x,y,title){const w=180,h=92;nodes[key]={x:x-w/2,y:y-h/2,w,h,kind:'decision',title};const g=el('g',{'data-decision':key},shapes);el('path',{d:`M${x} ${y-h/2} L${x+w/2} ${y} L${x} ${y+h/2} L${x-w/2} ${y} Z`,fill:'#fff',stroke:'#000','stroke-width':2.2,'data-activity-node':key,'data-uml-kind':'decision'},g);text(g,x,y,title,18);}
+ function terminal(key,x,y,final=false){nodes[key]={x:x-22,y:y-22,w:44,h:44,kind:final?'final':'initial'};if(final)el('circle',{cx:x,cy:y,r:22,fill:'#fff',stroke:'#000','stroke-width':2.6},shapes);el('circle',{cx:x,cy:y,r:final?14:22,fill:'#000','data-activity-node':key,'data-uml-kind':final?'final':'initial'},shapes);}
+ function bar(key,x,y,kind){nodes[key]={x:x-280,y:y-6,w:560,h:12,kind};el('rect',{x:x-280,y:y-6,width:560,height:12,fill:'#000','data-activity-node':key,'data-uml-kind':kind},shapes);}
+ function point(key,side){if(Array.isArray(side))return side;const n=nodes[key];return side==='l'?[n.x,n.y+n.h/2]:side==='r'?[n.x+n.w,n.y+n.h/2]:side==='t'?[n.x+n.w/2,n.y]:[n.x+n.w/2,n.y+n.h];}
+ function label(x,y,value,size=19){const t=text(labels,x,y,value,size);t.setAttribute('style','fill:#000;stroke:#fff;stroke-width:6px;paint-order:stroke;stroke-linejoin:round');}
+ function link(from,fs,to,ts,bends=[],guard,position){const points=[point(from,fs),...bends,point(to,ts)];el('path',{d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),class:'line',style:'fill:none;stroke:#000;stroke-width:2.2','marker-end':'url(#'+id+'-arrow)','data-control-from':from,'data-control-to':to,...(guard?{'data-guard':guard}:{})},edges);routes.push({from,to,points,guard:guard||null});if(guard&&position)label(position[0],position[1],guard);}
+ function dispatchStart(){terminal('start',200,125);action('choose',200,200,'Choose permitted\noperation');link('start','b','choose','t');}
+ function row(key,y,question,input,condition,result,child,preChild){
+  if(model.id==='p2'&&key==='request'){
+   decision('request-choice',200,y,question);action('request-input',600,y,'Select block / items;\ncheck availability',0);decision('request-role',980,y,'Class Rep.?');
+   link('request-choice','r','request-input','l',[],'[Yes]',[375,y-20]);link('request-input','r','request-role','l');
+   action('select-type',980,y+120,'Confirm / select\nReservation Type');decision('reservation-type',980,y+240,'Group or\nStudent Only?');
+   link('request-role','b','select-type','t',[],'[Yes]',[1045,y+65]);link('select-type','b','reservation-type','t');
+   action('group-info',600,y+360,'Confirm existing\ngroup / members');action('individual-info',980,y+360,'Confirm own\nstudent reservation');
+   link('reservation-type','l','group-info','t',[[600,y+240]],'[Group]',[740,y+217]);link('reservation-type','b','individual-info','t',[],'[Student Only]',[1055,y+297]);
+   bar('type-merge',790,y+470,'join');nodes['type-merge'].joinSpec='or';shapes.querySelector('[data-activity-node="type-merge"]').setAttribute('data-join-spec','or');label(655,y+505,'{joinSpec = or}',17);
+   link('group-info','b','type-merge',[600,y+464]);link('individual-info','b','type-merge',[980,y+464]);
+   decision('request-valid',980,y+590,'Type / request\nvalid?');link('type-merge','b','request-valid','t',[[790,y+520],[980,y+520]]);
+   link('request-role','r','type-merge','t',[[1180,y],[1180,y+410],[790,y+410]],'[No: Faculty]',[1090,y+205]);
+   action('request-save',980,y+695,'Save type, request, hold;\nroute if required',1);action('request-error',600,y+695,'Show correction;\nno record or hold');
+   link('request-valid','b','request-save','t',[],'[Yes]',[1030,y+653]);link('request-valid','l','request-error','t',[[600,y+590]],'[No]',[711,y+567]);
+   terminal('request-end',1140,y+772,true);terminal('request-error-end',430,y+772,true);link('request-save','r','request-end','t',[[1140,y+695]]);link('request-error','l','request-error-end','t',[[430,y+695]]);return;
+  }
+  decision(key+'-choice',200,y,question);action(key+'-input',600,y,input,preChild);decision(key+'-valid',980,y,condition);
+  action(key+'-save',980,y+105,result,child);action(key+'-error',600,y+105,key==='approval'?'Show current status;\nno decision applied':'Show correction;\nmake no change');
+  const compact=model.id==='p2';terminal(key+'-end',compact?1140:980,y+182,true);terminal(key+'-error-end',compact?430:600,y+182,true);
+  link(key+'-choice','r',key+'-input','l',[],'[Yes]',[375,y-20]);link(key+'-input','r',key+'-valid','l');
+  link(key+'-valid','b',key+'-save','t',[],'[Yes]',[1030,y+61]);
+  link(key+'-valid',[935,y+23],key+'-error','r',[[800,y+23],[800,y+105]],'[No]',[827,y+72]);
+  if(compact){link(key+'-save','r',key+'-end','t',[[1140,y+105]]);link(key+'-error','l',key+'-error-end','t',[[430,y+105]]);}
+  else {link(key+'-save','b',key+'-end','t');link(key+'-error','b',key+'-error-end','t');}
+ }
+ function dispatch(rows){dispatchStart();rows.forEach((r,i)=>{row(...r);if(i===0)link('choose','b',r[0]+'-choice','t');else link(rows[i-1][0]+'-choice','b',r[0]+'-choice','t',[],'[No]',[243,(rows[i-1][1]+r[1])/2]);});}
+ function refuseOther(last,y){action('other',200,y,'No permitted\noperation selected');terminal('other-end',200,y+85,true);link(last+'-choice','b','other','t',[],'[No]',[243,y-68]);link('other','b','other-end','t');}
  if(model.id==='p1'){
-  terminal('start',600,20);decision('goal',600,100,'Choose access operation');link('start','b','goal','t');
-  child('credentials',0,280,220,340,100,'Read D1 account and verify credentials.');
-  child('account',2,920,220,340,130,'Validate Student ID and Faculty.\nHead Laboratory only; signed in.');
-  link('goal','l','credentials','t',[[280,100]], [295,87,'[Log in: any role]']);
-  link('goal','r','account','t',[[920,100]], [1032,128,'[Issue representative\naccount]']);
-  decision('valid',280,350,'Credentials valid?');decision('unique',920,350,'Account details valid?');
-  link('credentials','b','valid','t');link('account','b','unique','t');
-  child('session',1,400,475,300,140,'Apply role and laboratory scope.\nDisplay the role dashboard.');
-  action('login-error',100,475,180,90,'Refuse login','No session created.');
-  action('save-account',790,475,310,115,'Save account in D1','Email credentials to Faculty\nfor representative hand-off.');
-  action('account-error',1110,475,170,120,'Refuse issuance','Duplicate ID or\nmissing Faculty.');
-  link('valid','l','login-error','t',[[100,350]],[155,380,'[no]']);link('valid','r','session','t',[[400,350]],[435,380,'[yes]']);
-  link('unique','l','save-account','t',[[790,350]],[735,380,'[yes]']);link('unique','r','account-error','t',[[1110,350]],[1155,380,'[no]']);
-  decision('done',600,625);for(const k of ['login-error','session','save-account','account-error']){const p=point(k,'b');link(k,'b','done',p[0]<600?'l':'r',[[p[0],625]]);}
-  terminal('end',600,695,true);link('done','b','end','t');
- }else if(model.id==='p2'){
-  terminal('start',600,20);decision('goal',600,105,'Choose permitted reservation operation');link('start','b','goal','t');
-  child('availability',0,215,245,350,90,'Read D2 holds, D3 schedule and D4 items.');
-  decision('request-entry',215,335);
-  child('request',1,215,420,350,124,'Validate owner, role and timing.\nCheck stock; save valid changes.');
-  child('approval',2,650,420,360,120,'Faculty / Dean: decide a routed request.\nNew requests: route for the required decision.');
-  child('status',3,990,575,370,115,'Save applicable decision / status;\nshow own status or history.\nRelease cancelled / rejected holds.');
-  decision('route',215,560);text(labels,300,510,'Academic approval\nneeded?',18,28,true);decision('status-entry',990,475);
-  link('goal','l','availability','t',[[215,105]],[290,90,'[View / submit / reschedule]']);
-  link('availability','b','request-entry','t');link('request-entry','b','request','t');
-  link('goal','l','request-entry','l',[[20,105],[20,335]],[83,315,'[Cancel]']);
-  link('goal','b','approval','t',[[600,165],[650,165]],[774,181,'[Decide routed request]']);
-  link('goal','r','status-entry','t',[[990,105]],[1080,140,'[Own status /\nhistory]']);
-  link('request','b','route','t');link('route','r','approval','l',[[435,560],[435,420]],[478,512,'[yes]']);
-  link('route','r','status','l',[[440,560],[440,575]],[629,601,'[no: scheduled Faculty / cancellation]']);
-  link('approval','r','status-entry','l',[[860,420],[860,475]],[925,440,'[Pending /\ndecision]']);link('status-entry','b','status','t');
-  action('result',600,670,520,58,'Display availability, result or correction');
-  link('request-entry','r','result','l',[[410,335],[410,610],[300,610],[300,670]],[355,597,'[View only]']);
-  link('status','b','result','r',[[990,670]]);terminal('end',600,710,true);link('result','b','end','t');
+  terminal('start',600,165);action('choose',600,260,'Choose access\noperation');link('start','b','choose','t');decision('operation',600,390,'Log in?');link('choose','b','operation','t');
+  for(const [key,x,login]of [['login',350,true],['account',850,false]]){
+   action(key+'-input',x,550,login?'Enter credentials':'Create / select account;\nFaculty / Class Rep.');action(key+'-check',x,710,login?'Validate credentials':'Check Head, role, ID;\nFaculty if Class Rep.',login?0:undefined);
+   decision(key+'-valid',x,860,'Valid?');action(key+'-save',x,1020,login?'Establish role-scoped\nsession':'Create / update details\nand active status',login?1:2);action(key+'-result',x,1180,login?'View role dashboard':'If new: email Faculty;\nconfirm saved account');
+   action(key+'-error',x,1380,login?'Show login error;\nno session created':'Show correction;\nno account changed');terminal(key+'-end',x,1600,true);
+   link('operation',login?'l':'r',key+'-input','t',[[x,390]],login?'[Yes]':'[No: manage accounts, Head]',[x,461]);link(key+'-input','b',key+'-check','t');link(key+'-check','b',key+'-valid','t');link(key+'-valid','b',key+'-save','t',[],'[Yes]',[x+50,947]);link(key+'-save','b',key+'-result','t');
+   const errorTrack=login?40:1160,successTrack=login?130:1070;
+   link(key+'-valid',login?'l':'r',key+'-error',login?'l':'r',[[errorTrack,860],[errorTrack,1380]],'[No]',[login?110:1090,838]);link(key+'-result',login?'l':'r',key+'-end',login?'l':'r',[[successTrack,1180],[successTrack,1600]]);link(key+'-error','b',key+'-end','t');
+  }
  }else if(model.id==='p3'){
-  terminal('start',650,20);child('inquiry',0,650,100,480,95,'Capture the signed-in requester’s question.');link('start','b','inquiry','t');
-  decision('scope',650,225,'Informational and permitted?');link('inquiry','b','scope','t');
-  child('evidence',1,650,335,480,105,'Retrieve only relevant, authorized\nD2 / D3 / D4 / D8 evidence.');
-  action('decline',200,335,310,140,'Decline unsupported action','Direct to the allowed workflow.\nNever submit or approve\na reservation.');
-  link('scope','b','evidence','t',[],[695,266,'[yes]']);link('scope','l','decline','t',[[200,225]],[357,209,'[no]']);
-  child('answer',2,650,480,480,100,'Answer from evidence or state unavailable;\nnever invent laboratory information.');link('evidence','b','answer','t');
-  decision('exchange',650,567);link('answer','b','exchange','t');link('decline','b','exchange','l',[[200,567]]);
-  child('history',3,650,640,480,90,'Store requester-scoped conversation in D9;\ndisplay the answer / refusal.');link('exchange','b','history','t');terminal('end',650,710,true);link('history','b','end','t');
+  terminal('start',600,170);action('ask',600,290,'Ask laboratory\nquestion');action('capture',600,450,'Capture inquiry',0);decision('scope',600,620,'Permitted?');link('start','b','ask','t');link('ask','b','capture','t');link('capture','b','scope','t');
+  action('records',350,820,'Retrieve authorized\nrecords',1);action('answer',350,1030,'Answer from evidence /\nstate unavailable',2);action('history',350,1240,'Record question\nand answer',3);action('result',350,1440,'Read answer');terminal('end',350,1610,true);
+  link('scope','l','records','t',[[350,620]],'[Yes]',[350,720]);link('records','b','answer','t');link('answer','b','history','t');link('history','b','result','t');link('result','b','end','t');
+  action('decline',850,820,'Decline; explain\nallowed questions');action('refusal-history',850,1240,'Record question\nand refusal',3);action('refusal-result',850,1440,'Read refusal');terminal('refusal-end',850,1610,true);link('scope','r','decline','t',[[850,620]],'[No]',[850,720]);link('decline','b','refusal-history','t');link('refusal-history','b','refusal-result','t');link('refusal-result','b','refusal-end','t');
+ }else if(model.id==='p2'){
+  dispatch([
+   ['availability',300,'View slots?', 'Choose laboratory\nand schedule','Allowed?', 'Retrieve and display\navailability',0],
+   ['request',520,'Submit /\nreschedule?', 'Select block / items;\ncheck availability','Valid?', 'Save request & holds;\nroute if required',1,0],
+   ['cancel',1400,'Cancel?', 'Select own request;\nconfirm cancellation','Eligible?', 'Cancel; release hold;\nnotify if needed',1],
+   ['tracking',1620,'View\ntracking?', 'Open own status\nor history','Own records?', 'Display own status\nand history',3]
+  ]);
+  decision('approval-choice',200,1850,'Decide?');link('tracking-choice','b','approval-choice','t',[],'[No]',[243,1735]);
+  action('approval-input',600,1850,'Faculty / Dean:\nApprove or Reject',2);decision('approval-valid',980,1850,'Pending for\nthis reviewer?');
+  link('approval-choice','r','approval-input','l',[],'[Yes]',[375,1830]);link('approval-input','r','approval-valid','l');
+  action('approval-error',600,1955,'Show current status;\nno decision applied');terminal('approval-error-end',600,2032,true);
+  link('approval-valid',[935,1873],'approval-error','r',[[800,1873],[800,1955]],'[No]',[834,1920]);link('approval-error','b','approval-error-end','t');
+  decision('decision-approved',980,2060,'Approve?');link('approval-valid','b','decision-approved','t',[],'[Yes]',[1030,1960]);
+  decision('dean-required',600,2120,'Dean still\nrequired?');link('decision-approved','l','dean-required','r',[[780,2060],[780,2120]],'[Yes]',[818,2040]);
+  action('approval-rejected',980,2245,'Save Rejected;\nrelease hold');terminal('approval-rejected-end',980,2322,true);
+  link('decision-approved','b','approval-rejected','t',[],'[No]',[1030,2165]);link('approval-rejected','b','approval-rejected-end','t');
+  action('approval-pending',200,2170,'Keep Pending Dean;\nretain hold; route');terminal('approval-pending-end',200,2280,true);
+  link('dean-required','l','approval-pending','t',[[200,2120]],'[Yes]',[375,2098]);link('approval-pending','b','approval-pending-end','t');
+  action('approval-final',600,2245,'Save final Approved;\nretain hold');terminal('approval-final-end',600,2322,true);
+  link('dean-required','b','approval-final','t',[],'[No]',[650,2183]);link('approval-final','b','approval-final-end','t');
+  refuseOther('approval',1970);
  }else if(model.id==='p4'){
-  terminal('start',600,20);action('scope',600,88,520,68,'Choose operation in the assigned laboratory','Head Laboratory may work across both laboratories.');link('start','b','scope','t');decision('goal',600,175);link('scope','b','goal','t');
-  child('inventory',0,150,300,270,150,'Search / add / update / remove D4 items.\nValidate type, quantities and outstanding issues.');
-  child('approved',1,450,300,270,150,'Read approved reservation in D2;\ncheck live D4 availability.');
-  child('return',3,750,300,270,150,'Validate returns against D5 issued quantities;\nrestore working items to D4.');
-  child('disposal',4,1050,300,270,150,'Physically present, nonrepairable item only;\nvalidate quantity and classification.');
-  ['inventory','approved','return','disposal'].forEach((k,i)=>{const x=150+i*300;link('goal',i<2?'l':'r',k,'t',[[x,175]],[x+(i===3?-70:70),208,['[Catalogue]','[Issue]','[Return]','[Dispose]'][i]]);});
-  action('stock',150,485,270,115,'Save valid catalogue change','Recompute availability; flag low stock.');
-  child('issue',2,450,485,270,150,'Save D5 borrowing slip.\nUpdate D4 stock and D2 status.\nDisplay slip; set Ongoing.');
-  action('outcome',750,485,270,115,'Record return outcome','Consumables: consumed. Equipment: broken / lost.\nComplete only if no outstanding balance.');
-  action('withdraw',1050,485,270,115,'Save disposal entry','Record D10 and applicable D4 adjustment;\nnever deduct the same quantity twice.');
-  [['inventory','stock'],['approved','issue'],['return','outcome'],['disposal','withdraw']].forEach(([a,b])=>link(a,'b',b,'t'));
-  decision('done',600,590);['stock','issue','outcome','withdraw'].forEach(k=>{const x=point(k,'b')[0];link(k,'b','done',x<600?'l':'r',[[x,590]]);});
-  action('result',600,655,690,65,'Return result or correction','Refuse invalid input; save only authorized, validated transactions.');link('done','b','result','t');terminal('end',600,710,true);link('result','b','end','t');
+  dispatch([
+   ['inventory',365,'Catalogue?', 'Search / enter\ninventory change','Valid?', 'Maintain inventory;\nshow catalogue',0],
+   ['issue',715,'Issue?', 'Retrieve finally approved\nreservation','Final approval;\nstock valid?', 'Issue items; save slip,\nstock & Ongoing status',2,1],
+   ['return',1065,'Return?', 'Enter return quantities\nand condition','Within issue?', 'Reconcile; complete\nonly with no balance',3],
+   ['disposal',1415,'Dispose?', 'Select physical waste\nand quantity','Disposable?', 'Record disposal;\nadjust stock once',4]
+  ]);refuseOther('disposal',1530);
  }else{
-  terminal('start',600,20);action('scope',600,90,630,80,'Choose authorized administration operation','Head Laboratory manages records. Class Representative: own-group clearance view only.');link('start','b','scope','t');decision('goal',600,175);link('scope','b','goal','t');
-  child('schedule',0,150,310,270,170,'Check term / room conflicts and held blocks;\nupdate D3 and publish vacant blocks.');
-  child('logs',1,450,310,270,170,'Record completed usage in D3 or\na separate daily task in D7.\nHead Laboratory only.');
-  child('clearance',2,750,310,270,170,'Head: read D5 evidence; raise / settle D6.\nRepresentative: read own-group status only.');
-  child('metrics',3,1050,310,270,170,'Read term reservation, usage, inventory,\nborrowing and daily-task records;\ncompile non-AI metrics.');
-  ['schedule','logs','clearance','metrics'].forEach((k,i)=>{const x=150+i*300;link('goal',i<2?'l':'r',k,'t',[[x,175]],[x+(i===3?-100:i===2?65:100),209,['[Schedule]','[Usage / daily task]','[Clearance]','[End-term report]'][i]]);});
-  child('report',4,1050,485,270,155,'Include disposal and\noutstanding clearances.\nExport or report failure.');link('metrics','b','report','t');
-  decision('done',600,590);['schedule','logs','clearance','report'].forEach(k=>{const x=point(k,'b')[0];link(k,'b','done',x<600?'l':'r',[[x,590]]);});
-  action('result',600,655,690,65,'Display permitted records, report or correction','Reject invalid input; never expose another group’s clearance.');link('done','b','result','t');terminal('end',600,710,true);link('result','b','end','t');
+  dispatch([
+   ['schedule',305,'Schedule?', 'Head: enter\nschedule block','Valid; no\nconflict?', 'Maintain schedule;\npublish vacant blocks',0],
+   ['logs',565,'Daily task?', 'Head: enter\ndaily task','Valid?', 'Save daily task;\nconfirm saved record',1],
+   ['clearance',825,'Clearance?', 'Head: raise / settle\nRep.: view own group','Permitted?', 'Process clearance;\ndisplay status',2]
+  ]);
+  action('term',200,1000,'Head: open Physics /\nCircuits logs');link('clearance-choice','b','term','t',[],'[No: report]',[274,891]);
+  bar('report-fork',780,1130,'fork');link('term','b','report-fork','t',[[200,1100],[780,1100]]);
+  action('read-usage',570,1230,'Read automatic logs of\ncompleted reservations');action('read-stock',990,1230,'Read inventory and\nborrowing-slip data');
+  nodes['read-usage'].stores=['d2','d3'];nodes['read-stock'].stores=['d4','d5'];
+  link('report-fork',[570,1136],'read-usage','t');link('report-fork',[990,1136],'read-stock','t');
+  bar('report-join',780,1320,'join');link('read-usage','b','report-join',[570,1314]);link('read-stock','b','report-join',[990,1314]);
+  label(780,1166,'Fork: independent reads',18);label(780,1290,'Join: wait for both results',18);
+  decision('records-ready',780,1380,'Any completed\nusage records?');link('report-join','b','records-ready','t');
+  action('metrics',780,1485,'Compute item use,\ntop 5 & session shares',3);action('report',780,1590,'Show report;\nexport if requested',4);terminal('report-end',780,1670,true);
+  link('records-ready','b','metrics','t',[],'[Yes]',[836,1428]);link('metrics','b','report','t');link('report','b','report-end','t');
+  action('incomplete',400,1485,'Show no records\nfor this term');terminal('incomplete-end',400,1600,true);link('records-ready','l','incomplete','t',[[400,1380]],'[No]',[507,1359]);link('incomplete','b','incomplete-end','t');
  }
- window.SystemActivityGeometry=window.SystemActivityGeometry||{};window.SystemActivityGeometry[model.id]={nodes,routes};return svg;
+ window.SystemActivityGeometry=window.SystemActivityGeometry||{};window.SystemActivityGeometry[model.id]={nodes,routes,width,height,precondition,actionSize:[ACTION_W,ACTION_H]};return svg;
 }
 window.SystemProcessActivity=draw;
 })();

@@ -19,7 +19,7 @@
     d4:['Equipment','inventory'],d5:['Borrowing','slip records'],d6:['Clearance','records'],d7:['Daily task','records'],
     d8:['Knowledge','base'],d9:['Chat history'],d10:['Disposal','records']};
   const storeY={d1:230,d2:610,d8:940,d9:1056,d4:1260,d5:1410,d10:1560,d3:1780,d7:1890,d6:2000};
-  const colors={classrep:'#1e40af',faculty:'#9f1239',dean:'#6b21a8',headlab:'#166534',physics:'#92400e',circuits:'#115e59'};
+  const ARROW_COLOR='#000000';
   function el(tag,attrs={},children=[]) {
     const node=document.createElementNS(NS,tag);
     Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,value));
@@ -143,12 +143,12 @@
     model.entities.forEach((n,i)=>nodes[n.id]={...n,...E,y:96+i*336,kind:'entity',lines:entityLines[n.id]});
     model.processes.forEach((n,i)=>nodes[n.id]={...n,...P,y:70+i*410,kind:'process',lines:processLines[n.id]});
     model.stores.forEach(n=>nodes[n.id]={...n,...D,y:storeY[n.id],kind:'store',lines:storeLines[n.id]});
-    const svg=el('svg',{xmlns:NS,width:W,height:H,viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Physics and Circuits Laboratory Level 1 DFD: five processes and 74 independent data flows'});
+    const svg=el('svg',{xmlns:NS,width:W,height:H,viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Physics and Circuits Laboratory Level 1 DFD: five processes and 72 independent data flows'});
     svg.appendChild(el('rect',{width:W,height:H,fill:'#fff'}));
     const defs=el('defs');
-    Object.entries({...colors,store:'#27272a'}).forEach(([key,color])=>{
+    [...Object.keys(entityLines),'store'].forEach(key=>{
       const marker=el('marker',{id:'arrow-'+key,markerWidth:13,markerHeight:13,refX:12,refY:6,orient:'auto',markerUnits:'userSpaceOnUse'});
-      marker.appendChild(el('path',{d:'M0 0 L12 6 L0 12 Z',fill:color}));defs.appendChild(marker);
+      marker.appendChild(el('path',{d:'M0 0 L12 6 L0 12 Z',fill:ARROW_COLOR}));defs.appendChild(marker);
     });
     svg.appendChild(defs);
     svg.appendChild(text(W/2,36,['Physics and Circuits Laboratory — Data Flow Diagram, Level 1'],{'font-size':34,'font-weight':700}));
@@ -210,7 +210,7 @@
         const to=[external?process.x:n.x,external?p.py:sy];
         let points=[from,[lane,from[1]],[lane,to[1]],to];
         if ((external&&f.source===process.id)||(!external&&f.source===peer.id)) points.reverse();
-        const color=external?colors[peer.id]:'#27272a';
+        const color=ARROW_COLOR;
         const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:points.map((v,j)=>(j?'L':'M')+v.join(' ')).join(' '),
           fill:'none',stroke:color,'stroke-width':2.2,'stroke-linejoin':'round','marker-end':'url(#arrow-'+(external?peer.id:'store')+')'});
         const title=el('title');title.textContent=nodes[f.source].name+' → '+f.label+' → '+nodes[f.target].name;path.appendChild(title);paths.appendChild(path);
@@ -219,8 +219,10 @@
         const group=el('g',{class:'diagram-flow-label','data-flow-id':f.id,'data-full-label':f.label});
         const labelText=text(lx,p.py,[label],{'font-size':FONT});group.appendChild(labelText);labels.appendChild(group);
         const maxWidth=external?384:292, rowHeight=(P.h-48)/Math.max(1,p.count-1);
-        const size=Math.min(FONT,FONT*maxWidth/labelText.getBBox().width,(rowHeight-1)/1.1);
+        const naturalSize=Math.min(FONT,FONT*maxWidth/labelText.getBBox().width,(rowHeight-1)/1.1);
+        const size=f.label.includes('Reservation Type')?Math.min(FONT,Math.max(19.2,naturalSize),(rowHeight-1)/1.1):naturalSize;
         labelText.setAttribute('font-size',size);
+        if(labelText.getBBox().width>maxWidth){labelText.querySelector('tspan').setAttribute('textLength',maxWidth);labelText.querySelector('tspan').setAttribute('lengthAdjust','spacingAndGlyphs');}
         const initial=labelText.getBBox();labelText.querySelector('tspan').setAttribute('y',p.py-initial.y-initial.height/2+p.py);
         const box=labelText.getBBox(),width=box.width+2*LABEL_GAP,height=box.height;
         routes.push({...f,points,peer:peer.id,process:process.id,side:external?'left':'right'});

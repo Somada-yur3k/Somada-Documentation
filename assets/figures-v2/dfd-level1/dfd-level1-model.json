@@ -123,7 +123,7 @@
       "id": "p1-fa-crcredentials",
       "source": "p1",
       "target": "faculty",
-      "label": "Class Representative Credentials",
+      "label": "Issued Account Credentials",
       "kind": "external"
     },
     {
@@ -144,7 +144,7 @@
       "id": "p1-he-account",
       "source": "headlab",
       "target": "p1",
-      "label": "Class Representative Account Details",
+      "label": "Account Management Details",
       "kind": "external"
     },
     {
@@ -165,14 +165,14 @@
       "id": "p2-cr-onschedule",
       "source": "classrep",
       "target": "p2",
-      "label": "On-Schedule Non-Laboratory Request",
+      "label": "On-Schedule Non-Laboratory Request including Reservation Type",
       "kind": "external"
     },
     {
       "id": "p2-cr-outschedule",
       "source": "classrep",
       "target": "p2",
-      "label": "Out-of-Schedule Request",
+      "label": "Out-of-Schedule Request including Reservation Type",
       "kind": "external"
     },
     {
@@ -445,14 +445,14 @@
       "id": "p2-d2-write",
       "source": "p2",
       "target": "d2",
-      "label": "Reservation / Approval Record",
+      "label": "Reservation Record including Reservation Type",
       "kind": "store"
     },
     {
       "id": "p2-d2-read",
       "source": "d2",
       "target": "p2",
-      "label": "Reservation / Approval Data",
+      "label": "Reservation Data including Reservation Type",
       "kind": "store"
     },
     {
@@ -607,20 +607,6 @@
       "source": "p5",
       "target": "d7",
       "label": "Daily Task Record",
-      "kind": "store"
-    },
-    {
-      "id": "p5-d7-read",
-      "source": "d7",
-      "target": "p5",
-      "label": "Daily Task Data",
-      "kind": "store"
-    },
-    {
-      "id": "p5-d10-read",
-      "source": "d10",
-      "target": "p5",
-      "label": "Disposal Summary",
       "kind": "store"
     }
   ]

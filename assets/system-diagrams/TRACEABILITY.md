@@ -1,12 +1,14 @@
 # System Diagrams — additive UML supplement
 
-Open [System-Diagrams.html](../../System-Diagrams.html) or [the A4 landscape PDF](diagrams.pdf). The publication contains eight sheets: SWIM-01 (the complete whole-system Swimlane), ACT-01–ACT-05 (one Activity diagram per DFD Level 1 parent), SEQ-01 (whole-system Sequence), and DEP-01 (Deployment). `models.js` retains the detailed workflow evidence catalog; `overview.js` renders the whole-system views, `process-activities.js` renders the five parent activities, and `render.js` renders Deployment and the page shell.
+Reservation Type update: Activity 2, SEQ-02 and the Class Representative Swimlane lane require Group / Student Only for both schedule variants. Activity alternatives converge through the requested OR join bar. Student Only is the signed-in representative; Group uses existing members. The combined reservation sequence retains rescheduling and the existing Faculty/Dean approval route. See [Changes Made](../../integrations/reservation-type/CHANGES.md).
+
+Open [System-Diagrams.html](../../System-Diagrams.html), [the complete A4 PDF](diagrams.pdf), or [the sequence-only PDF](sequences.pdf). The publication contains 12 sheets: SWIM-01, ACT-01–ACT-05, SEQ-01–SEQ-05 (one portrait sequence per major process), and DEP-01 (landscape). `models.js` retains the supporting evidence catalog; `sequence-models.js` holds the five interaction trees and `sequence-renderer.js` renders them.
 
 ## Source authority
 
 - `Docs.html`: current overview, 19 backlog rows, 24 events, 20 full descriptions (Tables 3–22), current scope and pending ERD notice.
 - `assets/figures-v2/usecase-diagram-source.html`: the current six actors and 20 main use cases.
-- `assets/figures-v2/dfd-level1/dfd-level1-model.json`: five parents, ten canonical logical record groups, 74 flows.
+- `assets/figures-v2/dfd-level1/dfd-level1-model.json`: five parents, ten canonical logical record groups, 72 flows.
 - `assets/figures-v2/dfd-level2-compact/dfd-level2-model.json`: 21 child processes and their directional exchanges.
 - `README.md` and the consultation findings in `assets/system-audit.json`: boundaries and unresolved decisions.
 - [OMG UML 2.5.1](https://www.omg.org/spec/UML/2.5.1): notation, not a source of laboratory requirements.
@@ -15,9 +17,9 @@ Archived entity arrays, archived ERD figures, retired traceable DFDs and the pau
 
 ## Activity → Sequence mapping
 
-SWIM-01 and SEQ-01 cover the same whole-system operation selection. Authentication leads to five alternative branches corresponding to DFD processes 1.0–5.0; these are not five mandatory consecutive transactions. Initial/final nodes mean the start/end of an operation attempt, not logout or termination of the entire system. Human partitions denote one eligible acting role per invocation; the complete eligible role list appears above each page. Persistent-record partitions/lifelines represent existing DFD stores, not an additional human actor or physical schema.
+SWIM-01 summarizes the laboratory service lifecycle with six actor partitions, including Dean. [The sequence inventory](SEQUENCE-PLAN.md) maps five Sequence Diagrams directly to the five Activities and DFD parents. Guarded fragments summarize related interactions without claiming that every alternative runs in one transaction. All 20 documented use cases and 21 Level 2 children remain covered in the sequence metadata.
 
-ACT-01–ACT-05 expand those five branches on separate landscape pages. Each contains only its parent's canonical subprocesses, with the exact numbers and names loaded from the Level 2 model. Initial nodes, guarded decisions, merges, action nodes and activity finals show the control flow; these are not copies of DFD data-flow arrows. Validation failures are summarized in actions, outcomes and page notes where a dedicated exception branch would overcrowd the page. They never authorize saving invalid input.
+ACT-01–ACT-05 expand those five branches on separate portrait pages. Each contains only its parent's canonical subprocesses, with names loaded from the Level 2 model; subprocess IDs remain in source metadata but are not printed. Initial nodes, guarded decisions, merges, action names and activity finals show the control flow; these are not copies of DFD data-flow arrows. Detailed descriptions, role restrictions and validation evidence remain in the model, the website's non-printing notes and the full descriptions. Removing explanatory prose from the artwork does not authorize saving invalid input.
 
 | Sheet | Activity focus | Canonical children |
 | --- | --- | --- |
@@ -27,14 +29,46 @@ ACT-01–ACT-05 expand those five branches on separate landscape pages. Each con
 | ACT-04 | Catalogue, issuance, return and disposal as alternative operations | 4.1–4.5 |
 | ACT-05 | Schedule, usage/tasks, clearance and end-term reporting as alternative operations | 5.1–5.5 |
 
-Every process page links directly to its matching Level 2 diagram and back to the complete Swimlane. The Sequence remains one whole-system sheet; it has not been split into five sequences.
+Every process page links to its matching Level 2 diagram and back to the complete Swimlane. The Sequence index contains exactly five entries in the same order as the Activity and DFD parent processes. Each sequence has Activity/DFD references and PNG/SVG/PDF downloads.
 
-The following 17 rows are the supporting workflow evidence catalog, NOT separate printed pages. Their details are grouped into the five process branches; all full conditions remain authoritative in Tables 3–22. The Activity swimlane loads the canonical Level 2 JSON and shows all 21 exact subprocess names and numbers once. Names within a grouped action identify the covered subprocesses, not a claim that all listed operations execute on every invocation. The selected workflow determines the applicable actions and order.
+### Portrait process activities
+
+ACT-01–ACT-05 use portrait layouts without responsibility partitions: uniform white rounded actions, black connectors, guarded decisions and initial/final nodes. Process 5 has a paired fork/join for independent read-only D2/D3 session evidence and D4/D5 inventory/item evidence; both branches join before computing the report. Alternative administration operations do not run in parallel. Only the whole-system Swimlane uses responsibility columns.
+
+Read from the initial node downward, following the guard for the selected operation. Catalogue, issue, return and disposal remain alternatives, as do schedule, logs, clearance and reporting. A vertical row alignment does not imply an unshown arrow or mandatory sequence. The 21 canonical subprocess names and numbers are unchanged. Deployment retains its structure; the five sequence pages summarize those alternatives through guarded fragments.
+
+### Whole-system UML swimlane
+
+Optional Q&A convergence uses a horizontal OR join: the No bypass and completion of the Q&A action enter separate top-face ports, followed by one output to reservation preparation. Need Q&A remains a decision. The join does not require both asking and skipping Q&A.
+
+Approval routing clarification: Own on-schedule Yes and Out-of-schedule No have independent labelled routes, independent arrowheads and separate top-face ports on a visible OR join. They do not share a line segment before that bar. Its output and Dean-approved Yes then enter separate ports on a lower OR join, preserving the short Faculty bypass and downward-only Dean route. This supersedes the earlier invisible approval connectors.
+
+Dean-approved Yes now runs downward and across to the lower approval convergence before the preparation fork. It no longer rises into the Faculty approval routes. The shortened on-schedule bypass retains its own upper convergence; both continue without changing approval conditions.
+
+Faculty routing update: the on-schedule Yes bypass converges above the lower Dean-rejection path rather than running down to the preparation fork. Faculty decision heights and action spacing leave visible connector shafts before arrowheads. Crossing bridges preserve distinct routes while leaving true convergence points connected. Approval conditions are unchanged.
+
+Return reconciliation now uses a horizontal OR join instead of its diamond. Circuit and Physics enter separate top-face ports; a single bottom-face output continues to the unresolved-balance check. The selected laboratory alone may proceed; the diagram does not require returns from both laboratories.
+
+Layout update: activity shapes use capsule ends. Dean routing uses a vertical rounded join bar with separated left-face inputs and a right-face output; preparation uses a horizontal rounded bar with four separated top-face inputs and a bottom output. The join region is more compact, parallel approach tracks remain spaced, and orthogonal connectors have rounded bends. Conditions and actor permissions are unchanged.
+
+Latest preparation update: both requester and staff convergence diamonds are removed. Rep, Faculty, Circuit and Physics edges connect directly to the preparation join with explicit `{joinSpec = (Rep or Faculty) and (Circuit or Physics)}`. It requires one requester and staff from the selected laboratory, not both requesters or both laboratories.
+
+The approval convergence uses two visible OR joins with independent input routes. Before Dean review, the user requested a visible JoinNode bar. It carries an explicit `{joinSpec = or}` condition: either incoming request can proceed, without waiting for both a Class Representative request and a Faculty request. The bar connects to Dean review, which connects to the Dean-approved decision. The preparation JoinNode uses `(Rep or Faculty) and (Circuit or Physics)` and waits for one requester and one assigned staff path. UML JoinNode specifications may override the default AND operator; see [UML specification, control-node semantics](https://docs.nomagic.com/download/attachments/136711173/UML%20specification.pdf?api=v2&modificationDate=1695226406576&version=1). Other decisions and merges are unchanged.
+
+SWIM-01 is one A4 portrait UML overview with Class Representative, Faculty, Circuit Staff, Physics Staff, Head Lab and Dean partitions. Actions are rounded capsules; initial/final circles, guarded decisions, exclusive-path merges and black fork/join bars use activity notation. Supporting readiness is optional, not a new approval gate. Class Representative requests require Faculty approval, then Dean approval if out-of-schedule. Faculty-originated scheduled activities bypass academic approval; out-of-schedule Faculty requests go to Dean. Dean review and decision are inside the Dean lane. Requester preparation stays in the appropriate actor lane. Assigned-staff service, clearance where needed and automatic completed-reservation logs follow. Detailed alternatives remain in Activities 1-5.
+
+Class Representatives view their own group records. Only Head Lab manages accounts, schedules, daily tasks and clearance. Faculty does not approve on behalf of Dean. In-scope Q&A is informational. Pending approval is a waiting state, not automatic rejection. The overview assumes a reviewer has clicked Approve or Reject. Preparation alternatives enter separate ports on a custom JoinNode; its join specification waits for one requester and one assigned staff path, not all four actors.
+
+The publication contains only the title, six actor headers, UML nodes, short labels, guards and connectors. Website notes explain scope outside the printable sheet. Standalone swimlane-system.png and .svg are used by Docs.html Figure 15 and Google Docs image capture; swimlane-system.pdf is one printable A4 page. Activity images remain separate portrait diagrams.
+
+Regression checks retain six actor partitions, Dean-owned review/decision, reachable final outcomes, explicit join specifications, contained labels and separated connectors. Publication checks now require 12 A4 pages (11 portrait and one landscape), plus five one-page sequence PDFs.
+
+The following 17 rows are the supporting evidence catalog, not separate printed pages. The simplified Swimlane covers all five major process groups without reproducing all 21 subprocesses. Detailed process mapping remains in the separate Activity Diagrams.
 
 | Evidence entry | Workflow | Full description tables | DFD child processes |
 | --- | --- | --- | --- |
 | 01 | Authenticate / establish access | 3 | 1.1, 1.2 |
-| 02 | Issue Class Representative account | 15 | 1.3 |
+| 02 | Issue Class Representative / Faculty account | 15 | 1.3 |
 | 03 | Scheduled Faculty activity | 4, 5, 6 | 2.1, 2.2 |
 | 04 | Routed non-lab / out-of-schedule request | 4, 5, 7 | 2.1, 2.2, 2.3 |
 | 05 | Approve / reject | 13 | 2.3, 2.4 |
@@ -51,19 +85,21 @@ The following 17 rows are the supporting workflow evidence catalog, NOT separate
 | 16 | Schedule / usage / daily tasks | 21 | 5.1, 5.2 |
 | 17 | End-term report | 22 | 5.4, 5.5 |
 
-The single-sheet overviews summarize operations, validations and outcomes rather than reproducing every individual query or exception. Record-group reads/writes are logical operations, not SQL, API contracts, tables or transaction-boundary guarantees. UI and application behavior are combined in the documented web-system lifeline; no undocumented controllers/services are invented. Solid filled-head calls, dashed open-head replies and execution bars distinguish requests and responses. The Sequence `opt` requires authentication; its `alt` operands identify the selected authorized operation. Email/recipient delivery uses an open asynchronous arrow, without assuming delivery acknowledgement. Settlement remains conditional, not automatically performed at clearance creation.
+Sequence record reads/writes are logical operations, not SQL, API contracts or atomicity guarantees. UI and application behavior share the documented Web System lifeline; no controllers, notification vendor or AI provider is invented. Actors use stick figures and never directly call the Database. Solid filled-head calls, dashed open-head replies and bounded execution bars distinguish requests/results. The renderer validates matching call stacks separately in every alternative operand. Self-calls are genuine internal work; create/destroy/recursive/duration messages are not forced. Login is separate; other interactions have an authenticated-role precondition. `alt` shows meaningful outcomes; `opt` covers conditional notification/export. Notifications are asynchronous signals, not replies to a non-caller. Settlement is a later explicit Head action, not automatically executed when clearance is raised.
 
-No fork/join is introduced: the sources do not require parallel execution. Login failure ends separately. Selected operations return either a result, pending status or correction/refusal; this shared exit does not imply that invalid input was saved. Internal DFD arrows are data dependencies, not evidence that unrelated operations must execute in one session.
+The Swimlane fork permits independent requester preparation and assigned-staff preparation after approval; the join waits for both before service. Circuit and Physics assignment is exclusive and converges through a JoinNode with `joinSpec = or`, never a default AND join requiring both laboratories. This is a logical business-preparation model, not a database-concurrency claim. Process 5 separately uses a read-only evidence fork/join.
+
+SEQ-05 mirrors that reporting fork/join with a `par` frame for completed-usage and inventory/item reads; both return before calculations, and its `opt` contains the separately requested export. SEQ-02 retains separate Faculty and Dean actor messages and validates the current persisted route for each decision.
 
 ## Important scope and evidence limits
 
-- All six actors can log in. Only Head Laboratory issues representative accounts, controls clearance and maintains logs/schedules/daily tasks. Staff remain laboratory-scoped for inventory, issue/return and disposal.
+- All six actors can log in. Only Head Laboratory issues Class Representative and Faculty accounts, controls clearance and maintains logs/schedules/daily tasks. Staff remain laboratory-scoped for inventory, issue/return and disposal. Dean retains a pre-assigned account; its provisioning authority awaits confirmation.
 - Faculty scheduled activities become Approved without an extra academic approval. Class Representatives cannot submit that activity type. Dean only participates in authentication and applicable approvals.
 - Approval records/status/holds belong to D2; base schedules/usage belong to D3. Rejection and cancellation release holds. Rescheduling revalidates before replacing a hold.
 - Q&A selects authorized D2/D3/D4/D8 evidence by intent, writes D9 conversation history, and never changes a reservation. Unsupported/action questions are declined; missing evidence is reported as unavailable. Failure/correction paths are summarized; recovery/logging policies beyond the full description are not invented.
 - Equipment cannot be consumed. Broken/lost outcomes are linked to borrowing evidence; only Head Laboratory raises accountability. Clearance viewing is a separate Class Representative-initiated read-only workflow.
 - Disposal includes only physically present, nonrepairable items/waste and does not deduct the same quantity twice. Table 20 supplies the inventory-adjustment detail; the DFD disposal child explicitly persists D10. No existing DFD flow was added to hide this distinction.
-- Reporting includes usage, borrowed items, broken/lost/consumed totals, disposal, daily tasks and outstanding clearances. It is non-AI. The report is handed to administration outside the system.
+- Reporting consists of Average Equipment Use, Top 5 Equipment & Consumables, Laboratory Frequency Usage, and supporting Recent Activity, separately for Physics and Circuits and filtered by term. Avg Use % = ROUND(Quantity Used / Total Available * 100, 2). Frequency uses distinct actual sessions, not hours or item rows: 4/9 and 5/9 produce 44.44% and 55.56%. Reporting reads D2/D3/D4/D5 only. Disposal, non-transaction daily tasks and outstanding clearances remain separate workflows, not report inputs or appendices. Calculations are non-AI.
 
 ## Deployment: supported logical architecture, not a fabricated technology stack
 
@@ -77,12 +113,14 @@ Deployment illustrates three candidate client device types in separate UML nodes
 
 ## Pending decisions deliberately preserved
 
-Exact Class Representative → Dean routing, the two-day advance cutoff, whole-term recurrence, room-only session completion, completion after clearance settlement, atomic quantity/hold rules and knowledge-base ownership still need consultation. No new policy is inferred from these diagrams.
+Approval routing is confirmed across Tables 7 and 13, the event table, backlog, DFD 2.3/2.4/4.2 descriptions, Activities 2 and 4, and the overall Swimlane. Class Representative on-schedule non-laboratory requests need assigned Faculty only; out-of-schedule requests need Faculty then Dean. Faculty's own scheduled activities need no additional academic approval; Faculty out-of-schedule requests go directly to Dean. Intermediate Faculty approval keeps reservation status Pending, with reviewer stage awaiting Dean and the hold retained. Only final required approval permits issuance; either rejection stops the route and releases the hold. “Pending Dean” is a stage label, not an added status enum. This resolves POL-01 only; Dean account provisioning remains pending.
+
+The two-day advance cutoff, whole-term recurrence, room-only session completion, completion after clearance settlement, atomic quantity/hold rules and knowledge-base ownership still need consultation. No new policy is inferred from these diagrams.
 
 ## Print and verification
 
-Use A4 Landscape, 100% scale, browser headers/footers off. The supplement supplies its own page numbers. Each of the eight pages has 10 mm margins and scalable vector content. The complete Swimlane is page 1; process Activities 1.0–5.0 occupy pages 2–6; Sequence is page 7; Deployment is page 8. No individual diagram is split across sheets. On phones, each sheet scrolls horizontally while the collection scrolls vertically.
+Use CSS-defined page sizes, 100% scale, browser headers/footers off. Page 1 is the portrait Swimlane; pages 2–6 are portrait Activities; pages 7–11 are portrait Sequences; page 12 is landscape Deployment. Activity, Swimlane and Sequence pages exclude website notes/navigation. Every sequence is one full A4 sheet with adaptive label wrapping/spacing and at least 18 SVG-unit message text (about 8.4 pt at its A4 print width). On phones, individual sheets scroll horizontally while the page remains within the viewport.
 
-Run `node integrations/system-diagrams/check.cjs --render` with Playwright and Edge available (`PLAYWRIGHT_MODULE` may point to an existing installation). This checks evidence-catalog coverage, all 21 canonical children in the complete Swimlane and their respective process pages, control-flow reachability from initial to final, matching DFD links, source preservation, text bounds and collisions, mobile overflow and the eight-page PDF count. It regenerates the PDF and eight preview PNGs. These checks do not replace review of summarized UML semantics. The original diagrams and Google Doc are never modified by this check.
+Run `node integrations/system-diagrams/check.cjs --render` with Playwright and Edge available (`PLAYWRIGHT_MODULE` may point to an existing installation). It checks Activity/Swimlane coverage and geometry, plus sequence roles, all 20 use cases/21 children, chronological calls and matched replies on each alternative, activation bounds, monochrome styling, label collisions, navigation, A4 orientation/count and exports. It regenerates the complete PDF, sequence-only PDF, five sequence PNG/SVG/PDF sets, and existing Activity/Swimlane exports. `node integrations/system-diagrams/check-sequences.cjs` runs the model-only checks. The checks do not write Google Docs or the shared database.
 
 The existing Analytics snapshot is refreshed for changed source fingerprints, including navigation and the full-label publication update. Its metrics and scope are not redesigned to claim UML semantic correctness. DFD Level 0–2 publication labels now display their complete canonical names; the models, flow counts, directions and role permissions are unchanged. Footer crossing/abbreviation notes are removed from printed diagrams. The single-sheet Level 1 remains dense: its fitted labels are approximately 5–6.3 pt within the existing A4 margins; inspect an actual-size print before submission. Full names take priority over the previous abbreviated-label font threshold.

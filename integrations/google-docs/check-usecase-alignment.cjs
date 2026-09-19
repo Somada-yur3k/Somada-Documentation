@@ -30,7 +30,7 @@ data.useCases.forEach((u,i)=>{
   assert.deepEqual(sorted(events.flatMap(e=>split(e.source))),sorted(expected),u.id+' event actors');
   assert(!/^(Unchanged|Renamed|Also genuinely|Genuinely missing)/.test(u.briefDescription));
 });
-assert.equal(dependencies.length,11);
+assert.equal(dependencies.length,12);
 assert.deepEqual(sorted(dependencies),sorted(model.RELATIONSHIPS.map(d=>d.from+'|'+d.to+'|'+d.type)));
 assert.equal(data.events.length,24);
 data.events.forEach(e=>{
@@ -40,4 +40,4 @@ data.events.forEach(e=>{
 assert(!/View My Dashboard|View Laboratory Dashboard/.test(JSON.stringify([data.useCases,data.events])));
 assert(html.includes('Table 23: Gap Analysis'));
 assert(html.includes('{uc.briefDescription}'));
-console.log('Alignment passed: 20 main descriptions (Tables 3–22), 10 supporting use cases / 11 dependencies, 24 events; names, roles, references and numbering match.');
+console.log('Alignment passed: 20 main descriptions (Tables 3–22), 11 supporting use cases / 12 dependencies, 24 events; names, roles, references and numbering match.');

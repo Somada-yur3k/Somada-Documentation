@@ -9,15 +9,19 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
   const page=await browser.newPage({viewport:{width:1440,height:1050}}),base=`http://127.0.0.1:${server.address().port}/`,errors=[];page.on('pageerror',e=>errors.push(e.message));
   for(const g of report.groups){assert.equal(g.total,report.checks.filter(c=>c.group===g.id).length);assert.equal(g.passed,report.checks.filter(c=>c.group===g.id&&c.status==='pass').length);assert.equal(g.percent,g.total?Math.round(100*g.passed/g.total):null);}
   assert.equal(report.groups.find(g=>g.id==='erd').status,'pending');
+  assert.equal(report.groups.find(g=>g.id==='erd').available,true,'The draft is available, not validated');
+  assert.equal(report.groups.find(g=>g.id==='erd').percent,null,'No invented schema completeness score');
   assert(report.findings.some(f=>f.status==='pending'&&f.id==='ERD-01'));
+  assert(report.findings.some(f=>f.status==='fixed'&&f.id==='POL-01'),'Confirmed sequential approval is no longer pending');
+  assert(report.findings.some(f=>f.status==='pending'&&f.id==='POL-08'),'Dean account provisioning remains unresolved');
   for(const f of report.features){assert(f.events>0&&f.steps.length&&f.backlog.length);assert(f.stores.every(s=>report.stores.some(n=>n.id===s)));}
   await page.goto(base+'Analytics.html');await page.waitForFunction(()=>window.__auditReady||window.__auditError);assert.equal(await page.evaluate(()=>window.__auditError),undefined);
   assert.equal(await page.locator('#features tr').count(),20);assert.equal(await page.locator('#model-grid .model-card').count(),6);
-  assert.equal(await page.locator('#findings article').count(),8);
+  assert.equal(await page.locator('#findings article').count(),report.findings.filter(f=>f.status==='pending').length);
   await page.locator('#feature-search').fill('clearance');assert.equal(await page.locator('#features tr').count(),2);
   await page.locator('#feature-search').fill('no-match-test');assert.match(await page.locator('#features').innerText(),/No matching/);
   await page.locator('#feature-search').fill('');await page.locator('#process-filter').selectOption('p4');assert.equal(await page.locator('#features tr').count(),4);
-  await page.locator('#process-filter').selectOption('');await page.locator('#finding-filter').selectOption('fixed');assert.equal(await page.locator('#findings article').count(),10);
+  await page.locator('#process-filter').selectOption('');await page.locator('#finding-filter').selectOption('fixed');assert.equal(await page.locator('#findings article').count(),report.findings.filter(f=>f.status==='fixed').length);
   await page.locator('#finding-filter').selectOption('pending');
   const links=await page.locator('a').evaluateAll(as=>as.map(a=>a.href));for(const href of links.filter(h=>h.startsWith(base)))assert(fs.existsSync(path.join(root,new URL(href).pathname)),href);
   await page.screenshot({path:path.join(os.tmpdir(),'system-analytics-desktop.png'),fullPage:true});

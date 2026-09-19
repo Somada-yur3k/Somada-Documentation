@@ -1,0 +1,28 @@
+// Confirm the consulted account scope without granting Dean/Staff creation.
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../..'),read=f=>fs.readFileSync(path.join(root,f),'utf8');
+const docs=vm.runInNewContext(read('Docs.html').match(/  const DATA = \{[\s\S]*?\n  \};/)[0]+'; DATA');
+const account=docs.useCases.find(u=>u.diagramId==='issueacct');
+assert.equal(account.actors,'Head Laboratory');
+assert.equal(account.title,'Manage Class Representative / Faculty Accounts');
+assert.match(account.briefDescription,/Dean remains on a pre-assigned account/);
+assert.match(account.briefDescription,/pending consultation/);
+assert.match(account.flowSystem.join(' '),/permits only Class Representative or Faculty/);
+assert.match(account.exceptions.join(' '),/creates the Faculty account first/);
+assert.match(docs.backlog.find(b=>b.id==='02').want,/Class Representatives and Faculty/);
+assert.equal(docs.events.find(e=>e.diagramId==='issueacct').useCase,account.title);
+const l1=JSON.parse(read('assets/figures-v2/dfd-level1/dfd-level1-model.json'));
+const p1=JSON.parse(read('assets/figures-v2/dfd-level2-compact/dfd-level2-model.json')).find(p=>p.id==='p1');
+assert.equal(p1.steps[2],account.title);
+assert(p1.flows.some(f=>f.source==='headlab'&&f.target==='p1.3'&&f.label==='Account Management Details'));
+assert(p1.flows.some(f=>f.source==='p1.3'&&f.target==='faculty'&&f.label==='Issued Account Credentials'));
+assert(!p1.flows.some(f=>f.source==='p1.3'&&f.target==='dean'));
+for(const label of ['Account Management Details','Issued Account Credentials'])assert(l1.flows.some(f=>f.label===label));
+assert(read('assets/system-diagrams/process-activities.js').includes('Create / update details\\nand active status'));
+assert.match(account.flowSystem.join(' '),/account creation or management/);
+assert.match(account.flowSystem.join(' '),/active\/inactive status/);
+assert(p1.flows.some(f=>f.source==='d1'&&f.target==='p1.3'&&f.label==='Account Data'));
+assert(read('assets/system-diagrams/sequence-models.js').includes("branch('Update existing Faculty / Class Rep. account'"));
+assert(read('assets/erd/model.js').includes('neither role self-registers'));
+assert(read('integrations/system-audit/build.cjs').includes('Dean account provisioning'));
+console.log('Account scope passed: Head creates/manages Faculty and Class Rep accounts; maintenance reads D1; no self-registration; Dean remains pre-assigned.');

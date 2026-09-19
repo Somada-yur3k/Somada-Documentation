@@ -16,8 +16,8 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
   return{actors:ACTORS,cases,paths,boxes,relationships:RELATIONSHIPS};
  });
  const issues=[];
- assert.equal(result.actors.length,6);assert.equal(result.cases.length,30);assert.equal(result.relationships.length,11);
- assert.equal(result.paths.length-11,42);
+ assert.equal(result.actors.length,6);assert.equal(result.cases.length,31);assert.equal(result.relationships.length,12);
+ assert.equal(result.paths.length-12,42);
  for(const side of ['left','right']){
   const actors=result.actors.filter(a=>a.side===side && a.uses.includes('login')).sort((a,b)=>a.cy-b.cy);
   assert.equal(actors.length,3);

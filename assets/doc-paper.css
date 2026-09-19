@@ -48,4 +48,6 @@
 .a4-document .dfd-level1-figure{margin:4pt 0 !important;}
 .a4-document .dfd-level1-figure .figure-frame img{max-height:220mm !important;}
 .a4-document .dfd-level1-figure .diagram-embed{height:220mm;max-height:220mm;}
+.a4-document .doc-figure:has(img[src*="erd-complete.png"]){margin:4pt 0 !important;}
+.a4-document img[src*="erd-complete.png"]{max-height:235mm !important;}
 .a4-document .anchor-link,.a4-document .zoom-hint,.a4-document .figure-editor-link,.a4-document .entity-note,.a4-document .entity-grid,.a4-document .doc-footer{display:none !important;}

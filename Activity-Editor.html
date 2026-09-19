@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Activity Diagram Editor · NU Fairview</title>
+<link rel="stylesheet" href="assets/activity-editor/editor.css">
+<script src="assets/activity-editor/config.js" defer></script>
+<script src="assets/system-diagrams/process-activities.js" defer></script>
+<script src="assets/activity-editor/core.js" defer></script>
+<script src="assets/activity-editor/drawing.js" defer></script>
+<script src="assets/activity-editor/editor.js" defer></script></head>
+<body><header><a href="System-Diagrams.html#process-activities">← System Diagrams</a><a href="Docs.html#activity-diagrams">Documentation</a><h1>Activity Diagram Editor</h1><p>Shared drafts for adviser review. Only the five Activity Diagrams are editable here.</p></header>
+<main><section class="toolbar" aria-label="Editor controls">
+<label>Diagram <select id="diagram"><option value="p1">1 · Access & Accounts</option><option value="p2">2 · Reservations</option><option value="p3">3 · Laboratory Questions</option><option value="p4">4 · Equipment & Borrowing</option><option value="p5">5 · Administration & Reporting</option></select></label>
+<button id="undo">Undo</button><button id="redo">Redo</button><button id="reset">Reset diagram</button><button id="download">Export review JSON</button><button id="svg-export">Export SVG</button>
+<label class="upload">Import review JSON<input id="import" type="file" accept="application/json,.json"></label>
+</section><p id="status" role="status" aria-live="polite">Loading authored diagrams…</p>
+<div class="layout"><section class="canvas-wrap" aria-label="Editable A4 portrait diagram"><div id="canvas"></div></section>
+<aside><section><h2>Selection</h2><p id="selection">Click a shape or arrow. Drag shapes or blue arrow handles. Arrow endpoints stay attached.</p>
+<label>Label<textarea id="label" rows="3" maxlength="180" disabled></textarea></label><button id="apply-label" disabled>Apply label</button>
+<p class="muted">Selected shapes: use arrow keys to move, Shift for larger steps. Labels are plain text. Connections and UML node types remain unchanged.</p></section>
+<section><h2>Review checks</h2><ul id="findings"></ul><p class="muted">Checks flag overlaps and wording changes. They do not certify UML meaning or replace adviser review.</p></section>
+<section><h2>Shared workspace</h2><p id="connection"></p>
+<label>Adviser / change note (optional)<textarea id="note" maxlength="2000" rows="3" placeholder="What changed and why? Do not include private information."></textarea></label>
+<div class="buttons"><button id="load" disabled>Reload latest</button><button id="save" disabled>Save for everyone</button><button id="history" disabled>Refresh history</button><button id="recover">Recover local backup</button></div>
+<p class="muted">Public editing: anyone can read and change these five diagrams without login or approval. Click Save for everyone; refreshing loads the latest database version. History and notes are public and anonymous. Simultaneous changes produce a conflict instead of silently overwriting. Google Docs and Git files are not automatically changed.</p>
+<ol id="history-list"></ol></section></aside></div></main>
+<footer>Local drafts are backed up in this browser; they are not shared until “Save for everyone” succeeds. Unsaved backups can be recovered explicitly; they never replace the latest shared version on refresh. <a href="integrations/activity-editor/SETUP.md">Public database setup</a></footer></body></html>

@@ -3,7 +3,8 @@
   'use strict';
   const pageStarts = new Set(['toc','overview','methodology','requirements','events',
     'usecase-diagrams','usecase-full','gap-analysis','context-diagram','dfd',
-    'dfd-p1','dfd-p2','dfd-p3','dfd-p4','dfd-p5','erd']);
+    'dfd-p1','dfd-p2','dfd-p3','dfd-p4','dfd-p5','erd',
+    'activity-diagrams','activity-p2','activity-p3','activity-p4','activity-p5','swimlane-diagram']);
 
   async function render(source, target, onProgress) {
     if (!window.Paged) throw new Error('The page-layout library did not load. Reload this page.');

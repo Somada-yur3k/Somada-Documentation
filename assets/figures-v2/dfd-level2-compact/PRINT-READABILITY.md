@@ -8,7 +8,7 @@ The active source is `dfd-level2-model.json`, drawn by `dfd-level2-renderer.js` 
 
 Each parent has its own 1200 × 950 publication frame and 2400 × 1900 PNG. The internal coordinate space is 2010 × 1486.75, widened to fit complete store-flow names and distinct ordered lanes. Boundary labels use a 24-unit base font (about 5.9 pt at the current A4 document width), fitted where necessary without truncation. Internal flow names can wrap over two lines; every word is retained. Shapes are white with black borders; entity-specific arrow colors match Level 1. No label box covers other arrows: only the label's own stroke is interrupted.
 
-All 74 current Level 1 flows are mapped by stable parent IDs. Repeated store reads/writes represent separate child stages, not additional parent features.
+All 72 current Level 1 flows are mapped by stable parent IDs. Repeated store reads/writes represent separate child stages, not additional parent features.
 
 | Parent | Child boundary exchanges | Internal exchanges |
 | --- | ---: | ---: |
@@ -26,7 +26,7 @@ Entity right-edge ports and store left-edge ports now follow subprocess order fr
 
 Run `node integrations/google-docs/check-level2.cjs --render` with Playwright available to audit all figures and regenerate the five PNGs. Run `check-pages.cjs` to verify intact A4 images and read-only sync capture. Browser edits are stored locally; print and embed/export use the audited authored layout.
 
-Vertical routing lanes mirror across both axes. For a peer below its process port, the store side starts rightmost and steps left; the entity side starts leftmost and steps right. For a peer above its process port, both orders reverse. Upward and downward geometric runs use separate lane bands; arrow direction itself is unchanged. All lanes on each side are distinct with 20 internal units (25% wider than the previous 16-unit spacing) of separation, including disjoint spans. In P5, the D3, D7 and D2 inputs into 5.4 step left-to-right, while the 5.5 End-Term Report return sits left of the Head Laboratory report-request lane. The audit checks these examples, both geometric orientations and the existing top-to-bottom peer ports. Editor storage version 6 prevents older manual routes from overriding this layout.
+Vertical routing lanes mirror across both axes. For a peer below its process port, the store side starts rightmost and steps left; the entity side starts leftmost and steps right. For a peer above its process port, both orders reverse. Upward and downward geometric runs use separate lane bands; arrow direction itself is unchanged. All lanes on each side are distinct with 20 internal units (25% wider than the previous 16-unit spacing) of separation, including disjoint spans. In P5, the D3 and D2 inputs into 5.4 (D7 daily tasks are excluded from reporting) step left-to-right, while the 5.5 End-Term Report return sits left of the Head Laboratory report-request lane. The audit checks these examples, both geometric orientations and the existing top-to-bottom peer ports. Editor storage version 6 prevents older manual routes from overriding this layout.
 
 Level 0 uses the same visual rules in `../dfd-level0/dfd-level0-portrait.js`: one process, six uniform entities, 46 independent horizontal arrows, 20-unit base labels, fitted to display full flow names, on a 1200 × 1500 portrait canvas, exported at 2400 × 3000. It derives boundary exchanges directly from Level 1. Run `check-dfd-scope.cjs --render` to audit and regenerate it.
 

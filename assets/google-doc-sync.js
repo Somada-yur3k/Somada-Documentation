@@ -9,7 +9,8 @@
     ['backlog', 'Product Backlog'], ['events', 'Event Tables'],
     ['usecase-diagrams', 'Use Case Diagrams'], ['usecase-full', 'Use Case Full Description'],
     ['gap-analysis', 'Gap Analysis'], ['context-diagram', 'Context Diagram'],
-    ['dfd', 'Data Flow Diagrams (Levels 1 and 2)'], ['erd', 'Entity-Relationship Diagram']
+    ['dfd', 'Data Flow Diagrams (Levels 1 and 2)'], ['erd', 'Entity-Relationship Diagram'],
+    ['activity-diagrams', 'Activity Diagrams (5 images)'], ['swimlane-diagram', 'Swimlane Diagram (1 image)']
   ];
   let dialog;
   let busy = false;
@@ -177,7 +178,8 @@
         const rich = richTextOf(element);
         if (rich.text) blocks.push({ kind:element.matches('h1,h2,h3,h4,h5') ? 'heading' : 'paragraph', ...rich,
           role:element.matches('.cap') ? 'caption' : element.matches('li') ? 'list' : 'body',
-          level:element.matches('h1,h2,h3,h4,h5') ? Number(element.tagName[1]) : 0 });
+          level:element.matches('h1,h2,h3,h4,h5') ? Number(element.tagName[1]) : 0,
+          pageBreakBefore:element.matches('h1,h2,h3,h4,h5') && element.closest('[data-sync-page-break="true"]') !== null });
         return;
       }
       for (const child of element.children) await visit(child);
@@ -236,7 +238,7 @@
         sections.push(await collectSection(id));
       }
       const title = textOf(document.querySelector('.doc-source #cover h1') || document.querySelector('#cover h1'));
-      const payload = JSON.stringify({ version:2, documentId:DOCUMENT_ID, title:includeTitle ? title : null, sections });
+      const payload = JSON.stringify({ version:3, documentId:DOCUMENT_ID, title:includeTitle ? title : null, sections });
       if (new Blob([payload]).size > 25 * 1024 * 1024) throw new Error('This update exceeds 25 MB. Select fewer sections per update.');
       const post = document.createElement('form');
       post.method='POST'; post.action=endpoint; post.target=popupName;
@@ -254,7 +256,8 @@
       dialog=document.createElement('dialog'); dialog.className='gdoc-dialog';
       dialog.innerHTML=`<form><h2>Update Google Docs</h2>
         <p>Target: <a href="${DOCUMENT_URL}" target="_blank" rel="noopener">your new Google Doc copy</a>.</p>
-        <p>Selected sections will be replaced with their current local text, tables, and images. Other sections stay as they are. A backup copy is created before changes.</p>
+        <p>Selected sections will be replaced with their current local text, tables, and images. Missing Activity and Swimlane sections will be created. A backup copy is created before changes.</p>
+        <p>Each sync sets the first document tab's body, header and footer text to 11 pt, including unselected sections. Bold and italic are preserved. Text inside images is unchanged. Deploy the updated Code.gs before sending this update.</p>
         <p><a href="integrations/google-docs/SETUP.md" target="_blank" rel="noopener">One-time Google connection setup</a></p>
         <label>Apps Script Web App URL<input name="endpoint" type="url" required placeholder="https://script.google.com/macros/s/…/exec"></label>
         <label>Sync key<input name="key" type="password" required autocomplete="off" minlength="32"></label>

@@ -9,7 +9,7 @@ const roles={classrep:'Class Representative',faculty:'Faculty',dean:'Dean',headl
 // Explicit design mappings, not a name-similarity score. Each row declares required child exchanges.
 const mapping={
  login:{steps:['p1.1','p1.2'],backlog:['01'],exchange:[['in','Credentials','p1.1']]},
- issueacct:{steps:['p1.3'],backlog:['02'],exchange:[['in','Class Representative Account Details','p1.3']]},
+ issueacct:{steps:['p1.3'],backlog:['02'],exchange:[['in','Account Management Details','p1.3']]},
  chooselab:{steps:['p2.1'],backlog:['03'],exchange:[['out','Schedule & Availability','p2.1']],note:'Laboratory choice is a UI filter carried into the schedule/request, not a separate persisted record.'},
  viewsched:{steps:['p2.1'],backlog:['03'],exchange:[['out','Schedule & Availability','p2.1']]},
  submitscheduled:{steps:['p2.2'],backlog:['04A'],exchange:[['in','Scheduled Laboratory Activity','p2.2']]},
@@ -30,6 +30,8 @@ const mapping={
  endterm:{steps:['p5.4','p5.5'],backlog:['17'],exchange:[['in','Report Request','p5.5'],['out','End-Term Report','p5.5']]}
 };
 const findings=[
+ ['fixed','RES-01','Required Reservation Type','Class Representatives must choose Group or Student Only for both schedule variants. Table 7, events, backlog, form preview, Use Case, DFD 0–2, ERD, Activity 2, Sequence 05 and Swimlane now carry the same requirement. Student Only uses the signed-in representative. Production reservation persistence remains an implementation task; the repository contains a documentation/UI preview.','Reservation-Form.html'],
+ ['pending','POL-08','Dean account provisioning','Head Laboratory is confirmed to create Class Representative and Faculty accounts. Dean retains a pre-assigned account; who provisions it is still awaiting confirmation. No Dean-creation permission is inferred.','Docs.html#uc-issueacct'],
  ['fixed','L2-01','Approval and availability reads','Added D2 reads to 2.1 (active holds) and 2.3 (the stored pending request).','Docs.html#uc-viewsched'],
  ['fixed','L2-02','Return transaction inputs','Added separate Head Laboratory, Physics Staff and Circuits Staff inputs to 4.4; previously they reached issuance only.','assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4'],
  ['fixed','L2-03','Live stock at issuance','Added D4 → 4.3 to verify stock before releasing items.','Docs.html#uc-issueeq'],
@@ -37,11 +39,11 @@ const findings=[
  ['fixed','DOC-01','Login backlog coverage','Backlog 01 now covers all six diagram actors, not just the two requester roles.','Docs.html#backlog'],
  ['fixed','DOC-02','Reschedule validation','Revalidate role, schedule category and resources; an old approval must not authorize a different request category.','Docs.html#uc-reschedres'],
  ['fixed','DOC-03','Disposal accounting','Only physically present items/waste are disposed of; never deduct already-written-off quantities twice. BLC logs are views of source records, not an undeclared extra DFD store.','Docs.html#uc-wastedisp'],
- ['fixed','DOC-04','Report contents','Made Daily Task Records and outstanding clearances explicit in the report flow; calculations remain non-AI.','Docs.html#uc-endterm'],
+ ['fixed','DOC-04','Lab End-Term Report clarified','Three summary tables plus Recent Activity, separately for Physics and Circuits. Item-use ratios and distinct-session frequency percentages are non-AI. Removed D7/D10 reporting reads and the clearance-to-metrics flow; other record-management features remain.','Docs.html#uc-endterm'],
  ['fixed','PUB-01','Current model publication','Corrected the Home flow count to 74 and removed the legacy ERD image/reference from the current paper. Archived source files are retained.','Docs.html#erd'],
  ['fixed','DOC-05','Document reference cleanup','Corrected MSYADD1 spelling, removed the duplicate Figure 1 label from the methodology illustration, and clarified that gap rows are not one-to-one backlog IDs.','Docs.html#gap-analysis'],
- ['pending','ERD-01','Current ERD is not designed','Map all 10 stores to entities, keys, relationships, cardinalities and constraints. No current ERD or schema score is claimed.','Docs.html#erd'],
- ['pending','POL-01','Class Representative → Dean routing','Specify exactly when an out-of-schedule Class Representative request goes to Dean, whether Faculty approval comes first, and whether one or two decisions are required.','Docs.html#uc-approve'],
+ ['pending','ERD-01','Logical ERD draft requires consultation','A draft maps all 10 stores to 25 entities and 51 PK–FK relationships. Review the proposed revision history, partial returns, inventory ledger and cross-record constraints before approval. No schema completeness percentage is claimed.','ERD.html'],
+ ['fixed','POL-01','Class Representative → Dean routing','Confirmed: on-schedule Class Representative requests require Faculty; out-of-schedule requests require Faculty then Dean. Intermediate Faculty approval retains Pending and the hold; rejection stops routing. Faculty out-of-schedule requests go directly to Dean.','Docs.html#uc-approve'],
  ['pending','POL-02','Two-day advance rule','Gap 10 requires two days; calendar/business days, cutoff time, exceptions and reschedule handling still need consultation and matching acceptance criteria.','Docs.html#gap-analysis'],
  ['pending','POL-03','Recurring reservations','Define per-session approval, cancellation, rescheduling, borrowing and completion for whole-term requests before finalizing recurrence.','Docs.html#gap-analysis'],
  ['pending','POL-04','Room-only session lifecycle','Requests can use a room without items, but Ongoing/Completed transitions currently rely on issuance/return. Confirm the responsible role and trigger for room-only sessions.','Docs.html#uc-submitres'],
@@ -74,7 +76,10 @@ async function build(){
   const matchingRoles=d&&same(d.actors.split(',').map(s=>s.trim()),actors.map(a=>roles[a]));
   const full=d&&['scenario','triggeringEvent','briefDescription','preconditions','postconditions','flowActor','flowSystem','exceptions'].every(k=>d[k]?.length);
   const eventMatch=events.length&&same(events.flatMap(e=>e.source.split(',').map(s=>s.trim())),actors.map(a=>roles[a]))&&events.every(e=>e.useCase===names.get(n.id));
-  const flowMatch=m&&actors.every(actor=>m.exchange.every(([dir,label,step])=>flows.some(f=>f.label===label&&(dir==='in'?f.source===actor&&f.target===step:f.target===actor&&f.source===step))));
+  const flowMatch=m&&actors.every(actor=>m.exchange.every(([dir,label,step])=>{
+   const expected=n.id==='submitcombined'&&actor==='classrep'?label+' including Reservation Type':label;
+   return flows.some(f=>f.label===expected&&(dir==='in'?f.source===actor&&f.target===step:f.target===actor&&f.source===step));
+  }));
   const linked=Boolean(full&&matchingRoles&&eventMatch&&flowMatch&&d.useCaseName===names.get(n.id)&&m.backlog.every(id=>data.backlog.some(b=>b.id===id)));
   add('documentation','doc-'+n.id,names.get(n.id)+' — full specification',Boolean(full&&matchingRoles&&d.useCaseName===names.get(n.id)),'Docs.html#'+(d?.id||'usecase-full'));
   add('usecase','trace-'+n.id,names.get(n.id)+' — role / event / DFD trace',linked,'Docs.html#'+(d?.id||'usecase-full'));
@@ -85,6 +90,9 @@ async function build(){
  uc.RELATIONSHIPS.forEach((r,i)=>add('usecase','dependency-'+i,`${r.type}: ${names.get(r.from)} → ${names.get(r.to)}`,data.useCases.some(d=>d.dependencies.some(e=>e.type===r.type&&(e.type==='include'?d.diagramId===r.from&&e.diagramId===r.to:d.diagramId===r.to&&e.diagramId===r.from))),'Docs.html#usecase-full'));
  const entityIds=new Set(l1.entities.map(e=>e.id)),processIds=new Set(l1.processes.map(p=>p.id)),storeIds=new Set(l1.stores.map(s=>s.id));
  add('dfd1','admin-scope','Only Head Laboratory sends logs, schedule, task and clearance actions',l1.flows.filter(f=>['Schedule Update','Usage Entry','Daily Task Entry','Clearance Action'].includes(f.label)).every(f=>f.source==='headlab'),'Docs.html#uc-mgmlogs');
+ const reservationFlows=['p2-cr-onschedule','p2-cr-outschedule','p2-d2-write','p2-d2-read'];
+ add('dfd1','reservation-type-payload','Both Class Representative schedule variants and D2 exchanges carry Reservation Type',reservationFlows.every(id=>l1.flows.find(f=>f.id===id)?.label.includes('Reservation Type')&&l2.find(p=>p.id==='p2').flows.filter(f=>f.parentFlow===id).every(f=>f.label===l1.flows.find(row=>row.id===id).label)),'Docs.html#uc-submitres');
+ add('documentation','reservation-type-validation','Table 7 and the form require an unselected Group / Student Only choice before submission',read('Docs.html').includes('No option is preselected')&&read('Reservation-Form.html').includes('name="reservation_type" value="GROUP" required')&&read('Reservation-Form.html').includes('name="reservation_type" value="STUDENT_ONLY" required'),'Reservation-Form.html');
  add('dfd1','dean-scope','Dean exchanges only login and approval data',l1.flows.filter(f=>f.source==='dean'||f.target==='dean').every(f=>['Credentials','Approval Decision','Routed Approval Request'].includes(f.label)),'Docs.html#uc-approve');
  add('dfd1','qa-scope','Q&A is requester-only and writes only its conversation log',l1.flows.filter(f=>f.source==='p3'||f.target==='p3').every(f=>f.kind==='external'?['classrep','faculty'].includes(f.source==='p3'?f.target:f.source):f.source!=='p3'||f.target==='d9'),'Docs.html#uc-askq');
  add('dfd2','parent-inventory','Exactly one decomposition for every parent',same(l1.processes.map(p=>p.id),l2.map(p=>p.id))&&new Set(l2.map(p=>p.id)).size===l2.length,'Docs.html#dfd');
@@ -107,12 +115,13 @@ async function build(){
  required.forEach(([source,target])=>add('dfd2','required-'+source+'-'+target,'Required workflow input '+source+' → '+target,l2.some(m=>m.flows.some(f=>f.source===source&&f.target===target)),'Docs.html#dfd'));
  // Pending decisions are intentionally not marked as passing automated checks.
  const groups=[['documentation','Documentation','Docs.html'],['usecase','Use Case',UC],['dfd0','DFD Level 0',L0],['dfd1','DFD Level 1','assets/figures-v2/dfd-level1/dfd-level1-source.html'],['dfd2','DFD Level 2','assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html'],['erd','ERD','Docs.html#erd']].map(([id,name,href])=>{const rows=checks.filter(c=>c.group===id),passed=rows.filter(c=>c.status==='pass').length;return{id,name,href,passed,total:rows.length,percent:rows.length?Math.round(100*passed/rows.length):null,status:id==='erd'?'pending':passed===rows.length?'pass':'fail'};});
- const sourcePaths=['Docs.html',UC,L1,L2,'assets/figures-v2/dfd-level0/dfd-level0-portrait.js','assets/figures-v2/dfd-level1/dfd-level1-portrait.js','assets/figures-v2/dfd-level2-compact/dfd-level2-renderer.js','integrations/system-audit/build.cjs'];
+ const sourcePaths=['Docs.html',UC,L1,L2,'assets/figures-v2/dfd-level0/dfd-level0-portrait.js','assets/figures-v2/dfd-level1/dfd-level1-portrait.js','assets/figures-v2/dfd-level2-compact/dfd-level2-renderer.js','integrations/system-audit/build.cjs','assets/erd/model.js','assets/erd/render.js','Reservation-Form.html','assets/reservation-type.js','assets/system-diagrams/process-activities.js','assets/system-diagrams/sequence-models.js','assets/system-diagrams/swimlane.js'];
+ groups.forEach(g=>{g.available=g.id==='erd'?fs.existsSync(path.join(root,'assets/erd/erd.pdf')):g.status!=='pending';if(g.id==='erd')g.href='ERD.html';});
  const sources=sourcePaths.map(p=>({path:p,sha256:crypto.createHash('sha256').update(read(p).replace(/\r\n/g,'\n')).digest('hex')}));
  return{version:1,generatedAt:new Date().toISOString(),title:data.meta.title,sources,groups,features,checks,findings,
   counts:{actors:uc.ACTORS.length,mainUseCases:uc.BASE_UC.length,supportingUseCases:uc.SUPPORT_UC.length,associations:uc.ACTORS.reduce((n,a)=>n+a.uses.length,0),dependencies:uc.RELATIONSHIPS.length,backlog:data.backlog.length,events:data.events.length,l0:context.flows.length,l1:l1.flows.length,stores:l1.stores.length,parents:l1.processes.length,children:l2.reduce((n,p)=>n+p.steps.length,0),l2:l2.reduce((n,p)=>n+p.flows.length,0)},
   backlog:data.backlog.map(b=>({id:b.id,status:b.status,features:features.filter(f=>f.backlog.includes(b.id)).map(f=>f.name),note:b.id==='16'?'Presentation-only dashboard: supported by inventory/reservation/log data; no standalone use case or DFD arrow, as requested.':''})),
-  stores:l1.stores.map(s=>({...s,readers:l1.flows.filter(f=>f.source===s.id).map(f=>f.target),writers:l1.flows.filter(f=>f.target===s.id).map(f=>f.source),schemaStatus:'Pending ERD'}))};
+  stores:l1.stores.map(s=>({...s,readers:l1.flows.filter(f=>f.source===s.id).map(f=>f.target),writers:l1.flows.filter(f=>f.target===s.id).map(f=>f.source),schemaStatus:'Logical draft — review pending'}))};
 }
 if(require.main===module)build().then(report=>{
  const target=path.join(root,'assets/system-audit.json');

@@ -1,23 +1,23 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-15T03:41:49.783Z",
+  "generatedAt": "2026-09-19T01:56:02.339Z",
   "title": "A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview",
   "sources": [
     {
       "path": "Docs.html",
-      "sha256": "d5f4ac90f63f37040f4cadc0d8b6b4bfa9c403ac9f4a3435c1a469becc754034"
+      "sha256": "b42bb59acd5910e807ea509c4c1d469c52e07a0f3905a9a9d75b6f979d1031ec"
     },
     {
       "path": "assets/figures-v2/usecase-diagram-source.html",
-      "sha256": "ae9c2c65e51d90a9bfea86b93bbe78b4dcdcb3f49173f20b79996062a4ecbe9b"
+      "sha256": "46fd14c0dff100058fb5d50b0b20b5c93f3a3733c163bbb737ada50136f859b6"
     },
     {
       "path": "assets/figures-v2/dfd-level1/dfd-level1-model.json",
-      "sha256": "744636c41be9c7bf94c5b5e8c872cb87423337ea2feef2817652acced23801eb"
+      "sha256": "ceed426087d579f0b906a43963171c94f63b8038d7ef5aee99d76fecac478e18"
     },
     {
       "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-model.json",
-      "sha256": "e1bbd20f9daf25f181dfb6f432becefb9dd5aecf6657825097682559828e1ce7"
+      "sha256": "59e19a891415fe97b7c1650b1be5869ac5f5f3579b353bc09efaa1fe7cc54bef"
     },
     {
       "path": "assets/figures-v2/dfd-level0/dfd-level0-portrait.js",
@@ -25,15 +25,43 @@
     },
     {
       "path": "assets/figures-v2/dfd-level1/dfd-level1-portrait.js",
-      "sha256": "f9fb6f17bafc2daabd3e42dba15dca3866d7db0afa3b4fe2f3ce26cb2a5f6b18"
+      "sha256": "be2ea28ce2ead3f8ed2a8ea5eb8f88d8402eb63126077c12324d4799e9b256a8"
     },
     {
       "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-renderer.js",
-      "sha256": "035f2cf645f953225fa4019f9d951a57a5a5fb31b0ac056084d55709687e8a7b"
+      "sha256": "f59c70337114878e905f7d031b90bbec794e399de01a63424219063efc7a52a7"
     },
     {
       "path": "integrations/system-audit/build.cjs",
-      "sha256": "a9bce98887ffabea115b12247caf07285435ac3ae5655a4919b5315504110c53"
+      "sha256": "125f9bd9e9983a266639a9e1d93604097564f8ccf4619ad289c654c024f51cdf"
+    },
+    {
+      "path": "assets/erd/model.js",
+      "sha256": "bac7657537afdea2e0725cf531a02eb66ab0c3ed7ca49644073a0d37994cb1e2"
+    },
+    {
+      "path": "assets/erd/render.js",
+      "sha256": "7857a41bec39baebdea5c38e3ed64b8204ab43033507806df3445180ece87fdd"
+    },
+    {
+      "path": "Reservation-Form.html",
+      "sha256": "233f27628d7fba9cbbc45f2dc1e3eec772531b7e738e56bbd9c7e6f248318163"
+    },
+    {
+      "path": "assets/reservation-type.js",
+      "sha256": "5169b4ed8734b6e73654cbc6e8d349486b875bd9b28232a1b51131111f116e1b"
+    },
+    {
+      "path": "assets/system-diagrams/process-activities.js",
+      "sha256": "e09eb87fa954accc7178515f2b372986fa99810d976f39abef135ee3658ce1cf"
+    },
+    {
+      "path": "assets/system-diagrams/sequence-models.js",
+      "sha256": "67c349a91bebf80ed9931830fb98996995175439f53603589331400a3c7a1284"
+    },
+    {
+      "path": "assets/system-diagrams/swimlane.js",
+      "sha256": "74eb493cf2cc862e666ec0fbb2c6d291a84839f2d0c27aa9260789070fb02c8c"
     }
   ],
   "groups": [
@@ -41,19 +69,21 @@
       "id": "documentation",
       "name": "Documentation",
       "href": "Docs.html",
-      "passed": 65,
-      "total": 65,
+      "passed": 66,
+      "total": 66,
       "percent": 100,
-      "status": "pass"
+      "status": "pass",
+      "available": true
     },
     {
       "id": "usecase",
       "name": "Use Case",
       "href": "assets/figures-v2/usecase-diagram-source.html",
-      "passed": 32,
-      "total": 32,
+      "passed": 33,
+      "total": 33,
       "percent": 100,
-      "status": "pass"
+      "status": "pass",
+      "available": true
     },
     {
       "id": "dfd0",
@@ -62,34 +92,38 @@
       "passed": 48,
       "total": 48,
       "percent": 100,
-      "status": "pass"
+      "status": "pass",
+      "available": true
     },
     {
       "id": "dfd1",
       "name": "DFD Level 1",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html",
-      "passed": 86,
-      "total": 86,
+      "passed": 85,
+      "total": 85,
       "percent": 100,
-      "status": "pass"
+      "status": "pass",
+      "available": true
     },
     {
       "id": "dfd2",
       "name": "DFD Level 2",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html",
-      "passed": 119,
-      "total": 119,
+      "passed": 117,
+      "total": 117,
       "percent": 100,
-      "status": "pass"
+      "status": "pass",
+      "available": true
     },
     {
       "id": "erd",
       "name": "ERD",
-      "href": "Docs.html#erd",
+      "href": "ERD.html",
       "passed": 0,
       "total": 0,
       "percent": null,
-      "status": "pending"
+      "status": "pending",
+      "available": true
     }
   ],
   "features": [
@@ -514,7 +548,7 @@
     },
     {
       "id": "issueacct",
-      "name": "Issue Class Representative Account",
+      "name": "Manage Class Representative / Faculty Accounts",
       "docId": "uc-issueacct",
       "table": 15,
       "actors": [
@@ -534,7 +568,8 @@
       "flowIds": [
         "p1-fa-crcredentials-child3",
         "p1-he-account-child3",
-        "p1-d1-write-child3"
+        "p1-d1-write-child3",
+        "p1-d1-read-child3"
       ],
       "status": "pass",
       "note": ""
@@ -757,12 +792,10 @@
         "p5.5"
       ],
       "stores": [
-        "d10",
         "d2",
         "d3",
         "d4",
-        "d5",
-        "d7"
+        "d5"
       ],
       "flowIds": [
         "p5-he-reportrequest-child5",
@@ -770,9 +803,7 @@
         "p5-d2-read-child4",
         "p5-d3-read-child4",
         "p5-d4-read-child4",
-        "p5-d5-read-child4",
-        "p5-d7-read-child4",
-        "p5-d10-read-child5"
+        "p5-d5-read-child4"
       ],
       "status": "pass",
       "note": ""
@@ -971,14 +1002,14 @@
     {
       "group": "documentation",
       "id": "doc-issueacct",
-      "label": "Issue Class Representative Account — full specification",
+      "label": "Manage Class Representative / Faculty Accounts — full specification",
       "status": "pass",
       "href": "Docs.html#uc-issueacct"
     },
     {
       "group": "usecase",
       "id": "trace-issueacct",
-      "label": "Issue Class Representative Account — role / event / DFD trace",
+      "label": "Manage Class Representative / Faculty Accounts — role / event / DFD trace",
       "status": "pass",
       "href": "Docs.html#uc-issueacct"
     },
@@ -1090,7 +1121,7 @@
     {
       "group": "documentation",
       "id": "event-1",
-      "label": "Head Laboratory issues a Class Representative account",
+      "label": "Head Laboratory creates or updates a Class Representative or Faculty account",
       "status": "pass",
       "href": "Docs.html#events"
     },
@@ -1230,7 +1261,7 @@
     {
       "group": "documentation",
       "id": "event-21",
-      "label": "Head Laboratory records the usage of a completed session",
+      "label": "Head Laboratory views automatically recorded completed-session usage",
       "status": "pass",
       "href": "Docs.html#events"
     },
@@ -1459,11 +1490,32 @@
       "href": "Docs.html#usecase-full"
     },
     {
+      "group": "usecase",
+      "id": "dependency-11",
+      "label": "extend: Select Reservation Type → Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
       "group": "dfd1",
       "id": "admin-scope",
       "label": "Only Head Laboratory sends logs, schedule, task and clearance actions",
       "status": "pass",
       "href": "Docs.html#uc-mgmlogs"
+    },
+    {
+      "group": "dfd1",
+      "id": "reservation-type-payload",
+      "label": "Both Class Representative schedule variants and D2 exchanges carry Reservation Type",
+      "status": "pass",
+      "href": "Docs.html#uc-submitres"
+    },
+    {
+      "group": "documentation",
+      "id": "reservation-type-validation",
+      "label": "Table 7 and the form require an unselected Group / Student Only choice before submission",
+      "status": "pass",
+      "href": "Reservation-Form.html"
     },
     {
       "group": "dfd1",
@@ -1517,7 +1569,7 @@
     {
       "group": "dfd0",
       "id": "p1-fa-crcredentials",
-      "label": "Class Representative Credentials — p1 → faculty",
+      "label": "Issued Account Credentials — p1 → faculty",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
@@ -1538,7 +1590,7 @@
     {
       "group": "dfd0",
       "id": "p1-he-account",
-      "label": "Class Representative Account Details — headlab → p1",
+      "label": "Account Management Details — headlab → p1",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
@@ -1559,14 +1611,14 @@
     {
       "group": "dfd0",
       "id": "p2-cr-onschedule",
-      "label": "On-Schedule Non-Laboratory Request — classrep → p2",
+      "label": "On-Schedule Non-Laboratory Request including Reservation Type — classrep → p2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
     {
       "group": "dfd0",
       "id": "p2-cr-outschedule",
-      "label": "Out-of-Schedule Request — classrep → p2",
+      "label": "Out-of-Schedule Request including Reservation Type — classrep → p2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
@@ -1867,7 +1919,7 @@
     {
       "group": "dfd1",
       "id": "p1-fa-crcredentials",
-      "label": "Class Representative Credentials — valid endpoints",
+      "label": "Issued Account Credentials — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -1888,7 +1940,7 @@
     {
       "group": "dfd1",
       "id": "p1-he-account",
-      "label": "Class Representative Account Details — valid endpoints",
+      "label": "Account Management Details — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -1909,14 +1961,14 @@
     {
       "group": "dfd1",
       "id": "p2-cr-onschedule",
-      "label": "On-Schedule Non-Laboratory Request — valid endpoints",
+      "label": "On-Schedule Non-Laboratory Request including Reservation Type — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
     {
       "group": "dfd1",
       "id": "p2-cr-outschedule",
-      "label": "Out-of-Schedule Request — valid endpoints",
+      "label": "Out-of-Schedule Request including Reservation Type — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -2189,14 +2241,14 @@
     {
       "group": "dfd1",
       "id": "p2-d2-write",
-      "label": "Reservation / Approval Record — valid endpoints",
+      "label": "Reservation Record including Reservation Type — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
     {
       "group": "dfd1",
       "id": "p2-d2-read",
-      "label": "Reservation / Approval Data — valid endpoints",
+      "label": "Reservation Data including Reservation Type — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -2356,20 +2408,6 @@
     },
     {
       "group": "dfd1",
-      "id": "p5-d7-read",
-      "label": "Daily Task Data — valid endpoints",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
-    },
-    {
-      "group": "dfd1",
-      "id": "p5-d10-read",
-      "label": "Disposal Summary — valid endpoints",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
-    },
-    {
-      "group": "dfd1",
       "id": "role-classrep",
       "label": "Class Representative — canonical use-case role",
       "status": "pass",
@@ -2434,7 +2472,7 @@
     {
       "group": "dfd2",
       "id": "p1-fa-crcredentials-child3",
-      "label": "Class Representative Credentials — p1.3 → faculty",
+      "label": "Issued Account Credentials — p1.3 → faculty",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
     },
@@ -2455,7 +2493,7 @@
     {
       "group": "dfd2",
       "id": "p1-he-account-child3",
-      "label": "Class Representative Account Details — headlab → p1.3",
+      "label": "Account Management Details — headlab → p1.3",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
     },
@@ -2477,6 +2515,13 @@
       "group": "dfd2",
       "id": "p1-d1-write-child3",
       "label": "Account Record — p1.3 → d1",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
+    },
+    {
+      "group": "dfd2",
+      "id": "p1-d1-read-child3",
+      "label": "Account Data — d1 → p1.3",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1"
     },
@@ -2511,14 +2556,14 @@
     {
       "group": "dfd2",
       "id": "p2-cr-onschedule-child2",
-      "label": "On-Schedule Non-Laboratory Request — classrep → p2.2",
+      "label": "On-Schedule Non-Laboratory Request including Reservation Type — classrep → p2.2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-cr-outschedule-child2",
-      "label": "Out-of-Schedule Request — classrep → p2.2",
+      "label": "Out-of-Schedule Request including Reservation Type — classrep → p2.2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -2623,35 +2668,35 @@
     {
       "group": "dfd2",
       "id": "p2-d2-write-child2",
-      "label": "Reservation / Approval Record — p2.2 → d2",
+      "label": "Reservation Record including Reservation Type — p2.2 → d2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-write-child3",
-      "label": "Reservation / Approval Record — p2.3 → d2",
+      "label": "Reservation Record including Reservation Type — p2.3 → d2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-write-child4",
-      "label": "Reservation / Approval Record — p2.4 → d2",
+      "label": "Reservation Record including Reservation Type — p2.4 → d2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-read-child2",
-      "label": "Reservation / Approval Data — d2 → p2.2",
+      "label": "Reservation Data including Reservation Type — d2 → p2.2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-read-child4",
-      "label": "Reservation / Approval Data — d2 → p2.4",
+      "label": "Reservation Data including Reservation Type — d2 → p2.4",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -2672,14 +2717,14 @@
     {
       "group": "dfd2",
       "id": "p2-d2-read-child1",
-      "label": "Reservation / Approval Data — d2 → p2.1",
+      "label": "Reservation Data including Reservation Type — d2 → p2.1",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-read-child3",
-      "label": "Reservation / Approval Data — d2 → p2.3",
+      "label": "Reservation Data including Reservation Type — d2 → p2.3",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -2693,7 +2738,7 @@
     {
       "group": "dfd2",
       "id": "p2-internal2",
-      "label": "Validated request — valid child exchange",
+      "label": "Validated Request including Reservation Type — valid child exchange",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -3140,20 +3185,6 @@
     },
     {
       "group": "dfd2",
-      "id": "p5-d7-read-child4",
-      "label": "Daily Task Data — d7 → p5.4",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
-    },
-    {
-      "group": "dfd2",
-      "id": "p5-d10-read-child5",
-      "label": "Disposal Summary — d10 → p5.5",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
-    },
-    {
-      "group": "dfd2",
       "id": "p5-d5-read-child3",
       "label": "Borrowing Slip Data — d5 → p5.3",
       "status": "pass",
@@ -3163,13 +3194,6 @@
       "group": "dfd2",
       "id": "p5-internal1",
       "label": "Schedule data — valid child exchange",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
-    },
-    {
-      "group": "dfd2",
-      "id": "p5-internal3",
-      "label": "Clearance data — valid child exchange",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5"
     },
@@ -3233,6 +3257,20 @@
   "findings": [
     {
       "status": "fixed",
+      "id": "RES-01",
+      "title": "Required Reservation Type",
+      "detail": "Class Representatives must choose Group or Student Only for both schedule variants. Table 7, events, backlog, form preview, Use Case, DFD 0–2, ERD, Activity 2, Sequence 05 and Swimlane now carry the same requirement. Student Only uses the signed-in representative. Production reservation persistence remains an implementation task; the repository contains a documentation/UI preview.",
+      "href": "Reservation-Form.html"
+    },
+    {
+      "status": "pending",
+      "id": "POL-08",
+      "title": "Dean account provisioning",
+      "detail": "Head Laboratory is confirmed to create Class Representative and Faculty accounts. Dean retains a pre-assigned account; who provisions it is still awaiting confirmation. No Dean-creation permission is inferred.",
+      "href": "Docs.html#uc-issueacct"
+    },
+    {
+      "status": "fixed",
       "id": "L2-01",
       "title": "Approval and availability reads",
       "detail": "Added D2 reads to 2.1 (active holds) and 2.3 (the stored pending request).",
@@ -3283,8 +3321,8 @@
     {
       "status": "fixed",
       "id": "DOC-04",
-      "title": "Report contents",
-      "detail": "Made Daily Task Records and outstanding clearances explicit in the report flow; calculations remain non-AI.",
+      "title": "Lab End-Term Report clarified",
+      "detail": "Three summary tables plus Recent Activity, separately for Physics and Circuits. Item-use ratios and distinct-session frequency percentages are non-AI. Removed D7/D10 reporting reads and the clearance-to-metrics flow; other record-management features remain.",
       "href": "Docs.html#uc-endterm"
     },
     {
@@ -3304,15 +3342,15 @@
     {
       "status": "pending",
       "id": "ERD-01",
-      "title": "Current ERD is not designed",
-      "detail": "Map all 10 stores to entities, keys, relationships, cardinalities and constraints. No current ERD or schema score is claimed.",
-      "href": "Docs.html#erd"
+      "title": "Logical ERD draft requires consultation",
+      "detail": "A draft maps all 10 stores to 25 entities and 51 PK–FK relationships. Review the proposed revision history, partial returns, inventory ledger and cross-record constraints before approval. No schema completeness percentage is claimed.",
+      "href": "ERD.html"
     },
     {
-      "status": "pending",
+      "status": "fixed",
       "id": "POL-01",
       "title": "Class Representative → Dean routing",
-      "detail": "Specify exactly when an out-of-schedule Class Representative request goes to Dean, whether Faculty approval comes first, and whether one or two decisions are required.",
+      "detail": "Confirmed: on-schedule Class Representative requests require Faculty; out-of-schedule requests require Faculty then Dean. Intermediate Faculty approval retains Pending and the hold; rejection stops routing. Faculty out-of-schedule requests go directly to Dean.",
       "href": "Docs.html#uc-approve"
     },
     {
@@ -3361,17 +3399,17 @@
   "counts": {
     "actors": 6,
     "mainUseCases": 20,
-    "supportingUseCases": 10,
+    "supportingUseCases": 11,
     "associations": 42,
-    "dependencies": 11,
+    "dependencies": 12,
     "backlog": 19,
     "events": 24,
     "l0": 46,
-    "l1": 74,
+    "l1": 72,
     "stores": 10,
     "parents": 5,
     "children": 21,
-    "l2": 90
+    "l2": 89
   },
   "backlog": [
     {
@@ -3386,7 +3424,7 @@
       "id": "02",
       "status": "Not Started",
       "features": [
-        "Issue Class Representative Account"
+        "Manage Class Representative / Faculty Accounts"
       ],
       "note": ""
     },
@@ -3541,7 +3579,7 @@
       "writers": [
         "p1"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d2",
@@ -3557,7 +3595,7 @@
         "p2",
         "p4"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d8",
@@ -3567,7 +3605,7 @@
         "p3"
       ],
       "writers": [],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d9",
@@ -3577,7 +3615,7 @@
       "writers": [
         "p3"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d4",
@@ -3592,7 +3630,7 @@
       "writers": [
         "p4"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d5",
@@ -3605,19 +3643,17 @@
       "writers": [
         "p4"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d10",
       "number": "D10",
       "name": "Disposal Records",
-      "readers": [
-        "p5"
-      ],
+      "readers": [],
       "writers": [
         "p4"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d3",
@@ -3631,19 +3667,17 @@
       "writers": [
         "p5"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d7",
       "number": "D7",
       "name": "Daily Task Records",
-      "readers": [
-        "p5"
-      ],
+      "readers": [],
       "writers": [
         "p5"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     },
     {
       "id": "d6",
@@ -3655,7 +3689,7 @@
       "writers": [
         "p5"
       ],
-      "schemaStatus": "Pending ERD"
+      "schemaStatus": "Logical draft — review pending"
     }
   ]
 }

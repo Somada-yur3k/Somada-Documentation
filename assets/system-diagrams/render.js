@@ -89,35 +89,66 @@ function html(tag,cls,value){const n=document.createElement(tag);if(cls)n.classN
 let pageNo=0;
 function sheet(group,type,s){
  const processPage=type==='process';
- const code=processPage?'ACT-0'+s.id.slice(1):type==='deployment'?'DEP-01':type==='activity'?'SWIM-01':'SEQ-01';
+ const code=processPage?'ACT-0'+s.id.slice(1):type==='deployment'?'DEP-01':type==='activity'?'SWIM-01':s.code;
  const id=type==='deployment'?'deployment-view':(processPage?'activity':type)+'-'+s.id;
  const wrap=html('div','sheet-scroll'),paper=html('article','sheet');paper.id=id;
  const header=html('header','sheet-head'),titles=html('div');titles.append(html('small','',(processPage?'activity':type==='activity'?'whole-system swimlane':type)+' diagram · NU Fairview laboratory system'),html('h2','',type==='deployment'?'Deployment — technology-neutral design':s.title));header.append(titles,html('span','page-code',code));paper.append(header);
  const subtitle=type==='deployment'?'Documented functions; candidate node placement. No implementation or hosting selection is asserted.':s.actors.join(' · ')+(s.recipient?' | Recipient: '+s.recipient:'');
- paper.append(html('p','sheet-subtitle',subtitle));const canvas=html('div','canvas');canvas.append(processPage?window.SystemProcessActivity(s.model):type==='deployment'?deployment(id):window.SystemDiagramOverview[type](id));paper.append(canvas);
+ paper.append(html('p','sheet-subtitle',subtitle));const canvas=html('div','canvas');canvas.append(processPage?window.SystemProcessActivity(s.model):type==='deployment'?deployment(id):type==='sequence'?window.SystemSequenceDiagram(s):window.SystemDiagramOverview[type](id));paper.append(canvas);
  paper.append(html('p','sheet-note',type==='deployment'?'The current paper says construction has not begun and the ERD is pending. The documentation site’s hosting and the paused collaboration-workspace draft are not the proposed laboratory application stack.':s.note));
  const foot=html('footer','sheet-foot');const link=html('a','',type==='deployment'?'Sources: Project Overview · Tables 3–22 · DFD 1.0–5.0':'Whole system · DFD 1.0–5.0 · Tables 3–22 · D1–D10');link.href=type==='deployment'?'Docs.html#overview':'assets/figures-v2/dfd-level1/dfd-level1-source.html';
  if(processPage){link.textContent='DFD Level 2 · Process '+s.id.slice(1)+'.0 · Canonical subprocesses';link.href='assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process='+s.id;}
- foot.append(link);if(type!=='deployment'){const pair=html('a','',processPage?'← Whole-system Swimlane':type==='activity'?'Matching sequence →':'← Whole-system Swimlane');pair.href=processPage?'#activity-system':'#'+(type==='activity'?'sequence-':'activity-')+s.id;foot.append(pair);}foot.append(html('span','','A4 landscape · '+(++pageNo)));paper.append(foot);wrap.append(paper);document.getElementById(group).append(wrap);
+ if(type==='sequence'){link.textContent='Matching Activity '+s.processes[0].split('.')[0].slice(1)+'.0';link.href='#activity-'+s.processes[0].split('.')[0];}
+ foot.append(link);if(type!=='deployment'){const pair=html('a','',type==='activity'?'Sequence workflows →':'← Whole-system Swimlane');pair.href=type==='activity'?'#sequence':'#activity-system';foot.append(pair);}foot.append(html('span','','A4 '+(type!=='deployment'?'portrait':'landscape')+' · '+(++pageNo)));paper.append(foot);wrap.append(paper);
+ if(processPage||type==='activity'||type==='sequence'){
+  paper.classList.add('process-sheet');header.remove();
+  if(type==='sequence')paper.classList.add('sequence-sheet');
+  const reference=html('details','process-reference');reference.append(html('summary','','Notes and DFD reference (not printed)'));
+  const downloads=html('p','');
+  for(const ext of (processPage?['png','svg']:['png','svg','pdf'])){const name=processPage?'activity-'+s.id:type==='sequence'?'sequence-'+s.id:'swimlane-system';const asset=html('a','','Download '+ext.toUpperCase());asset.href='assets/system-diagrams/'+name+'.'+ext;asset.download=name+'.'+ext;downloads.append(asset,document.createTextNode(' · '));}
+  reference.append(downloads);
+  for(const selector of ['.sheet-subtitle','.sheet-note','.sheet-foot'])reference.append(paper.querySelector(selector));
+  if(type==='sequence'){
+   const refs=html('p','sequence-related');
+   const tableRefs={login:3,chooselab:4,viewsched:5,submitscheduled:6,submitcombined:7,cancelres:8,reschedres:9,viewstatus:10,viewhistory:11,clearstatus:12,approve:13,askq:14,issueacct:15,mgminv:16,issueeq:17,procret:18,procclear:19,wastedisp:20,mgmlogs:21,endterm:22};
+   for(const use of s.uses){const a=html('a','','Table '+tableRefs[use]);a.href='Docs.html#'+({submitcombined:'uc-submitres',mgminv:'uc-inventory'}[use]||'uc-'+use);refs.append(a,document.createTextNode(' · '));}
+   const dfd=html('a','','DFD Level 2 '+s.processes.join(', '));dfd.href='assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process='+s.processes[0].split('.')[0];refs.append(dfd);
+   for(const target of s.links){const next=window.SystemSequenceModels.find(m=>m.id===target),a=html('a','',next.code+' '+next.title);a.href='#sequence-'+target;refs.append(document.createElement('br'),a);}
+   reference.append(refs);
+  }
+  wrap.append(reference);
+ }
+ document.getElementById(group).append(wrap);
 }
-const whole={id:'system',title:'Whole-system workflow',actors:['Class Representative','Faculty','Dean','Head Laboratory','Physics Laboratory Staff','Circuits Laboratory Staff'],note:'Branches are alternative authorized operations, not mandatory sequential stages. Validate before saving; errors do not create valid transactions. Faculty scheduled activities need no extra approval; routed requests stay Pending until decided. ¹ Only Head manages logs/tasks/clearance; Class Representative only views own-group clearance. Full conditions remain in Tables 3–22.'};
+const whole={id:'system',title:'Whole-system workflow',actors:['Class Representative','Faculty','Dean','Head Laboratory','Physics Laboratory Staff','Circuits Laboratory Staff'],note:'Branches are alternative authorized operations, not mandatory sequential stages. Validate before saving; errors do not create valid transactions. Faculty scheduled activities need no extra approval; routed requests stay Pending until decided. Only Head manages logs/tasks/clearance; Class Representative only views own-group clearance. Full conditions remain in Tables 3–22.'};
 const decompositionResponse=await fetch('assets/figures-v2/dfd-level2-compact/dfd-level2-model.json');
 if(!decompositionResponse.ok)throw new Error('Cannot load the canonical DFD Level 2 subprocesses.');
 window.SystemDiagramChildProcesses=await decompositionResponse.json();
-sheet('activity','activity',whole);
+sheet('activity','activity',{...whole,actors:['Class Representative','Faculty','Circuit Staff','Physics Staff','Head Lab','Dean'],note:'Simplified laboratory service lifecycle with six actor lanes. Supporting readiness is optional, not a new approval gate. Faculty scheduled activities bypass academic approval; Faculty out-of-schedule requests go to Dean. Dean reviews and decides inside the Dean partition. Standalone Q&A, inventory/disposal, cancellation and other detailed entry points remain in Activities 1–5. All four preparation paths connect directly to the join with condition (Rep or Faculty) and (Circuit or Physics): one requester plus staff of the selected laboratory. Dean routing uses an OR join. Circuit and Physics are exclusive assignments. A pending decision waits; only an explicit rejection follows the rejection branch. Completed reservations populate usage logs automatically. Clearance settlement does not silently complete an unresolved reservation.'});
 for(const model of window.SystemDiagramChildProcesses){
  const evidence=window.SystemDiagramModels.filter(s=>s.processes.some(p=>p.startsWith(model.id+'.')));
  const actors=[...new Set(evidence.flatMap(s=>s.actors))];
  const notes={
-  p1:'Login and account issuance are alternative operations. Only an already signed-in Head Laboratory issues representative accounts. Faculty delivers emailed credentials outside the system. Invalid credentials create no session; invalid account details create no account.',
-  p2:'Availability alone is read-only. Submit / reschedule continues through validation; cancellation enters validation directly. Faculty scheduled activities need no extra approval. Routed requests remain Pending until decided; wrong-role, conflicting or incomplete inputs return correction without a valid change. Exact Class Representative-to-Dean escalation remains pending.',
+  p1:'Login and account issuance are alternative operations. Only an already signed-in Head Laboratory creates Class Representative and Faculty accounts. Faculty receives its own credentials or passes representative credentials outside the system. Dean remains pre-assigned; its provisioning authority is pending. Invalid credentials create no session; invalid account details create no account.',
+  p2:'Availability alone is read-only. Submit / reschedule continues through validation; cancellation enters validation directly. Faculty scheduled activities need no extra approval. Class Representative on-schedule requests require Faculty; out-of-schedule requests require Faculty then Dean. Faculty out-of-schedule requests require Dean only. Intermediate Faculty approval retains Pending and the hold. Final approval permits issuance; rejection releases the hold. A stale or misrouted decision only shows the current status.',
   p3:'Class Representative and Faculty only. Question scope determines which records are read; no reservation is submitted, changed or approved. Unsupported questions are declined and missing evidence is reported as unavailable. Knowledge-base ownership remains pending.',
-  p4:'Branches are alternative operations, not a mandatory inventory → issue → return → disposal chain. Validate authorization, status, quantities and physical condition before committing changes. Broken / lost equipment goes to Head Laboratory for clearance review. Staff cannot raise or settle clearance; equipment cannot be consumed.',
+  p4:'Branches are alternatives, not a mandatory inventory → issue → return → disposal chain. Validate authorization, status, quantities and condition before saving. Complete borrowing only with no outstanding balance. Unreturned consumables are consumed; equipment is broken / lost, never consumed. Only Head Laboratory raises or settles clearance.',
   p5:'Schedule, usage / daily tasks, clearance and reporting are independently selected operations. Only Head Laboratory manages or settles records; Class Representative only views own-group clearance. Faculty and Laboratory Staff do not access these administration actions. Reporting is non-AI; completion after clearance settlement remains pending.'
  };
  sheet('process-activities','process',{id:model.id,title:'Process '+model.id.slice(1)+'.0 — '+model.name,model,actors,note:notes[model.id]});
 }
-sheet('sequence','sequence',whole);
+const index=html('nav','sequence-index');index.id='sequence-index';index.setAttribute('aria-label','Sequence workflows');
+index.append(html('h2','','Sequence Diagrams — five major processes'),html('p','','One A4 portrait page per DFD Level 1 major process. Related use cases are summarized with guarded fragments. Calls are solid; replies are dashed. Database labels identify logical DFD record groups, not a selected DBMS.'));
+const catalog=html('a','','Grouping decisions and evidence');catalog.href='assets/system-diagrams/SEQUENCE-PLAN.md';index.append(catalog);
+const sequenceDownload=html('a','','Download sequence-only PDF');sequenceDownload.href='assets/system-diagrams/sequences.pdf';sequenceDownload.download='sequences.pdf';index.append(document.createTextNode(' · '),sequenceDownload);
+const groups=html('div','sequence-groups');
+for(const parent of window.SystemDiagramChildProcesses){
+ const group=html('section',''),heading=html('h3','',parent.id.slice(1)+'.0 '+parent.name),list=html('ul','');group.append(heading,list);
+ for(const m of window.SystemSequenceModels.filter(m=>m.processes[0].startsWith(parent.id+'.'))){const li=html('li',''),a=html('a','',m.code+' · '+m.title);a.href='#sequence-'+m.id;li.append(a);list.append(li);}
+ groups.append(group);
+}
+index.append(groups);document.getElementById('sequence').append(index);
+for(const model of window.SystemSequenceModels)sheet('sequence','sequence',model);
 sheet('deployment','deployment');
 document.getElementById('print').onclick=()=>window.print();
 window.__systemDiagramsReady=true;

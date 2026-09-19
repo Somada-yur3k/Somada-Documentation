@@ -18,7 +18,7 @@ const payload = {version:2,documentId:targetId,title:null,sections:[
 ]};
 
 function simulate(options={}) {
-  const events=[], targetData=seed.map(text=>({type:'p',text}));
+  const events=[], targetData=(options.seed||seed).map(text=>({type:'p',text}));
   let stage, opens=0, released=false, backedUp=null, insertCount=0;
   function element(data,owner) {
     function check() { if(owner.closed) throw new Error('Document is closed; its contents cannot be updated.'); }
@@ -34,6 +34,8 @@ function simulate(options={}) {
     const owner={name,closed:false};
     const check=()=>{ if(owner.closed) throw new Error('Document is closed; its contents cannot be updated.'); };
     const body={
+      getText:()=>data.map(d=>d.text).join('\n'),
+      editAsText:()=>({setFontSize(size){assert.equal(size,11);events.push('font:11');}}),
       getNumChildren(){check();return data.length;},
       getChild(i){check();assert(data[i],'Valid child index '+i);return element(data[i],owner);},
       getPageWidth:()=>595,getMarginLeft:()=>51,getMarginRight:()=>51,
@@ -53,7 +55,7 @@ function simulate(options={}) {
     }
     return {owner,body,
       getId:()=>name==='stage'?'stage-id':targetId,
-      getTabs:()=>[{asDocumentTab:()=>({getBody:()=>{check();return body;}})}],
+      getTabs:()=>[{asDocumentTab:()=>({getBody:()=>{check();return body;},getHeader:()=>null,getFooter:()=>null})}],
       getBody:()=>body,
       saveAndClose(){check();events.push('close:'+name);owner.closed=true;if(name==='stage'&&options.cleanupFailure)throw new Error('Cleanup failed');}
     };
@@ -78,7 +80,7 @@ function simulate(options={}) {
   context.bodyStyle_=()=>null;
   context.appendBlock_=(body,block)=>{if(options.badPreparation)throw new Error('Bad image');body.appendPrepared(block);};
   context.page_=(title,message,backupUrl)=>({title,message,backupUrl});
-  const result=context.doPost({parameter:{syncKey:'test-only-key',payload:JSON.stringify(payload)}});
+  const result=context.doPost({parameter:{syncKey:'test-only-key',payload:JSON.stringify(options.payload||payload)}});
   assert(released,'Lock is released on every result');
   assert(events.includes('trash:stage'),'Preparation is cleaned up');
   return {result,events,data:targetData.map(x=>x.text),backedUp,opens};
@@ -111,4 +113,24 @@ for(const options of [{changed:true},{badPreparation:true}]) {
   assert.equal(test.backedUp,null);
 }
 assert.equal(simulate({cleanupFailure:true}).result.title,'Google Doc updated','Cleanup failure must not misreport a saved update');
-console.log('Lifecycle checks passed: closed-source regression, fresh target, backups, multi-section tables/images, insert-before-delete, failures and cleanup.');
+assert(ok.events.includes('font:11'),'Uniform font is applied after the backup');
+const supplements={version:3,documentId:targetId,title:null,sections:[
+ {id:'swimlane-diagram',blocks:[{kind:'paragraph',text:'New whole-system swimlane'}]},
+ {id:'activity-diagrams',blocks:[{kind:'paragraph',text:'New five activities'}]},
+ {id:'erd',blocks:[{kind:'paragraph',text:'New ERD'}]}
+]};
+const created=simulate({payload:supplements});
+assert.equal(created.result.title,'Google Doc updated');
+assert(created.data.indexOf('3.1.8 Entity-Relationship Diagram')<created.data.indexOf('3.1.9 Activity Diagrams'));
+assert(created.data.indexOf('3.1.9 Activity Diagrams')<created.data.indexOf('3.1.10 Swimlane Diagram'));
+for(const value of ['New ERD','New five activities','New whole-system swimlane'])assert(created.data.includes(value));
+assert(!created.data.includes('Old ERD'));assert(created.data.includes('Old DFD images'),'Unselected DFD remains');
+const repeated=simulate({seed:created.data,payload:supplements});
+assert.equal(repeated.result.title,'Google Doc updated');
+for(const value of ['3.1.9 Activity Diagrams','3.1.10 Swimlane Diagram','New five activities','New whole-system swimlane'])assert.equal(repeated.data.filter(t=>t===value).length,1,'No duplicated '+value);
+const onlyActivity=simulate({payload:{...supplements,sections:supplements.sections.filter(s=>s.id==='activity-diagrams')}});
+assert(!onlyActivity.data.includes('3.1.10 Swimlane Diagram'),'Only selected missing sections are created');
+assert(onlyActivity.data.includes('Old ERD'),'Creating a new section does not delete ERD');
+const onlySwim=simulate({seed:onlyActivity.data,payload:{...supplements,sections:supplements.sections.filter(s=>s.id==='swimlane-diagram')}});
+assert.equal(onlySwim.result.title,'Google Doc updated');assert(onlySwim.data.includes('New five activities'));
+console.log('Lifecycle checks passed: safe creation/order/idempotency of new sections, closed-source regression, fresh target, backups, insert-before-delete, failures, 11 pt and cleanup.');

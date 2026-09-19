@@ -99,6 +99,7 @@ function mockParagraph(value,attrs={},textAttrs={}) {
   };
   const p={state,getText:()=>state.value,getAttributes:()=>({...state.attrs}),editAsText:()=>text,
     setText:v=>{state.value=v;return p;},
+    appendText:v=>{state.value+=v;return text;},appendPageBreak:()=>{state.pageBreak=true;return {};},
     setAttributes:a=>{Object.assign(state.attrs,a);return p;},
     setHeading:v=>{state.heading=v;return p;},getHeading:()=>state.heading,
     setAlignment:v=>{state.attrs.alignment=v;return p;},
@@ -122,7 +123,7 @@ const stageMock={appendParagraph:value=>{const p=mockParagraph(value);paragraphs
 context.appendBlock_(stageMock,{kind:'paragraph',...rich},480,650,sample);
 assert.equal(paragraphs[0].state.attrs.alignment,'justify');
 assert.equal(paragraphs[0].state.attrs.INDENT_FIRST_LINE,36);
-assert.equal(paragraphs[0].state.textAttrs.FONT_SIZE,12);
+assert.equal(paragraphs[0].state.textAttrs.FONT_SIZE,11);
 assert.deepEqual(paragraphs[0].state.bold[1],[0,rich.runs[0].end-1,true]);
 context.appendBlock_(stageMock,{kind:'paragraph',text:'Caption',role:'caption'},480,650,sample);
 assert.equal(paragraphs[1].state.attrs.alignment,'center');
@@ -137,7 +138,7 @@ const cover=mockParagraph(oldTitle,{alignment:'center'},{FONT_SIZE:20,FONT_FAMIL
 context.updateTitle_(cover,title);
 assert.equal(cover.state.value,title);
 assert.equal(cover.state.attrs.alignment,'center');
-assert.equal(cover.state.textAttrs.FONT_SIZE,20);
+assert.equal(cover.state.textAttrs.FONT_SIZE,11);
 assert.deepEqual(cover.state.bold,[[true]]);
 const cells=tableBlock.rows[0].map(value=>{
   const p=mockParagraph(value);return {p,editAsText:p.editAsText};
@@ -153,7 +154,7 @@ context.appendBlock_({appendTable:()=>tableMock},tableBlock,480,650);
 assert.equal(tableState.borderColor,'#000000');
 assert.equal(tableState.borderWidth,0.5);
 assert.equal(baseTableText.state.textAttrs.FOREGROUND_COLOR,'#000000');
-assert.equal(baseTableText.state.textAttrs.FONT_SIZE,9);
+assert.equal(baseTableText.state.textAttrs.FONT_SIZE,11);
 assert.equal(baseTableText.state.textAttrs.BOLD,false);
 assert.equal(baseTableText.state.textAttrs.ITALIC,false);
 assert.deepEqual(JSON.parse(JSON.stringify(cells[0].p.state.ranges)),[[0,4,{BOLD:true,ITALIC:false}]]);
@@ -186,4 +187,25 @@ assert.equal(a4Bounds.height,918,'A4 image height keeps 40 pt for caption/spacin
 assert.throws(()=>context.imageBounds_({
   getPageWidth:()=>0,getPageHeight:()=>0,getMarginLeft:()=>0,getMarginRight:()=>0,getMarginTop:()=>0,getMarginBottom:()=>0
 }),/valid page dimensions/);
-console.log('Sync contract checks passed: target, boundaries, rich-text ranges, justified body styles, bold cover/table text, image units and local assets.');
+context.appendBlock_(stageMock,{kind:'heading',text:'New heading',level:3,pageBreakBefore:true},480,650,null);
+assert.equal(paragraphs.at(-1).state.pageBreak,true);
+assert.equal(paragraphs.at(-1).state.value,'New heading');
+assert.equal(paragraphs[2].state.textAttrs.FONT_SIZE,11);
+const footer=mockParagraph('Page number',{}, {FONT_SIZE:9}),header=mockParagraph('Header',{}, {FONT_SIZE:14});
+context.normalizeFont_({getBody:()=>cover,getHeader:()=>header,getFooter:()=>footer});
+for(const p of [cover,header,footer])assert.equal(p.state.textAttrs.FONT_SIZE,11);
+context.normalizeFont_({getBody:()=>cover,getHeader:()=>null,getFooter:()=>null});
+const addedPayload={...makePayload(['erd','activity-diagrams','swimlane-diagram'].map(id=>({id,blocks:[{kind:'heading',text:'Figure heading',level:3,pageBreakBefore:true}]}))),version:3};
+context.validatePayload_(addedPayload);
+const additions=context.planSections_(bodyOf(text),addedPayload).sections;
+assert.equal(additions[0].end,text.length);
+for(const p of additions.slice(1)){assert.equal(p.create,true);assert.equal(p.start,text.length);assert.equal(p.end,text.length);}
+const withNew=[...text,'3.1.9 Activity Diagrams','Old activities','3.1.10 Swimlane Diagram','Old swimlane'];
+const replacement=context.planSections_(bodyOf(withNew),addedPayload).sections;
+assert.equal(replacement[0].end,text.length);
+assert.equal(replacement[1].start,text.length);assert.equal(replacement[1].end,text.length+2);
+assert.equal(replacement[2].create,undefined);
+assert.throws(()=>context.planSections_(bodyOf([...withNew,'3.1.9 Activity Diagrams']),addedPayload),/uniquely/);
+assert.throws(()=>context.planSections_(bodyOf(text.slice(0,-2)),addedPayload),/locate/);
+assert.throws(()=>context.validatePayload_({...addedPayload,sections:[{id:'activity-diagrams',blocks:[{kind:'paragraph',text:'invalid',pageBreakBefore:true}]}]}),/page break/);
+console.log('Sync contract checks passed: 12 sections, safe missing-section plans, page breaks, uniform 11 pt, preserved emphasis, image units and local assets.');

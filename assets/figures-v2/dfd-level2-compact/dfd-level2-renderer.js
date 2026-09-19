@@ -11,7 +11,7 @@
   const storeLines={d1:['User','accounts'],d2:['Reservations','& approvals'],d3:['Lab schedule','& usage logs'],
     d4:['Equipment','inventory'],d5:['Borrowing','slip records'],d6:['Clearance','records'],d7:['Daily task','records'],
     d8:['Knowledge','base'],d9:['Chat history'],d10:['Disposal','records']};
-  const colors={classrep:'#1e40af',faculty:'#9f1239',dean:'#6b21a8',headlab:'#166534',physics:'#92400e',circuits:'#115e59'};
+  const colors={classrep:'#000000',faculty:'#000000',dean:'#000000',headlab:'#000000',physics:'#000000',circuits:'#000000'};
   function el(tag,attrs={},children=[]) {
     const node=document.createElementNS(NS,tag);
     Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,value));
@@ -62,7 +62,7 @@
   }
 
   const childLines={
-    p1:[['Validate','Credentials'],['Establish','Role-Scoped','Session'],['Issue Class','Rep. Account']],
+    p1:[['Validate','Credentials'],['Establish','Role-Scoped','Session'],['Manage Class','Rep. / Faculty','Accounts']],
     p2:[['Retrieve','Availability'],['Validate &','Record','Reservation'],['Route','Approval','Decision'],['Update','Reservation','Status']],
     p3:[['Capture','Signed-In','Inquiry'],['Retrieve','Authorized','Records'],['Compose','Grounded','Answer'],['Record Q&A','Exchange']],
     p4:[['Maintain','Inventory'],['Retrieve','Approved','Reservation'],['Issue Items &','Create Slip'],['Reconcile','Return'],['Record','Disposal']],
@@ -109,7 +109,7 @@
     svg.appendChild(el('rect',{x:5,y:58,width:W-10,height:H-112,fill:'none',stroke:'#aaa','stroke-width':1.2}));
     svg.appendChild(text(W/2,34,['Process '+model.id.slice(1)+'.0 — '+model.name],{'font-size':30,'font-weight':700}));
     const defs=el('defs');
-    Object.entries({...colors,store:'#27272a',internal:'#27272a'}).forEach(([id,color])=>{
+    Object.entries({...colors,store:'#000000',internal:'#000000'}).forEach(([id,color])=>{
       const marker=el('marker',{id:'arrow-'+id,markerWidth:13,markerHeight:13,refX:12,refY:6,orient:'auto',markerUnits:'userSpaceOnUse'});
       marker.appendChild(el('path',{d:'M0 0 L12 6 L0 12 Z',fill:color}));defs.appendChild(marker);
     });svg.appendChild(defs);
@@ -158,7 +158,7 @@
     assignLanes(left,200,true);
     assignLanes(right,1490,false);
     function draw(f,points,lx,ly,label,colorKey,side){
-      const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),fill:'none',stroke:colors[colorKey]||'#27272a','stroke-width':2.2,'marker-end':'url(#arrow-'+colorKey+')'});
+      const path=el('path',{class:'diagram-connector','data-flow-id':f.id,d:points.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' '),fill:'none',stroke:'#000000','stroke-width':2.2,'marker-end':'url(#arrow-'+colorKey+')'});
       const title=el('title');title.textContent=f.label;path.appendChild(title);paths.appendChild(path);
       const group=el('g',{class:'diagram-flow-label','data-flow-id':f.id,'data-full-label':f.label});
       const parts=[label];
@@ -167,7 +167,7 @@
         if(words.length>1)parts.splice(0,1,words.slice(0,middle).join(' '),words.slice(middle).join(' '));
       }
       const t=text(lx,ly,parts,{'font-size':FONT,'data-line-height':25});group.appendChild(t);labels.appendChild(group);
-      const maxWidth=side==='internal'?136:side==='left'?396:330;
+      const maxWidth=side==='internal'?136:side==='left'?396:326;
       t.setAttribute('font-size',Math.min(FONT,FONT*maxWidth/t.getBBox().width));
       const initial=t.getBBox(),offset=ly-initial.y-initial.height/2;
       t.querySelectorAll('tspan').forEach(span=>span.setAttribute('y',Number(span.getAttribute('y'))+offset));

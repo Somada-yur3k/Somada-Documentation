@@ -4,7 +4,7 @@
     "steps": [
       "Validate Credentials",
       "Establish Role-Scoped Session",
-      "Issue Class Representative Account"
+      "Manage Class Representative / Faculty Accounts"
     ],
     "internal": [
       {
@@ -45,7 +45,7 @@
         "parentFlow": "p1-fa-crcredentials",
         "source": "p1.3",
         "target": "faculty",
-        "label": "Class Representative Credentials",
+        "label": "Issued Account Credentials",
         "kind": "external"
       },
       {
@@ -69,7 +69,7 @@
         "parentFlow": "p1-he-account",
         "source": "headlab",
         "target": "p1.3",
-        "label": "Class Representative Account Details",
+        "label": "Account Management Details",
         "kind": "external"
       },
       {
@@ -94,6 +94,14 @@
         "source": "p1.3",
         "target": "d1",
         "label": "Account Record",
+        "kind": "store"
+      },
+      {
+        "id": "p1-d1-read-child3",
+        "parentFlow": "p1-d1-read",
+        "source": "d1",
+        "target": "p1.3",
+        "label": "Account Data",
         "kind": "store"
       },
       {
@@ -126,7 +134,7 @@
         "id": "p2-internal2",
         "source": "p2.2",
         "target": "p2.3",
-        "label": "Validated request",
+        "label": "Validated Request including Reservation Type",
         "kind": "internal"
       },
       {
@@ -144,7 +152,7 @@
         "parentFlow": "p2-cr-onschedule",
         "source": "classrep",
         "target": "p2.2",
-        "label": "On-Schedule Non-Laboratory Request",
+        "label": "On-Schedule Non-Laboratory Request including Reservation Type",
         "kind": "external"
       },
       {
@@ -152,7 +160,7 @@
         "parentFlow": "p2-cr-outschedule",
         "source": "classrep",
         "target": "p2.2",
-        "label": "Out-of-Schedule Request",
+        "label": "Out-of-Schedule Request including Reservation Type",
         "kind": "external"
       },
       {
@@ -272,7 +280,7 @@
         "parentFlow": "p2-d2-write",
         "source": "p2.2",
         "target": "d2",
-        "label": "Reservation / Approval Record",
+        "label": "Reservation Record including Reservation Type",
         "kind": "store"
       },
       {
@@ -280,7 +288,7 @@
         "parentFlow": "p2-d2-write",
         "source": "p2.3",
         "target": "d2",
-        "label": "Reservation / Approval Record",
+        "label": "Reservation Record including Reservation Type",
         "kind": "store"
       },
       {
@@ -288,7 +296,7 @@
         "parentFlow": "p2-d2-write",
         "source": "p2.4",
         "target": "d2",
-        "label": "Reservation / Approval Record",
+        "label": "Reservation Record including Reservation Type",
         "kind": "store"
       },
       {
@@ -296,7 +304,7 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.2",
-        "label": "Reservation / Approval Data",
+        "label": "Reservation Data including Reservation Type",
         "kind": "store"
       },
       {
@@ -304,7 +312,7 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.4",
-        "label": "Reservation / Approval Data",
+        "label": "Reservation Data including Reservation Type",
         "kind": "store"
       },
       {
@@ -328,7 +336,7 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.1",
-        "label": "Reservation / Approval Data",
+        "label": "Reservation Data including Reservation Type",
         "kind": "store"
       },
       {
@@ -336,7 +344,7 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.3",
-        "label": "Reservation / Approval Data",
+        "label": "Reservation Data including Reservation Type",
         "kind": "store"
       }
     ]
@@ -725,13 +733,6 @@
         "kind": "internal"
       },
       {
-        "id": "p5-internal3",
-        "source": "p5.3",
-        "target": "p5.4",
-        "label": "Clearance data",
-        "kind": "internal"
-      },
-      {
         "id": "p5-internal4",
         "source": "p5.4",
         "target": "p5.5",
@@ -867,22 +868,6 @@
         "source": "p5.2",
         "target": "d7",
         "label": "Daily Task Record",
-        "kind": "store"
-      },
-      {
-        "id": "p5-d7-read-child4",
-        "parentFlow": "p5-d7-read",
-        "source": "d7",
-        "target": "p5.4",
-        "label": "Daily Task Data",
-        "kind": "store"
-      },
-      {
-        "id": "p5-d10-read-child5",
-        "parentFlow": "p5-d10-read",
-        "source": "d10",
-        "target": "p5.5",
-        "label": "Disposal Summary",
         "kind": "store"
       },
       {

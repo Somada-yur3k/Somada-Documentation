@@ -15,6 +15,8 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
    await page.waitForFunction(()=>window.__done||window.__error);assert.equal(await page.evaluate(()=>window.__error),undefined,id);
    const d=await page.evaluate(()=>({...window.__level2,nodeText:[...document.querySelectorAll('[data-node-id] text')].map(t=>{const b=t.getBBox();return{id:t.closest('[data-node-id]').dataset.nodeId,text:t.textContent,x:b.x,y:b.y,w:b.width,h:b.height};})}));
    const {model,parent,nodes,routes,labelBoxes}=d,issues=[],ports=[];
+   assert(await page.locator('.diagram-connector').evaluateAll(ns=>ns.length>0&&ns.every(n=>getComputedStyle(n).stroke==='rgb(0, 0, 0)')),id+' all arrows are black');
+   assert(await page.locator('marker path').evaluateAll(ns=>ns.length>0&&ns.every(n=>getComputedStyle(n).fill==='rgb(0, 0, 0)')),id+' all arrowheads are black');
    for(const f of [...model.flows,...model.internal]){
     const visible=await page.locator('.diagram-flow-label[data-flow-id="'+f.id+'"] tspan').allTextContents();
     assert.equal(visible.join(' '),f.label,'Full canonical Level 2 label');
@@ -54,9 +56,9 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
     }
    }
    if(id==='p5'){
-    const inputs=['d3','d7','d2'].map(peer=>routes.find(r=>r.source===peer&&r.target==='p5.4'));
+    const inputs=['d3','d2'].map(peer=>routes.find(r=>r.source===peer&&r.target==='p5.4'));
     assert(inputs.every(Boolean));
-    assert(inputs[0].points[1][0]<inputs[1].points[1][0]&&inputs[1].points[1][0]<inputs[2].points[1][0],'D3/D7/D2 staircase into 5.4');
+    assert(inputs[0].points[1][0]<inputs[1].points[1][0],'D3/D2 staircase into 5.4; daily tasks are not report inputs');
     const report=routes.find(r=>r.source==='p5.5'&&r.target==='headlab');
     const request=routes.find(r=>r.source==='headlab'&&r.target==='p5.5');
     assert(report&&request);

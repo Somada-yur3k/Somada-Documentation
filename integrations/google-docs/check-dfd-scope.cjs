@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'../..'),dir='assets/figures-v2/';
 const model=JSON.parse(fs.readFileSync(path.join(root,dir,'dfd-level1/dfd-level1-model.json'),'utf8'));
-assert.equal(model.flows.length,74);
+assert.equal(model.flows.length,72);
 assert.equal(model.entities.at(-1).id,'headlab');
 assert.deepEqual(model.flows.filter(f=>f.label==='Daily Task Entry').map(f=>f.source),['headlab']);
  assert.deepEqual(model.flows.filter(f=>f.label==='Usage Entry').map(f=>f.source),['headlab']);
@@ -54,6 +54,6 @@ const server=http.createServer((req,res)=>{
     await page.locator('#stage svg').screenshot({path:path.join(os.tmpdir(),'somada-level0-scope.png')});
     if(process.argv.includes('--render'))await page.locator('#stage svg').screenshot({path:path.join(root,dir,'dfd-level0/dfd-level0-draft.png')});
     assert.deepEqual(errors,[]);
-    console.log('Scope passed: 74 L1 flows, 46 L0 flows, 17 P5 parent flows realized by '+child.flows.length+' child exchanges; only Head Lab logs, schedules and Daily Tasks, Head Lab last.');
+    console.log('Scope passed: 72 L1 flows, 46 L0 flows, 15 P5 parent flows realized by '+child.flows.length+' child exchanges; only Head Lab logs, schedules and Daily Tasks, Head Lab last.');
   } finally {await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});
