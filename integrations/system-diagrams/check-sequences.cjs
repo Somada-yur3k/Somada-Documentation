@@ -54,6 +54,9 @@ assert(reportParallel.operands.every(o=>o.steps.length===2&&o.steps[0].to==='db'
 assert.match(find('p5').note,/Daily tasks, disposal, outstanding clearances and appendix are excluded/);
 
 async function checkPage(page){
+ const reservationText=await page.locator('#sequence-p2 svg').textContent();
+ assert.match(reservationText,/Group = selected class members/,'Printed sequence explains Group accountability');
+ assert.match(reservationText,/Student Only = one selected class student\./,'Printed sequence explains individual accountability');
  assert.equal(await page.locator('.sequence-sheet').count(),5);
  assert.equal(await page.locator('#sequence-index a[href^="#sequence-"]').count(),5);
  const all=await page.evaluate(()=>window.SystemSequenceGeometry);

@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-19T01:56:02.339Z",
+  "generatedAt": "2026-09-20T07:57:16.431Z",
   "title": "A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview",
   "sources": [
     {
       "path": "Docs.html",
-      "sha256": "b42bb59acd5910e807ea509c4c1d469c52e07a0f3905a9a9d75b6f979d1031ec"
+      "sha256": "cae4cff78001d8602fadadf19bab30bd7bfb961eb79fe667a49fb934036cd036"
     },
     {
       "path": "assets/figures-v2/usecase-diagram-source.html",
@@ -13,11 +13,11 @@
     },
     {
       "path": "assets/figures-v2/dfd-level1/dfd-level1-model.json",
-      "sha256": "ceed426087d579f0b906a43963171c94f63b8038d7ef5aee99d76fecac478e18"
+      "sha256": "3b240ed191c8fc1b686d991b8de841d761c6749d63b390429ed7aad8b8bbbc35"
     },
     {
       "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-model.json",
-      "sha256": "59e19a891415fe97b7c1650b1be5869ac5f5f3579b353bc09efaa1fe7cc54bef"
+      "sha256": "8f08aa0f748f837dad5346ac2f702164bcb0ad071d721347b63939da9eb205d1"
     },
     {
       "path": "assets/figures-v2/dfd-level0/dfd-level0-portrait.js",
@@ -33,11 +33,11 @@
     },
     {
       "path": "integrations/system-audit/build.cjs",
-      "sha256": "125f9bd9e9983a266639a9e1d93604097564f8ccf4619ad289c654c024f51cdf"
+      "sha256": "49bb6320f9c94dd4795b89e8535127473da42f99e9502574631cae668dd447a7"
     },
     {
       "path": "assets/erd/model.js",
-      "sha256": "bac7657537afdea2e0725cf531a02eb66ab0c3ed7ca49644073a0d37994cb1e2"
+      "sha256": "6c191cff06659944c2cddb713ee7aa030ac8fdfaf817b24554a5987f923c949a"
     },
     {
       "path": "assets/erd/render.js",
@@ -45,23 +45,23 @@
     },
     {
       "path": "Reservation-Form.html",
-      "sha256": "233f27628d7fba9cbbc45f2dc1e3eec772531b7e738e56bbd9c7e6f248318163"
+      "sha256": "614b6dee461dd3efe60fc7ad2f1f4d24e21d0a4ab5193949a1cf9163065207e1"
     },
     {
       "path": "assets/reservation-type.js",
-      "sha256": "5169b4ed8734b6e73654cbc6e8d349486b875bd9b28232a1b51131111f116e1b"
+      "sha256": "7f2c4f54b6fccdc86148ae4fb97e763c6dc3c978e70be54c2d12293f18fba4a4"
     },
     {
       "path": "assets/system-diagrams/process-activities.js",
-      "sha256": "e09eb87fa954accc7178515f2b372986fa99810d976f39abef135ee3658ce1cf"
+      "sha256": "5f792a0e83cb77be00dce09ff88657da79949498ba92e7b54238b961bb095afd"
     },
     {
       "path": "assets/system-diagrams/sequence-models.js",
-      "sha256": "67c349a91bebf80ed9931830fb98996995175439f53603589331400a3c7a1284"
+      "sha256": "76dca8bc17949226b475f279a5d4c83ed0b4d7c8b993af73432181be624a63df"
     },
     {
       "path": "assets/system-diagrams/swimlane.js",
-      "sha256": "74eb493cf2cc862e666ec0fbb2c6d291a84839f2d0c27aa9260789070fb02c8c"
+      "sha256": "5ac41d0a2e0ff8fbc087be038a9daffe542f3cc9767c12c5243107e192ce988d"
     }
   ],
   "groups": [
@@ -1611,14 +1611,14 @@
     {
       "group": "dfd0",
       "id": "p2-cr-onschedule",
-      "label": "On-Schedule Non-Laboratory Request including Reservation Type — classrep → p2",
+      "label": "On-Schedule Request — classrep → p2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
     {
       "group": "dfd0",
       "id": "p2-cr-outschedule",
-      "label": "Out-of-Schedule Request including Reservation Type — classrep → p2",
+      "label": "Out-of-Schedule Request — classrep → p2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
@@ -1653,7 +1653,7 @@
     {
       "group": "dfd0",
       "id": "p2-fa-scheduled",
-      "label": "Scheduled Laboratory Activity — faculty → p2",
+      "label": "On-Schedule Request — faculty → p2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
@@ -1961,14 +1961,14 @@
     {
       "group": "dfd1",
       "id": "p2-cr-onschedule",
-      "label": "On-Schedule Non-Laboratory Request including Reservation Type — valid endpoints",
+      "label": "On-Schedule Request — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
     {
       "group": "dfd1",
       "id": "p2-cr-outschedule",
-      "label": "Out-of-Schedule Request including Reservation Type — valid endpoints",
+      "label": "Out-of-Schedule Request — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -2003,7 +2003,7 @@
     {
       "group": "dfd1",
       "id": "p2-fa-scheduled",
-      "label": "Scheduled Laboratory Activity — valid endpoints",
+      "label": "On-Schedule Request — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -2241,14 +2241,14 @@
     {
       "group": "dfd1",
       "id": "p2-d2-write",
-      "label": "Reservation Record including Reservation Type — valid endpoints",
+      "label": "Reservation Record — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
     {
       "group": "dfd1",
       "id": "p2-d2-read",
-      "label": "Reservation Data including Reservation Type — valid endpoints",
+      "label": "Reservation Data — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -2556,14 +2556,14 @@
     {
       "group": "dfd2",
       "id": "p2-cr-onschedule-child2",
-      "label": "On-Schedule Non-Laboratory Request including Reservation Type — classrep → p2.2",
+      "label": "On-Schedule Request — classrep → p2.2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-cr-outschedule-child2",
-      "label": "Out-of-Schedule Request including Reservation Type — classrep → p2.2",
+      "label": "Out-of-Schedule Request — classrep → p2.2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -2598,7 +2598,7 @@
     {
       "group": "dfd2",
       "id": "p2-fa-scheduled-child2",
-      "label": "Scheduled Laboratory Activity — faculty → p2.2",
+      "label": "On-Schedule Request — faculty → p2.2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -2668,35 +2668,35 @@
     {
       "group": "dfd2",
       "id": "p2-d2-write-child2",
-      "label": "Reservation Record including Reservation Type — p2.2 → d2",
+      "label": "Reservation Record — p2.2 → d2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-write-child3",
-      "label": "Reservation Record including Reservation Type — p2.3 → d2",
+      "label": "Reservation Record — p2.3 → d2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-write-child4",
-      "label": "Reservation Record including Reservation Type — p2.4 → d2",
+      "label": "Reservation Record — p2.4 → d2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-read-child2",
-      "label": "Reservation Data including Reservation Type — d2 → p2.2",
+      "label": "Reservation Data — d2 → p2.2",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-read-child4",
-      "label": "Reservation Data including Reservation Type — d2 → p2.4",
+      "label": "Reservation Data — d2 → p2.4",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -2717,14 +2717,14 @@
     {
       "group": "dfd2",
       "id": "p2-d2-read-child1",
-      "label": "Reservation Data including Reservation Type — d2 → p2.1",
+      "label": "Reservation Data — d2 → p2.1",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
     {
       "group": "dfd2",
       "id": "p2-d2-read-child3",
-      "label": "Reservation Data including Reservation Type — d2 → p2.3",
+      "label": "Reservation Data — d2 → p2.3",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -2738,7 +2738,7 @@
     {
       "group": "dfd2",
       "id": "p2-internal2",
-      "label": "Validated Request including Reservation Type — valid child exchange",
+      "label": "Validated Request — valid child exchange",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2"
     },
@@ -3259,7 +3259,7 @@
       "status": "fixed",
       "id": "RES-01",
       "title": "Required Reservation Type",
-      "detail": "Class Representatives must choose Group or Student Only for both schedule variants. Table 7, events, backlog, form preview, Use Case, DFD 0–2, ERD, Activity 2, Sequence 05 and Swimlane now carry the same requirement. Student Only uses the signed-in representative. Production reservation persistence remains an implementation task; the repository contains a documentation/UI preview.",
+      "detail": "Class Representatives must choose Group or Student Only for both schedule variants. Table 7, events, backlog, form preview, Use Case, DFD 0–2, ERD, Activity 2, Sequence 05 and Swimlane now carry the same requirement. Student Only uses exactly one selected class student; the representative submits on their behalf. Production reservation persistence remains an implementation task; the repository contains a documentation/UI preview.",
       "href": "Reservation-Form.html"
     },
     {

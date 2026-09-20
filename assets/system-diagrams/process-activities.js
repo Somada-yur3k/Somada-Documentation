@@ -19,8 +19,8 @@ function draw(model){
  function text(parent,x,y,value,size=22,bold=false){const rows=value.split('\n'),t=el('text',{'text-anchor':'middle','font-size':size,'font-weight':bold?700:400,style:'fill:#000'},parent);rows.forEach((row,i)=>el('tspan',{x,y:y+(i-(rows.length-1)/2)*size*1.16+size*.34},t).textContent=row);return t;}
  const titles={p1:'User Access & Accounts',p2:'Reservations, Availability & Approvals',p3:'Laboratory Questions',p4:'Equipment & Borrowing',p5:'Laboratory Administration & Reporting'};
  text(labels,600,32,titles[model.id]+' — Activity Diagram',29,true);
- const precondition={p1:'Login: any role. Create / update Faculty or Class Rep. accounts: signed-in Head Laboratory only.',p2:'Precondition: signed-in requester or routed Faculty / Dean; permitted operations only.',p3:'Precondition: signed-in Class Representative or Faculty; informational Q&A only.',p4:'Precondition: signed-in Head Laboratory or Staff within the assigned laboratory.',p5:'Precondition: signed-in Head Laboratory; Class Representative: own-group clearance only.'}[model.id];
- if(model.id==='p2') text(labels,600,77,'Class Rep.: choose Group or Student Only for BOTH schedule variants. Student Only = signed-in representative.\nOn-schedule → Faculty; out-of-schedule → Faculty, then Dean. Faculty request rules remain unchanged.',16);
+ const precondition={p1:'Login: any role. Create / update Faculty or Class Rep. accounts: signed-in Head Laboratory only.',p2:'Precondition: signed-in requester or routed Faculty / Dean; permitted operations only.',p3:'Precondition: signed-in Class Representative or Faculty; informational Q&A only.',p4:'Precondition: signed-in Head Laboratory or Staff within the assigned laboratory.',p5:'Precondition: signed-in Head Laboratory; Class Representative: assigned-class student clearance only.'}[model.id];
+ if(model.id==='p2') text(labels,600,77,'Class Rep.: choose Group or Student Only for BOTH schedule variants. Student Only = one selected class student.\nOn-schedule → Faculty; out-of-schedule → Faculty, then Dean. Faculty request rules remain unchanged.',16);
  else text(labels,600,83,precondition,20);
  function action(key,x,y,title,child){
   const g=el('g',{'data-activity-node':key,'data-uml-kind':'action'},shapes);nodes[key]={x:x-ACTION_W/2,y:y-ACTION_H/2,w:ACTION_W,h:ACTION_H,kind:'action',title};
@@ -36,11 +36,11 @@ function draw(model){
  function dispatchStart(){terminal('start',200,125);action('choose',200,200,'Choose permitted\noperation');link('start','b','choose','t');}
  function row(key,y,question,input,condition,result,child,preChild){
   if(model.id==='p2'&&key==='request'){
-   decision('request-choice',200,y,question);action('request-input',600,y,'Select block / items;\ncheck availability',0);decision('request-role',980,y,'Class Rep.?');
+   decision('request-choice',200,y,question);action('request-input',600,y,'Select class / block;\ncheck items and slots',0);decision('request-role',980,y,'Class Rep.?');
    link('request-choice','r','request-input','l',[],'[Yes]',[375,y-20]);link('request-input','r','request-role','l');
    action('select-type',980,y+120,'Confirm / select\nReservation Type');decision('reservation-type',980,y+240,'Group or\nStudent Only?');
    link('request-role','b','select-type','t',[],'[Yes]',[1045,y+65]);link('select-type','b','reservation-type','t');
-   action('group-info',600,y+360,'Confirm existing\ngroup / members');action('individual-info',980,y+360,'Confirm own\nstudent reservation');
+   action('group-info',600,y+360,'Confirm existing\ngroup / members');action('individual-info',980,y+360,'Select one student\nfrom assigned class');
    link('reservation-type','l','group-info','t',[[600,y+240]],'[Group]',[740,y+217]);link('reservation-type','b','individual-info','t',[],'[Student Only]',[1055,y+297]);
    bar('type-merge',790,y+470,'join');nodes['type-merge'].joinSpec='or';shapes.querySelector('[data-activity-node="type-merge"]').setAttribute('data-join-spec','or');label(655,y+505,'{joinSpec = or}',17);
    link('group-info','b','type-merge',[600,y+464]);link('individual-info','b','type-merge',[980,y+464]);
@@ -64,8 +64,8 @@ function draw(model){
  if(model.id==='p1'){
   terminal('start',600,165);action('choose',600,260,'Choose access\noperation');link('start','b','choose','t');decision('operation',600,390,'Log in?');link('choose','b','operation','t');
   for(const [key,x,login]of [['login',350,true],['account',850,false]]){
-   action(key+'-input',x,550,login?'Enter credentials':'Create / select account;\nFaculty / Class Rep.');action(key+'-check',x,710,login?'Validate credentials':'Check Head, role, ID;\nFaculty if Class Rep.',login?0:undefined);
-   decision(key+'-valid',x,860,'Valid?');action(key+'-save',x,1020,login?'Establish role-scoped\nsession':'Create / update details\nand active status',login?1:2);action(key+'-result',x,1180,login?'View role dashboard':'If new: email Faculty;\nconfirm saved account');
+   action(key+'-input',x,550,login?'Enter credentials':'Enter verified details;\nFaculty / Class Rep.');action(key+'-check',x,710,login?'Validate credentials':'Check role, ID, section;\nclass / Faculty links',login?0:undefined);
+   decision(key+'-valid',x,860,'Valid?');action(key+'-save',x,1020,login?'Establish role-scoped\nsession':'Create / update details\nand active status',login?1:2);action(key+'-result',x,1180,login?'View role dashboard':'If new: email Faculty;\nFaculty hands to Rep.');
    action(key+'-error',x,1380,login?'Show login error;\nno session created':'Show correction;\nno account changed');terminal(key+'-end',x,1600,true);
    link('operation',login?'l':'r',key+'-input','t',[[x,390]],login?'[Yes]':'[No: manage accounts, Head]',[x,461]);link(key+'-input','b',key+'-check','t');link(key+'-check','b',key+'-valid','t');link(key+'-valid','b',key+'-save','t',[],'[Yes]',[x+50,947]);link(key+'-save','b',key+'-result','t');
    const errorTrack=login?40:1160,successTrack=login?130:1070;
@@ -79,7 +79,7 @@ function draw(model){
  }else if(model.id==='p2'){
   dispatch([
    ['availability',300,'View slots?', 'Choose laboratory\nand schedule','Allowed?', 'Retrieve and display\navailability',0],
-   ['request',520,'Submit /\nreschedule?', 'Select block / items;\ncheck availability','Valid?', 'Save request & holds;\nroute if required',1,0],
+   ['request',520,'Submit /\nreschedule?', 'Select class / block;\ncheck items and slots','Valid?', 'Save request & holds;\nroute if required',1,0],
    ['cancel',1400,'Cancel?', 'Select own request;\nconfirm cancellation','Eligible?', 'Cancel; release hold;\nnotify if needed',1],
    ['tracking',1620,'View\ntracking?', 'Open own status\nor history','Own records?', 'Display own status\nand history',3]
   ]);
@@ -108,7 +108,7 @@ function draw(model){
   dispatch([
    ['schedule',305,'Schedule?', 'Head: enter\nschedule block','Valid; no\nconflict?', 'Maintain schedule;\npublish vacant blocks',0],
    ['logs',565,'Daily task?', 'Head: enter\ndaily task','Valid?', 'Save daily task;\nconfirm saved record',1],
-   ['clearance',825,'Clearance?', 'Head: raise / settle\nRep.: view own group','Permitted?', 'Process clearance;\ndisplay status',2]
+   ['clearance',825,'Clearance?', 'Head: identify student\nRep.: view status only','Allowed /\nvalid?', 'Head: create / settle;\nRep.: view status',2]
   ]);
   action('term',200,1000,'Head: open Physics /\nCircuits logs');link('clearance-choice','b','term','t',[],'[No: report]',[274,891]);
   bar('report-fork',780,1130,'fork');link('term','b','report-fork','t',[[200,1100],[780,1100]]);

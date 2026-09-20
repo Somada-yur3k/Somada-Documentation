@@ -25,7 +25,7 @@ for(const actor of ['faculty','dean']){
  assert(p2.flows.some(f=>f.source==='p2.3'&&f.target===actor&&f.label==='Routed Approval Request'));
 }
 assert(l2.find(m=>m.id==='p4').flows.some(f=>f.source==='d2'&&f.target==='p4.2'&&f.label==='Authorized Reservation Data'));
-assert.match(read('assets/system-diagrams/swimlane.js'),/Review Pending Dean/);
+assert.match(read('assets/system-diagrams/swimlane.js'),/act\('dean',5,\d+,'Review request;\\nApprove \/ Reject'/,'Dean review stays in the Dean partition');
 assert.match(read('assets/system-diagrams/swimlane.js'),/Check final approval/);
 assert.match(read('integrations/system-audit/build.cjs'),/\['fixed','POL-01'/);
 assert.match(read('integrations/system-audit/build.cjs'),/\['pending','POL-08'/,'Dean account provisioning is still pending');

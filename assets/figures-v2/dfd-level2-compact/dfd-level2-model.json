@@ -134,7 +134,8 @@
         "id": "p2-internal2",
         "source": "p2.2",
         "target": "p2.3",
-        "label": "Validated Request including Reservation Type",
+        "label": "Validated Request",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "internal"
       },
       {
@@ -152,7 +153,8 @@
         "parentFlow": "p2-cr-onschedule",
         "source": "classrep",
         "target": "p2.2",
-        "label": "On-Schedule Non-Laboratory Request including Reservation Type",
+        "label": "On-Schedule Request",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "external"
       },
       {
@@ -160,7 +162,8 @@
         "parentFlow": "p2-cr-outschedule",
         "source": "classrep",
         "target": "p2.2",
-        "label": "Out-of-Schedule Request including Reservation Type",
+        "label": "Out-of-Schedule Request",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "external"
       },
       {
@@ -200,7 +203,7 @@
         "parentFlow": "p2-fa-scheduled",
         "source": "faculty",
         "target": "p2.2",
-        "label": "Scheduled Laboratory Activity",
+        "label": "On-Schedule Request",
         "kind": "external"
       },
       {
@@ -280,7 +283,8 @@
         "parentFlow": "p2-d2-write",
         "source": "p2.2",
         "target": "d2",
-        "label": "Reservation Record including Reservation Type",
+        "label": "Reservation Record",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "store"
       },
       {
@@ -288,7 +292,8 @@
         "parentFlow": "p2-d2-write",
         "source": "p2.3",
         "target": "d2",
-        "label": "Reservation Record including Reservation Type",
+        "label": "Reservation Record",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "store"
       },
       {
@@ -296,7 +301,8 @@
         "parentFlow": "p2-d2-write",
         "source": "p2.4",
         "target": "d2",
-        "label": "Reservation Record including Reservation Type",
+        "label": "Reservation Record",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "store"
       },
       {
@@ -304,7 +310,8 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.2",
-        "label": "Reservation Data including Reservation Type",
+        "label": "Reservation Data",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "store"
       },
       {
@@ -312,7 +319,8 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.4",
-        "label": "Reservation Data including Reservation Type",
+        "label": "Reservation Data",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "store"
       },
       {
@@ -336,7 +344,8 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.1",
-        "label": "Reservation Data including Reservation Type",
+        "label": "Reservation Data",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "store"
       },
       {
@@ -344,7 +353,8 @@
         "parentFlow": "p2-d2-read",
         "source": "d2",
         "target": "p2.3",
-        "label": "Reservation Data including Reservation Type",
+        "label": "Reservation Data",
+        "payloadFields": ["reservation_type", "student_ids"],
         "kind": "store"
       }
     ]

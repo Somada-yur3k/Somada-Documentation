@@ -165,14 +165,16 @@
       "id": "p2-cr-onschedule",
       "source": "classrep",
       "target": "p2",
-      "label": "On-Schedule Non-Laboratory Request including Reservation Type",
+      "label": "On-Schedule Request",
+      "payloadFields": ["reservation_type", "student_ids"],
       "kind": "external"
     },
     {
       "id": "p2-cr-outschedule",
       "source": "classrep",
       "target": "p2",
-      "label": "Out-of-Schedule Request including Reservation Type",
+      "label": "Out-of-Schedule Request",
+      "payloadFields": ["reservation_type", "student_ids"],
       "kind": "external"
     },
     {
@@ -207,7 +209,7 @@
       "id": "p2-fa-scheduled",
       "source": "faculty",
       "target": "p2",
-      "label": "Scheduled Laboratory Activity",
+      "label": "On-Schedule Request",
       "kind": "external"
     },
     {
@@ -445,14 +447,16 @@
       "id": "p2-d2-write",
       "source": "p2",
       "target": "d2",
-      "label": "Reservation Record including Reservation Type",
+      "label": "Reservation Record",
+      "payloadFields": ["reservation_type", "student_ids"],
       "kind": "store"
     },
     {
       "id": "p2-d2-read",
       "source": "d2",
       "target": "p2",
-      "label": "Reservation Data including Reservation Type",
+      "label": "Reservation Data",
+      "payloadFields": ["reservation_type", "student_ids"],
       "kind": "store"
     },
     {

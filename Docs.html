@@ -386,7 +386,7 @@
       { id:"02", role:"Head Laboratory", want:`create and manage system accounts to Class Representatives and Faculty`, soThat:`both requester roles receive controlled access without self-registration`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"03", role:"Class Representative / Faculty", want:`choose Physics or Circuits Laboratory and view its schedule and availability before filing an allowed request`, soThat:`I only see the slots and resources that actually apply to the laboratory I need`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"04A", role:"Faculty", want:`submit a scheduled laboratory activity covered by the term schedule, selecting any resources the class needs`, soThat:`I can arrange the regular class laboratory activity without another academic approval`, priority:"Must", sprint:2, status:"Not Started" },
-      { id:"04B", role:"Class Representative", want:`submit an on-schedule non-laboratory request within my class's assigned schedule after choosing As a Group or As a Student Only`, soThat:`the reservation identifies group or individual use and obtains assigned-Faculty approval`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"04B", role:"Class Representative", want:`submit an on-schedule non-laboratory request within my class's assigned schedule after choosing As a Group or As a Student Only`, soThat:`the reservation identifies the selected classmates or individual student separately from my submitting account and obtains assigned-Faculty approval`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"04C", role:"Class Representative / Faculty", want:`submit an out-of-schedule laboratory request against a vacant block; Class Representatives must choose As a Group or As a Student Only`, soThat:`Class Representative requests receive Faculty approval then Dean approval, while Faculty requests go directly to Dean`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"05", role:"Class Representative / Faculty", want:`cancel or reschedule a reservation I already submitted`, soThat:`a change of plan doesn't leave a stale booking or force me to file a whole new request`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"06", role:"Faculty", want:`review and approve or reject a routed on-schedule non-laboratory or out-of-schedule request from my assigned Class Representative`, soThat:`my approval finalizes on-schedule requests but keeps out-of-schedule requests Pending for Dean; my rejection stops the route`, priority:"Must", sprint:2, status:"Not Started" },
@@ -451,7 +451,7 @@
       },
       {
         "event": "Class Representative submits an on-schedule non-laboratory request",
-        "trigger": "Class Representative selects an assigned block and academic purpose, selects Reservation Type (As a Group or As a Student Only), confirms applicable information, and submits",
+        "trigger": "Class Representative selects an assigned block and academic purpose, selects Reservation Type (As a Group or As a Student Only), selects the participating class students or one individual student, and submits",
         "source": "Class Representative",
         "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
         "response": "Require Reservation Type; store GROUP or STUDENT_ONLY with the Pending request and applicable accountable students; route to assigned Faculty for approval",
@@ -460,7 +460,7 @@
       },
       {
         "event": "A requester submits an out-of-schedule request",
-        "trigger": "Class Representative or Faculty selects a vacant out-of-schedule block; Class Representative must select As a Group or As a Student Only before submitting",
+        "trigger": "Class Representative or Faculty selects a vacant out-of-schedule block; Class Representative must select As a Group or As a Student Only and the applicable class students before submitting",
         "source": "Class Representative, Faculty",
         "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
         "response": "Validate and store Reservation Type (GROUP or STUDENT_ONLY) for Class Representative requests. Store Pending with a held block: Class Representative requests go to assigned Faculty first, then Dean only after Faculty approval; Faculty requests go directly to Dean",
@@ -804,7 +804,7 @@
         "useCaseName": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
         "scenario": "A requester needs a laboratory room, equipment, or both, for a session.",
         "triggeringEvent": "The requester completes the reservation form and submits it.",
-        "briefDescription": "A Class Representative must select Reservation Type: As a Group (GROUP) or As a Student Only (STUDENT_ONLY), for both on-schedule non-laboratory and out-of-schedule requests. Group uses the existing member information; Student Only uses the signed-in Class Representative's student identity without additional group-member input. Schedule Type and Reservation Type are separate: all four combinations are valid. Assigned Faculty approves on-schedule non-laboratory requests; out-of-schedule requests require assigned Faculty followed by Dean. Faculty's own out-of-schedule request goes directly to Dean and does not require the Class Representative-only selection.",
+        "briefDescription": "A Class Representative must select Reservation Type: As a Group (GROUP) or As a Student Only (STUDENT_ONLY), for both on-schedule non-laboratory and out-of-schedule requests. Class Representative submits on behalf of classmates in the assigned section/class. Group uses selected existing class members; Student Only requires exactly one selected class student, who may be a classmate or the representative. The submitting account is not automatically the borrower; ordinary students do not need login accounts. Schedule Type and Reservation Type are separate: all four combinations are valid. Assigned Faculty approves on-schedule non-laboratory requests; out-of-schedule requests require assigned Faculty followed by Dean. Faculty's own out-of-schedule request goes directly to Dean and does not require the Class Representative-only selection.",
         "actors": "Class Representative, Faculty",
         "related": [
           "Choose Laboratory",
@@ -829,17 +829,17 @@
           "The request is stored as Pending and the selected block is held. Class Representative requests go to assigned Faculty first; out-of-schedule requests proceed to Dean only after Faculty approval. Faculty out-of-schedule requests go directly to Dean. This use case does not submit scheduled Faculty laboratory activities."
         ],
         "flowActor": [
-          "Requester chooses the laboratory and the intended block.",
+          "Requester chooses an authorized active subject/class, the laboratory and the intended block. The same section representative account is reused for different subjects.",
           "Requester selects required resources and quantities.",
           "Class Representative selects On-Schedule Non-Laboratory or Out-of-Schedule; Faculty selects Out-of-Schedule.",
           "For an on-schedule non-laboratory request, Class Representative confirms the assigned class block and states the academic purpose.",
           "For either Class Representative schedule variant, select the required Reservation Type: As a Group or As a Student Only. No option is preselected.",
-          "As a Group: confirm the existing group/member information within the assigned class. As a Student Only: confirm individual use by the signed-in Class Representative; no additional group members are required.",
+          "As a Group: select participating students from the assigned class. As a Student Only: select exactly one existing student from that class; the representative may select a classmate or themselves. No individual student is preselected.",
           "Requester reviews the information and submits."
         ],
         "flowSystem": [
           "System enforces the signed-in requester's allowed schedule variant and requires a valid Reservation Type for Class Representatives. Missing or invalid type prevents submission without creating a record or hold.",
-          "System carries the assigned class context for schedule and Faculty routing. GROUP retains applicable existing members; STUDENT_ONLY derives the sole accountable student from the signed-in account and ignores stale group-member input.",
+          "System validates the selected class against the representative's active assignments and derives the reviewer from that class's Faculty. Reject an unassigned class; never trust a submitted Faculty ID or use the credential recipient as a global reviewer. GROUP retains members of the selected class; STUDENT_ONLY validates and records exactly one selected class student, not automatically the submitting representative, and ignores stale group-member input. Reject missing or out-of-class student selections. Keep requester_id as the submitting Class Rep account.",
           "System performs Select Resources / Equipment and validates item quantities.",
           "System validates an on-schedule non-laboratory block against the Class Representative's class schedule, or validates an out-of-schedule block as vacant.",
           "System stores reservation_type (GROUP or STUDENT_ONLY) with each Class Representative request, independently of request_basis / usage_type. Store Pending and hold the block: route Class Representative requests to assigned Faculty; route Faculty out-of-schedule requests directly to Dean."
@@ -847,7 +847,7 @@
         "exceptions": [
           "If the selected slot is already committed, the system reports the conflict and offers the remaining vacant blocks.",
           "If a requested resource quantity exceeds availability, the system flags it so the requester can adjust it.",
-          "If required information is incomplete, including Reservation Type for a Class Representative, the system requests corrections before submission. Neither a reservation nor a hold is created.",
+          "If required information is incomplete, including Reservation Type and the applicable selected class students for a Class Representative, the system requests corrections before submission. Neither a reservation nor a hold is created.",
           "If a Class Representative identifies the request as the class's scheduled laboratory activity, the system blocks that type and directs the class to its Faculty member.",
           "If a Class Representative selects On-Schedule but the block is outside the class's assigned schedule, the system requires the request to be filed as Out-of-Schedule."
         ],
@@ -858,7 +858,7 @@
             "name": "Select Reservation Type",
             "type": "extend",
             "condition": "Mandatory when the requester is a Class Representative, for both On-Schedule Non-Laboratory and Out-of-Schedule. The shared base also serves Faculty, for whom this step does not apply.",
-            "behavior": "Present unselected As a Group / As a Student Only options before submission. Validate the selection, confirm only applicable member information, and persist GROUP or STUDENT_ONLY separately from Schedule Type."
+            "behavior": "Present unselected As a Group / As a Student Only options before submission. Validate the selection, validate selected class members for Group or exactly one selected class student for Student Only, and persist GROUP or STUDENT_ONLY separately from Schedule Type. The submitting Class Rep and participating students are separate identities."
           },
           {
             "diagramId": "selectres",
@@ -1050,7 +1050,7 @@
         ],
         "flowActor": [
           "Class Representative opens Clearance Status.",
-          "Class Representative reviews any open or settled student clearance for the group."
+          "Class Representative reviews open or settled clearance for students in the assigned section/class, including Group participants and the selected Student Only borrower. This is viewing existing records, not applying for clearance."
         ],
         "flowSystem": [
           "System retrieves clearance records raised against students in the Class Representative's group.",
@@ -1188,36 +1188,36 @@
         "useCaseName": "Manage Class Representative / Faculty Accounts",
         "scenario": "A Class Representative or Faculty member needs an account, or Head Laboratory needs to maintain an existing account's details or active/inactive status.",
         "triggeringEvent": "Head Laboratory selects Create or Update for a Class Representative or Faculty account and submits the required identity details.",
-        "briefDescription": "Head Laboratory creates and manages Class Representative and Faculty accounts (details and active/inactive status); neither role self-registers. A representative uses their NU Student ID and an existing assigned Faculty account. A Faculty member uses their NU Fairview email. The system generates a password and retains the email-delivery workflow: representative credentials go to the assigned Faculty for manual hand-off, while Faculty credentials go to that Faculty member. Dean remains on a pre-assigned account; responsibility for provisioning it is pending consultation. Creating Dean, Head Laboratory, Laboratory Staff or ordinary-student login accounts is outside this use case.",
+        "briefDescription": "Head Laboratory manually creates and manages Faculty and Class Representative accounts in the system; neither role self-registers. Head Laboratory creates the Faculty account first using verified identity and NU Fairview email. Faculty manually supplies and confirms the representative's full name, NU Student ID and section before Head Laboratory enters those details. There is one active Class Representative account per section, reused across its assigned subjects/classes and Faculty; no separate account is created per subject. The system generates a password: Faculty credentials go to their owner, while representative credentials go to the designated Faculty for manual hand-off. The credential recipient does not automatically become the reviewer of every reservation; the selected subject/class determines its Faculty reviewer. Dean remains on a pre-assigned account; responsibility for provisioning it is pending consultation. Creating Dean, Head Laboratory, Laboratory Staff or ordinary-student login accounts is outside this use case.",
         "actors": "Head Laboratory",
         "related": [
           "Log In"
         ],
         "stakeholders": [
           "Head Laboratory: controls account creation and maintenance for Class Representatives and Faculty.",
-          "Faculty: receives their own account credentials and hands assigned representative credentials to the Class Representative.",
+          "Faculty: manually supplies verified representative details to Head Laboratory, receives their own credentials, and hands representative credentials to the correct section representative.",
           "Class Representative: needs a working account without self-registering."
         ],
         "preconditions": [
           "Head Laboratory is signed in.",
-          "The selected account type is Class Representative or Faculty. For a representative account, the assigned Faculty must already have an account; Head Laboratory can create that Faculty account first."
+          "The selected account type is Class Representative or Faculty. For a representative account, the designated Faculty must already have an account; Head Laboratory can create that Faculty account first. Faculty has manually confirmed the representative's full name, NU Student ID and section. No new online nomination or registration module is required."
         ],
         "postconditions": [
           "The selected Class Representative or Faculty account is stored with the correct role and a unique Student ID or NU Fairview email username. Only new-account credentials go to the Faculty owner or, for a representative, to the assigned Faculty. Updates preserve role and linked history. The Dean account is unchanged."
         ],
         "flowActor": [
           "Head Laboratory opens Manage Class Representative / Faculty Accounts.",
-          "Head Laboratory selects Class Representative or Faculty. For a representative, enter NU Student ID and select an existing Faculty account. For Faculty, enter the Faculty identity and NU Fairview email.",
+          "Head Laboratory selects Class Representative or Faculty. For a representative, enter the Faculty-verified full name, NU Student ID and section, select the designated Faculty credential recipient, and link the existing subject/class assignments. For Faculty, manually enter the verified Faculty name and NU Fairview email.",
           "Head Laboratory submits Create or selects an existing Faculty / Class Representative account to update its details or active/inactive status."
         ],
         "flowSystem": [
           "System verifies Head Laboratory authorization and permits only Class Representative or Faculty account creation or management. For Update, load the existing record and retain its role and linked history; no role change, credential reset or hard deletion is included.",
-          "System validates the Student ID and existing Faculty assignment for a representative, or the NU Fairview email and identity for Faculty; duplicate usernames are rejected.",
-          "For Create, system creates the selected role account with a system-generated password. For Update, system saves validated account details, applicable Faculty assignment and active/inactive status, excluding the current record from duplicate checks.",
+          "System validates identity, section and existing Faculty/class assignments for a representative, or the NU Fairview email and identity for Faculty. Reject duplicate usernames and a second active representative for the same section; reuse the section representative account when adding another subject/class. Each class retains its own Faculty reviewer.",
+          "For Create, system creates the selected role account with a system-generated password. For Update, system saves validated account details, applicable subject/class assignments and active/inactive status, excluding the current record from duplicate checks. Preserve the account identity and linked history when adding subjects; do not overwrite every class reviewer with the credential recipient.",
           "Only on creation, system emails Faculty credentials to the Faculty owner, or representative credentials to the assigned Faculty for manual hand-off. System confirms creation or update to Head Laboratory."
         ],
         "exceptions": [
-          "If the Student ID or NU Fairview email is already registered, the system refuses to create a duplicate.",
+          "If the Student ID or NU Fairview email is already registered, or the section already has an active representative account, the system refuses to create a duplicate. Missing or conflicting representative details must be confirmed with Faculty before account creation.",
           "If the assigned Faculty member has no account yet, representative issuance is blocked; Head Laboratory creates the Faculty account first, then retries.",
           "Creation of any other role is rejected. Dean provisioning remains pending confirmation, with a pre-assigned Dean account used in the current scope."
         ],
@@ -1309,7 +1309,7 @@
         "useCaseName": "Issue Equipment",
         "scenario": "An approved reservation requires equipment to be released for the session.",
         "triggeringEvent": "Head Laboratory or assigned Laboratory Staff open an approved reservation and record the quantity issued for each item.",
-        "briefDescription": "Generates a borrowing slip record from the approved reservation, with the item list constrained to the resources selected on it. The quantity issued is recorded per item against the requester and the date of the session, and issued quantities are deducted from available stock. The stored borrowing slip is made visible to the requester and becomes the source record for return and clearance processing.",
+        "briefDescription": "Generates a borrowing slip record from the approved reservation, retaining both the submitting Class Rep account and the actual selected borrowers: participating group members or the one Student Only borrower. The item list is constrained to the reserved resources. The quantity issued is recorded per item and session date, and issued quantities are deducted from available stock. The stored slip is visible through the requester account and supplies the participant and item evidence for return processing and Head Lab identification of the responsible student before clearance creation.",
         "actors": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
         "related": [
           "Approve / Reject Routed Request",
@@ -1406,7 +1406,7 @@
         "useCaseName": "Process Clearance",
         "scenario": "An item is found broken or missing during the post-session check and accountability must be recorded.",
         "triggeringEvent": "Head Laboratory reviews a broken or lost outcome from return processing and selects the accountable student from the borrowing slip record.",
-        "briefDescription": "Only Head Laboratory may raise, update, and close a clearance. Laboratory Staff record broken or lost outcomes during return processing, but they do not create or settle the clearance. The record is raised only against the accountable student identified on the borrowing slip and becomes visible through the Class Representative's View Clearance Status. Faculty accounts neither receive nor display clearance records.",
+        "briefDescription": "Only Head Laboratory may raise, update, and close a clearance. Laboratory Staff record broken or lost outcomes during return processing, but they do not create or settle the clearance. After the laboratory session, Head Laboratory identifies the responsible student among the selected reservation participants on the borrowing slip before creating the record. Do not automatically charge the submitting Class Rep or every group member. The record is raised only against that identified student and becomes visible through the Class Representative's View Clearance Status. Faculty accounts neither receive nor display clearance records.",
         "actors": "Head Laboratory",
         "related": [
           "Process Return",
@@ -1426,13 +1426,13 @@
         ],
         "flowActor": [
           "Head Laboratory opens the broken or lost outcome and its borrowing slip record.",
-          "Head Laboratory selects the accountable student.",
+          "Head Laboratory identifies and selects the responsible student from the reservation-linked borrowing participants: a selected group member or the selected Student Only borrower.",
           "Head Laboratory raises the clearance stating the item, quantity, and reason.",
           "Head Laboratory marks the clearance cleared or replaced on settlement."
         ],
         "flowSystem": [
-          "System displays the accountable students recorded on the borrowing slip.",
-          "System writes the clearance record against the selected student and makes it visible to the student's Class Representative.",
+          "System displays the selected participants recorded on the reservation-linked borrowing slip and the damaged or missing item. Require Head Laboratory to identify the responsible student before creating clearance.",
+          "System writes the clearance against the identified student and makes the student name, item, reason and status visible in the section Class Rep account. The Class Rep can view the record but cannot request, create or settle clearance.",
           "System updates the clearance status and closes it on settlement."
         ],
         "exceptions": [
@@ -1577,8 +1577,8 @@
 
     gaps: [
       { id:"01", current:`Inventory is held in the inventory finder worksheet as name, description, existing quantity, unit and type, with no condition field and no record of how much of each item is currently out or committed; edits are typed directly into cells.`, proposed:`Provide an inventory module supporting add, edit and remove, in which each holding is recorded by name with a condition status and quantities tracked as existing, available, in use and reserved.`, impact:`Stock levels become visible at a glance and changes are attributable rather than silently overwritten.` },
-      { id:"02", current:`Borrowing is recorded in the Physics and Circuits usage logs by date, subject code, professor, particulars and quantity; no student is named anywhere in the workbook.`, proposed:`Provide a Borrowing Slip Record capturing the requester, applicable accountable students (group members or the individual representative), issued items, quantities, date, and time against the approved reservation.`, impact:`Accountability attaches to the borrower rather than only to the supervising professor.` },
-      { id:"03", current:`Damage and loss are logged by date, professor, item, quantity and unit; the accountable group is traceable only through the signed paper slip for that session.`, proposed:`Record damage and loss directly against the accountable group drawn from the Borrowing Slip Record.`, impact:`Removes the paper cross-reference step and prevents unattributed losses.` },
+      { id:"02", current:`Borrowing is recorded in the Physics and Circuits usage logs by date, subject code, professor, particulars and quantity; no student is named anywhere in the workbook.`, proposed:`Provide a Borrowing Slip Record capturing the requester, applicable participating students (selected group members or the selected individual student), issued items, quantities, date, and time against the approved reservation.`, impact:`Accountability attaches to the borrower rather than only to the supervising professor.` },
+      { id:"03", current:`Damage and loss are logged by date, professor, item, quantity and unit; the accountable group is traceable only through the signed paper slip for that session.`, proposed:`Record damage and loss against the borrowing transaction; Head Laboratory identifies the responsible student from its Group or Student Only participants before raising clearance.`, impact:`Removes the paper cross-reference step and prevents unattributed losses.` },
       { id:"04", current:`Availability is established by opening the inventory finder and reading a quantity that is updated by hand after each session.`, proposed:`Provide a live availability view showing quantities on hand and expected return times.`, impact:`Availability can be checked without a physical count.` },
       { id:"05", current:`End-of-term figures are computed by formula blocks in the Broken, Loss and Consumed worksheet and exported manually into a presentation.`, proposed:`Generate summaries and transaction logs directly from stored records.`, impact:`Reporting no longer depends on preserving a hand-built formula set.` },
       { id:"06", current:`Clearance is issued on paper, signed by the student, a faculty member and the laboratory head, then forwarded to the registrar.`, proposed:`Provide a digital clearance record raised and tracked by the laboratory head.`, impact:`Removes lost and incomplete clearance records and shortens processing time.` },
@@ -2029,7 +2029,7 @@ function UseCaseFullSection() {
       <SectionHeading level={3} kicker="3.1.4" title="Use Case Full Description" id="usecase-full" />
       <div className="lede">
         <p>Tables 3 to 22 correspond one-to-one with the twenty main use cases in Figure 1. Table 6 describes Faculty’s Submit Scheduled Laboratory Activity; Table 7 describes Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, retaining its two alternative flows. The eleven supporting use cases are documented as included or extending behavior in their parent tables, covering all twelve diagram dependencies. Select Reservation Type is mandatory for Class Representatives in both schedule variants; its conditional extension of the shared request use case preserves the Faculty variant. Dashboard screens remain interface views, not standalone use cases or business events. Actor permissions and event names use the same diagram mapping.</p>
-        <p><a href="Reservation-Form.html">Open the On-Schedule / Out-of-Schedule reservation form preview</a>. Schedule Type determines the approval route; Reservation Type identifies Group or Student Only. Student Only uses the signed-in Class Representative's existing student identity.</p>
+        <p><a href="Reservation-Form.html">Open the On-Schedule / Out-of-Schedule reservation form preview</a>. Schedule Type determines the approval route; Reservation Type identifies Group or Student Only. Student Only requires one selected student from the assigned class. The Class Rep submits on that student's behalf; no additional student login is created.</p>
       </div>
       {DATA.useCases.map(uc => <UseCaseSection key={uc.id} uc={uc} />)}
     </section>
@@ -2104,7 +2104,7 @@ function DfdSection({ onZoom }) {
         </div>
         <a className="figure-editor-link" href="assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html">Open canonical DFD Level 2 diagrams</a>
         <div className="lede approval-routing-reference">
-          <p>Process 2.3 routes Class Representative requests to assigned Faculty first: on-schedule non-laboratory requests need Faculty approval only; out-of-schedule requests need Faculty followed by Dean. Faculty out-of-schedule requests go directly to Dean. Scheduled Faculty activities need no additional academic approval. Any rejection stops routing and releases the hold.</p>
+          <p>DFD Levels 0–2 use the same concise data-flow labels for both requesting roles: On-Schedule Request and Out-of-Schedule Request. For Faculty, On-Schedule Request means the laboratory activity within the assigned class schedule; it needs no additional academic approval. For Class Representatives, the on-schedule non-laboratory request requires the selected class Faculty's approval. Process 2.3 routes Class Representative out-of-schedule requests to Faculty followed by Dean; Faculty out-of-schedule requests go directly to Dean. Group / Student Only applies only to Class Representatives. Any rejection stops routing and releases the hold.</p>
           <p>Process 2.4 retains Pending (awaiting Dean) and the held block after intermediate Faculty approval; only the final required approval sets Approved. Pending Dean is a reviewer stage, not a new reservation-status value. Process 4.2 retrieves only finally approved reservations for issuance; Pending requests cannot proceed to Process 4.3. Existing Faculty/Dean, D2 approval-record and authorized-reservation flows carry these rules without additional arrows.</p>
         </div>
       </div>
@@ -2133,7 +2133,7 @@ function ErdSection({ onZoom }) {
       <Figure src="assets/erd/erd-complete.png" caption="Figure 9: Entity–Relationship Diagram — Logical Draft" onZoom={onZoom} />
       <div className="lede"><p><strong>Logical ERD draft — pending consultation and validation.</strong> One complete black-and-white A4 portrait diagram maps all ten canonical DFD stores to 25 entities and 51 primary-key/foreign-key relationships. Each table appears once. Crow’s Foot connectors attach to the key rows, while the data dictionary records optional relationships, uniqueness and workflow constraints.</p><p>Reservation revisions, partial-return history and inventory ledger entries are proposed design choices, not approved implementation facts. Recurrence, room-only completion, clearance completion, atomic stock holds and knowledge-base ownership still require consultation. The archived ERD remains excluded; forecasting entities and email approval tokens are outside the current scope.</p></div>
       <p><a className="figure-editor-link" href="ERD.html">Open complete ERD and data dictionary</a> <a className="figure-editor-link" href="assets/erd/erd.pdf">Download A4 portrait ERD draft</a></p>
-      <p>RESERVATION.reservation_type records GROUP or STUDENT_ONLY and is required for every Class Representative reservation. Schedule Type remains separate in REQUEST_REVISION.request_basis / usage_type. CLASS_GROUP remains the assigned class context for routing. REQUEST_MEMBER retains existing Group members or automatically records the representative alone for Student Only, preserving borrowing and clearance accountability without additional member input. Faculty requests retain their existing workflow.</p>
+      <p>RESERVATION.reservation_type records GROUP or STUDENT_ONLY and is required for every Class Representative reservation. Schedule Type remains separate in REQUEST_REVISION.request_basis / usage_type. One active representative account per section can link to multiple CLASS_GROUP subject/class records. The requester selects an authorized active class; its faculty_id determines the Faculty reviewer, not the Faculty who delivered the account credentials. The backend must enforce section representative uniqueness across active class assignments and validate the chosen class, term, section and schedule together. REQUEST_MEMBER retains members of the selected class or records the one selected student for Student Only. RESERVATION.requester_id identifies the submitting Class Rep separately from the participating students. Faculty requests retain their existing workflow.</p>
     </section>
   );
 }
@@ -2142,7 +2142,7 @@ function ActivityDiagramsSection({ onZoom }) {
   return (
     <section id="activity-diagrams" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.9" title="Activity Diagrams" id="activity-diagrams" />
-      <div className="lede"><p>Figures 10 to 14 show a separate Activity Diagram for each of the five primary DFD processes, retaining the corresponding Level 2 subprocesses. Figure 11 requires Class Representatives to select Group or Student Only before validation for either schedule variant. Exclusive type branches use a merge, not a parallel join. Decisions show alternative workflow outcomes; these control flows are distinct from DFD data flows. Actor partitions appear in the overall Swimlane Diagram in Figure 15.</p></div>
+      <div className="lede"><p>Figures 10 to 14 show a separate Activity Diagram for each of the five primary DFD processes, retaining the corresponding Level 2 subprocesses. Figure 11 requires Class Representatives to select Group or Student Only before validation for either schedule variant. Exclusive type branches converge at the bar labelled &#123;joinSpec = or&#125;: one selected path continues, without waiting for both Group and Student Only. This is not an AND synchronization of parallel activities. Decisions show alternative workflow outcomes; these control flows are distinct from DFD data flows. Actor partitions appear in the overall Swimlane Diagram in Figure 15.</p></div>
       {ACTIVITY_FIGURES.map((f,i)=>(
         <section id={f.id} key={f.id} className="doc-section sub" data-sync-page-break={i>0 ? 'true' : undefined}>
           <SectionHeading level={4} title={f.title} id={f.id} />
@@ -2157,7 +2157,7 @@ function SwimlaneDiagramSection({ onZoom }) {
   return (
     <section id="swimlane-diagram" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.10" title="Swimlane Diagram" id="swimlane-diagram" />
-      <div className="lede"><p>Figure 15 summarizes major interactions across six actor lanes, including Dean. The Class Representative selects Reservation Type before submission; Group and Student Only paths merge before the existing schedule-based approval route. Alternative requester paths merge before joining assigned-staff preparation. Circuit and Physics assignments are alternatives. Each approver acts within their own lane. Detailed workflows remain in Figures 10–14.</p></div>
+      <div className="lede"><p>Figure 15 summarizes major interactions across six actor lanes, including Dean. The Class Representative selects Reservation Type and the participating class students before submission; Group and Student Only paths converge at the bar labelled &#123;joinSpec = or&#125; before the existing schedule-based approval route. Only the selected type path is required, not both. After returns, Head Lab identifies the responsible student before creating clearance; its status is displayed in the Class Rep account, without a clearance application from the Class Rep. Alternative requester paths converge before joining assigned-staff preparation. Circuit and Physics assignments are alternatives. Each approver acts within their own lane. Detailed workflows remain in Figures 10–14.</p></div>
       <Figure src="assets/system-diagrams/swimlane-system.png" caption="Figure 15: Whole-System Swimlane Diagram" onZoom={onZoom} editorHref="System-Diagrams.html#activity-system" />
     </section>
   );

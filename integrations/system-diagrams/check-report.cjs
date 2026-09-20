@@ -14,7 +14,9 @@ for(const id of ['uc-procclear','uc-wastedisp'])assert(!data.useCases.find(u=>u.
 const l1=JSON.parse(read('assets/figures-v2/dfd-level1/dfd-level1-model.json'));
 const l2=JSON.parse(read('assets/figures-v2/dfd-level2-compact/dfd-level2-model.json'));
 assert.equal(l1.flows.length,72);assert.equal(l1.flows.filter(f=>f.kind==='external').length,46);
-assert.equal(l2.reduce((n,m)=>n+m.flows.length,0),88);
+// P1 account maintenance now reads D1 independently; report exchanges are unchanged.
+assert.equal(l2.reduce((n,m)=>n+m.flows.length,0),89);
+assert(l2.find(m=>m.id==='p1').flows.some(f=>f.source==='d1'&&f.target==='p1.3'&&f.label==='Account Data'));
 const p5=l2.find(m=>m.id==='p5');
 assert.deepEqual(p5.flows.filter(f=>f.target==='p5.4').map(f=>f.source).sort(),['d2','d3','d4','d5']);
 assert(!p5.internal.some(f=>f.source==='p5.3'&&f.target==='p5.4'));

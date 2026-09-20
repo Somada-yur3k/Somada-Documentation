@@ -1,5 +1,7 @@
 # Head Laboratory account responsibility review
 
+Latest clarification: see [Section account update](ACCOUNT-SECTION-UPDATE.md) for the one-account-per-section rule, manual Faculty identity confirmation and class-specific reservation reviewers.
+
 ## Updated
 
 - Documentation: backlog 02, account event and Table 15 now describe creating and managing Faculty / Class Representative accounts. Updates cover details, applicable Faculty assignment and active/inactive status; retain the existing role and linked history. No credential reset or hard deletion is added.

@@ -1,12 +1,13 @@
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
-const {prepare}=require('../../assets/reservation-type.js'),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const {prepare:prepareReservation}=require('../../assets/reservation-type.js'),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const prepare=(input,account)=>prepareReservation({group_id:'c1',...input},account);
 const root=path.resolve(__dirname,'../..');
-const account={role:'Class Representative',account_id:'rep',student_id:'s1',group_id:'c1',group_student_ids:['s1','s2']};
+const account={role:'Class Representative',account_id:'rep',student_id:'s1',group_id:'c1',assigned_classes:[{group_id:'c1',faculty_id:'faculty-1',student_ids:['s1','s2'],active:true}]};
 for(const schedule_type of ['ON_SCHEDULE','OUT_OF_SCHEDULE']){
  for(const invalid of [undefined,'','OTHER'])assert.throws(()=>prepare({schedule_type,reservation_type:invalid},account),/Reservation Type/);
  const group=prepare({schedule_type,reservation_type:'GROUP',student_ids:['s1','s2']},account);
- const single=prepare({schedule_type,reservation_type:'STUDENT_ONLY',student_ids:['s2','outside']},account);
- assert.equal(group.reservation_type,'GROUP');assert.deepEqual(single.student_ids,['s1']);assert.equal(single.reservation_type,'STUDENT_ONLY');
+ const single=prepare({schedule_type,reservation_type:'STUDENT_ONLY',student_id:'s2',student_ids:['outside']},account);
+ assert.equal(group.reservation_type,'GROUP');assert.deepEqual(single.student_ids,['s2']);assert.equal(single.reservation_type,'STUDENT_ONLY');
  assert.deepEqual(group.approval_route,single.approval_route);assert.equal(group.group_id,single.group_id);
  assert.throws(()=>prepare({schedule_type,reservation_type:'GROUP',student_ids:['outside']},account),/assigned class/);
  assert.throws(()=>prepare({schedule_type,reservation_type:'GROUP',student_ids:[]},account),/group/);
@@ -16,7 +17,7 @@ for(const schedule_type of ['ON_SCHEDULE','OUT_OF_SCHEDULE']){
 const model=require('../../assets/erd/model.js');assert.deepEqual(model.tables.find(t=>t.name==='RESERVATION').fields.find(f=>f.name==='reservation_type').values,['GROUP','STUDENT_ONLY']);
 const l1=JSON.parse(fs.readFileSync(path.join(root,'assets/figures-v2/dfd-level1/dfd-level1-model.json'))),l2=JSON.parse(fs.readFileSync(path.join(root,'assets/figures-v2/dfd-level2-compact/dfd-level2-model.json')));
 for(const id of ['p2-cr-onschedule','p2-cr-outschedule','p2-d2-write','p2-d2-read']){
- const f=l1.flows.find(f=>f.id===id);assert.match(f.label,/Reservation Type/);for(const child of l2.find(p=>p.id==='p2').flows.filter(c=>c.parentFlow===id))assert.equal(child.label,f.label);
+ const f=l1.flows.find(f=>f.id===id);assert.ok(f.payloadFields?.includes('reservation_type'));assert.doesNotMatch(f.label,/including|Reservation Type/);for(const child of l2.find(p=>p.id==='p2').flows.filter(c=>c.parentFlow===id)){assert.equal(child.label,f.label);assert.ok(child.payloadFields?.includes('reservation_type'));}
 }
 const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://local').pathname));if(!p.startsWith(root+path.sep))return res.writeHead(403).end();fs.readFile(p,(e,b)=>{if(e)return res.writeHead(404).end();res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml'})[path.extname(p)]||'application/octet-stream');res.end(b);});});
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;try{
@@ -25,10 +26,19 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+decodeU
  await page.goto(base+'Reservation-Form.html');
  for(const schedule of ['ON_SCHEDULE','OUT_OF_SCHEDULE']){
   await page.locator(`[data-schedule="${schedule}"]`).click();assert.equal(await page.locator('[name=reservation_type]:checked').count(),0);
+  await page.locator('[name=group_id]').selectOption('assigned-class');
   await page.locator('button[type=submit]').click();assert.equal(await page.locator('#result').isVisible(),false);assert.equal(await page.locator('[name=reservation_type]').first().evaluate(n=>n.validity.valueMissing),true);
   await page.locator('[value=GROUP]').check();assert(await page.locator('#group-info').isVisible());await page.locator('button[type=submit]').click();assert.match(await page.locator('#result').textContent(),/"reservation_type": "GROUP"/);
-  await page.locator('[value=STUDENT_ONLY]').check();assert(!await page.locator('#group-info').isVisible());assert(await page.locator('#group-info').evaluate(n=>n.disabled));await page.locator('button[type=submit]').click();const record=await page.locator('#result').textContent();assert.match(record,/STUDENT_ONLY/);assert(!record.includes('member-2'));
+  await page.locator('[value=STUDENT_ONLY]').check();await page.locator('button[type=submit]').click();assert(!await page.locator('#result').isVisible());await page.locator('[name=student_id]').selectOption('member-2');assert(!await page.locator('#group-info').isVisible());assert(await page.locator('#group-info').evaluate(n=>n.disabled));await page.locator('button[type=submit]').click();const record=await page.locator('#result').textContent();assert.match(record,/STUDENT_ONLY/);assert(record.includes('member-2'));assert(!record.includes('"rep-student"'));
  }
+ await page.locator('[name=group_id]').selectOption('circuits-class');
+ assert.equal(await page.locator('[name=student_id]').inputValue(),'','Changing class clears previous individual borrower');
+ await page.locator('button[type=submit]').click();assert(!await page.locator('#result').isVisible(),'A new class requires a new student selection');
+ assert(!await page.locator('#result').isVisible(),'Changing class clears stale result');
+ await page.locator('[value=GROUP]').check();await page.locator('button[type=submit]').click();
+ const changedClass=await page.locator('#result').textContent();
+ assert.match(changedClass,/"faculty_id": "faculty-b"/);assert.match(changedClass,/member-3/);assert(!changedClass.includes('member-2'));
+ await page.locator('[name=group_id]').selectOption('');await page.locator('button[type=submit]').click();assert(!await page.locator('#result').isVisible(),'Class selection is required');
  await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.setViewportSize({width:1440,height:1600});
  await page.goto(base+'System-Diagrams.html?authored=1');await page.waitForFunction(()=>window.SystemActivityGeometry?.p2&&window.SystemSwimlaneGeometry,{},{timeout:20000});
  if(errors.length)throw Error(errors.join('\n'));

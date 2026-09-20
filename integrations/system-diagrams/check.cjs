@@ -115,7 +115,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  const swim=page.locator('#activity-system');
  assert.equal(await swim.locator('[data-uml-kind="initial"]').count(),1);
  assert.equal(await swim.locator('[data-uml-kind="fork"]').count(),1);
- assert.equal(await swim.locator('[data-uml-kind="join"]').count(),7,'Preparation join and six explicit OR convergence bars');
+ assert.equal(await swim.locator('[data-uml-kind="join"]').count(),8,'Preparation join and seven explicit OR convergence bars');
  assert.equal(await swim.locator('[data-uml-kind="final"]').count(),4);
  assert.equal(await swim.locator('svg').getAttribute('viewBox'),'0 0 2520 3564','A4 portrait artwork ratio');
  assert.equal(await swim.locator('[data-child-process]').count(),0,'Summary does not repeat every Level 2 step');
@@ -129,7 +129,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  }
  for(const route of whole.routes){
   const finalA=route.points.at(-2),finalB=route.points.at(-1);
-  assert(Math.hypot(finalB[0]-finalA[0],finalB[1]-finalA[1])>=20,route.from+' → '+route.to+' keeps a visible shaft before its arrowhead');
+  assert(Math.hypot(finalB[0]-finalA[0],finalB[1]-finalA[1])>=30,route.from+' → '+route.to+' keeps a visible shaft before its arrowhead');
   route.points.slice(1).forEach((b,i)=>{
    const a=route.points[i];assert(a[0]===b[0]||a[1]===b[1],'Orthogonal whole-system flow');
    for(const [key,n] of Object.entries(whole.nodes)){
@@ -189,10 +189,16 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  assert.equal(whole.nodes['type-merge'].kind,'join','Reservation Type alternatives enter the requested join bar');
  assert.equal(whole.nodes['type-merge'].joinSpec,'or');
  assert.equal(whole.nodes.question.kind,'decision','Need Q&A remains a decision');
- for(const [id,vertical] of [['dean-route',true],['prepare-join',false],['returns',false],['approved',false],['approval-ready',false],['request-ready',false],['type-merge',false]]){
+ assert.equal(whole.nodes.ready.kind,'join');assert.equal(whole.nodes.ready.joinSpec,'or');
+ assert.equal(whole.nodes.clearance.lane,4,'Head Lab identifies the student and creates clearance');
+ assert.equal(whole.nodes['clearance-view'].lane,0,'Class Rep only receives the status view');
+ assert(whole.routes.some(r=>r.from==='clearance'&&r.to==='clearance-view'),'Head-created clearance leads to Class Rep status view');
+ assert(whole.nodes['admin-tasks'].y-(whole.nodes.admin.y+whole.nodes.admin.h)>=45,'Head Lab actions have visible separation');
+ for(const [id,vertical] of [['ready',false],['dean-route',true],['prepare-join',false],['returns',false],['approved',false],['approval-ready',false],['request-ready',false],['type-merge',false]]){
   const n=whole.nodes[id],incoming=whole.routes.filter(r=>r.to===id),ports=incoming.map(r=>r.points.at(-1));
   assert.equal(n.h>n.w,vertical,id+' bar orientation');
   ports.forEach(([x,y])=>assert(Math.abs(vertical?x-n.x:y-n.y)<1e-6,id+' inputs enter the same broad face'));
+  for(const route of incoming){const a=route.points.at(-2),b=route.points.at(-1);assert(vertical?a[1]===b[1]&&a[0]<b[0]:a[0]===b[0]&&a[1]<b[1],id+' arrow approaches perpendicular to the bar');}
   const offsets=ports.map(p=>p[vertical?1:0]).sort((a,b)=>a-b);
   offsets.slice(1).forEach((v,i)=>assert(v-offsets[i]>=80,id+' input ports have visible spacing'));
  }

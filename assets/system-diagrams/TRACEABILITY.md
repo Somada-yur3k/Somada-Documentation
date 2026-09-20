@@ -1,6 +1,6 @@
 # System Diagrams — additive UML supplement
 
-Reservation Type update: Activity 2, SEQ-02 and the Class Representative Swimlane lane require Group / Student Only for both schedule variants. Activity alternatives converge through the requested OR join bar. Student Only is the signed-in representative; Group uses existing members. The combined reservation sequence retains rescheduling and the existing Faculty/Dean approval route. See [Changes Made](../../integrations/reservation-type/CHANGES.md).
+Reservation Type update: Activity 2, SEQ-02 and the Class Representative Swimlane lane require Group / Student Only for both schedule variants. Activity alternatives converge through the requested OR join bar. Student Only is one selected class student; Group uses selected class members. The Class Rep is the submitting account, not automatically the borrower. Head Lab identifies the responsible borrower before clearance creation; the Class Rep only views student clearance status. The combined reservation sequence retains rescheduling and the existing Faculty/Dean approval route. See [Changes Made](../../integrations/reservation-type/CHANGES.md).
 
 Open [System-Diagrams.html](../../System-Diagrams.html), [the complete A4 PDF](diagrams.pdf), or [the sequence-only PDF](sequences.pdf). The publication contains 12 sheets: SWIM-01, ACT-01–ACT-05, SEQ-01–SEQ-05 (one portrait sequence per major process), and DEP-01 (landscape). `models.js` retains the supporting evidence catalog; `sequence-models.js` holds the five interaction trees and `sequence-renderer.js` renders them.
 
@@ -80,7 +80,7 @@ The following 17 rows are the supporting evidence catalog, not separate printed 
 | 11 | Issue equipment / borrowing slip | 17 | 4.2, 4.3 |
 | 12 | Return reconciliation | 18 | 4.4 |
 | 13 | Raise / settle clearance | 19 | 5.3 |
-| 14 | View own-group clearance | 12 | 5.3 |
+| 14 | View assigned-class student clearance | 12 | 5.3 |
 | 15 | Disposal | 20 | 4.5 |
 | 16 | Schedule / usage / daily tasks | 21 | 5.1, 5.2 |
 | 17 | End-term report | 22 | 5.4, 5.5 |

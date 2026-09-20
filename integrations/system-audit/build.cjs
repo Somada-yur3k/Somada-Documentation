@@ -12,7 +12,7 @@ const mapping={
  issueacct:{steps:['p1.3'],backlog:['02'],exchange:[['in','Account Management Details','p1.3']]},
  chooselab:{steps:['p2.1'],backlog:['03'],exchange:[['out','Schedule & Availability','p2.1']],note:'Laboratory choice is a UI filter carried into the schedule/request, not a separate persisted record.'},
  viewsched:{steps:['p2.1'],backlog:['03'],exchange:[['out','Schedule & Availability','p2.1']]},
- submitscheduled:{steps:['p2.2'],backlog:['04A'],exchange:[['in','Scheduled Laboratory Activity','p2.2']]},
+ submitscheduled:{steps:['p2.2'],backlog:['04A'],exchange:[['in','On-Schedule Request','p2.2']]},
  submitcombined:{steps:['p2.2','p2.3'],backlog:['04B','04C'],exchange:[['in','Out-of-Schedule Request','p2.2']]},
  cancelres:{steps:['p2.2','p2.4'],backlog:['05'],exchange:[['in','Reservation Change Request','p2.2']]},
  reschedres:{steps:['p2.2','p2.4'],backlog:['05'],exchange:[['in','Reservation Change Request','p2.2']]},
@@ -30,7 +30,7 @@ const mapping={
  endterm:{steps:['p5.4','p5.5'],backlog:['17'],exchange:[['in','Report Request','p5.5'],['out','End-Term Report','p5.5']]}
 };
 const findings=[
- ['fixed','RES-01','Required Reservation Type','Class Representatives must choose Group or Student Only for both schedule variants. Table 7, events, backlog, form preview, Use Case, DFD 0–2, ERD, Activity 2, Sequence 05 and Swimlane now carry the same requirement. Student Only uses the signed-in representative. Production reservation persistence remains an implementation task; the repository contains a documentation/UI preview.','Reservation-Form.html'],
+ ['fixed','RES-01','Required Reservation Type','Class Representatives must choose Group or Student Only for both schedule variants. Table 7, events, backlog, form preview, Use Case, DFD 0–2, ERD, Activity 2, Sequence 05 and Swimlane now carry the same requirement. Student Only uses exactly one selected class student; the representative submits on their behalf. Production reservation persistence remains an implementation task; the repository contains a documentation/UI preview.','Reservation-Form.html'],
  ['pending','POL-08','Dean account provisioning','Head Laboratory is confirmed to create Class Representative and Faculty accounts. Dean retains a pre-assigned account; who provisions it is still awaiting confirmation. No Dean-creation permission is inferred.','Docs.html#uc-issueacct'],
  ['fixed','L2-01','Approval and availability reads','Added D2 reads to 2.1 (active holds) and 2.3 (the stored pending request).','Docs.html#uc-viewsched'],
  ['fixed','L2-02','Return transaction inputs','Added separate Head Laboratory, Physics Staff and Circuits Staff inputs to 4.4; previously they reached issuance only.','assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4'],
@@ -77,7 +77,7 @@ async function build(){
   const full=d&&['scenario','triggeringEvent','briefDescription','preconditions','postconditions','flowActor','flowSystem','exceptions'].every(k=>d[k]?.length);
   const eventMatch=events.length&&same(events.flatMap(e=>e.source.split(',').map(s=>s.trim())),actors.map(a=>roles[a]))&&events.every(e=>e.useCase===names.get(n.id));
   const flowMatch=m&&actors.every(actor=>m.exchange.every(([dir,label,step])=>{
-   const expected=n.id==='submitcombined'&&actor==='classrep'?label+' including Reservation Type':label;
+   const expected=label;
    return flows.some(f=>f.label===expected&&(dir==='in'?f.source===actor&&f.target===step:f.target===actor&&f.source===step));
   }));
   const linked=Boolean(full&&matchingRoles&&eventMatch&&flowMatch&&d.useCaseName===names.get(n.id)&&m.backlog.every(id=>data.backlog.some(b=>b.id===id)));
@@ -91,7 +91,7 @@ async function build(){
  const entityIds=new Set(l1.entities.map(e=>e.id)),processIds=new Set(l1.processes.map(p=>p.id)),storeIds=new Set(l1.stores.map(s=>s.id));
  add('dfd1','admin-scope','Only Head Laboratory sends logs, schedule, task and clearance actions',l1.flows.filter(f=>['Schedule Update','Usage Entry','Daily Task Entry','Clearance Action'].includes(f.label)).every(f=>f.source==='headlab'),'Docs.html#uc-mgmlogs');
  const reservationFlows=['p2-cr-onschedule','p2-cr-outschedule','p2-d2-write','p2-d2-read'];
- add('dfd1','reservation-type-payload','Both Class Representative schedule variants and D2 exchanges carry Reservation Type',reservationFlows.every(id=>l1.flows.find(f=>f.id===id)?.label.includes('Reservation Type')&&l2.find(p=>p.id==='p2').flows.filter(f=>f.parentFlow===id).every(f=>f.label===l1.flows.find(row=>row.id===id).label)),'Docs.html#uc-submitres');
+ add('dfd1','reservation-type-payload','Both Class Representative schedule variants and D2 exchanges carry Reservation Type',reservationFlows.every(id=>l1.flows.find(f=>f.id===id)?.payloadFields?.includes('reservation_type')&&l2.find(p=>p.id==='p2').flows.filter(f=>f.parentFlow===id).every(f=>f.label===l1.flows.find(row=>row.id===id).label&&f.payloadFields?.includes('reservation_type'))),'Docs.html#uc-submitres');
  add('documentation','reservation-type-validation','Table 7 and the form require an unselected Group / Student Only choice before submission',read('Docs.html').includes('No option is preselected')&&read('Reservation-Form.html').includes('name="reservation_type" value="GROUP" required')&&read('Reservation-Form.html').includes('name="reservation_type" value="STUDENT_ONLY" required'),'Reservation-Form.html');
  add('dfd1','dean-scope','Dean exchanges only login and approval data',l1.flows.filter(f=>f.source==='dean'||f.target==='dean').every(f=>['Credentials','Approval Decision','Routed Approval Request'].includes(f.label)),'Docs.html#uc-approve');
  add('dfd1','qa-scope','Q&A is requester-only and writes only its conversation log',l1.flows.filter(f=>f.source==='p3'||f.target==='p3').every(f=>f.kind==='external'?['classrep','faculty'].includes(f.source==='p3'?f.target:f.source):f.source!=='p3'||f.target==='d9'),'Docs.html#uc-askq');
