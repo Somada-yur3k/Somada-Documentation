@@ -10,7 +10,7 @@
 const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent){const n=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs||{}))n.setAttribute(k,v);parent?.append(n);return n;}
 function draw(model){
- const id='activity-'+model.id,width=1200,height=model.id==='p2'?2357:1697,ACTION_W=260,ACTION_H=68;
+ const id='activity-'+model.id,width=1200,height=model.id==='p2'?2500:1697,ACTION_W=260,ACTION_H=68;
  const svg=el('svg',{xmlns:NS,viewBox:`0 0 ${width} ${height}`,role:'img','aria-label':model.name+' — portrait UML Activity Diagram','data-parent':model.id});
  const defs=el('defs',{},svg),marker=el('marker',{id:id+'-arrow',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:8.5,markerHeight:8.5,orient:'auto'},defs);
  el('style',{},defs).textContent='text{font-family:Arial,Helvetica,sans-serif;fill:#000}.line{fill:none;stroke:#000;stroke-width:2.2}';
@@ -20,7 +20,7 @@ function draw(model){
  const titles={p1:'User Access & Accounts',p2:'Reservations, Availability & Approvals',p3:'Laboratory Questions',p4:'Equipment & Borrowing',p5:'Laboratory Administration & Reporting'};
  text(labels,600,32,titles[model.id]+' — Activity Diagram',29,true);
  const precondition={p1:'Login: any role. Create / update Faculty or Class Rep. accounts: signed-in Head Laboratory only.',p2:'Precondition: signed-in requester or routed Faculty / Dean; permitted operations only.',p3:'Precondition: signed-in Class Representative or Faculty; informational Q&A only.',p4:'Precondition: signed-in Head Laboratory or Staff within the assigned laboratory.',p5:'Precondition: signed-in Head Laboratory; Class Representative: assigned-class student clearance only.'}[model.id];
- if(model.id==='p2') text(labels,600,77,'Class Rep.: choose Group or Student Only for BOTH schedule variants. Student Only = one selected class student.\nOn-schedule → Faculty; out-of-schedule → Faculty, then Dean. Faculty request rules remain unchanged.',16);
+ if(model.id==='p2') text(labels,600,77,'Class Rep.: choose Group or Student Only for BOTH schedule variants. Student Only = one selected class student.\nOn-schedule → Faculty; out-of-schedule → available Faculty, or Dean if Faculty is unavailable.',16);
  else text(labels,600,83,precondition,20);
  function action(key,x,y,title,child){
   const g=el('g',{'data-activity-node':key,'data-uml-kind':'action'},shapes);nodes[key]={x:x-ACTION_W/2,y:y-ACTION_H/2,w:ACTION_W,h:ACTION_H,kind:'action',title};
@@ -83,20 +83,38 @@ function draw(model){
    ['cancel',1400,'Cancel?', 'Select own request;\nconfirm cancellation','Eligible?', 'Cancel; release hold;\nnotify if needed',1],
    ['tracking',1620,'View\ntracking?', 'Open own status\nor history','Own records?', 'Display own status\nand history',3]
   ]);
-  decision('approval-choice',200,1850,'Decide?');link('tracking-choice','b','approval-choice','t',[],'[No]',[243,1735]);
-  action('approval-input',600,1850,'Faculty / Dean:\nApprove or Reject',2);decision('approval-valid',980,1850,'Pending for\nthis reviewer?');
-  link('approval-choice','r','approval-input','l',[],'[Yes]',[375,1830]);link('approval-input','r','approval-valid','l');
-  action('approval-error',600,1955,'Show current status;\nno decision applied');terminal('approval-error-end',600,2032,true);
-  link('approval-valid',[935,1873],'approval-error','r',[[800,1873],[800,1955]],'[No]',[834,1920]);link('approval-error','b','approval-error-end','t');
-  decision('decision-approved',980,2060,'Approve?');link('approval-valid','b','decision-approved','t',[],'[Yes]',[1030,1960]);
-  decision('dean-required',600,2120,'Dean still\nrequired?');link('decision-approved','l','dean-required','r',[[780,2060],[780,2120]],'[Yes]',[818,2040]);
-  action('approval-rejected',980,2245,'Save Rejected;\nrelease hold');terminal('approval-rejected-end',980,2322,true);
-  link('decision-approved','b','approval-rejected','t',[],'[No]',[1030,2165]);link('approval-rejected','b','approval-rejected-end','t');
-  action('approval-pending',200,2170,'Keep Pending Dean;\nretain hold; route');terminal('approval-pending-end',200,2280,true);
-  link('dean-required','l','approval-pending','t',[[200,2120]],'[Yes]',[375,2098]);link('approval-pending','b','approval-pending-end','t');
-  action('approval-final',600,2245,'Save final Approved;\nretain hold');terminal('approval-final-end',600,2322,true);
-  link('dean-required','b','approval-final','t',[],'[No]',[650,2183]);link('approval-final','b','approval-final-end','t');
-  refuseOther('approval',1970);
+  decision('approval-choice',200,1850,'Review /\nroute request?');link('tracking-choice','b','approval-choice','t',[],'[No]',[243,1735]);
+  action('approval-input',600,1850,'Check requester\nand schedule',2);decision('approval-requester',980,1850,'Class Rep.?');
+  link('approval-choice','r','approval-input','l',[],'[Yes]',[375,1830]);link('approval-input','r','approval-requester','l');
+
+  // Class Representative: Faculty decides regular requests. For an
+  // out-of-schedule request, direct Dean routing is allowed only when
+  // the assigned Faculty is unavailable.
+  decision('classrep-schedule',600,1980,'On-schedule?');
+  link('approval-requester','b','classrep-schedule','t',[[980,1926],[600,1926]],'[Yes: Class Rep.]',[760,1910]);
+  action('classrep-faculty-review',640,2100,'Faculty: review\nApprove or Reject');
+  link('classrep-schedule','b','classrep-faculty-review','t',[[600,2045],[640,2045]],'[Yes]',[650,2037]);
+  action('classrep-final',640,2220,'Save final\nApproved / Rejected');terminal('classrep-final-end',640,2310,true);
+  link('classrep-faculty-review','b','classrep-final','t');link('classrep-final','b','classrep-final-end','t');
+  decision('faculty-available',300,2100,'Faculty\navailable?');
+  link('classrep-schedule','l','faculty-available','t',[[450,1980],[450,2045],[300,2045]],'[No]',[475,1958]);
+  action('classrep-out-faculty-review',300,2220,'Faculty: review\nApprove or Reject');
+  link('faculty-available','b','classrep-out-faculty-review','t',[],'[Yes]',[350,2157]);
+  action('classrep-out-final',300,2340,'Save final\nApproved / Rejected');terminal('classrep-out-final-end',300,2440,true);
+  link('classrep-out-faculty-review','b','classrep-out-final','t');link('classrep-out-final','b','classrep-out-final-end','t');
+  action('classrep-direct-dean',920,2340,'Dean: final\nApprove or Reject');terminal('classrep-direct-dean-end',920,2440,true);
+  link('faculty-available','r','classrep-direct-dean','t',[[450,2100],[450,2280],[920,2280]],'[No: Faculty unavailable]',[820,2260]);link('classrep-direct-dean','b','classrep-direct-dean-end','t');
+
+  // Faculty: its regular class schedule is saved directly; only an
+  // out-of-schedule Faculty request requires the Dean's final decision.
+  decision('faculty-schedule',980,1980,'On-schedule?');
+  link('approval-requester','b','faculty-schedule','t',[],'[No: Faculty]',[1045,1910]);
+  action('faculty-regular',980,2100,'Save regular class\nschedule; no approval');terminal('faculty-regular-end',1140,2100,true);
+  link('faculty-schedule','b','faculty-regular','t',[],'[Yes]',[1030,2037]);link('faculty-regular','r','faculty-regular-end','l');
+  action('faculty-dean-review',980,2220,'Dean: final\nApprove or Reject');terminal('faculty-dean-review-end',1140,2220,true);
+  link('faculty-schedule','r','faculty-dean-review','t',[[1120,1980],[1120,2160],[980,2160]],'[No]',[1145,2050]);link('faculty-dean-review','r','faculty-dean-review-end','l');
+  action('other',200,1970,'No permitted\noperation selected');terminal('other-end',100,2055,true);
+  link('approval-choice','b','other','t',[],'[No]',[243,1922]);link('other','b','other-end','t',[[200,2020],[100,2020]]);
  }else if(model.id==='p4'){
   dispatch([
    ['inventory',365,'Catalogue?', 'Search / enter\ninventory change','Valid?', 'Maintain inventory;\nshow catalogue',0],

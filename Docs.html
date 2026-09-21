@@ -387,7 +387,7 @@
       { id:"03", role:"Class Representative / Faculty", want:`choose Physics or Circuits Laboratory and view its schedule and availability before filing an allowed request`, soThat:`I only see the slots and resources that actually apply to the laboratory I need`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"04A", role:"Faculty", want:`submit a scheduled laboratory activity covered by the term schedule, selecting any resources the class needs`, soThat:`I can arrange the regular class laboratory activity without another academic approval`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"04B", role:"Class Representative", want:`submit an on-schedule non-laboratory request within my class's assigned schedule after choosing As a Group or As a Student Only`, soThat:`the reservation identifies the selected classmates or individual student separately from my submitting account and obtains assigned-Faculty approval`, priority:"Must", sprint:2, status:"Not Started" },
-      { id:"04C", role:"Class Representative / Faculty", want:`submit an out-of-schedule laboratory request against a vacant block; Class Representatives must choose As a Group or As a Student Only`, soThat:`Class Representative requests receive Faculty approval then Dean approval, while Faculty requests go directly to Dean`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"04C", role:"Class Representative / Faculty", want:`submit an out-of-schedule laboratory request against a vacant block; Class Representatives must choose As a Group or As a Student Only`, soThat:`Class Representative requests use available Faculty approval then Dean approval, with direct Dean routing only when the assigned Faculty is unavailable; Faculty requests go directly to Dean`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"05", role:"Class Representative / Faculty", want:`cancel or reschedule a reservation I already submitted`, soThat:`a change of plan doesn't leave a stale booking or force me to file a whole new request`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"06", role:"Faculty", want:`review and approve or reject a routed on-schedule non-laboratory or out-of-schedule request from my assigned Class Representative`, soThat:`my approval finalizes on-schedule requests but keeps out-of-schedule requests Pending for Dean; my rejection stops the route`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"07", role:"Dean", want:`approve or reject an out-of-schedule Faculty request or a Faculty-approved out-of-schedule Class Representative request`, soThat:`the final required academic decision is recorded before laboratory processing`, priority:"Must", sprint:2, status:"Not Started" },
@@ -463,7 +463,7 @@
         "trigger": "Class Representative or Faculty selects a vacant out-of-schedule block; Class Representative must select As a Group or As a Student Only and the applicable class students before submitting",
         "source": "Class Representative, Faculty",
         "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
-        "response": "Validate and store Reservation Type (GROUP or STUDENT_ONLY) for Class Representative requests. Store Pending with a held block: Class Representative requests go to assigned Faculty first, then Dean only after Faculty approval; Faculty requests go directly to Dean",
+        "response": "Validate and store Reservation Type (GROUP or STUDENT_ONLY) for Class Representative requests. Store Pending with a held block: Class Representative requests go to assigned Faculty when available, then Dean after Faculty approval; an out-of-schedule request may go directly to Dean only when the assigned Faculty is unavailable; Faculty requests go directly to Dean",
         "destination": "Reservation Records, approver dashboard",
         "diagramId": "submitcombined"
       },
@@ -496,7 +496,7 @@
       },
       {
         "event": "Dean decides on a routed out-of-schedule request",
-        "trigger": "Dean reviews an out-of-schedule Faculty request, or an out-of-schedule Class Representative request already approved by assigned Faculty, and selects Approve or Reject",
+        "trigger": "Dean reviews an out-of-schedule Faculty request, or an out-of-schedule Class Representative request already approved by assigned Faculty or directly routed because the assigned Faculty is unavailable, and selects Approve or Reject",
         "source": "Dean",
         "useCase": "Approve / Reject Routed Request",
         "response": "Decision and approval record saved; status becomes Approved or Rejected, and rejection releases the held block",
@@ -944,7 +944,7 @@
         "flowSystem": [
           "System preserves the saved Reservation Type and applicable accountable students while revalidating the new block, resources, requester role, schedule type and class schedule. A Class Representative legacy request without a valid type requires selection before resubmission; the original hold remains until validation succeeds.",
           "System releases the original block and holds the new one.",
-          "System resets Pending where a decision applies: Class Representative requests restart with assigned Faculty (then Dean if out-of-schedule); Faculty out-of-schedule requests go to Dean."
+          "System resets Pending where a decision applies: Class Representative requests restart with assigned Faculty when available (then Dean if out-of-schedule); an out-of-schedule request may go directly to Dean only when assigned Faculty is unavailable; Faculty out-of-schedule requests go to Dean."
         ],
         "exceptions": [
           "If the new block is already committed, the system reports the conflict and offers the remaining vacant blocks.",
@@ -960,7 +960,7 @@
         "useCaseName": "View Reservation Status",
         "scenario": "A requester wants to know where a specific reservation currently stands.",
         "triggeringEvent": "The requester opens a reservation from their dashboard.",
-        "briefDescription": "The signed-in requester views their own reservation details and status: Pending, Approved, Rejected, Cancelled, Ongoing, or Completed. Pending identifies the current reviewer, including awaiting Dean after intermediate Faculty approval. No public reference-number lookup is required.",
+        "briefDescription": "The signed-in requester views their own reservation details and status: Pending, Approved, Rejected, Cancelled, Ongoing, or Completed. Pending identifies the current reviewer, including awaiting Dean after intermediate Faculty approval or direct unavailability route. No public reference-number lookup is required.",
         "actors": "Class Representative, Faculty",
         "related": [
           "Submit Scheduled Laboratory Activity",
@@ -1069,7 +1069,7 @@
         "useCaseName": "Approve / Reject Routed Request",
         "scenario": "A submitted reservation awaits a decision from the appropriate authority.",
         "triggeringEvent": "Faculty or Dean opens a Pending reservation from their dashboard and selects Approve or Reject.",
-        "briefDescription": "Assigned Faculty reviews Class Representative requests first. Faculty approval finalizes an on-schedule non-laboratory request; an out-of-schedule request remains Pending and proceeds to Dean. Faculty rejection stops the route. Dean makes the final decision on Faculty-approved out-of-schedule Class Representative requests and Faculty members' own out-of-schedule requests. Regular scheduled Faculty laboratory activities need no additional academic approval. Dean is approval-only, never a requester.",
+        "briefDescription": "Assigned Faculty reviews Class Representative requests first when available. Faculty approval finalizes an on-schedule non-laboratory request; an out-of-schedule request remains Pending and proceeds to Dean. If the assigned Faculty is unavailable, an out-of-schedule Class Representative request may go directly to Dean. Faculty rejection stops the route. Dean makes the final decision on Faculty-approved or direct-unavailability out-of-schedule Class Representative requests and Faculty members' own out-of-schedule requests. Regular scheduled Faculty laboratory activities need no additional academic approval. Dean is approval-only, never a requester.",
         "actors": "Faculty, Dean",
         "related": [
           "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
@@ -1084,10 +1084,10 @@
         ],
         "preconditions": [
           "A reservation exists with the status Pending.",
-          "The approver is signed in and is the current routed reviewer. Dean receives a Class Representative request only after assigned Faculty approval."
+          "The approver is signed in and is the current routed reviewer. Dean receives a Class Representative request after assigned Faculty approval, or directly only when the assigned Faculty is unavailable."
         ],
         "postconditions": [
-          "Record each decision, approver and time. Rejection sets Rejected, releases the hold and stops routing. Faculty approval of an out-of-schedule Class Representative request keeps Pending (awaiting Dean), retains the hold and does not permit issuance. Only the final required approval sets Approved and permits laboratory processing."
+          "Record each decision, approver and time. Rejection sets Rejected, releases the hold and stops routing. Faculty approval of an out-of-schedule Class Representative request keeps Pending (awaiting Dean), retains the hold and does not permit issuance. A direct Dean route records the assigned Faculty unavailability. Only the final required approval sets Approved and permits laboratory processing."
         ],
         "flowActor": [
           "Approver opens the Pending reservation from their dashboard.",
@@ -1097,7 +1097,7 @@
         "flowSystem": [
           "System displays the Pending reservation to the routed approver.",
           "System records the decision and writes the approval record.",
-          "System rejects and releases the hold, keeps Pending and routes to Dean after intermediate Faculty approval, or sets Approved after the final required approval; it notifies the requester."
+          "System rejects and releases the hold, keeps Pending and routes to Dean after intermediate Faculty approval or direct Faculty-unavailability routing, or sets Approved after the final required approval; it notifies the requester."
         ],
         "exceptions": [
           "If the reservation is rejected, the status is set to Rejected and the held block is released.",
@@ -1966,7 +1966,7 @@ function UseCaseDiagramsSection({ onZoom }) {
       <SectionHeading level={3} kicker="3.1.3" title="Use Case Diagrams" id="usecase-diagrams" />
       <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 1: Use Case Diagram" onZoom={onZoom} editorHref="assets/figures-v2/usecase-diagram-source.html" />
       <div className="lede" style={{marginTop:18}}>
-        <p>Figure 1 presents the use case diagram under the revised system model. Six large actors — Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff — frame the system boundary. Submission is separated into two visible goals: Faculty alone connects to Submit Scheduled Laboratory Activity, while Class Representative and Faculty connect to Submit On-Schedule Non-Laboratory / Out-of-Schedule Request. The combined ellipse states its two alternative flows directly: a Class Representative's on-schedule non-laboratory request requires assigned-Faculty approval, while an out-of-schedule Class Representative request requires Faculty approval followed by Dean approval; a Faculty out-of-schedule request goes directly to Dean. The Dean has associations only with Log In and Approve / Reject Routed Request because the role does not choose a laboratory, submit a request, or track a personal reservation. View Clearance Status is associated only with the Class Representative, while Process Clearance is associated only with Head Laboratory; Laboratory Staff record broken or lost return outcomes but cannot raise or settle a clearance. Inside the boundary, requester and approval processes occupy the left column, relationship-supporting use cases form the center column, and laboratory operations occupy the right column. Both submission use cases &lt;&lt;include&gt;&gt; Select Resources / Equipment because resource selection is a required step whenever a request is completed. Manage Equipment Inventory also &lt;&lt;include&gt;&gt; Add Equipment, Update Equipment, Remove Equipment, and Search &amp; Filter Inventory because these are required inventory-management subprocesses within each authorised laboratory scope. The &lt;&lt;extend&gt;&gt; relationships remain limited to conditional return outcomes and the detected category of an authenticated laboratory question. Manage Logs, Schedule & Daily Tasks is associated only with Head Laboratory; Physics and Circuits Laboratory Staff retain their inventory, issuance, return, and disposal responsibilities but cannot manage logs, schedules, or daily tasks. Marking a clearance as cleared or replaced remains inside Process Clearance rather than being duplicated as another ellipse.</p>
+        <p>Figure 1 presents the use case diagram under the revised system model. Six large actors — Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff — frame the system boundary. Submission is separated into two visible goals: Faculty alone connects to Submit Scheduled Laboratory Activity, while Class Representative and Faculty connect to Submit On-Schedule Non-Laboratory / Out-of-Schedule Request. The combined ellipse states its two alternative flows directly: a Class Representative's on-schedule non-laboratory request requires assigned-Faculty approval, while an out-of-schedule Class Representative request normally requires available Faculty approval followed by Dean approval and may go directly to Dean only when that Faculty is unavailable; a Faculty out-of-schedule request goes directly to Dean. The Dean has associations only with Log In and Approve / Reject Routed Request because the role does not choose a laboratory, submit a request, or track a personal reservation. View Clearance Status is associated only with the Class Representative, while Process Clearance is associated only with Head Laboratory; Laboratory Staff record broken or lost return outcomes but cannot raise or settle a clearance. Inside the boundary, requester and approval processes occupy the left column, relationship-supporting use cases form the center column, and laboratory operations occupy the right column. Both submission use cases &lt;&lt;include&gt;&gt; Select Resources / Equipment because resource selection is a required step whenever a request is completed. Manage Equipment Inventory also &lt;&lt;include&gt;&gt; Add Equipment, Update Equipment, Remove Equipment, and Search &amp; Filter Inventory because these are required inventory-management subprocesses within each authorised laboratory scope. The &lt;&lt;extend&gt;&gt; relationships remain limited to conditional return outcomes and the detected category of an authenticated laboratory question. Manage Logs, Schedule & Daily Tasks is associated only with Head Laboratory; Physics and Circuits Laboratory Staff retain their inventory, issuance, return, and disposal responsibilities but cannot manage logs, schedules, or daily tasks. Marking a clearance as cleared or replaced remains inside Process Clearance rather than being duplicated as another ellipse.</p>
       </div>
     </section>
   );
@@ -2104,8 +2104,8 @@ function DfdSection({ onZoom }) {
         </div>
         <a className="figure-editor-link" href="assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html">Open canonical DFD Level 2 diagrams</a>
         <div className="lede approval-routing-reference">
-          <p>DFD Levels 0–2 use the same concise data-flow labels for both requesting roles: On-Schedule Request and Out-of-Schedule Request. For Faculty, On-Schedule Request means the laboratory activity within the assigned class schedule; it needs no additional academic approval. For Class Representatives, the on-schedule non-laboratory request requires the selected class Faculty's approval. Process 2.3 routes Class Representative out-of-schedule requests to Faculty followed by Dean; Faculty out-of-schedule requests go directly to Dean. Group / Student Only applies only to Class Representatives. Any rejection stops routing and releases the hold.</p>
-          <p>Process 2.4 retains Pending (awaiting Dean) and the held block after intermediate Faculty approval; only the final required approval sets Approved. Pending Dean is a reviewer stage, not a new reservation-status value. Process 4.2 retrieves only finally approved reservations for issuance; Pending requests cannot proceed to Process 4.3. Existing Faculty/Dean, D2 approval-record and authorized-reservation flows carry these rules without additional arrows.</p>
+          <p>DFD Levels 0–2 use the same concise data-flow labels for both requesting roles: On-Schedule Request and Out-of-Schedule Request. For Faculty, On-Schedule Request means the laboratory activity within the assigned class schedule; it needs no additional academic approval. For Class Representatives, the on-schedule non-laboratory request requires the selected class Faculty's approval. Process 2.3 routes a Class Representative out-of-schedule request to Faculty then Dean when the assigned Faculty is available; it may route directly to Dean only when that Faculty is unavailable. Faculty out-of-schedule requests go directly to Dean. Group / Student Only applies only to Class Representatives. Any rejection stops routing and releases the hold.</p>
+          <p>Process 2.4 retains Pending (awaiting Dean) and the held block after intermediate Faculty approval or the documented Faculty-unavailability direct route; only the final required approval sets Approved. Pending Dean is a reviewer stage, not a new reservation-status value. Process 4.2 retrieves only finally approved reservations for issuance; Pending requests cannot proceed to Process 4.3. Existing Faculty/Dean, D2 approval-record and authorized-reservation flows carry these rules without additional arrows.</p>
         </div>
       </div>
       {level2Figures.map(figure => (

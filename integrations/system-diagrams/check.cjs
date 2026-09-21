@@ -15,6 +15,21 @@ for(const p of processes)assert(models.some(m=>m.processes.includes(p)),'Missing
 // against commit 2c15a21 predates approved reservation-type changes.
 require('../google-docs/check-usecase-alignment.cjs');
 require('./check-approval.cjs');
+// P2 must distinguish the requester before applying approval rules:
+// Class Rep on-schedule → Faculty; Class Rep out-of-schedule → available Faculty
+// then Dean, or direct Dean only when the assigned Faculty is unavailable;
+// Faculty on-schedule → regular schedule; Faculty out-of-schedule → Dean.
+const p2Activity=read('assets/system-diagrams/process-activities.js');
+assert.match(p2Activity,/decision\('approval-requester',980,1850,'Class Rep\.\?'/);
+assert.match(p2Activity,/decision\('classrep-schedule',600,1980,'On-schedule\?'/);
+assert.match(p2Activity,/action\('classrep-faculty-review',640,2100,'Faculty: review\\nApprove or Reject'/);
+assert.match(p2Activity,/decision\('faculty-available',300,2100,'Faculty\\navailable\?'/);
+assert.match(p2Activity,/action\('classrep-out-faculty-review',300,2220,'Faculty: review\\nApprove or Reject'/);
+assert.match(p2Activity,/action\('classrep-direct-dean',920,2340,'Dean: final\\nApprove or Reject'/);
+assert.match(p2Activity,/action\('classrep-out-final',300,2340,'Save final\\nApproved \/ Rejected'/);
+assert.match(p2Activity,/decision\('faculty-schedule',980,1980,'On-schedule\?'/);
+assert.match(p2Activity,/action\('faculty-regular',980,2100,'Save regular class\\nschedule; no approval'/);
+assert.match(p2Activity,/action\('faculty-dean-review',980,2220,'Dean: final\\nApprove or Reject'/);
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL(req.url,'http://local').pathname);if(!p.startsWith(root+path.sep))return res.writeHead(403).end();fs.readFile(p,(e,b)=>{if(e)return res.writeHead(404).end();res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(p)]||'application/octet-stream');res.end(b);});});
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;try{
@@ -41,7 +56,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   for(const alias of aliases)assert.equal(alias.name,model.steps[Number(alias.id.split('.')[1])-1],'Repeated behavior retains its canonical mapping');
   assert(await section.locator('[data-child-process]').evaluateAll(nodes=>nodes.every(n=>!/^\d+\.\d+/.test(n.textContent))),'No process-number prefixes in action labels');
   const geometry=await page.evaluate(id=>window.SystemActivityGeometry[id],model.id);
-  assert.equal(await section.locator('svg').getAttribute('viewBox'),model.id==='p2'?'0 0 1200 2357':'0 0 1200 1697','Portrait activity artwork');
+  assert.equal(await section.locator('svg').getAttribute('viewBox'),model.id==='p2'?'0 0 1200 2500':'0 0 1200 1697','Portrait activity artwork');
   const actionSizes=Object.values(geometry.nodes).filter(n=>n.kind==='action').map(n=>[n.w,n.h]);
   assert(actionSizes.every(([w,h])=>w===260&&h===68),'Uniform compact action boxes across all five activities');
   assert(Object.values(geometry.nodes).filter(n=>['initial','final'].includes(n.kind)).every(n=>n.w===44&&n.h===44),'Larger, uniform initial/final nodes');
@@ -74,12 +89,16 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   }
   if(model.id==='p2'){
    const route=(from,guard)=>geometry.routes.find(r=>r.from===from&&r.guard===guard)?.to;
-   assert.equal(route('approval-valid','[No]'),'approval-error','Stale/wrong reviewer cannot record a decision');
-   assert.equal(route('decision-approved','[No]'),'approval-rejected','Either reviewer rejection ends routing');
-   assert.equal(route('decision-approved','[Yes]'),'dean-required');
-   assert.equal(route('dean-required','[Yes]'),'approval-pending','Intermediate approval must remain Pending');
-   assert.equal(route('dean-required','[No]'),'approval-final','Only final approval is Approved');
-   assert.match(geometry.nodes['approval-pending'].title,/Pending Dean;\nretain hold/);
+   assert.equal(route('approval-requester','[Yes: Class Rep.]'),'classrep-schedule','Requester type is checked before applying Class Rep rules');
+   assert.equal(route('approval-requester','[No: Faculty]'),'faculty-schedule','Requester type is checked before applying Faculty rules');
+   assert.equal(route('classrep-schedule','[Yes]'),'classrep-faculty-review','On-schedule Class Rep requests go to Faculty');
+   assert.equal(route('classrep-schedule','[No]'),'faculty-available','Out-of-schedule Class Rep requests first check Faculty availability');
+   assert.equal(route('faculty-available','[Yes]'),'classrep-out-faculty-review','Available Faculty reviews the Class Rep out-of-schedule request');
+   assert.equal(route('faculty-available','[No: Faculty unavailable]'),'classrep-direct-dean','Only an unavailable Faculty permits direct Dean review');
+   assert.equal(route('classrep-out-faculty-review',null),'classrep-out-final','Available Faculty makes the final out-of-schedule decision');
+   assert.equal(route('faculty-schedule','[Yes]'),'faculty-regular','Regular Faculty class schedules need no approval');
+   assert.equal(route('faculty-schedule','[No]'),'faculty-dean-review','Only out-of-schedule Faculty requests go to Dean');
+   assert.match(geometry.nodes['classrep-out-final'].title,/Save final\nApproved \/ Rejected/);
    for(const [key,n]of Object.entries(geometry.nodes).filter(([,n])=>n.kind==='final')){
     for(const [other,b]of Object.entries(geometry.nodes))if(other!==key)assert(!(n.x<b.x+b.w&&n.x+n.w>b.x&&n.y<b.y+b.h&&n.y+n.h>b.y),'Activity 2 final node overlaps '+other);
    }
