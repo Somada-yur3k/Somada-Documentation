@@ -2,16 +2,15 @@
    Text and PNG bytes travel in a top-level form POST, without public image uploads. */
 (() => {
   'use strict';
-  const DOCUMENT_ID = '1UfFa6G0eWenSY_KjokZoOHqrQ2ajKGVgIwU56dkjpzY';
+  const DOCUMENT_ID = '11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM';
   const DOCUMENT_URL = `https://docs.google.com/document/d/${DOCUMENT_ID}/edit`;
   const SECTIONS = [
-    ['overview', 'Project Context, Problems, Objectives, Scope & Limitations'], ['methodology', 'Methodology'],
+    ['overview', 'Project Overview'], ['methodology', 'Methodology'],
     ['backlog', 'Product Backlog'], ['events', 'Event Tables'],
     ['usecase-diagrams', 'Use Case Diagrams'], ['usecase-full', 'Use Case Full Description'],
     ['gap-analysis', 'Gap Analysis'], ['context-diagram', 'Context Diagram'],
     ['dfd', 'Data Flow Diagrams (Levels 1 and 2)'], ['erd', 'Entity-Relationship Diagram'],
-    ['activity-diagrams', 'Activity Diagrams (5 images)'], ['swimlane-diagram', 'Swimlane Diagram (1 image)'],
-    ['sequence-diagrams', 'Sequence Diagrams (5 images)'], ['deployment-diagram', 'Deployment Diagram (1 image)']
+    ['activity-diagrams', 'Activity Diagrams (5 images)'], ['swimlane-diagram', 'Swimlane Diagram (1 image)']
   ];
   let dialog;
   let busy = false;
@@ -190,14 +189,12 @@
     return { id, blocks };
   }
 
-  const SETTINGS_KEY = 'lab-google-doc-final-term-connection';
-  const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbygjQzpGp97kn41uLTTbC-0yw3wJyOFCwMClSZicWgCNowQi1YxvzleGqnI0ITuhQTt/exec';
+  const SETTINGS_KEY = 'lab-google-doc-private-connection';
   const validEndpoint = value => /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(value);
 
   function loadConnection(form) {
-    form.elements.endpoint.value=DEFAULT_ENDPOINT;
     try {
-      form.elements.endpoint.value=localStorage.getItem('lab-google-doc-endpoint')||DEFAULT_ENDPOINT;
+      form.elements.endpoint.value=localStorage.getItem('lab-google-doc-endpoint')||'';
       const saved=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
       if(saved && saved.endpoint===form.elements.endpoint.value && validEndpoint(saved.endpoint) &&
         typeof saved.key==='string' && saved.key.length>=32) {
@@ -258,8 +255,8 @@
     if (!dialog) {
       dialog=document.createElement('dialog'); dialog.className='gdoc-dialog';
       dialog.innerHTML=`<form><h2>Update Google Docs</h2>
-        <p>Target: <a href="${DOCUMENT_URL}" target="_blank" rel="noopener">final-term Google Doc</a>.</p>
-        <p>Final-term document only. Selected sections will be replaced with current local content. Missing Activity, Swimlane, Sequence and Deployment sections will be created before References. A backup is created first. The original document is not targeted.</p>
+        <p>Target: <a href="${DOCUMENT_URL}" target="_blank" rel="noopener">your new Google Doc copy</a>.</p>
+        <p>Selected sections will be replaced with their current local text, tables, and images. Missing Activity and Swimlane sections will be created. A backup copy is created before changes.</p>
         <p>Each sync sets the first document tab's body, header and footer text to 11 pt, including unselected sections. Bold and italic are preserved. Text inside images is unchanged. Deploy the updated Code.gs before sending this update.</p>
         <p><a href="integrations/google-docs/SETUP.md" target="_blank" rel="noopener">One-time Google connection setup</a></p>
         <label>Apps Script Web App URL<input name="endpoint" type="url" required placeholder="https://script.google.com/macros/s/…/exec"></label>

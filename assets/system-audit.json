@@ -1,15 +1,15 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-23T09:51:35.061Z",
+  "generatedAt": "2026-09-23T11:37:13.457Z",
   "title": "A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview",
   "sources": [
     {
       "path": "Docs.html",
-      "sha256": "e2bee6d41c618a9c7866c8dce8d6c9f8313a90af3bb769f697a24b0418b39855"
+      "sha256": "401f25769d120a68290930d6baece9f6fbd9706b10264cc40dda8e22f744b304"
     },
     {
       "path": "assets/figures-v2/usecase-diagram-source.html",
-      "sha256": "8b9bf45d390de15b1cbe22a4035b40aa2dfe4c9b5c88b61cc630c2db1a470d3c"
+      "sha256": "00846d37b40ecb9cab1bf98f691baac9c0f4aebc6bdc6f49be042dc3c70ec747"
     },
     {
       "path": "assets/figures-v2/dfd-level1/dfd-level1-model.json",

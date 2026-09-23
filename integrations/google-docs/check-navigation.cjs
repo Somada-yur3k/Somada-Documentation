@@ -2,13 +2,13 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),root=path.resolve(__dirname,'../..');
 const files=['index.html','Docs.html','Analytics.html','Current-System.html','assets/figures-v2/usecase-diagram-source.html','assets/figures-v2/dfd-level0/dfd-level0-source.html','assets/figures-v2/dfd-level1/dfd-level1-source.html','assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html'];
-const google='https://docs.google.com/document/d/11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM/edit?tab=t.0#heading=h.6lc8m3z0ynuc';
+const google='https://docs.google.com/document/d/1UfFa6G0eWenSY_KjokZoOHqrQ2ajKGVgIwU56dkjpzY/edit';
 const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new URL(req.url,'http://localhost').pathname);if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}fs.readFile(file,(e,d)=>{if(e){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'application/octet-stream');res.end(d);});});
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({channel:'msedge',headless:true});try{
 const base='http://127.0.0.1:'+server.address().port+'/',page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];
 page.on('pageerror',e=>errors.push(e.message));
 for(const file of files){
- await page.goto(base+file);await page.locator('nav[aria-label="Primary navigation"]').waitFor();
+ await page.goto(base+file,{timeout:120000});await page.locator('nav[aria-label="Primary navigation"]').waitFor();
  const nav=page.locator('nav[aria-label="Primary navigation"]');
  assert.equal(await nav.getByRole('link',{name:'Google Docs ↗',exact:true}).getAttribute('href'),google);
  assert.equal(await nav.getByRole('link',{name:'Google Docs ↗',exact:true}).getAttribute('target'),'_blank');

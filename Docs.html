@@ -354,6 +354,7 @@
 <link rel="stylesheet" href="assets/doc-paper.css" data-pagedjs-ignore>
 <link rel="stylesheet" href="assets/doc-pages.css" data-pagedjs-ignore>
 <script src="assets/google-doc-sync.js" defer></script>
+<script src="assets/final-term-references.js" defer></script>
 <script src="assets/vendor/paged-0.4.3.js" defer></script>
 <script src="assets/doc-pages.js" defer></script>
 </head>
@@ -387,10 +388,10 @@
       { id:"03", role:"Class Representative / Faculty", want:`choose Physics or Circuits Laboratory and view its schedule and availability before filing an allowed request`, soThat:`I only see the slots and resources that actually apply to the laboratory I need`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"04A", role:"Faculty", want:`submit a scheduled laboratory activity covered by the term schedule, selecting any resources the class needs`, soThat:`I can arrange the regular class laboratory activity without another academic approval`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"04B", role:"Class Representative", want:`submit an on-schedule non-laboratory request within my class's assigned schedule after choosing As a Group or As a Student Only`, soThat:`the reservation identifies the selected classmates or individual student separately from my submitting account and obtains assigned-Faculty approval`, priority:"Must", sprint:2, status:"Not Started" },
-      { id:"04C", role:"Class Representative / Faculty", want:`submit an out-of-schedule laboratory request against a vacant block; Class Representatives must choose As a Group or As a Student Only`, soThat:`Class Representative requests use available Faculty approval then Dean approval, with direct Dean routing only when the assigned Faculty is unavailable; Faculty requests go directly to Dean`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"04C", role:"Class Representative / Faculty", want:`submit an out-of-schedule laboratory request against a vacant block; Class Representatives must choose As a Group or As a Student Only`, soThat:`Class Representative requests use a final decision from available Faculty, with direct Dean routing only when the assigned Faculty is unavailable; Faculty requests go directly to Dean`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"05", role:"Class Representative / Faculty", want:`cancel or reschedule a reservation I already submitted`, soThat:`a change of plan doesn't leave a stale booking or force me to file a whole new request`, priority:"Must", sprint:2, status:"Not Started" },
-      { id:"06", role:"Faculty", want:`review and approve or reject a routed on-schedule non-laboratory or out-of-schedule request from my assigned Class Representative`, soThat:`my approval finalizes on-schedule requests but keeps out-of-schedule requests Pending for Dean; my rejection stops the route`, priority:"Must", sprint:2, status:"Not Started" },
-      { id:"07", role:"Dean", want:`approve or reject an out-of-schedule Faculty request or a Faculty-approved out-of-schedule Class Representative request`, soThat:`the final required academic decision is recorded before laboratory processing`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"06", role:"Faculty", want:`review and approve or reject a routed on-schedule non-laboratory or out-of-schedule request from my assigned Class Representative`, soThat:`my approval or rejection is final for either schedule variant; rejection releases the hold`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"07", role:"Dean", want:`approve or reject an out-of-schedule Faculty request or an out-of-schedule Class Representative request whose assigned Faculty is unavailable`, soThat:`the final required academic decision is recorded before laboratory processing`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"08", role:"Class Representative / Faculty", want:`view the status and history of my reservations and, when I am the Class Representative, the clearance status raised against a student in my group`, soThat:`I know where a request stands and the Class Representative can see what the student group is accountable for without visiting the laboratory`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"09", role:"Class Representative / Faculty", want:`ask the Q&A chatbot about approved Circuits / Physics laboratory information, equipment information / availability, or operating hours`, soThat:`I can get verified guidance and current inventory information without waiting for a reply; future schedule selection and status tracking remain in their own pages`, priority:"Should", sprint:4, status:"Not Started" },
       { id:"10", role:"Head Laboratory / Laboratory Staff", want:`add, edit, or remove equipment records for my assigned laboratory`, soThat:`I can accurately manage and categorize what is currently in the storage room`, priority:"Must", sprint:1, status:"Not Started" },
@@ -464,7 +465,7 @@
         "trigger": "Class Representative or Faculty selects a vacant out-of-schedule block; Class Representative must select As a Group or As a Student Only and the applicable class students before submitting",
         "source": "Class Representative, Faculty",
         "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
-        "response": "Validate and store Reservation Type (GROUP or STUDENT_ONLY) for Class Representative requests. Store Pending with a held block: Class Representative requests go to assigned Faculty when available, then Dean after Faculty approval; an out-of-schedule request may go directly to Dean only when the assigned Faculty is unavailable; Faculty requests go directly to Dean",
+        "response": "Validate and store Reservation Type (GROUP or STUDENT_ONLY) for Class Representative requests. Store Pending with a held block: Class Representative requests go to assigned Faculty for a final decision when available; an out-of-schedule request may go directly to Dean only when the assigned Faculty is unavailable; Faculty requests go directly to Dean",
         "destination": "Reservation Records, approver dashboard",
         "diagramId": "submitcombined"
       },
@@ -491,13 +492,13 @@
         "trigger": "The assigned Faculty member reviews the pending on-schedule non-laboratory or out-of-schedule request and selects Approve or Reject",
         "source": "Faculty",
         "useCase": "Approve / Reject Routed Request",
-        "response": "Decision recorded: rejection sets Rejected, releases the hold and stops routing; approval of an on-schedule request sets Approved; approval of an out-of-schedule request keeps Pending, retains the hold and routes to Dean",
+        "response": "Decision recorded: rejection sets Rejected, releases the hold and stops routing; approval of either eligible schedule variant sets Approved; no subsequent Dean review is required",
         "destination": "Reservation Records, Approval Records, Class Representative",
         "diagramId": "approve"
       },
       {
         "event": "Dean decides on a routed out-of-schedule request",
-        "trigger": "Dean reviews an out-of-schedule Faculty request, or an out-of-schedule Class Representative request already approved by assigned Faculty or directly routed because the assigned Faculty is unavailable, and selects Approve or Reject",
+        "trigger": "Dean reviews an out-of-schedule Faculty request, or an out-of-schedule Class Representative request directly routed because the assigned Faculty is unavailable, and selects Approve or Reject",
         "source": "Dean",
         "useCase": "Approve / Reject Routed Request",
         "response": "Decision and approval record saved; status becomes Approved or Rejected, and rejection releases the held block",
@@ -814,7 +815,7 @@
         "useCaseName": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
         "scenario": "A requester needs a laboratory room, equipment, or both, for a session.",
         "triggeringEvent": "The requester completes the reservation form and submits it.",
-        "briefDescription": "A Class Representative must select Reservation Type: As a Group (GROUP) or As a Student Only (STUDENT_ONLY), for both on-schedule non-laboratory and out-of-schedule requests. Class Representative submits on behalf of classmates in the assigned section/class. Group uses selected existing class members; Student Only requires exactly one selected class student, who may be a classmate or the representative. The submitting account is not automatically the borrower; ordinary students do not need login accounts. Schedule Type and Reservation Type are separate: all four combinations are valid. Assigned Faculty approves on-schedule non-laboratory requests; out-of-schedule requests require assigned Faculty followed by Dean. Faculty's own out-of-schedule request goes directly to Dean and does not require the Class Representative-only selection.",
+        "briefDescription": "A Class Representative must select Reservation Type: As a Group (GROUP) or As a Student Only (STUDENT_ONLY), for both on-schedule non-laboratory and out-of-schedule requests. Class Representative submits on behalf of classmates in the assigned section/class. Group uses selected existing class members; Student Only requires exactly one selected class student, who may be a classmate or the representative. The submitting account is not automatically the borrower; ordinary students do not need login accounts. Schedule Type and Reservation Type are separate: all four combinations are valid. Assigned Faculty approves on-schedule non-laboratory requests; out-of-schedule requests require available Faculty, or Dean if Faculty is unavailable; either reviewer makes the final decision. Faculty's own out-of-schedule request goes directly to Dean and does not require the Class Representative-only selection.",
         "actors": "Class Representative, Faculty",
         "related": [
           "Choose Laboratory",
@@ -836,7 +837,7 @@
           "The laboratory schedule for the term has been recorded."
         ],
         "postconditions": [
-          "The request is stored as Pending and the selected block is held. Class Representative requests go to assigned Faculty first; out-of-schedule requests proceed to Dean only after Faculty approval. Faculty out-of-schedule requests go directly to Dean. This use case does not submit scheduled Faculty laboratory activities."
+          "The request is stored as Pending and the selected block is held. Class Representative on-schedule requests go to assigned Faculty; out-of-schedule requests go to available Faculty or directly to Dean if Faculty is unavailable. Faculty out-of-schedule requests go directly to Dean. This use case does not submit scheduled Faculty laboratory activities."
         ],
         "flowActor": [
           "Requester chooses an authorized active subject/class, the laboratory and the intended block. The same section representative account is reused for different subjects.",
@@ -852,7 +853,7 @@
           "System validates the selected class against the representative's active assignments and derives the reviewer from that class's Faculty. Reject an unassigned class; never trust a submitted Faculty ID or use the credential recipient as a global reviewer. GROUP retains members of the selected class; STUDENT_ONLY validates and records exactly one selected class student, not automatically the submitting representative, and ignores stale group-member input. Reject missing or out-of-class student selections. Keep requester_id as the submitting Class Rep account.",
           "System performs Select Resources / Equipment and validates item quantities.",
           "System validates an on-schedule non-laboratory block against the Class Representative's class schedule, or validates an out-of-schedule block as vacant.",
-          "System stores reservation_type (GROUP or STUDENT_ONLY) with each Class Representative request, independently of request_basis / usage_type. Store Pending and hold the block: route Class Representative requests to assigned Faculty; route Faculty out-of-schedule requests directly to Dean."
+          "System stores reservation_type (GROUP or STUDENT_ONLY) with each Class Representative request, independently of request_basis / usage_type. Store Pending and hold the block: route Class Representative on-schedule requests to Faculty, and out-of-schedule requests to available Faculty or directly to Dean if Faculty is unavailable; route Faculty out-of-schedule requests directly to Dean."
         ],
         "exceptions": [
           "If the selected slot is already committed, the system reports the conflict and offers the remaining vacant blocks.",
@@ -954,7 +955,7 @@
         "flowSystem": [
           "System preserves the saved Reservation Type and applicable accountable students while revalidating the new block, resources, requester role, schedule type and class schedule. A Class Representative legacy request without a valid type requires selection before resubmission; the original hold remains until validation succeeds.",
           "System releases the original block and holds the new one.",
-          "System resets Pending where a decision applies: Class Representative requests restart with assigned Faculty when available (then Dean if out-of-schedule); an out-of-schedule request may go directly to Dean only when assigned Faculty is unavailable; Faculty out-of-schedule requests go to Dean."
+          "System resets Pending where a decision applies: Class Representative requests restart with assigned Faculty for a final decision when available; an out-of-schedule request may go directly to Dean only when assigned Faculty is unavailable; Faculty out-of-schedule requests go to Dean."
         ],
         "exceptions": [
           "If the new block is already committed, the system reports the conflict and offers the remaining vacant blocks.",
@@ -970,7 +971,7 @@
         "useCaseName": "View Reservation Status",
         "scenario": "A requester wants to know where a specific reservation currently stands.",
         "triggeringEvent": "The requester opens a reservation from their dashboard.",
-        "briefDescription": "The signed-in requester views their own reservation details and status: Pending, Approved, Rejected, Cancelled, Ongoing, or Completed. Pending identifies the current reviewer, including awaiting Dean after intermediate Faculty approval or direct unavailability route. No public reference-number lookup is required.",
+        "briefDescription": "The signed-in requester views their own reservation details and status: Pending, Approved, Rejected, Cancelled, Ongoing, or Completed. Pending identifies the current reviewer, either Faculty or Dean according to the applicable routing rule. No public reference-number lookup is required.",
         "actors": "Class Representative, Faculty",
         "related": [
           "Submit Scheduled Laboratory Activity",
@@ -1079,7 +1080,7 @@
         "useCaseName": "Approve / Reject Routed Request",
         "scenario": "A submitted reservation awaits a decision from the appropriate authority.",
         "triggeringEvent": "Faculty or Dean opens a Pending reservation from their dashboard and selects Approve or Reject.",
-        "briefDescription": "Assigned Faculty reviews Class Representative requests first when available. Faculty approval finalizes an on-schedule non-laboratory request; an out-of-schedule request remains Pending and proceeds to Dean. If the assigned Faculty is unavailable, an out-of-schedule Class Representative request may go directly to Dean. Faculty rejection stops the route. Dean makes the final decision on Faculty-approved or direct-unavailability out-of-schedule Class Representative requests and Faculty members' own out-of-schedule requests. Regular scheduled Faculty laboratory activities need no additional academic approval. Dean is approval-only, never a requester.",
+        "briefDescription": "Assigned Faculty reviews Class Representative requests first when available. Faculty approval or rejection is final for either eligible schedule variant. If the assigned Faculty is unavailable, an out-of-schedule Class Representative request may go directly to Dean. Faculty rejection stops the route. Dean makes the final decision on direct-unavailability out-of-schedule Class Representative requests and Faculty members' own out-of-schedule requests. Regular scheduled Faculty laboratory activities need no additional academic approval. Dean is approval-only, never a requester.",
         "actors": "Faculty, Dean",
         "related": [
           "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
@@ -1094,10 +1095,10 @@
         ],
         "preconditions": [
           "A reservation exists with the status Pending.",
-          "The approver is signed in and is the current routed reviewer. Dean receives a Class Representative request after assigned Faculty approval, or directly only when the assigned Faculty is unavailable."
+          "The approver is signed in and is the current routed reviewer. Dean receives an out-of-schedule Class Representative request directly only when the assigned Faculty is unavailable."
         ],
         "postconditions": [
-          "Record each decision, approver and time. Rejection sets Rejected, releases the hold and stops routing. Faculty approval of an out-of-schedule Class Representative request keeps Pending (awaiting Dean), retains the hold and does not permit issuance. A direct Dean route records the assigned Faculty unavailability. Only the final required approval sets Approved and permits laboratory processing."
+          "Record each decision, approver and time. Rejection sets Rejected, releases the hold and stops routing. Faculty approval of an eligible out-of-schedule Class Representative request sets Approved and permits laboratory processing without another Dean decision. A direct Dean route records the assigned Faculty unavailability. Only the final required approval sets Approved and permits laboratory processing."
         ],
         "flowActor": [
           "Approver opens the Pending reservation from their dashboard.",
@@ -1107,7 +1108,7 @@
         "flowSystem": [
           "System displays the Pending reservation to the routed approver.",
           "System records the decision and writes the approval record.",
-          "System rejects and releases the hold, keeps Pending and routes to Dean after intermediate Faculty approval or direct Faculty-unavailability routing, or sets Approved after the final required approval; it notifies the requester."
+          "System saves the selected reviewer's final Approved or Rejected decision and notifies the requester. Rejection releases the hold. No intermediate Faculty-to-Dean escalation is performed."
         ],
         "exceptions": [
           "If the reservation is rejected, the status is set to Rejected and the held block is released.",
@@ -1636,26 +1637,33 @@
   };
 
   const ACTIVITY_FIGURES = [
-    { id:'activity-p1', process:'p1', figure:10, title:'Manage User Access & Accounts' },
-    { id:'activity-p2', process:'p2', figure:11, title:'Manage Reservations, Availability & Approvals' },
-    { id:'activity-p3', process:'p3', figure:12, title:'Answer Laboratory Questions' },
-    { id:'activity-p4', process:'p4', figure:13, title:'Manage Equipment & Borrowing' },
-    { id:'activity-p5', process:'p5', figure:14, title:'Manage Laboratory Administration & Reporting' },
+    { id:'activity-p1', process:'p1', figure:11, title:'Manage User Access & Accounts' },
+    { id:'activity-p2', process:'p2', figure:12, title:'Manage Reservations, Availability & Approvals' },
+    { id:'activity-p3', process:'p3', figure:13, title:'Answer Laboratory Questions' },
+    { id:'activity-p4', process:'p4', figure:14, title:'Manage Equipment & Borrowing' },
+    { id:'activity-p5', process:'p5', figure:15, title:'Manage Laboratory Administration & Reporting' },
   ];
   const TOC_ENTRIES = [
-    { label:"I. Project Overview", page:1, id:"overview", indent:0 },
+    { label:"I. Project Context", page:1, id:"overview", indent:0 },
+    { label:"1.1 Statement of the Problem", page:1, id:"problem", indent:1 },
+    { label:"1.2 Objectives", page:1, id:"objectives", indent:1 },
+    { label:"1.3 Scope and Limitations", page:1, id:"scope", indent:1 },
     { label:"II. Methodology", page:3, id:"methodology", indent:0 },
-    { label:"III. Requirements Analysis", page:5, id:"requirements", indent:0 },
-    { label:"3.1.1 Product Backlog", page:5, id:"backlog", indent:1 },
-    { label:"3.1.2 Event Tables", page:8, id:"events", indent:1 },
-    { label:"3.1.3 Use Case Diagrams", page:11, id:"usecase-diagrams", indent:1 },
-    { label:"3.1.4 Use Case Full Description", page:12, id:"usecase-full", indent:1 },
-    { label:"3.1.5 Gap Analysis", page:35, id:"gap-analysis", indent:1 },
-    { label:"3.1.6 Context Diagram", page:38, id:"context-diagram", indent:1 },
-    { label:"3.1.7 Data Flow Diagrams", page:39, id:"dfd", indent:1 },
-    { label:"3.1.8 Entity-Relationship Diagram", page:50, id:"erd", indent:1 },
-    { label:"3.1.9 Activity Diagrams", page:51, id:"activity-diagrams", indent:1 },
-    { label:"3.1.10 Swimlane Diagram", page:56, id:"swimlane-diagram", indent:1 },
+    { label:"2.1 Requirements Analysis", page:5, id:"requirements", indent:0 },
+    { label:"2.1.1 Product Backlog", page:5, id:"backlog", indent:1 },
+    { label:"2.1.2 Event Tables", page:8, id:"events", indent:1 },
+    { label:"2.1.3 Use Case Diagrams", page:11, id:"usecase-diagrams", indent:1 },
+    { label:"2.1.4 Use Case Full Description", page:12, id:"usecase-full", indent:1 },
+    { label:"2.2 Gap Analysis", page:35, id:"gap-analysis", indent:1 },
+    { label:"2.3 System Analysis and Design", page:1, id:"system-analysis", indent:0 },
+    { label:"2.3.1 Context Diagram", page:38, id:"context-diagram", indent:1 },
+    { label:"2.3.2 Data Flow Diagrams", page:39, id:"dfd", indent:1 },
+    { label:"2.3.3 Entity-Relationship Diagram", page:50, id:"erd", indent:1 },
+    { label:"2.3.4 Activity Diagrams", page:51, id:"activity-diagrams", indent:1 },
+    { label:"2.3.5 Swimlane Diagram", page:56, id:"swimlane-diagram", indent:1 },
+    { label:"2.3.6 Sequence Diagram", page:57, id:"sequence-diagrams", indent:1 },
+    { label:"2.3.7 Deployment Diagram", page:62, id:"deployment-diagram", indent:1 },
+    { label:"References", page:63, id:"references", indent:0 },
   ];
 
   /* Sidebar outline tree — built from DATA so it can never drift out of sync
@@ -1663,25 +1671,34 @@
   const NAV = [
     { id:"cover", label:"Cover Page" },
     { id:"toc", label:"Table of Contents" },
-    { id:"overview", label:"I. Project Overview" },
+    { id:"overview", label:"I. Project Context", children:[
+      {id:"problem",label:"1.1 Statement of the Problem"},
+      {id:"objectives",label:"1.2 Objectives"},
+      {id:"scope",label:"1.3 Scope and Limitations"}
+    ] },
     { id:"methodology", label:"II. Methodology" },
-    { id:"requirements", label:"III. Requirements Analysis", children:[
-      { id:"backlog", label:"3.1.1 Product Backlog" },
-      { id:"events", label:"3.1.2 Event Tables" },
-      { id:"usecase-diagrams", label:"3.1.3 Use Case Diagrams" },
-      { id:"usecase-full", label:"3.1.4 Use Case Full Description", children:
+    { id:"requirements", label:"2.1 Requirements Analysis", children:[
+      { id:"backlog", label:"2.1.1 Product Backlog" },
+      { id:"events", label:"2.1.2 Event Tables" },
+      { id:"usecase-diagrams", label:"2.1.3 Use Case Diagrams" },
+      { id:"usecase-full", label:"2.1.4 Use Case Full Description", children:
         DATA.useCases.map(uc => ({ id:uc.id, label:`Table ${uc.table} — ${uc.title}` })) },
-      { id:"gap-analysis", label:"3.1.5 Gap Analysis" },
-      { id:"context-diagram", label:"3.1.6 Context Diagram" },
-      { id:"dfd", label:"3.1.7 Data Flow Diagrams", children:[
+    ]},
+    { id:"gap-analysis", label:"2.2 Gap Analysis" },
+    { id:"system-analysis", label:"2.3 System Analysis and Design", children:[
+      { id:"context-diagram", label:"2.3.1 Context Diagram" },
+      { id:"dfd", label:"2.3.2 Data Flow Diagrams", children:[
         { id:"dfd-level1", label:"Level 1 — Overview" },
         ...[1,2,3,4,5].map(n => ({ id:`dfd-p${n}`, label:`Level 2 — Process ${n}.0` })),
         ...DATA.dfdProcesses.map(p => ({ id:p.id, label:`${p.fig} — ${p.title}` })),
       ]},
-      { id:"erd", label:"3.1.8 Entity-Relationship Diagram" },
-      { id:"activity-diagrams", label:"3.1.9 Activity Diagrams", children:ACTIVITY_FIGURES.map(f=>({ id:f.id, label:`Figure ${f.figure} — ${f.title}` })) },
-      { id:"swimlane-diagram", label:"3.1.10 Swimlane Diagram" },
+      { id:"erd", label:"2.3.3 Entity-Relationship Diagram" },
+      { id:"activity-diagrams", label:"2.3.4 Activity Diagrams", children:ACTIVITY_FIGURES.map(f=>({ id:f.id, label:`Figure ${f.figure} — ${f.title}` })) },
+      { id:"swimlane-diagram", label:"2.3.5 Swimlane Diagram" },
+      { id:"sequence-diagrams", label:"2.3.6 Sequence Diagram" },
+      { id:"deployment-diagram", label:"2.3.7 Deployment Diagram" },
     ]},
+    { id:"references", label:"References" },
   ];
 </script>
 
@@ -1893,7 +1910,7 @@ function TocSection({ onNavigate }) {
 function OverviewSection() {
   return (
     <section id="overview" className="doc-section">
-      <SectionHeading title="I. Project Overview" id="overview" />
+      <SectionHeading title="I. Project Context" id="overview" />
       <div className="lede">
         <p>The Physics and Circuits Laboratory of NU Fairview supports laboratory activities that require coordinated access to rooms, equipment, and consumable supplies. Its operations include maintaining inventory, scheduling laboratory use, processing equipment borrowing and returns, tracking student accountability, and preparing activity reports. Keeping these records accurate and accessible is essential to supporting laboratory sessions and managing available resources.</p>
         <p>The current process relies on handwritten request forms, borrower’s slips, and spreadsheet records maintained by the laboratory head. Reservations, inventory quantities, borrowing transactions, and clearance records are recorded separately, requiring repeated encoding and manual cross-checking. This arrangement makes it difficult to monitor available resources, identify scheduling conflicts, trace damaged or missing equipment, and provide timely updates to requesters.</p>
@@ -1904,6 +1921,42 @@ function OverviewSection() {
         <p><strong>Results.</strong> Display item, laboratory, current usable stock, forecast month, estimated consumption or concurrent demand, suggested consumable restock quantity or possible equipment shortage, a short explanation, history period, and generation date. Keep current low-stock alerts separate from predicted shortages. If the relevant history is insufficient or unreliable, show “Insufficient history” and the known stock/threshold alerts rather than a zero or invented estimate. Missing equipment timing must not be replaced by total monthly borrowing counts.</p>
         <p><strong>Human review and limits.</strong> Head Lab reviews the recommendation against known upcoming activities and decides what to restock outside this workflow. Generating or refreshing a forecast never creates a purchase, changes stock, or approves a reservation. Forecast results are dynamic; no Forecast table is required. Consumption is aggregated from return outcomes once, not added again from inventory ledger entries. Initial usage-based estimates must be evaluated against actual subsequent usage; a historical-average baseline is not a trained AI model. The forecasting method, minimum reliable history and measured error must be validated before claiming production AI accuracy.</p>
         <p>Through these integrated functions, the proposed system aims to reduce repeated encoding, improve record consistency, make laboratory information more accessible, and support accountability in the use of laboratory resources.</p>
+        <h3 id="problem">1.1 Statement of the Problem</h3>
+        <p>Laboratory requests, inventory, equipment returns and student accountability are recorded separately through paper forms and spreadsheets. Manual cross-checking can delay confirmation of available stock, identification of schedule conflicts, request approvals and tracing of damaged or unreturned items. Repeated encoding also makes usage reporting and inventory planning more difficult.</p>
+        <ol>
+          <li>How can linked inventory, reservation and borrowing records reduce repeated encoding and improve traceability?</li>
+          <li>How can role-based scheduling and approval workflows give authorized requesters clear availability and request status?</li>
+          <li>How can Head Laboratory identify the accountable student and manage clearance after equipment return?</li>
+          <li>How can approved laboratory information and historical usage support routine inquiries and inventory planning without allowing AI to change transactions?</li>
+        </ol>
+        <h3 id="objectives">1.2 Objectives</h3>
+        <h4>1.2.1 Main Objective</h4>
+        <p>To design and develop a web-based Physics and Circuits Laboratory Management System that links controlled user access, reservations and approvals, inventory and borrowing, student clearance, operational records and reporting, with informational Q&amp;A and advisory inventory forecasting.</p>
+        <h4>1.2.2 Specific Objectives</h4>
+        <ol>
+          <li>Provide role-scoped accounts and allow Head Laboratory to create and manage Faculty and Class Representative accounts using verified details.</li>
+          <li>Provide schedule and item availability checks, Group or Student Only reservations through a Class Representative account, and authenticated Faculty or Dean approval according to schedule type and Faculty availability.</li>
+          <li>Link inventory, approved borrowing slips, issuance and return outcomes, preserving responsible borrowers and actual consumable use.</li>
+          <li>Allow Head Laboratory to identify accountable students and create, update and resolve clearance records, with class student status visible to the relevant Class Representative.</li>
+          <li>Compile completed laboratory usage into Average Equipment Use, Top 5 Equipment &amp; Consumables, Laboratory Frequency Usage and Recent Activity for end-term review.</li>
+          <li>Provide an authenticated informational chatbot and Head Lab inventory recommendations with clear evidence limits and no automatic transaction changes.</li>
+        </ol>
+        <h3 id="scope">1.3 Scope and Limitations</h3>
+        <h4>1.3.1 Scope</h4>
+        <p><strong>Access and accounts.</strong> Six roles access the same web application: Class Representative, Faculty, Dean, Circuit Staff, Physics Staff and Head Lab. Head Lab manually creates Faculty accounts and Class Representative accounts after Faculty verifies the representative's name, student ID and section. Credentials for Class Representatives are handed through Faculty. Faculty and Class Representatives do not self-register; Dean retains a pre-assigned account. Individual classmates do not need their own reservation accounts.</p>
+        <p><strong>Reservations and approvals.</strong> A Class Representative submits for a selected group of classmates or one selected student. Both on-schedule and out-of-schedule requests require this borrower choice. On-schedule Class Representative requests require Faculty approval. Out-of-schedule requests go to available Faculty, or directly to Dean if Faculty is unavailable; the selected reviewer makes the final approval or rejection. Faculty's regular on-schedule class requires no academic approval; Faculty out-of-schedule requests require Dean approval. Requests and status are handled inside authenticated, role-scoped pages, not through a public kiosk or account-free email approval.</p>
+        <p><strong>Laboratory operations and clearance.</strong> Staff manage inventory, issuance, returns and disposal only within their assigned laboratory. Head Lab manages accounts, schedules, daily tasks, clearance and reporting across the laboratories. Issuance requires the applicable final approval. Return records distinguish reusable equipment from consumed supplies and identify the actual group or individual borrower. Head Lab identifies the accountable student before creating a clearance record for a return issue; Class Representatives view their class students' clearance status and do not request or issue clearance themselves.</p>
+        <p><strong>Logs and reports.</strong> Completed reservations and return outcomes supply laboratory logs automatically. End-term reports contain Average Equipment Use, Top 5 Equipment &amp; Consumables, Laboratory Frequency Usage and Recent Activity. Average Use % follows quantity used divided by total available, multiplied by 100 and rounded to two decimals; session frequency counts laboratory sessions per requester, not item rows. Disposal records, daily tasks, outstanding clearances and appendix content are excluded from this end-term report.</p>
+        <p><strong>AI scope.</strong> Class Representatives and Faculty may ask for Circuits/Physics laboratory information, equipment information/current availability and operating hours. Schedule selection, reservation tracking and clearance remain in their own pages. Head Lab may request next-month inventory forecasts using existing inventory and actual usage history. Results are advisory; insufficient history is explicitly reported.</p>
+        <h4>1.3.2 Limitations</h4>
+        <ul>
+          <li>No financial transaction processing, automated purchasing, AI reservation submission or AI approval is included.</li>
+          <li>Current availability information does not guarantee or reserve stock for a future session.</li>
+          <li>Forecast reliability depends on accurate history and validated methods; no trained-model accuracy is claimed for a simple usage baseline.</li>
+          <li>AI-generated dashboard interpretations and report summaries are excluded. Inventory forecasting does not change stored stock.</li>
+          <li>Unresolved policies, including request recurrence and cutoff details, remain subject to consultation; this document does not introduce them as completed features.</li>
+          <li>The application is at scaffold stage. Implementation, security, browser compatibility and user acceptance testing remain necessary.</li>
+        </ul>
       </div>
     </section>
   );
@@ -1917,7 +1970,7 @@ function MethodologySection({ onZoom }) {
         <p>The system is developed under the Agile methodology, following the Scrum Framework. Agile was selected because the requirements of this project continued to change throughout requirements gathering.</p>
         <p>This project spans three (3) terms, each term running thirteen and a half (13.5) weeks and corresponding to one subject and one release: MNTSDEV in the second year third term, MSYADD1 in the third year first term, and MCSPROJ in the third year second term.</p>
       </div>
-      <Figure src="assets/figures/fig-scrum.png" caption="Methodology illustration: Scrum Framework" onZoom={onZoom} />
+      <Figure src="assets/figures/fig-scrum.png" caption="Figure 1: Scrum Framework" onZoom={onZoom} />
       <div className="lede" style={{marginTop:18}}>
         <p><strong>Product Vision.</strong> The product vision was formed during MNTSDEV from the operational problems of the Physics and Circuits Laboratory and the Product Owner: paper borrower's slips and laboratory service request forms re-encoded by hand, a Google Sheet and several workbooks whose borrowing records are not linked to its inventory, room availability checked against a separate weekly grid for each room, approvals signed on paper and stored outside the workbook, and consumable quantities that cannot be established without a physical count.</p>
         <p><strong>Product Backlog and User Stories.</strong> From that vision the team wrote the objectives as user stories and organized them into the product backlog presented in Table 1: to digitalize inventory and equipment borrowing, to provide reservation with conflict detection, to replace paper-based clearance, to record approval through authenticated Faculty and Dean accounts and publish request status, to provide an authenticated laboratory Q&A chatbot, and to record waste disposal. The backlog is a living artifact and is refined continuously as consultation produces new information.</p>
@@ -1925,7 +1978,7 @@ function MethodologySection({ onZoom }) {
         <p><strong>The Sprint.</strong> Sprints will run at a fixed length. However, the fixed length will be decided when the development phase starts.</p>
         <p><strong>Sprint Review and Sprint Retrospective.</strong> Each sprint closes with a sprint review, at which is demonstrated to the laboratory head and the backlog is adjusted in light of what he raises, and then a sprint retrospective, at which the team inspects how it worked during the sprint, its collaboration, its tools and its process, and commits to at least one improvement for the next sprint. The review inspects the product, while the retrospective inspects the process.</p>
         <p><strong>Product Backlog Refinement.</strong> Findings from the review and the retrospective return to the product backlog, which the Product Owner reorders before the next sprint planning.</p>
-        <p><strong>Current Status.</strong> As of this submission the product vision, the product backlog, the requirements analysis, the system models and the prototype are complete or in revision, and construction has not begun. Every item in Table 1 therefore carries the status Not Started, and the fixed length of the sprint is left unassigned until the development phase starts.</p>
+        <p><strong>Current Status.</strong> As of this submission the product vision, the product backlog, the requirements analysis, the system models and the prototype are complete or in revision, and only the initial Next.js application scaffold has been created; laboratory features have not yet been implemented. Every item in Table 1 therefore carries the status Not Started, and the fixed length of the sprint is left unassigned until the development phase starts.</p>
       </div>
     </section>
   );
@@ -1934,26 +1987,50 @@ function MethodologySection({ onZoom }) {
 function RequirementsIntro() {
   return (
     <section id="requirements" className="doc-section">
-      <SectionHeading title="III. Requirements Analysis" id="requirements" />
+      <SectionHeading title="2.1 Requirements Analysis" id="requirements" />
     </section>
   );
 }
 
 function BacklogSection() {
+  const acceptanceCriteria = {
+    '01': 'Valid credentials for an active account open the correct role dashboard. Invalid credentials or inactive accounts are rejected. Users cannot access functions outside their role or laboratory assignment.',
+    '02': 'Only Head Lab can create or manage Faculty and Class Representative accounts. Required identity, role and section details are validated; duplicate accounts are rejected. Faculty verifies Class Representative details and receives credentials for handover. Self-registration is unavailable.',
+    '03': 'Selecting Physics or Circuits displays only that laboratory’s schedule and resource availability. Occupied blocks cannot be selected as vacant blocks. Viewing availability does not create a booking.',
+    '04A': 'Faculty requests matching their assigned class and term schedule pass availability checks and are saved as Approved without Faculty or Dean review. Conflicting or unavailable resources prevent submission.',
+    '04B': 'A Class Representative selects Group or Student Only and students from the assigned class. Student Only requires exactly one student. A valid on-schedule request is saved as Pending and routed to the assigned Faculty; submitter and borrowers are recorded separately.',
+    '04C': 'A valid out-of-schedule request holds a vacant block while Pending. Class Representative requests go to available assigned Faculty, or directly to Dean when that Faculty is unavailable. Faculty requests go to Dean. The selected reviewer’s approval or rejection is final.',
+    '05': 'Only the submitting requester can cancel or reschedule an eligible reservation before the session. Cancellation releases the held block. Rescheduling rechecks availability and the applicable approval route; an invalid change preserves the existing reservation.',
+    '06': 'Faculty can review only requests routed to them. Approve or Reject saves the final decision and updates requester status. Rejection releases the hold; approval makes the reservation eligible for laboratory processing without another Dean approval.',
+    '07': 'Dean can review routed out-of-schedule Faculty requests and Class Representative requests with unavailable Faculty. Approve or Reject saves the final decision and updates requester status; rejection releases the hold.',
+    '08': 'Requesters see their permitted reservation history and current status. Class Representatives can view clearance information for accountable students in their assigned class, including Group and Student Only borrowers, but cannot create or clear a clearance.',
+    '09': 'The chatbot answers laboratory information, equipment information/current availability and operating-hours questions from approved records. Unsupported questions receive a limitation or referral response. It does not change bookings or stock, or replace schedule and status pages.',
+    '10': 'Authorized users can maintain inventory within their laboratory scope. Required item details and nonnegative quantities are validated. Changes persist and appear in the catalogue; removal must not break existing transaction history.',
+    '10F': 'Only Head Lab can generate next-month forecasts from recorded stock and actual usage. Consumable demand is distinguished from reusable-equipment concurrent demand. Insufficient history is explicitly identified. Reviewing a forecast never changes stock or creates a purchase automatically.',
+    '11': 'Items can be issued only against a finally approved reservation with sufficient available stock. Issue and return records reference the reservation, actual borrowers and quantities. Repeated processing cannot duplicate stock movements.',
+    '12': 'Return processing records issued, returned and applicable consumed, broken or lost quantities consistently. Reusable equipment cannot be marked consumed. Invalid or excessive quantities are rejected without changing stock.',
+    '13': 'Head Lab reviews return issues and identifies the accountable student before creating clearance linked to the reservation and affected items. The assigned Class Representative can view that student’s status. Only Head Lab closes clearance after verified settlement.',
+    '14': 'Authorized users record the item, quantity, reason and hazardous-waste classification within their laboratory scope. Invalid quantities are rejected. Disposal records remain traceable and excluded from Lab End-Term usage summaries.',
+    '15': 'Head Lab can maintain schedules and daily tasks across both laboratories. Schedule conflicts are rejected. Completed reservation/return records populate laboratory usage logs without duplicate manual encoding; daily tasks remain separate from usage logs.',
+    '16': 'Dashboard totals reflect stored inventory, requests and usage within the user’s permitted laboratory scope. Updated records are reflected on refresh; an empty dataset displays zero or an empty state rather than invented values.',
+    '17': 'The selected term and laboratory produce Average Equipment Use, Top 5 Equipment & Consumables, Laboratory Frequency Usage and Recent Activity from completed records. Use percentage equals quantity used / total available × 100, rounded to two decimals, with zero denominators handled. Frequency counts sessions, not item rows. Disposal, daily tasks, outstanding clearances and appendix content are excluded.'
+  };
   const columns = [
     { key:"id", label:"ID", width:"44px" },
     { key:"role", label:"As a", width:"120px" },
     { key:"want", label:"I want to be able to" },
     { key:"soThat", label:"So that" },
+    { key:"acceptanceCriteria", label:"Acceptance Criteria" },
     { key:"priority", label:"Priority", width:"84px", render:(v) => <PriorityBadge priority={v} /> },
     { key:"sprint", label:"Sprint", width:"60px" },
     { key:"status", label:"Status", width:"116px", render:(v) => <StatusPill status={v} /> },
   ];
   return (
     <section id="backlog" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.1" title="Product Backlog" id="backlog" />
+      <SectionHeading level={3} kicker="2.1.1" title="Product Backlog" id="backlog" />
       <p className="cap">Table 1: Product Backlog</p>
-      <DataTable columns={columns} rows={DATA.backlog} />
+      <p>Acceptance criteria below define the expected results for future implementation and testing; they do not indicate that these features are already implemented.</p>
+      <DataTable columns={columns} rows={DATA.backlog.map(item => ({...item, acceptanceCriteria: acceptanceCriteria[item.id]}))} />
     </section>
   );
 }
@@ -1969,7 +2046,7 @@ function EventsSection() {
   ];
   return (
     <section id="events" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.2" title="Event Tables" id="events" />
+      <SectionHeading level={3} kicker="2.1.2" title="Event Tables" id="events" />
       <p className="cap">Table 2: Event Tables</p>
       <DataTable columns={columns} rows={DATA.events} />
     </section>
@@ -1979,10 +2056,10 @@ function EventsSection() {
 function UseCaseDiagramsSection({ onZoom }) {
   return (
     <section id="usecase-diagrams" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.3" title="Use Case Diagrams" id="usecase-diagrams" />
-      <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 1: Use Case Diagram" onZoom={onZoom} editorHref="assets/figures-v2/usecase-diagram-source.html" />
+      <SectionHeading level={3} kicker="2.1.3" title="Use Case Diagrams" id="usecase-diagrams" />
+      <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 2: Use Case Diagram" onZoom={onZoom} editorHref="assets/figures-v2/usecase-diagram-source.html" />
       <div className="lede" style={{marginTop:18}}>
-<p>Figure 1 presents six actors around a compact three-column system boundary. Log In appears above Generate Inventory Forecast and connects to all six actors as shared system access. The Dean also participates in Approve / Reject Routed Request. The left column contains requester and approval goals, the center contains supporting use cases, and the right contains laboratory operations. Ask Laboratory Question has three conditional extensions: Ask Circuits / Physics Laboratory Information, Ask Equipment Information / Availability, and Check Operating Hours. These provide verified guidance or current inventory information, never a reservation or stock hold. Schedule blocks remain in the reservation form; reservation tracking and Class Representative clearance remain in their own pages. Generate Inventory Forecast remains an optional Head Lab extension of Manage Equipment Inventory. Existing submission, inventory, return and clearance responsibilities are preserved. The smaller uniform ellipses and actors provide more room for distinct associations and labelled dependencies.</p>
+<p>Figure 2 presents six actors around a compact three-column system boundary. Log In appears above Generate Inventory Forecast and connects to all six actors as shared system access. The Dean also participates in Approve / Reject Routed Request. The left column contains requester and approval goals, the center contains supporting use cases, and the right contains laboratory operations. Ask Laboratory Question has three conditional extensions: Ask Circuits / Physics Laboratory Information, Ask Equipment Information / Availability, and Check Operating Hours. These provide verified guidance or current inventory information, never a reservation or stock hold. Schedule blocks remain in the reservation form; reservation tracking and Class Representative clearance remain in their own pages. Generate Inventory Forecast remains an optional Head Lab extension of Manage Equipment Inventory. Existing submission, inventory, return and clearance responsibilities are preserved. The smaller uniform ellipses and actors provide more room for distinct associations and labelled dependencies.</p>
       </div>
     </section>
   );
@@ -2042,11 +2119,11 @@ function UseCaseSection({ uc }) {
 function UseCaseFullSection() {
   return (
     <section id="usecase-full" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.4" title="Use Case Full Description" id="usecase-full" />
+      <SectionHeading level={3} kicker="2.1.4" title="Use Case Full Description" id="usecase-full" />
       <p>Log In is shown as shared system access for all six actors. Authentication remains a precondition for protected functions; its full specification and existing table numbers are preserved.</p>
       <div className="lede">
-        <p>Tables 3 to 22 correspond one-to-one with the twenty main use cases in Figure 1. Table 6 describes Faculty’s Submit Scheduled Laboratory Activity; Table 7 describes Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, retaining its two alternative flows. The eleven supporting use cases are documented as included or extending behavior in their parent tables, covering all twelve diagram dependencies. Select Reservation Type is mandatory for Class Representatives in both schedule variants; its conditional extension of the shared request use case preserves the Faculty variant. Dashboard screens remain interface views, not standalone use cases or business events. Actor permissions and event names use the same diagram mapping.</p>
-        <p><a href="Reservation-Form.html">Open the On-Schedule / Out-of-Schedule reservation form preview</a>. Schedule Type determines the approval route; Reservation Type identifies Group or Student Only. Student Only requires one selected student from the assigned class. The Class Rep submits on that student's behalf; no additional student login is created.</p>
+        <p>Tables 3 to 22 correspond one-to-one with the twenty main use cases in Figure 2. Table 6 describes Faculty’s Submit Scheduled Laboratory Activity; Table 7 describes Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, retaining its two alternative flows. The eleven supporting use cases are documented as included or extending behavior in their parent tables, covering all twelve diagram dependencies. Select Reservation Type is mandatory for Class Representatives in both schedule variants; its conditional extension of the shared request use case preserves the Faculty variant. Dashboard screens remain interface views, not standalone use cases or business events. Actor permissions and event names use the same diagram mapping.</p>
+        <p>In the proposed system, Schedule Type determines the approval route; Reservation Type identifies Group or Student Only. Student Only requires one selected student from the assigned class. The Class Rep submits on that student's behalf; no additional student login is created.</p>
       </div>
       {DATA.useCases.map(uc => <UseCaseSection key={uc.id} uc={uc} />)}
     </section>
@@ -2062,7 +2139,7 @@ function GapAnalysisSection() {
   ];
   return (
     <section id="gap-analysis" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.5" title="Gap Analysis" id="gap-analysis" />
+      <SectionHeading level={3} kicker="2.2" title="Gap Analysis" id="gap-analysis" />
       <div className="lede"><p>Table 23 groups the current-system gaps and proposed changes. These groups are not a one-to-one numbering of the product backlog; recurrence remains a consultation item. The Analytics page provides the explicit backlog-to-use-case and DFD traceability matrix.</p></div>
       <p className="cap">Table 23: Gap Analysis</p>
       <DataTable columns={columns} rows={DATA.gaps} />
@@ -2073,10 +2150,10 @@ function GapAnalysisSection() {
 function ContextDiagramSection({ onZoom }) {
   return (
     <section id="context-diagram" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.6" title="Context Diagram" id="context-diagram" />
-      <Figure src="assets/figures-v2/dfd-level0/dfd-level0-draft.png" caption="Figure 2: Context Diagram (DFD Level 0)" onZoom={onZoom} editorHref="assets/figures-v2/dfd-level0/dfd-level0-source.html" />
+      <SectionHeading level={3} kicker="2.3.1" title="Context Diagram" id="context-diagram" />
+      <Figure src="assets/figures-v2/dfd-level0/dfd-level0-draft.png" caption="Figure 3: Context Diagram (DFD Level 0)" onZoom={onZoom} editorHref="assets/figures-v2/dfd-level0/dfd-level0-source.html" />
       <div className="lede" style={{marginTop:18}}>
-        <p>Figure 2 presents the system as one process at DFD Level 0. Its six external entities match the Use Case Diagram and each appears once. The Class Representative and Faculty exchange request, availability, status, history, question-and-answer, and Borrowing Slip data within their permitted workflows; only the Class Representative receives Clearance Status. The Dean remains approval-only. Head Laboratory exchanges account, inventory, equipment, clearance, schedule, usage, daily-task, disposal, and reporting data across both laboratories. Physics and Circuits Laboratory Staff exchange inventory, equipment, and disposal data only for their assigned laboratory; they do not send schedule, usage-log, clearance, or daily-task actions. These 46 boundary flows are preserved in the Level 1 DFD. Laboratory dashboards remain read-only views of existing records; their presentation arrows are intentionally omitted from these DFDs.</p>
+        <p>Figure 3 presents the system as one process at DFD Level 0. Its six external entities match the Use Case Diagram and each appears once. The Class Representative and Faculty exchange request, availability, status, history, question-and-answer, and Borrowing Slip data within their permitted workflows; only the Class Representative receives Clearance Status. The Dean remains approval-only. Head Laboratory exchanges account, inventory, equipment, clearance, schedule, usage, daily-task, disposal, and reporting data across both laboratories. Physics and Circuits Laboratory Staff exchange inventory, equipment, and disposal data only for their assigned laboratory; they do not send schedule, usage-log, clearance, or daily-task actions. These 48 boundary flows are preserved in the Level 1 DFD. Laboratory dashboards remain read-only views of existing records; their presentation arrows are intentionally omitted from these DFDs.</p>
       </div>
     </section>
   );
@@ -2096,33 +2173,33 @@ function EmbeddedDiagram({ src, caption, editorHref, aspectRatio = "4500 / 4100"
 
 function DfdSection({ onZoom }) {
   const level2Figures = [
-    { id:"p1", number:"4", title:"Manage User Access & Accounts" },
-    { id:"p2", number:"5", title:"Manage Reservations, Availability & Approvals" },
-    { id:"p3", number:"6", title:"Answer Laboratory Questions" },
-    { id:"p4", number:"7", title:"Manage Equipment & Borrowing" },
-    { id:"p5", number:"8", title:"Manage Laboratory Administration & Reporting" },
+    { id:"p1", number:"5", title:"Manage User Access & Accounts" },
+    { id:"p2", number:"6", title:"Manage Reservations, Availability & Approvals" },
+    { id:"p3", number:"7", title:"Answer Laboratory Questions" },
+    { id:"p4", number:"8", title:"Manage Equipment & Borrowing" },
+    { id:"p5", number:"9", title:"Manage Laboratory Administration & Reporting" },
   ];
   return (
     <section id="dfd" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.7" title="Data Flow Diagrams" id="dfd" />
+      <SectionHeading level={3} kicker="2.3.2" title="Data Flow Diagrams" id="dfd" />
 
       <section id="dfd-level1" className="doc-section sub">
         <SectionHeading level={4} title="Level 1" id="dfd-level1" />
-        <EmbeddedDiagram src="assets/figures-v2/dfd-level1/dfd-level1-source.html" caption="Figure 3: Level 1 Data Flow Diagram" editorHref="assets/figures-v2/dfd-level1/dfd-level1-source.html" aspectRatio="1770 / 2220" className="dfd-level1-figure" />
+        <EmbeddedDiagram src="assets/figures-v2/dfd-level1/dfd-level1-source.html" caption="Figure 4: Level 1 Data Flow Diagram" editorHref="assets/figures-v2/dfd-level1/dfd-level1-source.html" aspectRatio="1770 / 2220" className="dfd-level1-figure" />
         <div className="lede" style={{marginTop:18}}>
-          <p>Figure 3 is the formal detailed reference: it decomposes the system into five primary processes and ten canonical data stores, retaining the individual boundary flows. Process 1.0 manages user access and controlled account issuance. Process 2.0 manages reservations, availability, approvals, status, and history. Process 3.0 answers authenticated laboratory questions. Process 4.0 manages inventory, equipment issuance and return, Borrowing Slip Records, disposal, and optional Head Lab inventory forecasting. Process 5.0 manages schedules, session usage, Head-Laboratory-controlled daily tasks and clearance, and end-term reporting. Only Head Laboratory sends Schedule Update, Usage Entry, Daily Task Entry, and Clearance Action. Laboratory Staff contribute inventory, issuance/return, and disposal records within their assigned laboratory. The 73 independent flows comprise 48 external exchanges and 25 store exchanges. Forecast Request and Inventory Forecast are Head Lab boundary exchanges; historical item references support dynamic forecasting. Dashboard presentation arrows are omitted without removing the dashboard feature. Head Laboratory appears last in the entity column.</p>
+          <p>Figure 4 is the formal detailed reference: it decomposes the system into five primary processes and ten canonical data stores, retaining the individual boundary flows. Process 1.0 manages user access and controlled account issuance. Process 2.0 manages reservations, availability, approvals, status, and history. Process 3.0 answers authenticated laboratory questions. Process 4.0 manages inventory, equipment issuance and return, Borrowing Slip Records, disposal, and optional Head Lab inventory forecasting. Process 5.0 manages schedules, session usage, Head-Laboratory-controlled daily tasks and clearance, and end-term reporting. Only Head Laboratory sends Schedule Update, Usage Entry, Daily Task Entry, and Clearance Action. Laboratory Staff contribute inventory, issuance/return, and disposal records within their assigned laboratory. The 73 independent flows comprise 48 external exchanges and 25 store exchanges. Forecast Request and Inventory Forecast are Head Lab boundary exchanges; historical item references support dynamic forecasting. Dashboard presentation arrows are omitted without removing the dashboard feature. Head Laboratory appears last in the entity column.</p>
         </div>
       </section>
 
       <div className="doc-section sub">
         <SectionHeading level={4} title="Level 2" id="dfd-level2-label" />
         <div className="lede" style={{marginTop:18}}>
-          <p>Figures 4 to 8 decompose the five-process formal Level 1 model into five separate images. Each uses the same plain, print-oriented style as Level 1: uniform peer shapes, a vertical child-process column, independent noun-labelled arrows, and clear space beneath each label. Every Level 1 boundary flow is mapped to its child process; separate reads and writes may realize the same parent flow at different stages. Full names and parent-flow references remain available in the editable diagram. Borrowing Slip, Clearance, Daily Task, and Disposal Records remain distinct. Only Head Laboratory manages Daily Tasks, and Process 3.0 remains an informational Q&amp;A chatbot.</p>
+          <p>Figures 5 to 9 decompose the five-process formal Level 1 model into five separate images. Each uses the same plain, print-oriented style as Level 1: uniform peer shapes, a vertical child-process column, independent noun-labelled arrows, and clear space beneath each label. Every Level 1 boundary flow is mapped to its child process; separate reads and writes may realize the same parent flow at different stages. Full names and parent-flow references remain available in the editable diagram. Borrowing Slip, Clearance, Daily Task, and Disposal Records remain distinct. Only Head Laboratory manages Daily Tasks, and Process 3.0 remains an informational Q&amp;A chatbot.</p>
         </div>
         <a className="figure-editor-link" href="assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html">Open canonical DFD Level 2 diagrams</a>
         <div className="lede approval-routing-reference">
-          <p>DFD Levels 0–2 use the same concise data-flow labels for both requesting roles: On-Schedule Request and Out-of-Schedule Request. For Faculty, On-Schedule Request means the laboratory activity within the assigned class schedule; it needs no additional academic approval. For Class Representatives, the on-schedule non-laboratory request requires the selected class Faculty's approval. Process 2.3 routes a Class Representative out-of-schedule request to Faculty then Dean when the assigned Faculty is available; it may route directly to Dean only when that Faculty is unavailable. Faculty out-of-schedule requests go directly to Dean. Group / Student Only applies only to Class Representatives. Any rejection stops routing and releases the hold.</p>
-          <p>Process 2.4 retains Pending (awaiting Dean) and the held block after intermediate Faculty approval or the documented Faculty-unavailability direct route; only the final required approval sets Approved. Pending Dean is a reviewer stage, not a new reservation-status value. Process 4.2 retrieves only finally approved reservations for issuance; Pending requests cannot proceed to Process 4.3. Existing Faculty/Dean, D2 approval-record and authorized-reservation flows carry these rules without additional arrows.</p>
+          <p>DFD Levels 0–2 use the same concise data-flow labels for both requesting roles: On-Schedule Request and Out-of-Schedule Request. For Faculty, On-Schedule Request means the laboratory activity within the assigned class schedule; it needs no additional academic approval. For Class Representatives, the on-schedule non-laboratory request requires the selected class Faculty's approval. Process 2.3 routes a Class Representative out-of-schedule request to Faculty for a final decision when the assigned Faculty is available; it may route directly to Dean only when that Faculty is unavailable. Faculty out-of-schedule requests go directly to Dean. Group / Student Only applies only to Class Representatives. Any rejection stops routing and releases the hold.</p>
+          <p>Process 2.4 saves the selected Faculty or Dean reviewer's final decision. Pending applies only while awaiting that decision; it does not continue to Dean after Faculty approval. Process 4.2 retrieves only finally approved reservations for issuance; Pending requests cannot proceed to Process 4.3. Existing Faculty/Dean, D2 approval-record and authorized-reservation flows carry these rules without additional arrows.</p>
         </div>
       </div>
       {level2Figures.map(figure => (
@@ -2146,8 +2223,8 @@ function DfdSection({ onZoom }) {
 function ErdSection({ onZoom }) {
   return (
     <section id="erd" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.8" title="Entity-Relationship Diagram" id="erd" />
-      <Figure src="assets/erd/erd-complete.png" caption="Figure 9: Entity–Relationship Diagram — Logical Draft" onZoom={onZoom} />
+      <SectionHeading level={3} kicker="2.3.3" title="Entity-Relationship Diagram" id="erd" />
+      <Figure src="assets/erd/erd-complete.png" caption="Figure 10: Entity–Relationship Diagram — Logical Draft" onZoom={onZoom} />
       <div className="lede"><p><strong>Logical ERD draft — pending consultation and validation.</strong> One complete black-and-white A4 portrait diagram maps all ten canonical DFD stores to 25 entities and 51 primary-key/foreign-key relationships. Each table appears once. Crow’s Foot connectors attach to the key rows, while the data dictionary records optional relationships, uniqueness and workflow constraints.</p><p>Inventory Forecasting reads ITEM / inventory records, BORROWING, BORROWING_ITEM and RETURN_ENTRY, resolving each item through REQUEST_ITEM. Consumption uses RETURN_ENTRY.qty_consumed; reusable-equipment demand uses issue and partial-return timing, not summed borrow counts. Dynamic results require no new table, key or relationship. Forecast generation does not write inventory. Reservation revisions, recurrence, room-only completion, clearance completion, atomic stock holds and knowledge-base ownership retain their existing consultation status. The archived ERD and email approval tokens remain excluded.</p></div>
       <p><a className="figure-editor-link" href="ERD.html">Open complete ERD and data dictionary</a> <a className="figure-editor-link" href="assets/erd/erd.pdf">Download A4 portrait ERD draft</a></p>
       <p>RESERVATION.reservation_type records GROUP or STUDENT_ONLY and is required for every Class Representative reservation. Schedule Type remains separate in REQUEST_REVISION.request_basis / usage_type. One active representative account per section can link to multiple CLASS_GROUP subject/class records. The requester selects an authorized active class; its faculty_id determines the Faculty reviewer, not the Faculty who delivered the account credentials. The backend must enforce section representative uniqueness across active class assignments and validate the chosen class, term, section and schedule together. REQUEST_MEMBER retains members of the selected class or records the one selected student for Student Only. RESERVATION.requester_id identifies the submitting Class Rep separately from the participating students. Faculty requests retain their existing workflow.</p>
@@ -2158,8 +2235,8 @@ function ErdSection({ onZoom }) {
 function ActivityDiagramsSection({ onZoom }) {
   return (
     <section id="activity-diagrams" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.9" title="Activity Diagrams" id="activity-diagrams" />
-      <div className="lede"><p>Figures 10 to 14 show a separate Activity Diagram for each of the five primary DFD processes, retaining the corresponding Level 2 subprocesses. Figure 11 requires Class Representatives to select Group or Student Only before validation for either schedule variant. Exclusive type branches converge at the bar labelled &#123;joinSpec = or&#125;: one selected path continues, without waiting for both Group and Student Only. This is not an AND synchronization of parallel activities. Decisions show alternative workflow outcomes; these control flows are distinct from DFD data flows. Actor partitions appear in the overall Swimlane Diagram in Figure 15.</p></div>
+      <SectionHeading level={3} kicker="2.3.4" title="Activity Diagrams" id="activity-diagrams" />
+      <div className="lede"><p>Figures 11 to 15 show a separate Activity Diagram for each of the five primary DFD processes, retaining the corresponding Level 2 subprocesses. Figure 12 requires Class Representatives to select Group or Student Only before validation for either schedule variant. Exclusive type branches converge at the alternative-flow merge: one selected path continues, without waiting for both Group and Student Only. This is not an AND synchronization of parallel activities. Decisions show alternative workflow outcomes; these control flows are distinct from DFD data flows. Actor partitions appear in the overall Swimlane Diagram in Figure 16.</p></div>
       {ACTIVITY_FIGURES.map((f,i)=>(
         <section id={f.id} key={f.id} className="doc-section sub" data-sync-page-break={i>0 ? 'true' : undefined}>
           <SectionHeading level={4} title={f.title} id={f.id} />
@@ -2173,11 +2250,30 @@ function ActivityDiagramsSection({ onZoom }) {
 function SwimlaneDiagramSection({ onZoom }) {
   return (
     <section id="swimlane-diagram" className="doc-section sub">
-      <SectionHeading level={3} kicker="3.1.10" title="Swimlane Diagram" id="swimlane-diagram" />
-      <div className="lede"><p>Figure 15 summarizes six actor lanes, including Dean. Head Lab optionally reviews inventory forecasts. Class Representatives select Group or Student Only; alternative routes use explicit OR joins. Head Lab identifies accountable students before creating clearance, which Class Representatives only view. Detailed workflows remain in Figures 10–14.</p></div>
-      <Figure src="assets/system-diagrams/swimlane-system.png" caption="Figure 15: Whole-System Swimlane Diagram" onZoom={onZoom} editorHref="System-Diagrams.html#activity-system" />
+      <SectionHeading level={3} kicker="2.3.5" title="Swimlane Diagram" id="swimlane-diagram" />
+      <div className="lede"><p>Figure 16 summarizes six actor lanes, including Dean. Head Lab optionally reviews inventory forecasts. Class Representatives select Group or Student Only; alternative routes use explicit OR joins. Head Lab identifies accountable students before creating clearance, which Class Representatives only view. Detailed workflows remain in Figures 11–15.</p></div>
+      <Figure src="assets/system-diagrams/swimlane-system.png" caption="Figure 16: Whole-System Swimlane Diagram" onZoom={onZoom} editorHref="System-Diagrams.html#activity-system" />
     </section>
   );
+}
+
+function SequenceDiagramSection({ onZoom }) {
+  return <section id="sequence-diagrams" className="doc-section sub">
+    <SectionHeading level={3} kicker="2.3.6" title="Sequence Diagram" id="sequence-diagrams" />
+    <p>Figures 17 to 21 summarize the five major processes. Matched requests and responses show actor, application and database interactions. Equipment and Borrowing includes Head Lab's read-only forecasting and insufficient-history alternative.</p>
+    {ACTIVITY_FIGURES.map((f,i)=><div key={f.process} className="activity-process-page" data-sync-page-break={i>0 ? 'true' : undefined}>
+      <SectionHeading level={4} title={f.title} id={`sequence-${f.process}`} />
+      <Figure src={`assets/system-diagrams/sequence-${f.process}.png`} caption={`Figure ${17+i}: Sequence Diagram — ${f.title}`} onZoom={onZoom} editorHref={`System-Diagrams.html#sequence-${f.process}`} />
+    </div>)}
+  </section>;
+}
+
+function DeploymentDiagramSection({ onZoom }) {
+  return <section id="deployment-diagram" className="doc-section sub">
+    <SectionHeading level={3} kicker="2.3.7" title="Deployment Diagram" id="deployment-diagram" />
+    <p>Figure 22 presents the proposed Next.js, React and TypeScript application on Node.js, accessed through modern browsers over HTTPS. A secure backend connection reaches one PostgreSQL database containing the ten logical DFD stores. AI modules remain in the backend; no external provider or automatic inventory mutation is assumed.</p>
+    <Figure src="assets/system-diagrams/deployment.png" caption="Figure 22: Deployment Diagram" onZoom={onZoom} editorHref="System-Diagrams.html#deployment" />
+  </section>;
 }
 
 function Footer() {
@@ -2370,7 +2466,7 @@ function App() {
     <a className="page-tab" href="ERD.html">ERD</a>
     <a className="page-tab" href="assets/downloads/dfd-arrow-integrity-skill.zip" download="dfd-arrow-integrity-skill.zip">Download Skill</a>
   </div>
-  <a className="page-tab nav-google-docs" href="https://docs.google.com/document/d/11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM/edit?tab=t.0#heading=h.6lc8m3z0ynuc" target="_blank" rel="noopener noreferrer" title="Open Google Docs in a new tab">Google Docs ↗</a>
+  <a className="page-tab nav-google-docs" href="https://docs.google.com/document/d/1UfFa6G0eWenSY_KjokZoOHqrQ2ajKGVgIwU56dkjpzY/edit" target="_blank" rel="noopener noreferrer" title="Open Google Docs in a new tab">Google Docs ↗</a>
 </nav>
 
       <div className="shell">
@@ -2392,11 +2488,15 @@ function App() {
             <UseCaseDiagramsSection onZoom={setLightbox} />
             <UseCaseFullSection />
             <GapAnalysisSection />
+            <section id="system-analysis" className="doc-section"><SectionHeading title="2.3 System Analysis and Design" id="system-analysis" /></section>
             <ContextDiagramSection onZoom={setLightbox} />
             <DfdSection onZoom={setLightbox} />
             <ErdSection onZoom={setLightbox} />
             <ActivityDiagramsSection onZoom={setLightbox} />
             <SwimlaneDiagramSection onZoom={setLightbox} />
+            <SequenceDiagramSection onZoom={setLightbox} />
+            <DeploymentDiagramSection onZoom={setLightbox} />
+            <section id="references" className="doc-section"><SectionHeading title="References" id="references" />{(window.FinalTermReferences || []).map((reference,i)=><p key={i}>{reference}</p>)}</section>
             <Footer />
           </div>
         </main>

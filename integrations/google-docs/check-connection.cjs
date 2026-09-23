@@ -20,7 +20,7 @@ const source=fs.readFileSync(require('node:path').join(__dirname,'../../assets/g
     await page.locator('[name=endpoint]').fill(endpoint);
     await page.locator('[name=key]').fill(key);
     await page.locator('[data-save]').click();
-    assert.equal(await page.evaluate(()=>localStorage.getItem('lab-google-doc-private-connection')),null);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('lab-google-doc-final-term-connection')),null);
     await page.locator('[name=remember]').check();
     await page.locator('[data-save]').click();
     await open();
@@ -30,10 +30,10 @@ const source=fs.readFileSync(require('node:path').join(__dirname,'../../assets/g
     assert.equal(await page.locator('[name=key]').inputValue(),'');
     assert.equal(await page.locator('[name=remember]').isChecked(),false);
     await page.locator('[data-forget]').click();
-    assert.equal(await page.evaluate(()=>localStorage.getItem('lab-google-doc-private-connection')),null);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('lab-google-doc-final-term-connection')),null);
     await open();
     assert.equal(await page.locator('[name=key]').inputValue(),'');
-    await page.evaluate(()=>localStorage.setItem('lab-google-doc-private-connection','bad json'));
+    await page.evaluate(()=>localStorage.setItem('lab-google-doc-final-term-connection','bad json'));
     await open();
     assert.equal(await page.locator('[name=key]').inputValue(),'');
     await page.evaluate(()=>Object.defineProperty(window,'localStorage',{get(){throw new Error('blocked');}}));

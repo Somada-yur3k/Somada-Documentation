@@ -5,12 +5,12 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const context=vm.createContext({ console, DocumentApp:{ ElementType:{PARAGRAPH:'p',TABLE:'t'} } });
 vm.runInContext(fs.readFileSync(__dirname+'/Code.gs','utf8'),context);
-const id='11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM';
+const id='1UfFa6G0eWenSY_KjokZoOHqrQ2ajKGVgIwU56dkjpzY';
 const title='A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview';
 const oldTitle='SOMADA: A Web-Based Laboratory Management System';
 const makePayload=(sections=[{id:'overview',blocks:[{kind:'paragraph',text:'Updated introduction.'}]}])=>({version:1,documentId:id,title,sections});
 const para=text=>({getType:()=> 'p',asParagraph:()=>({getText:()=>text})});
-const bodyOf=texts=>({getNumChildren:()=>texts.length,getChild:i=>para(texts[i])});
+const bodyOf=original=>{const texts=[...original,'References','Preserved bibliography'];return {getNumChildren:()=>texts.length,getChild:i=>para(texts[i])};};
 
 context.validatePayload_(makePayload());
 assert.throws(()=>context.validatePayload_({...makePayload(),documentId:'original-document'}),/Wrong document/);
@@ -95,6 +95,7 @@ function mockParagraph(value,attrs={},textAttrs={}) {
     setItalic:(...args)=>{state.italic.push(args);return text;},
     setFontFamily:v=>{state.textAttrs.FONT_FAMILY=v;return text;},
     setFontSize:v=>{state.textAttrs.FONT_SIZE=v;return text;},
+    setForegroundColor:v=>{state.textAttrs.FOREGROUND_COLOR=v;return text;},
     isBold:()=>false,isItalic:()=>false
   };
   const p={state,getText:()=>state.value,getAttributes:()=>({...state.attrs}),editAsText:()=>text,
@@ -200,12 +201,12 @@ context.validatePayload_(addedPayload);
 const additions=context.planSections_(bodyOf(text),addedPayload).sections;
 assert.equal(additions[0].end,text.length);
 for(const p of additions.slice(1)){assert.equal(p.create,true);assert.equal(p.start,text.length);assert.equal(p.end,text.length);}
-const withNew=[...text,'3.1.9 Activity Diagrams','Old activities','3.1.10 Swimlane Diagram','Old swimlane'];
+const withNew=[...text,'2.3.4 Activity Diagrams','Old activities','2.3.5 Swimlane Diagram','Old swimlane'];
 const replacement=context.planSections_(bodyOf(withNew),addedPayload).sections;
 assert.equal(replacement[0].end,text.length);
 assert.equal(replacement[1].start,text.length);assert.equal(replacement[1].end,text.length+2);
 assert.equal(replacement[2].create,undefined);
-assert.throws(()=>context.planSections_(bodyOf([...withNew,'3.1.9 Activity Diagrams']),addedPayload),/uniquely/);
+assert.throws(()=>context.planSections_(bodyOf([...withNew,'2.3.4 Activity Diagrams']),addedPayload),/uniquely/);
 assert.throws(()=>context.planSections_(bodyOf(text.slice(0,-2)),addedPayload),/locate/);
 assert.throws(()=>context.validatePayload_({...addedPayload,sections:[{id:'activity-diagrams',blocks:[{kind:'paragraph',text:'invalid',pageBreakBefore:true}]}]}),/page break/);
 console.log('Sync contract checks passed: 12 sections, safe missing-section plans, page breaks, uniform 11 pt, preserved emphasis, image units and local assets.');

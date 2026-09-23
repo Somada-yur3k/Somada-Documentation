@@ -1,25 +1,21 @@
 /* Deploy under your own Google account. Never make this web app public.
- * Final-term integration: pinned to the final-term document, never the original.
- * Deploy this file in a separate Apps Script project; local edits do not update /exec. */
-const TARGET_ID = '1UfFa6G0eWenSY_KjokZoOHqrQ2ajKGVgIwU56dkjpzY';
-const SYNC_BUILD = '2026-09-23-final-term-black-text';
+ * This integration is pinned to the NEW copy, never the original document. */
+const TARGET_ID = '11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM';
+const SYNC_BUILD = '2026-09-16-activity-swimlane-font11';
 const DOC_FONT_SIZE = 11;
 // Migration-only match for older copies; never used as the current project title.
 const OLD_TITLE = 'SOMADA: A Web-Based Laboratory Management System';
 const SECTION_ORDER = ['overview','methodology','requirements','backlog','events',
-  'usecase-diagrams','usecase-full','gap-analysis','system-analysis','context-diagram','dfd','erd','activity-diagrams','swimlane-diagram','sequence-diagrams','deployment-diagram','references'];
+  'usecase-diagrams','usecase-full','gap-analysis','context-diagram','dfd','erd','activity-diagrams','swimlane-diagram'];
 const SECTION_NAMES = {
-  overview:'project context', methodology:'methodology', requirements:'requirements analysis',
+  overview:'project overview', methodology:'methodology', requirements:'requirements analysis',
   backlog:'product backlog', events:'event tables', 'usecase-diagrams':'use case diagrams',
   'usecase-full':'use case full description', 'gap-analysis':'gap analysis',
   'context-diagram':'context diagram', dfd:'data flow diagrams', erd:'entity-relationship diagram',
-  'activity-diagrams':'activity diagrams', 'swimlane-diagram':'swimlane diagram',
-  'system-analysis':'system analysis and design', 'sequence-diagrams':'sequence diagram',
-  'deployment-diagram':'deployment diagram', references:'references'
+  'activity-diagrams':'activity diagrams', 'swimlane-diagram':'swimlane diagram'
 };
 // Only these new, explicitly selected sections may be created if absent.
-const NEW_SECTIONS = {'activity-diagrams':'2.3.4 Activity Diagrams','swimlane-diagram':'2.3.5 Swimlane Diagram',
-  'sequence-diagrams':'2.3.6 Sequence Diagram','deployment-diagram':'2.3.7 Deployment Diagram'};
+const NEW_SECTIONS = {'activity-diagrams':'3.1.9 Activity Diagrams','swimlane-diagram':'3.1.10 Swimlane Diagram'};
 
 // Run once in the Apps Script editor, authorize, then copy the key from the execution log.
 function setupSync() {
@@ -29,12 +25,11 @@ function setupSync() {
   let key = props.getProperty('LAB_SYNC_KEY');
   if (!key) { key = Utilities.getUuid() + Utilities.getUuid(); props.setProperty('LAB_SYNC_KEY',key); }
   console.log('Target: ' + document.getUrl());
-  console.log('Sync build: ' + SYNC_BUILD);
   console.log('Sync key (keep private; paste only into your local sync dialog): ' + key);
 }
 
 function doGet() {
-  return page_('Final-term Google Docs connection', 'Build: ' + SYNC_BUILD + '. Target document: ' + TARGET_ID + '. After running setupSync and authorizing this deployment, return to Docs.html and use Update Google Docs. Supports 14 selectable sections, including Sequence and Deployment diagrams. References are preserved.', null);
+  return page_('Google Docs connection', 'This deployment targets your new document copy. After running setupSync and authorizing this deployment, return to Docs.html and use Update Google Docs.', null);
 }
 
 function doPost(event) {
@@ -107,7 +102,7 @@ function doPost(event) {
       mutationStarted = true;
       updateTitle_(paragraph, payload.title);
     }
-    phase = 'setting first-tab text to black, 11 pt';
+    phase = 'setting first-tab text to 11 pt';
     mutationStarted = true;
     normalizeFont_(writeTarget.getTabs()[0].asDocumentTab());
     phase = 'saving the target';
@@ -115,7 +110,7 @@ function doPost(event) {
     return page_('Google Doc updated',
       'Updated ' + (payload.title ? 'cover title' : '') + (payload.title && payload.sections.length ? ' and ' : '') +
       payload.sections.map(section=>SECTION_NAMES[section.id]).join(', ') +
-      '. First-tab body, header and footer text is now black, 11 pt. Bold and italic were preserved; text inside images is unchanged. Review page breaks and refresh the table of contents. Unselected content was preserved apart from font size and text color.', backupUrl);
+      '. First-tab body, header and footer text is now 11 pt. Bold and italic were preserved; text inside images is unchanged. Review page breaks and refresh the table of contents. Unselected content was preserved apart from font size.', backupUrl);
   } catch(error) {
     console.error('Sync failed while ' + phase + ': ' + String(error.stack || error));
     return page_(mutationStarted ? 'Update interrupted — check the backup' : 'Update not applied',
@@ -161,7 +156,7 @@ function validatePayload_(payload) {
   if (!payload.title && !payload.sections.length) throw new Error('Nothing selected.');
   const seen = {};
   payload.sections.forEach(section => {
-    if (!SECTION_NAMES[section.id] || ['requirements','system-analysis','references'].includes(section.id) || seen[section.id]) throw new Error('Invalid or duplicate section.');
+    if (!SECTION_NAMES[section.id] || section.id === 'requirements' || seen[section.id]) throw new Error('Invalid or duplicate section.');
     seen[section.id]=true;
     if (!Array.isArray(section.blocks) || !section.blocks.length || section.blocks.length>1500) throw new Error('Invalid section content.');
     section.blocks.forEach(block => {
@@ -196,7 +191,7 @@ function validatePayload_(payload) {
 
 function headingName_(text) {
   return String(text).replace(/\s+/g,' ').trim().toLowerCase()
-    .replace(/^(?:[ivx]+\.?|\d+(?:\.\d+)*\.?)\s+/,'').replace(/[–—]/g,'-');
+    .replace(/^(?:[ivx]+\.?|3\.1\.\d+)\s+/,'').replace(/[–—]/g,'-');
 }
 
 function planSections_(body,payload) {
@@ -208,10 +203,6 @@ function planSections_(body,payload) {
     const text=element.asParagraph().getText().replace(/\s+/g,' ').trim();
     if(text===OLD_TITLE || (payload.title && text===payload.title)) titles.push(i);
     let normalized=headingName_(text);
-    if(normalized==='project overview') normalized='project context';
-    if(normalized==='product backlog / user stories') normalized='product backlog';
-    if(normalized==='entity-relationship diagrams') normalized='entity-relationship diagram';
-    if(normalized==='sequence diagrams') normalized='sequence diagram';
     if(normalized==='activity diagram') normalized='activity diagrams';
     if(normalized==='swimlane diagrams') normalized='swimlane diagram';
     const match=Object.keys(SECTION_NAMES).find(key=>SECTION_NAMES[key]===normalized);
@@ -220,7 +211,7 @@ function planSections_(body,payload) {
   if(payload.title && titles.length!==1) throw new Error('Expected exactly one cover title in the first tab. No change was made.');
   if(payload.sections.some(section=>section.id==='erd'||NEW_SECTIONS[section.id])) {
     let previous=-1;
-    ['erd','activity-diagrams','swimlane-diagram','sequence-diagrams','deployment-diagram','references'].forEach(id=>{
+    ['erd','activity-diagrams','swimlane-diagram'].forEach(id=>{
       if(!indexes[id]) return;
       if(indexes[id].length!==1) throw new Error('Cannot uniquely locate '+SECTION_NAMES[id]+'.');
       if(indexes[id][0]<=previous) throw new Error('Unexpected new diagram section order.');
@@ -281,13 +272,9 @@ function updateTitle_(paragraph,title) {
 }
 
 function normalizeFont_(tab) {
-  // Normalize all text, including tables and links; preserve wording and emphasis.
+  // One font-size operation per text container; no setText, so emphasis survives.
   [tab.getBody(),tab.getHeader(),tab.getFooter()].forEach(section=>{
-    if(section && section.getText()) {
-      const text = section.editAsText();
-      text.setFontSize(DOC_FONT_SIZE);
-      text.setForegroundColor('#000000');
-    }
+    if(section && section.getText()) section.editAsText().setFontSize(DOC_FONT_SIZE);
   });
 }
 

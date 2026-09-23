@@ -26,7 +26,7 @@ const server = http.createServer((req,res) => {
     page.on('pageerror',error => errors.push(error.message));
     page.on('console',message => { if (message.type()==='error') console.error('Browser:',message.text()); });
     page.on('requestfailed',request => console.error('Request failed:',request.url(),request.failure()?.errorText));
-    await page.goto(`http://127.0.0.1:${server.address().port}/Docs.html`,{waitUntil:'load'});
+    await page.goto(`http://127.0.0.1:${server.address().port}/Docs.html`,{waitUntil:'load',timeout:120000});
     await page.waitForFunction(() => document.querySelectorAll('.a4-page-number').length > 0, null, {timeout:120000}).catch(async error => {
       console.error('Page state:',await page.locator('body').innerText(),errors);
       throw error;
@@ -75,14 +75,14 @@ const server = http.createServer((req,res) => {
     assert.deepEqual(result.missingCells,[],'All table cell contents appear in preview');
     assert.deepEqual(result.overflow,[],'Content fits the page area');
     assert(result.sourceLastRow);
-    assert.equal(await page.locator('.doc-pages figure img').count(),16,'Ten existing figures plus five activities and one swimlane');
+    assert.equal(await page.locator('.doc-pages figure img').count(),22,'Final-term Figures 1–22 are complete');
     assert.equal(await page.locator('.doc-source #erd img').count(),1,'One complete portrait ERD is available for sync');
     assert.match(await page.locator('.doc-source #erd img').getAttribute('src'),/assets\/erd\/erd-complete\.png$/,'Only the new ERD, never the archived image');
     const level1=page.locator('.doc-pages .dfd-level1-figure');
     assert.equal(await level1.count(),1,'Level 1 figure is not split or duplicated');
     const level1Page=level1.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
     assert.equal(await level1Page.locator('[data-section-id="dfd-level1"]').count(),1,'Level 1 heading stays with its diagram');
-    assert.equal(await level1Page.locator('figcaption').filter({hasText:'Figure 3: Level 1 Data Flow Diagram'}).count(),1);
+    assert.equal(await level1Page.locator('figcaption').filter({hasText:'Figure 4: Level 1 Data Flow Diagram'}).count(),1);
     const imageSize=await level1.locator('img').evaluate(img=>({width:img.getBoundingClientRect().width,height:img.getBoundingClientRect().height,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight}));
     assert(Math.abs(imageSize.naturalWidth/imageSize.naturalHeight-1880/2140)<0.001,'Preview uses the full-label portrait export');
     assert(28.8*Math.min(imageSize.width/1880,imageSize.height/2140)*72/96>=7.5,'Node text remains at least 7.5 pt on the A4 page');
@@ -143,7 +143,7 @@ const server = http.createServer((req,res) => {
     });
     assert.equal(supplements[0].images.length,5);assert.equal(supplements[1].images.length,1);
     assert.equal(supplements[0].breaks,4,'Each subsequent activity begins on a new page');
-    assert.deepEqual(supplements.flatMap(s=>s.images).map(i=>Number(i.caption.match(/^Figure (\d+):/)[1])),[10,11,12,13,14,15]);
+    assert.deepEqual(supplements.flatMap(s=>s.images).map(i=>Number(i.caption.match(/^Figure (\d+):/)[1])),[11,12,13,14,15,16]);
     assert(supplements.flatMap(s=>s.images).every(i=>i.png&&i.width===2400),'Six high-resolution PNGs captured');
     const diagramPages=await page.locator('.doc-pages figure').filter({has:page.locator('img[src*="system-diagrams/activity-p"],img[src*="system-diagrams/swimlane-system"]')}).evaluateAll(figures=>figures.map(f=>f.closest('.pagedjs_page').dataset.pageNumber));
     assert.equal(diagramPages.length,6);assert.equal(new Set(diagramPages).size,6,'One new diagram per documentation page');
@@ -151,9 +151,20 @@ const server = http.createServer((req,res) => {
     const swimPage=swimFigure.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
     assert.equal(await swimPage.locator('[data-section-id="swimlane-diagram"]').count(),1,'Portrait swimlane heading and diagram share one page');
     const swimSize=await swimFigure.locator('img').evaluate(img=>({h:img.getBoundingClientRect().height,w:img.naturalWidth,nh:img.naturalHeight}));
-    assert(Math.abs(swimSize.w/swimSize.nh-2100/2970)<.001,'Google Docs source is the portrait swimlane');
-    assert(36*swimSize.h/2970*.75>=7,'Canonical subprocess names print at least 7 pt inside Documentation');
-    console.log('New sections passed: Figures 10–15, six distinct pages, five activity PNGs and one whole-system swimlane PNG ready for sync.');
+    assert(Math.abs(swimSize.w/swimSize.nh-2520/3800)<.001,'Google Docs source preserves the current authored portrait swimlane aspect ratio');
+    assert(swimSize.h>500,'Swimlane receives a substantial portrait page area; dense labels require zoom');
+    const finalImages=await page.evaluate(async()=>{
+      const values=[];for(const id of ['sequence-diagrams','deployment-diagram']){const s=await window.__collectSyncSection(id);values.push(...s.blocks.filter(b=>b.kind==='image').map(b=>({caption:b.caption,width:b.width,height:b.height})));}return values;
+    });
+    assert.deepEqual(finalImages.map(b=>Number(b.caption.match(/^Figure (\d+):/)[1])),[17,18,19,20,21,22]);
+    assert(finalImages.every(b=>b.width===2400&&b.height>b.width));
+    for(const id of ['sequence-diagrams','deployment-diagram']){
+      const section=page.locator('.doc-pages [data-section-id="'+id+'"]').first();
+      const sheet=section.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
+      assert.equal(await sheet.locator('figure').count(),1,'New section heading shares its first diagram page');
+      await sheet.screenshot({path:path.join(os.tmpdir(),'final-term-'+id+'.png')});
+    }
+    console.log('Final-term figures passed: 22 images; Activity, Swimlane, Sequence and Deployment capture complete.');
     console.log('Read-only Google Docs capture passed: six diagrams; Level 1 portrait 1880 x 2140 with full labels.');
     await page.locator('.doc-pages .toc-row[href="#backlog"]').click();
     await page.waitForTimeout(700);

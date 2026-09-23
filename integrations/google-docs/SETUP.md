@@ -1,6 +1,20 @@
-# Connect the new Google Doc copy
+# Connect the final-term Google Doc
 
-Target: https://docs.google.com/document/d/11Q2UAiRIxcR_Pc5mb4ieqBvsA-t9Stb759jTH2tizEM/edit
+Target: https://docs.google.com/document/d/1UfFa6G0eWenSY_KjokZoOHqrQ2ajKGVgIwU56dkjpzY/edit
+
+## Final-term migration — build `2026-09-23-final-term`
+
+Create a **separate Apps Script project/deployment** for this final-term target. Do not replace the previous document's deployment. The previous integration source is archived in `legacy/Code.gs` and `legacy/google-doc-sync.js`; it is not loaded by the current website.
+
+The final-term client stores its deployment URL/key in a separate browser storage namespace. Configure the new connection once. Never paste the key into chat or commit it. The active script rejects the old document ID.
+
+There are 14 selectable sections. Project Context includes Statement of the Problem, Main/Specific Objectives, Scope and Limitations, replacing their old content together. Sequence (five images) and Deployment (one image) are added after Swimlane. The hierarchy uses 2.1, 2.2 and 2.3; figure captions run 1–22, starting with Scrum. Sync all figure-bearing sections during migration to avoid mixed old/new caption numbering. Send several small batches if the payload exceeds 25 MB.
+
+Requirements Analysis, System Analysis and Design, and References are protected boundary headings, not selectable replacement sections. References must be present and are never replaced by diagram sync. The bibliography copied into the local preview is unchanged from the supplied Google Doc; bibliographic accuracy has not been independently verified. Existing reference text in Google Docs remains authoritative and untouched.
+
+Use the latest `Code.gs`; after deployment, sync Project Context first and review it, then Methodology, requirements tables/use cases, and diagrams in batches. Review the backup link and update Google Docs' table of contents afterward. No live update is performed by editing these local files.
+
+Run `check-final-term.cjs`, `check-sync.cjs`, `check-lifecycle.cjs`, `check-connection.cjs` and `check-pages.cjs` locally. The first three are offline contracts; they are not proof of a live Apps Script deployment.
 
 The older document is never targeted. The integration is prepared locally; it cannot write to Google until you deploy and authorize your own Apps Script project.
 
@@ -14,7 +28,7 @@ The older document is never targeted. The integration is prepared locally; it ca
 6. Choose **Deploy → New deployment → Web app**. Set **Execute as: Me** and **Who has access: Only myself**. Do not deploy with anonymous/public access.
 7. Copy the deployed URL ending in `/exec`, and open it once in the same browser to complete any Google sign-in prompts. It should show the target connection page. If your organization prevents this deployment, the administrator must allow it; making the document publicly editable is not a substitute.
 8. Open local **Docs.html** through your IDE's Live Server or another localhost HTTP server. Images cannot be collected from `file://` mode.
-9. Click **Update Google Docs**, paste the deployment URL and sync key, and select the content to update. The default selection is the revised cover title and Project Overview.
+9. Click **Update Google Docs**, paste the final-term deployment URL and sync key, and select the content to update. The default selection is the cover title and Project Context.
 10. Click **Update selected content**. Allow the result window to open. Google displays success or an error there. The local page only reports that the update was sent.
 
 The endpoint is remembered in this browser. To avoid pasting the key after each reload, enter it once, check **Remember sync key on this browser**, and click **Save connection** (this does not update Google Docs). This is opt-in: keys are never shipped in website code or GitHub. The saved key is bound to its exact deployment URL; editing that URL clears the key field. **Forget saved key** removes it locally, but does not revoke the server credential.
