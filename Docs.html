@@ -2020,10 +2020,10 @@ function BacklogSection() {
     { key:"role", label:"As a", width:"120px" },
     { key:"want", label:"I want to be able to" },
     { key:"soThat", label:"So that" },
-    { key:"acceptanceCriteria", label:"Acceptance Criteria" },
     { key:"priority", label:"Priority", width:"84px", render:(v) => <PriorityBadge priority={v} /> },
     { key:"sprint", label:"Sprint", width:"60px" },
     { key:"status", label:"Status", width:"116px", render:(v) => <StatusPill status={v} /> },
+    { key:"acceptanceCriteria", label:"Acceptance Criteria" },
   ];
   return (
     <section id="backlog" className="doc-section sub">
