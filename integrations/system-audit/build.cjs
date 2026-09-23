@@ -21,7 +21,7 @@ const mapping={
  clearstatus:{steps:['p5.3'],backlog:['08'],exchange:[['out','Clearance Status','p5.3']]},
  approve:{steps:['p2.3'],backlog:['06','07'],exchange:[['in','Approval Decision','p2.3'],['out','Routed Approval Request','p2.3']]},
  askq:{steps:['p3.1','p3.2','p3.3','p3.4'],backlog:['09'],exchange:[['in','Inquiry','p3.1'],['out','Answer','p3.3']]},
- mgminv:{steps:['p4.1'],backlog:['10'],exchange:[['in','Inventory Update','p4.1']]},
+ mgminv:{steps:['p4.1','p4.6','p4.7','p4.8'],backlog:['10','10F'],exchange:[['in','Inventory Update','p4.1']],note:'Head-only optional Inventory Forecasting reads existing stock and actual usage. Dynamic advisory output; no stock/purchase write. Missing history suppresses estimates.'},
  issueeq:{steps:['p4.2','p4.3'],backlog:['11'],exchange:[['in','Equipment Transaction','p4.3']]},
  procret:{steps:['p4.4'],backlog:['11','12'],exchange:[['in','Equipment Transaction','p4.4']]},
  procclear:{steps:['p5.3'],backlog:['13'],exchange:[['in','Clearance Action','p5.3']]},
@@ -119,7 +119,7 @@ async function build(){
  groups.forEach(g=>{g.available=g.id==='erd'?fs.existsSync(path.join(root,'assets/erd/erd.pdf')):g.status!=='pending';if(g.id==='erd')g.href='ERD.html';});
  const sources=sourcePaths.map(p=>({path:p,sha256:crypto.createHash('sha256').update(read(p).replace(/\r\n/g,'\n')).digest('hex')}));
  return{version:1,generatedAt:new Date().toISOString(),title:data.meta.title,sources,groups,features,checks,findings,
-  counts:{actors:uc.ACTORS.length,mainUseCases:uc.BASE_UC.length,supportingUseCases:uc.SUPPORT_UC.length,associations:uc.ACTORS.reduce((n,a)=>n+a.uses.length,0),dependencies:uc.RELATIONSHIPS.length,backlog:data.backlog.length,events:data.events.length,l0:context.flows.length,l1:l1.flows.length,stores:l1.stores.length,parents:l1.processes.length,children:l2.reduce((n,p)=>n+p.steps.length,0),l2:l2.reduce((n,p)=>n+p.flows.length,0)},
+  counts:{actors:uc.ACTORS.length,mainUseCases:uc.BASE_UC.filter(u=>!u.diagramHidden).length,accessSpecifications:uc.BASE_UC.filter(u=>u.diagramHidden).length,supportingUseCases:uc.SUPPORT_UC.length,associations:uc.ACTORS.reduce((n,a)=>n+a.uses.filter(id=>!uc.BASE_UC.find(u=>u.id===id)?.diagramHidden).length,0),dependencies:uc.RELATIONSHIPS.length,backlog:data.backlog.length,events:data.events.length,l0:context.flows.length,l1:l1.flows.length,stores:l1.stores.length,parents:l1.processes.length,children:l2.reduce((n,p)=>n+p.steps.length,0),l2:l2.reduce((n,p)=>n+p.flows.length,0)},
   backlog:data.backlog.map(b=>({id:b.id,status:b.status,features:features.filter(f=>f.backlog.includes(b.id)).map(f=>f.name),note:b.id==='16'?'Presentation-only dashboard: supported by inventory/reservation/log data; no standalone use case or DFD arrow, as requested.':''})),
   stores:l1.stores.map(s=>({...s,readers:l1.flows.filter(f=>f.source===s.id).map(f=>f.target),writers:l1.flows.filter(f=>f.target===s.id).map(f=>f.source),schemaStatus:'Logical draft — review pending'}))};
 }

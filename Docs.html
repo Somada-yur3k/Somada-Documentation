@@ -392,8 +392,9 @@
       { id:"06", role:"Faculty", want:`review and approve or reject a routed on-schedule non-laboratory or out-of-schedule request from my assigned Class Representative`, soThat:`my approval finalizes on-schedule requests but keeps out-of-schedule requests Pending for Dean; my rejection stops the route`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"07", role:"Dean", want:`approve or reject an out-of-schedule Faculty request or a Faculty-approved out-of-schedule Class Representative request`, soThat:`the final required academic decision is recorded before laboratory processing`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"08", role:"Class Representative / Faculty", want:`view the status and history of my reservations and, when I am the Class Representative, the clearance status raised against a student in my group`, soThat:`I know where a request stands and the Class Representative can see what the student group is accountable for without visiting the laboratory`, priority:"Must", sprint:2, status:"Not Started" },
-      { id:"09", role:"Class Representative / Faculty", want:`ask the Q&A chatbot a question about item availability, schedule availability, operating hours or my reservation status`, soThat:`I can get an answer grounded in the laboratory's own records without waiting for a reply`, priority:"Should", sprint:4, status:"Not Started" },
+      { id:"09", role:"Class Representative / Faculty", want:`ask the Q&A chatbot about approved Circuits / Physics laboratory information, equipment information / availability, or operating hours`, soThat:`I can get verified guidance and current inventory information without waiting for a reply; future schedule selection and status tracking remain in their own pages`, priority:"Should", sprint:4, status:"Not Started" },
       { id:"10", role:"Head Laboratory / Laboratory Staff", want:`add, edit, or remove equipment records for my assigned laboratory`, soThat:`I can accurately manage and categorize what is currently in the storage room`, priority:"Must", sprint:1, status:"Not Started" },
+      { id:"10F", role:"Head Laboratory", want:`generate and review next-month inventory forecasts from existing stock and actual usage history`, soThat:`I can assess consumable restocking and potential reusable-equipment shortages without automatic purchasing`, priority:"Should", sprint:4, status:"Not Started" },
       { id:"11", role:"Head Laboratory / Laboratory Staff", want:`issue equipment against an approved reservation and record its return`, soThat:`borrowing and stock levels stay accurate without re-encoding a paper slip`, priority:"Must", sprint:3, status:"Not Started" },
       { id:"12", role:"Head Laboratory / Laboratory Staff", want:`record issued and returned quantities separately, with equipment barred from being marked consumed`, soThat:`consumed counts reflect only what was genuinely used up, and unreturned equipment is correctly recorded as broken or lost`, priority:"Must", sprint:3, status:"Not Started" },
       { id:"13", role:"Head Laboratory", want:`review a broken or missing item reported during return processing, raise a clearance against the accountable student, and close it on settlement`, soThat:`I can control accountability and clear the responsible person before the end of the term`, priority:"Must", sprint:3, status:"Not Started" },
@@ -535,7 +536,7 @@
         "trigger": "Requester submits a question from within their account",
         "source": "Class Representative, Faculty",
         "useCase": "Ask Laboratory Question",
-        "response": "Answer composed from the laboratory's own records on item, schedule, or reservation status, or operating hours",
+        "response": "Verified Circuits / Physics laboratory information, equipment information / current availability, or operating hours; state unavailable when evidence is missing; no reservation or stock hold",
         "destination": "Requester",
         "diagramId": "askq"
       },
@@ -574,6 +575,15 @@
         "response": "Disposal entry created; hazardous items flagged for separate collection",
         "destination": "Waste Disposal Records",
         "diagramId": "wastedisp"
+      },
+      {
+        "event": "Head Laboratory requests an inventory forecast",
+        "trigger": "Head Lab selects a laboratory and Generate Inventory Forecast for next month",
+        "source": "Head Laboratory",
+        "useCase": "Manage Equipment Inventory",
+        "response": "Dynamic consumption or equipment-demand estimates with advisory restock/shortage and evidence period; Insufficient history when required evidence is missing; no stock or purchase write",
+        "destination": "Head Laboratory — Inventory Forecast view",
+        "diagramId": "mgminv"
       },
       {
         "event": "Laboratory staff maintain the equipment catalogue",
@@ -1111,16 +1121,13 @@
         "table": 14,
         "title": "Ask Laboratory Question",
         "useCaseName": "Ask Laboratory Question",
-        "scenario": "A Class Representative or Faculty member needs a quick answer without waiting for a reply.",
+        "scenario": "A signed-in Class Representative or Faculty member needs laboratory guidance or current equipment information.",
         "triggeringEvent": "The requester submits a question from within their account.",
-        "briefDescription": "The authenticated Q&A chatbot answers questions about item availability, schedule availability, operating hours, and the requester's own reservation status. Access is limited to Class Representatives and Faculty, identified by their signed-in session. It is informational only: it never creates, modifies, approves, or rejects a reservation. Each requester's conversation history is isolated from every other requester's. If the answer is not grounded in authorized laboratory data, the chatbot states that the information is unavailable rather than inventing an answer.",
+        "briefDescription": "The authenticated Q&A chatbot answers approved Circuits / Physics laboratory information, equipment information / availability, and laboratory operating hours. Laboratory answers explain the selected laboratory’s location, purpose, services, rules and approved contact information, never private account data. Equipment answers explain purpose, typical laboratory use and approved basic handling / safety guidance; current availability comes from inventory records and is not a reservation or stock hold. Date/time-specific availability is validated in the reservation form. Schedule-block selection, reservation tracking and clearance status remain in their existing pages, not chatbot answer categories.",
         "actors": "Class Representative, Faculty",
         "related": [
-          "View Reservation Status",
-          "View Schedule & Availability",
-          "Check Item Availability",
-          "Check Schedule Availability",
-          "Check Reservation Status",
+          "Ask Circuits / Physics Laboratory Information",
+          "Ask Equipment Information / Availability",
           "Check Operating Hours"
         ],
         "stakeholders": [
@@ -1136,48 +1143,43 @@
           "An answer grounded on laboratory records is returned. The exchange is written to the requester's own conversation log, isolated from other requesters. No reservation or borrowing record is created or changed."
         ],
         "flowActor": [
-          "Requester opens Q&A from within their account.",
-          "Requester submits a question.",
-          "Requester reads the answer returned."
+          "Requester opens the chatbot from their authorized dashboard.",
+          "Requester asks about Circuits / Physics laboratory information, equipment information / availability, or operating hours.",
+          "Requester reads the answer and uses the reservation or records page when a transaction or status lookup is needed."
         ],
         "flowSystem": [
-          "System interprets the question and retrieves the relevant laboratory records, scoped to the signed-in requester where the question concerns their own reservation.",
-          "System composes an answer grounded on those records.",
-          "System writes the exchange to the requester's own conversation log."
+          "System checks the authenticated role and classifies the permitted question intent.",
+          "System retrieves approved laboratory knowledge for Circuits / Physics laboratory information, equipment purpose / guidance and operating hours; current equipment availability is read from inventory.",
+          "System returns an evidence-grounded answer. Availability is informational only and does not hold stock or guarantee availability for a future session.",
+          "System records the exchange in the requester-scoped conversation history."
         ],
         "exceptions": [
-          "If the question asks the system to create, modify, approve, or reject a reservation, the assistant declines and directs the requester to the request action permitted for their role.",
-          "If no matching record exists, the assistant states that the information is not held rather than composing an answer."
+          "If approved information or inventory evidence is unavailable, state unavailable; do not invent contacts, equipment guidance, quantities or safety instructions.",
+          "For schedule blocks, direct the requester to the reservation form. For reservation tracking or clearance, direct them to their authorized records navigation without performing the lookup in chat.",
+          "Decline requests to create, modify, approve or reject reservations, purchase items, change inventory or expose private account/student information."
         ],
         "diagramId": "askq",
         "dependencies": [
           {
+            "diagramId": "headinfo",
+            "name": "Ask Circuits / Physics Laboratory Information",
+            "type": "extend",
+            "condition": "The question concerns approved Circuits / Physics laboratory information.",
+            "behavior": "Read the selected Circuits or Physics laboratory’s verified location, purpose, services, rules and approved contact information from laboratory knowledge; ask which laboratory when unclear, and state unavailable if not recorded."
+          },
+          {
             "diagramId": "checkitem",
-            "name": "Check Item Availability",
+            "name": "Ask Equipment Information / Availability",
             "type": "extend",
-            "condition": "The authenticated question asks about item availability.",
-            "behavior": "Retrieve authorized inventory availability and supply it to the grounded answer."
-          },
-          {
-            "diagramId": "checksched",
-            "name": "Check Schedule Availability",
-            "type": "extend",
-            "condition": "The authenticated question asks about schedule availability.",
-            "behavior": "Retrieve the selected laboratory’s authorized schedule and vacant blocks."
-          },
-          {
-            "diagramId": "checkstatus",
-            "name": "Check Reservation Status",
-            "type": "extend",
-            "condition": "The authenticated question asks about the requester’s own reservation status.",
-            "behavior": "Retrieve only reservations belonging to the signed-in requester."
+            "condition": "The question concerns equipment purpose, use, basic guidance or current availability.",
+            "behavior": "Read approved equipment guidance and current inventory evidence. No reservation or stock hold is created; future date/time availability is checked in the reservation form."
           },
           {
             "diagramId": "checkhours",
             "name": "Check Operating Hours",
             "type": "extend",
-            "condition": "The authenticated question asks about laboratory operating hours.",
-            "behavior": "Retrieve the maintained operating-hours knowledge; state when the information is unavailable."
+            "condition": "The question concerns laboratory operating hours.",
+            "behavior": "Read approved laboratory hours; state unavailable when evidence is missing."
           }
         ]
       },
@@ -1231,7 +1233,7 @@
         "useCaseName": "Manage Equipment Inventory",
         "scenario": "Laboratory staff maintain the catalogue of laboratory holdings.",
         "triggeringEvent": "Head Laboratory or assigned Laboratory Staff open Inventory Management to add, edit, remove, or search a holding.",
-        "briefDescription": "Head Laboratory sees and manages holdings across both laboratories, while Physics Laboratory Staff and Circuits Laboratory Staff each manage only their own laboratory's catalogue. Each holding is recorded by name together with its description, category, unit of measure, quantity, condition status, reorder level, and an optional photograph, with quantities tracked as existing, available, in use, and reserved. Equipment cannot be recorded as consumed; consumables are depletable. A low stock flag is raised when a quantity falls below its reorder level.",
+        "briefDescription": "Head Laboratory sees and manages holdings across both laboratories, while Physics Laboratory Staff and Circuits Laboratory Staff each manage only their own laboratory's catalogue. Each holding is recorded by name together with its description, category, unit of measure, quantity, condition status, reorder level, and an optional photograph, with quantities tracked as existing, available, in use, and reserved. Equipment cannot be recorded as consumed; consumables are depletable. A low stock flag is raised when a quantity falls below its reorder level. Head Lab may additionally generate a next-month inventory forecast from recorded stock, actual consumption and borrowing/return history. Consumables use estimated consumption; reusable equipment uses concurrent demand and serviceable quantities, not cumulative borrowing as consumption. Results are advisory and dynamically generated: no automatic purchase, stock change or stored Forecast table. Insufficient history produces an explicit unavailable estimate, never a fabricated zero.",
         "actors": "Head Laboratory, Physics Laboratory Staff, Circuits Laboratory Staff",
         "related": [
           "Add Equipment",
@@ -1240,7 +1242,8 @@
           "Search & Filter Inventory",
           "Issue Equipment",
           "Process Return",
-          "Log Waste Disposal"
+          "Log Waste Disposal",
+          "Generate Inventory Forecast"
         ],
         "stakeholders": [
           "Head Laboratory: needs stock levels visible across both laboratories.",
@@ -1252,7 +1255,8 @@
           "The item category and unit of measure are defined."
         ],
         "postconditions": [
-          "The holding is created, amended, or removed within the acting user's laboratory scope. Existing, available, in use, and reserved quantities are recomputed. A low stock flag is raised where a quantity falls below its reorder level."
+          "The holding is created, amended, or removed within the acting user's laboratory scope. Existing, available, in use, and reserved quantities are recomputed. A low stock flag is raised where a quantity falls below its reorder level.",
+          "Forecasting returns a read-only recommendation or Insufficient history; inventory and reservation records remain unchanged."
         ],
         "flowActor": [
           "User opens Inventory Management for their assigned laboratory.",
@@ -1268,7 +1272,8 @@
         ],
         "exceptions": [
           "If removal is attempted for an item with an outstanding issued quantity, the system refuses it.",
-          "If a Physics or Circuits Laboratory Staff account attempts to edit the other laboratory's catalogue, the system refuses access."
+          "If a Physics or Circuits Laboratory Staff account attempts to edit the other laboratory's catalogue, the system refuses access.",
+          "Only Head Laboratory may generate the forecast. Missing/incomplete history suppresses the affected estimate, while current stock and rule-based low-stock alerts remain visible."
         ],
         "diagramId": "mgminv",
         "dependencies": [
@@ -1299,6 +1304,13 @@
             "type": "include",
             "condition": "Required inventory-management subprocess in the documented decomposition.",
             "behavior": "Retrieve and filter holdings only within the acting user’s laboratory scope."
+          },
+          {
+            "diagramId": "forecast",
+            "name": "Generate Inventory Forecast",
+            "type": "extend",
+            "condition": "Head Laboratory selects Generate Inventory Forecast in Inventory Management.",
+            "behavior": "Retrieve D4 stock, D5 actual issue/return history and D2 item references; validate history; estimate next-month consumption or concurrent equipment needs; display current stock, estimated demand, suggested consumable restock or equipment shortage, explanation, history period and generation date. Head reviews the recommendation. Missing history shows Insufficient history. No purchasing or inventory mutation."
           }
         ]
       },
@@ -1589,7 +1601,7 @@
       { id:"11", current:`Recurrence is written as free text in the remarks column of the request register, for example EVERY SATURDAY.`, proposed:`Whole-term versus one-time recurrence remains pending consultation: define per-session approval, cancellation, borrowing and completion rules before treating recurrence as a finalized feature.`, impact:`Makes the remaining lifecycle decision explicit rather than claiming recurrence is already fully specified.` },
       { id:"12", current:`The usage logs carry a quantity column and a consumed column with a type marker, but nothing prevents an equipment item from being marked consumed.`, proposed:`Record issued and returned quantities separately and bar equipment from being marked consumed.`, impact:`Consumed counts reflect genuine depletion only, and unreturned equipment is recorded as broken or lost.` },
       { id:"13", current:`The hazardous waste disposal worksheet exists as a prepared template in which no disposal has been recorded.`, proposed:`Provide a disposal log linked to the inventory, recording reason, quantity, unit, date and classification.`, impact:`Withdrawals from the laboratory become traceable and hazardous items become reportable.` },
-      { id:"14", current:`Consumable levels are known only from the last manual decrement, so a shortage surfaces when a scheduled session already requires the item.`, proposed:`Display current consumable quantities and flag stock below the configured reorder level; demand forecasting is outside the current AI scope.`, impact:`Staff can identify low stock from recorded quantities and configured thresholds without a predictive model.` },
+      { id:"14", current:`Consumable levels are known only from the last manual decrement, so a shortage surfaces when a scheduled session already requires the item.`, proposed:`Retain current-stock threshold alerts and add Head Lab next-month inventory forecasting from actual consumption and borrowing history. Show Insufficient history when evidence is inadequate.`, impact:`Head Lab can review suggested consumable restocking and potential reusable-equipment shortages; recommendations do not purchase items or change stock.` },
       { id:"15", current:`Item availability, operating hours and request status are answered by the laboratory head in person or by email during office hours.`, proposed:`Provide an authenticated Q&A chatbot for Class Representatives and Faculty, answering from authorized laboratory records on items, schedules, operating hours, and the requester’s own reservation status.`, impact:`Reduces repetitive workload and removes the office-hours constraint on routine inquiries.` },
       { id:"16", current:`Usage figures sit in formula blocks and are interpreted by the laboratory head.`, proposed:`Display recorded usage totals in dashboard tables and compile end-term reports from laboratory logs; do not generate AI-written insights or report summaries.`, impact:`Recorded usage is easier for Head Laboratory to review; interpretation remains with the user.` },
     ],
@@ -1886,7 +1898,11 @@ function OverviewSection() {
         <p>The Physics and Circuits Laboratory of NU Fairview supports laboratory activities that require coordinated access to rooms, equipment, and consumable supplies. Its operations include maintaining inventory, scheduling laboratory use, processing equipment borrowing and returns, tracking student accountability, and preparing activity reports. Keeping these records accurate and accessible is essential to supporting laboratory sessions and managing available resources.</p>
         <p>The current process relies on handwritten request forms, borrower’s slips, and spreadsheet records maintained by the laboratory head. Reservations, inventory quantities, borrowing transactions, and clearance records are recorded separately, requiring repeated encoding and manual cross-checking. This arrangement makes it difficult to monitor available resources, identify scheduling conflicts, trace damaged or missing equipment, and provide timely updates to requesters.</p>
         <p>The proposed Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview brings these operations into one platform. It integrates inventory management, laboratory reservations and approvals, equipment issuance and returns, borrowing slip records, clearance tracking, daily task records, disposal logs, and end-of-term reporting. Access is assigned according to the responsibilities of Class Representatives, Faculty, the Dean, Head Laboratory, and Laboratory Staff, with staff access limited to their assigned laboratory.</p>
-        <p>The system’s current AI capability is limited to an authenticated laboratory question-and-answer chatbot for Class Representatives and Faculty. It answers questions about item availability, laboratory schedules, operating hours, and the requester’s own reservation status using authorized laboratory records. The chatbot is informational only: it does not submit, change, approve, or reject reservations. Demand forecasting, AI-written report summaries, and reservation recommendations are outside the current scope pending panel consultation. Regular dashboards, low-stock threshold flags, and end-term reports remain non-AI system functions.</p>
+        <p>The proposed system has two AI-related capabilities: an authenticated laboratory Q&amp;A chatbot for Class Representatives and Faculty, and Inventory Forecasting for Head Laboratory under Inventory Management. The chatbot answers approved Circuits / Physics laboratory information, equipment information / availability and operating hours from authorized records; it does not submit, change or approve reservations. Inventory Forecasting estimates next-month consumable needs and possible reusable-equipment shortages from existing stock and actual usage history. Forecasts are recommendations, not guaranteed outcomes or automatic purchasing decisions. Regular dashboards, threshold-based low-stock alerts and end-term reports remain non-AI functions; AI-written report summaries and AI reservation actions remain excluded.</p>
+        <h3>Inventory Forecasting — Head Laboratory</h3>
+        <p><strong>Process.</strong> Head Lab opens Inventory Management, selects Circuits or Physics, and requests the next-month forecast. The system retrieves D4 inventory, D5 issue/return history and D2 request/item references, then checks completeness and history coverage. Actual consumed quantities support consumable estimates; borrowing and return timing support concurrent reusable-equipment demand. Cancelled/rejected requests and merely requested quantities are not historical consumption. Returned reusable equipment is not consumed.</p>
+        <p><strong>Results.</strong> Display item, laboratory, current usable stock, forecast month, estimated consumption or concurrent demand, suggested consumable restock quantity or possible equipment shortage, a short explanation, history period, and generation date. Keep current low-stock alerts separate from predicted shortages. If the relevant history is insufficient or unreliable, show “Insufficient history” and the known stock/threshold alerts rather than a zero or invented estimate. Missing equipment timing must not be replaced by total monthly borrowing counts.</p>
+        <p><strong>Human review and limits.</strong> Head Lab reviews the recommendation against known upcoming activities and decides what to restock outside this workflow. Generating or refreshing a forecast never creates a purchase, changes stock, or approves a reservation. Forecast results are dynamic; no Forecast table is required. Consumption is aggregated from return outcomes once, not added again from inventory ledger entries. Initial usage-based estimates must be evaluated against actual subsequent usage; a historical-average baseline is not a trained AI model. The forecasting method, minimum reliable history and measured error must be validated before claiming production AI accuracy.</p>
         <p>Through these integrated functions, the proposed system aims to reduce repeated encoding, improve record consistency, make laboratory information more accessible, and support accountability in the use of laboratory resources.</p>
       </div>
     </section>
@@ -1966,7 +1982,7 @@ function UseCaseDiagramsSection({ onZoom }) {
       <SectionHeading level={3} kicker="3.1.3" title="Use Case Diagrams" id="usecase-diagrams" />
       <Figure src="assets/figures-v2/usecase-diagram-draft.png" caption="Figure 1: Use Case Diagram" onZoom={onZoom} editorHref="assets/figures-v2/usecase-diagram-source.html" />
       <div className="lede" style={{marginTop:18}}>
-        <p>Figure 1 presents the use case diagram under the revised system model. Six large actors — Class Representative, Faculty, Dean, Head Laboratory, Physics Laboratory Staff, and Circuits Laboratory Staff — frame the system boundary. Submission is separated into two visible goals: Faculty alone connects to Submit Scheduled Laboratory Activity, while Class Representative and Faculty connect to Submit On-Schedule Non-Laboratory / Out-of-Schedule Request. The combined ellipse states its two alternative flows directly: a Class Representative's on-schedule non-laboratory request requires assigned-Faculty approval, while an out-of-schedule Class Representative request normally requires available Faculty approval followed by Dean approval and may go directly to Dean only when that Faculty is unavailable; a Faculty out-of-schedule request goes directly to Dean. The Dean has associations only with Log In and Approve / Reject Routed Request because the role does not choose a laboratory, submit a request, or track a personal reservation. View Clearance Status is associated only with the Class Representative, while Process Clearance is associated only with Head Laboratory; Laboratory Staff record broken or lost return outcomes but cannot raise or settle a clearance. Inside the boundary, requester and approval processes occupy the left column, relationship-supporting use cases form the center column, and laboratory operations occupy the right column. Both submission use cases &lt;&lt;include&gt;&gt; Select Resources / Equipment because resource selection is a required step whenever a request is completed. Manage Equipment Inventory also &lt;&lt;include&gt;&gt; Add Equipment, Update Equipment, Remove Equipment, and Search &amp; Filter Inventory because these are required inventory-management subprocesses within each authorised laboratory scope. The &lt;&lt;extend&gt;&gt; relationships remain limited to conditional return outcomes and the detected category of an authenticated laboratory question. Manage Logs, Schedule & Daily Tasks is associated only with Head Laboratory; Physics and Circuits Laboratory Staff retain their inventory, issuance, return, and disposal responsibilities but cannot manage logs, schedules, or daily tasks. Marking a clearance as cleared or replaced remains inside Process Clearance rather than being duplicated as another ellipse.</p>
+<p>Figure 1 presents six actors around a compact three-column system boundary. Log In appears above Generate Inventory Forecast and connects to all six actors as shared system access. The Dean also participates in Approve / Reject Routed Request. The left column contains requester and approval goals, the center contains supporting use cases, and the right contains laboratory operations. Ask Laboratory Question has three conditional extensions: Ask Circuits / Physics Laboratory Information, Ask Equipment Information / Availability, and Check Operating Hours. These provide verified guidance or current inventory information, never a reservation or stock hold. Schedule blocks remain in the reservation form; reservation tracking and Class Representative clearance remain in their own pages. Generate Inventory Forecast remains an optional Head Lab extension of Manage Equipment Inventory. Existing submission, inventory, return and clearance responsibilities are preserved. The smaller uniform ellipses and actors provide more room for distinct associations and labelled dependencies.</p>
       </div>
     </section>
   );
@@ -2027,6 +2043,7 @@ function UseCaseFullSection() {
   return (
     <section id="usecase-full" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.4" title="Use Case Full Description" id="usecase-full" />
+      <p>Log In is shown as shared system access for all six actors. Authentication remains a precondition for protected functions; its full specification and existing table numbers are preserved.</p>
       <div className="lede">
         <p>Tables 3 to 22 correspond one-to-one with the twenty main use cases in Figure 1. Table 6 describes Faculty’s Submit Scheduled Laboratory Activity; Table 7 describes Submit On-Schedule Non-Laboratory / Out-of-Schedule Request, retaining its two alternative flows. The eleven supporting use cases are documented as included or extending behavior in their parent tables, covering all twelve diagram dependencies. Select Reservation Type is mandatory for Class Representatives in both schedule variants; its conditional extension of the shared request use case preserves the Faculty variant. Dashboard screens remain interface views, not standalone use cases or business events. Actor permissions and event names use the same diagram mapping.</p>
         <p><a href="Reservation-Form.html">Open the On-Schedule / Out-of-Schedule reservation form preview</a>. Schedule Type determines the approval route; Reservation Type identifies Group or Student Only. Student Only requires one selected student from the assigned class. The Class Rep submits on that student's behalf; no additional student login is created.</p>
@@ -2079,11 +2096,11 @@ function EmbeddedDiagram({ src, caption, editorHref, aspectRatio = "4500 / 4100"
 
 function DfdSection({ onZoom }) {
   const level2Figures = [
-    { id:"p1", number:"4", title:"Process 1.0 — Manage User Access & Accounts" },
-    { id:"p2", number:"5", title:"Process 2.0 — Manage Reservations, Availability & Approvals" },
-    { id:"p3", number:"6", title:"Process 3.0 — Answer Laboratory Questions" },
-    { id:"p4", number:"7", title:"Process 4.0 — Manage Equipment & Borrowing" },
-    { id:"p5", number:"8", title:"Process 5.0 — Manage Laboratory Administration & Reporting" },
+    { id:"p1", number:"4", title:"Manage User Access & Accounts" },
+    { id:"p2", number:"5", title:"Manage Reservations, Availability & Approvals" },
+    { id:"p3", number:"6", title:"Answer Laboratory Questions" },
+    { id:"p4", number:"7", title:"Manage Equipment & Borrowing" },
+    { id:"p5", number:"8", title:"Manage Laboratory Administration & Reporting" },
   ];
   return (
     <section id="dfd" className="doc-section sub">
@@ -2093,7 +2110,7 @@ function DfdSection({ onZoom }) {
         <SectionHeading level={4} title="Level 1" id="dfd-level1" />
         <EmbeddedDiagram src="assets/figures-v2/dfd-level1/dfd-level1-source.html" caption="Figure 3: Level 1 Data Flow Diagram" editorHref="assets/figures-v2/dfd-level1/dfd-level1-source.html" aspectRatio="1770 / 2220" className="dfd-level1-figure" />
         <div className="lede" style={{marginTop:18}}>
-          <p>Figure 3 is the formal detailed reference: it decomposes the system into five primary processes and ten canonical data stores, retaining the individual boundary flows. Process 1.0 manages user access and controlled account issuance. Process 2.0 manages reservations, availability, approvals, status, and history. Process 3.0 answers authenticated laboratory questions. Process 4.0 manages inventory, equipment issuance and return, Borrowing Slip Records, and disposal. Process 5.0 manages schedules, session usage, Head-Laboratory-controlled daily tasks and clearance, and end-term reporting. Only Head Laboratory sends Schedule Update, Usage Entry, Daily Task Entry, and Clearance Action. Laboratory Staff contribute inventory, issuance/return, and disposal records within their assigned laboratory. The 72 independent flows comprise 46 external exchanges and 26 store exchanges. Dashboard presentation arrows are omitted without removing the dashboard feature. Head Laboratory appears last in the entity column.</p>
+          <p>Figure 3 is the formal detailed reference: it decomposes the system into five primary processes and ten canonical data stores, retaining the individual boundary flows. Process 1.0 manages user access and controlled account issuance. Process 2.0 manages reservations, availability, approvals, status, and history. Process 3.0 answers authenticated laboratory questions. Process 4.0 manages inventory, equipment issuance and return, Borrowing Slip Records, disposal, and optional Head Lab inventory forecasting. Process 5.0 manages schedules, session usage, Head-Laboratory-controlled daily tasks and clearance, and end-term reporting. Only Head Laboratory sends Schedule Update, Usage Entry, Daily Task Entry, and Clearance Action. Laboratory Staff contribute inventory, issuance/return, and disposal records within their assigned laboratory. The 73 independent flows comprise 48 external exchanges and 25 store exchanges. Forecast Request and Inventory Forecast are Head Lab boundary exchanges; historical item references support dynamic forecasting. Dashboard presentation arrows are omitted without removing the dashboard feature. Head Laboratory appears last in the entity column.</p>
         </div>
       </section>
 
@@ -2131,7 +2148,7 @@ function ErdSection({ onZoom }) {
     <section id="erd" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.8" title="Entity-Relationship Diagram" id="erd" />
       <Figure src="assets/erd/erd-complete.png" caption="Figure 9: Entity–Relationship Diagram — Logical Draft" onZoom={onZoom} />
-      <div className="lede"><p><strong>Logical ERD draft — pending consultation and validation.</strong> One complete black-and-white A4 portrait diagram maps all ten canonical DFD stores to 25 entities and 51 primary-key/foreign-key relationships. Each table appears once. Crow’s Foot connectors attach to the key rows, while the data dictionary records optional relationships, uniqueness and workflow constraints.</p><p>Reservation revisions, partial-return history and inventory ledger entries are proposed design choices, not approved implementation facts. Recurrence, room-only completion, clearance completion, atomic stock holds and knowledge-base ownership still require consultation. The archived ERD remains excluded; forecasting entities and email approval tokens are outside the current scope.</p></div>
+      <div className="lede"><p><strong>Logical ERD draft — pending consultation and validation.</strong> One complete black-and-white A4 portrait diagram maps all ten canonical DFD stores to 25 entities and 51 primary-key/foreign-key relationships. Each table appears once. Crow’s Foot connectors attach to the key rows, while the data dictionary records optional relationships, uniqueness and workflow constraints.</p><p>Inventory Forecasting reads ITEM / inventory records, BORROWING, BORROWING_ITEM and RETURN_ENTRY, resolving each item through REQUEST_ITEM. Consumption uses RETURN_ENTRY.qty_consumed; reusable-equipment demand uses issue and partial-return timing, not summed borrow counts. Dynamic results require no new table, key or relationship. Forecast generation does not write inventory. Reservation revisions, recurrence, room-only completion, clearance completion, atomic stock holds and knowledge-base ownership retain their existing consultation status. The archived ERD and email approval tokens remain excluded.</p></div>
       <p><a className="figure-editor-link" href="ERD.html">Open complete ERD and data dictionary</a> <a className="figure-editor-link" href="assets/erd/erd.pdf">Download A4 portrait ERD draft</a></p>
       <p>RESERVATION.reservation_type records GROUP or STUDENT_ONLY and is required for every Class Representative reservation. Schedule Type remains separate in REQUEST_REVISION.request_basis / usage_type. One active representative account per section can link to multiple CLASS_GROUP subject/class records. The requester selects an authorized active class; its faculty_id determines the Faculty reviewer, not the Faculty who delivered the account credentials. The backend must enforce section representative uniqueness across active class assignments and validate the chosen class, term, section and schedule together. REQUEST_MEMBER retains members of the selected class or records the one selected student for Student Only. RESERVATION.requester_id identifies the submitting Class Rep separately from the participating students. Faculty requests retain their existing workflow.</p>
     </section>
@@ -2157,7 +2174,7 @@ function SwimlaneDiagramSection({ onZoom }) {
   return (
     <section id="swimlane-diagram" className="doc-section sub">
       <SectionHeading level={3} kicker="3.1.10" title="Swimlane Diagram" id="swimlane-diagram" />
-      <div className="lede"><p>Figure 15 summarizes major interactions across six actor lanes, including Dean. The Class Representative selects Reservation Type and the participating class students before submission; Group and Student Only paths converge at the bar labelled &#123;joinSpec = or&#125; before the existing schedule-based approval route. Only the selected type path is required, not both. After returns, Head Lab identifies the responsible student before creating clearance; its status is displayed in the Class Rep account, without a clearance application from the Class Rep. Alternative requester paths converge before joining assigned-staff preparation. Circuit and Physics assignments are alternatives. Each approver acts within their own lane. Detailed workflows remain in Figures 10–14.</p></div>
+      <div className="lede"><p>Figure 15 summarizes six actor lanes, including Dean. Head Lab optionally reviews inventory forecasts. Class Representatives select Group or Student Only; alternative routes use explicit OR joins. Head Lab identifies accountable students before creating clearance, which Class Representatives only view. Detailed workflows remain in Figures 10–14.</p></div>
       <Figure src="assets/system-diagrams/swimlane-system.png" caption="Figure 15: Whole-System Swimlane Diagram" onZoom={onZoom} editorHref="System-Diagrams.html#activity-system" />
     </section>
   );

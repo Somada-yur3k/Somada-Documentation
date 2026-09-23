@@ -15,74 +15,63 @@ function svg(title,id){const s=el('svg',{xmlns:NS,viewBox:`0 0 ${W} ${H}`,role:'
 }
 function path(s,points,id,{open=false,dashed=false,head=true}={}){return el('path',{d:points.map(([x,y],i)=>(i?'L':'M')+x+' '+y).join(' '),class:'line'+(dashed?' return':''),...(head?{'marker-end':`url(#${id}-${open?'open':'filled'})`}:{})},s);}
 function deployment(id){
- const v=svg('Deployment: candidate client devices and logical infrastructure',id);
- const palettes={
-  client:{edge:'#2168a1',face:'#edf6ff',cap:'#cce5fb'},
-  app:{edge:'#247558',face:'#effaf3',cap:'#ccebdc'},
-  records:{edge:'#7053a0',face:'#f5f0ff',cap:'#e1d5f6'},
-  email:{edge:'#9a661a',face:'#fff9eb',cap:'#f9e7bc'}
- };
- // Decorative vector icons retain sharp edges in the A4 PDF.
- function icon(kind,x,y,color){
-  const g=el('g',{transform:'translate('+x+' '+y+')',fill:'none',stroke:color,'stroke-width':2.6,'stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true','data-icon':kind},v);
-  const rect=(x,y,width,height,rx=2)=>el('rect',{x,y,width,height,rx},g);
-  const line=d=>el('path',{d},g);
-  if(kind==='desktop'){rect(2,2,36,24);line('M20 26 V35 M10 36 H30');}
-  if(kind==='laptop'){rect(5,3,30,23);line('M5 26 L0 33 H40 L35 26 M15 30 H25');}
-  if(kind==='phone'){rect(10,0,22,39,4);line('M17 5 H25 M19 34 H23');}
-  if(kind==='server'){[0,14,28].forEach(y=>{rect(1,y,39,10);line('M7 '+(y+5)+' H9 M15 '+(y+5)+' H33');});}
-  if(kind==='database'){el('ellipse',{cx:20,cy:6,rx:19,ry:6},g);line('M1 6 V32 C1 40 39 40 39 32 V6 M1 19 C1 27 39 27 39 19');}
-  if(kind==='mail'){rect(0,4,40,29,3);line('M1 6 L20 21 L39 6 M1 32 L13 21 M39 32 L27 21');}
+ const v=svg('Proposed deployment architecture',id);v.setAttribute('viewBox','0 0 1200 1697');
+ const box=(p,x,y,w,h)=>el('rect',{x,y,width:w,height:h,fill:'#fff',stroke:'#000','stroke-width':2},p);
+ function node(x,y,w,h,label,key){
+  const g=el('g',{'data-node':key},v);
+  el('path',{d:'M'+x+' '+y+' l14 -14 h'+w+' v'+h+' l-14 14 M'+(x+w)+' '+y+' l14 -14',fill:'#fff',stroke:'#000','stroke-width':2},g);
+  box(g,x,y,w,h);text(g,x+w/2,y+34,label,{font:key==='staff'?19:22,bold:true,max:key==='staff'?30:45});return g;
  }
- function node(x,y,w,h,title,kind,palette){
-  const p=palettes[palette],g=el('g',{'data-node':kind},v);
-  el('path',{d:'M'+x+' '+y+' l12 -12 h'+w+' l-12 12 Z',fill:p.cap,stroke:p.edge,'stroke-width':2},g);
-  el('path',{d:'M'+(x+w)+' '+y+' l12 -12 v'+h+' l-12 12 Z',fill:p.cap,stroke:p.edge,'stroke-width':2},g);
-  el('rect',{x,y,width:w,height:h,fill:p.face,stroke:p.edge,'stroke-width':2},g);
-  icon(kind,x+15,y+17,p.edge);
-  text(v,x+w/2+26,y+28,title,{font:20,bold:true,max:24});
-  return p;
+ function artifact(p,x,y,w,h){
+  el('path',{d:'M'+x+' '+y+' H'+(x+w-16)+' L'+(x+w)+' '+(y+16)+' V'+(y+h)+' H'+x+' Z M'+(x+w-16)+' '+y+' V'+(y+16)+' H'+(x+w),fill:'#fff',stroke:'#000','stroke-width':1.5},p);
  }
- function panel(x,y,w,h,color){el('rect',{x,y,width:w,height:h,rx:4,fill:'#ffffff',stroke:color,'stroke-width':1.3},v);}
- // Device types are alternatives, not a purchased inventory or one device per role.
- const clients=[{y:30,title:'Desktop computer',icon:'desktop'},{y:215,title:'Laptop computer',icon:'laptop'},{y:400,title:'Smartphone',icon:'phone'}];
- clients.forEach(c=>{
-  const p=node(20,c.y,280,158,'«device»\n'+c.title,c.icon,'client');
-  panel(34,c.y+65,252,81,p.edge);
-  text(v,160,c.y+83,'«executionEnvironment» Browser',{font:15,max:40});
-  panel(45,c.y+95,230,40,p.edge);
-  text(v,160,c.y+119,'«artifact»\nLaboratory web interface',{font:15,max:32});
+ function icon(p,x,y,phone){
+  const g=el('g',{fill:'none',stroke:'#000','stroke-width':3,'data-device-icon':phone?'mobile':'desktop'},p);
+  if(phone){el('rect',{x:x-13,y,width:26,height:41,rx:4},g);el('path',{d:'M'+(x-5)+' '+(y+34)+' h10'},g);}
+  else{el('rect',{x:x-28,y,width:56,height:34,rx:2},g);el('path',{d:'M'+x+' '+(y+34)+' v10 m-15 0 h30'},g);}
+ }
+ text(v,600,30,'Physics and Circuits Laboratory Management System',{font:28,bold:true,max:90});
+ text(v,600,65,'Deployment Diagram · Proposed architecture',{font:22,max:90});
+ const roles=[['classrep','Class Representative'],['faculty','Faculty'],['dean','Dean'],['staff','Circuit Staff / Physics Staff'],['head','Head Lab']];
+ roles.forEach(([key,label],i)=>{
+  const y=110+i*296,g=node(25,y,340,274,'«device» '+label,key);
+  box(g,42,y+65,306,133);
+  text(g,195,y+88,'«executionEnvironment»',{font:18,max:40});
+  text(g,195,y+116,'Web Browser',{font:23,bold:true});
+  artifact(g,57,y+135,276,48);
+  text(g,195,y+160,'«artifact» Web interface',{font:19,max:40});
+  icon(g,195,y+211,i===0);
  });
- const app=node(460,90,310,420,'«device»\nApplication host','server','app');
- panel(477,164,276,328,app.edge);
- text(v,615,198,'«executionEnvironment»\nWeb application runtime',{font:18,max:30});
- text(v,615,237,'Implementation not yet selected',{font:15,max:38});
- panel(490,260,250,214,app.edge);
- text(v,615,295,'«artifact»\nLaboratory application',{font:19,bold:true,max:29});
- text(v,615,380,'1.0 Accounts / access\n2.0 Reservations / approvals\n3.0 Informational Q&A\n4.0 Equipment / borrowing\n5.0 Lab administration',{font:18,max:31});
- const db=node(920,90,255,375,'«device»\nPersistence host','database','records');
- panel(935,164,225,279,db.edge);
- text(v,1047,198,'«executionEnvironment»\nPersistence / DBMS',{font:17,max:28});
- text(v,1047,233,'Not yet selected',{font:16,max:28});
- panel(948,259,199,165,db.edge);
- text(v,1047,298,'«artifact»\nLogical record schema',{font:17,bold:true,max:25});
- text(v,1047,373,'D1–D10\nPhysical ERD pending',{font:17,max:25});
- node(885,550,290,127,'«device»\nEmail infrastructure','mail','email');
- text(v,1030,637,'Account credentials to Faculty\nProvider / transport unspecified',{font:16,max:39});
- // UML communication paths are undirected; each client connects to the app.
- clients.forEach((c,i)=>{
-  const lane=345+i*35,port=215+i*95;
-  path(v,[[312,c.y+79],[lane,c.y+79],[lane,port],[460,port]],id,{head:false});
+ const app=node(535,290,625,470,'«device» Application Server','application');
+ box(app,555,353,585,386);
+ text(app,847,380,'«executionEnvironment» Node.js Runtime',{font:23,max:50});
+ artifact(app,575,408,545,302);
+ text(app,847,441,'«artifact» Laboratory Web Application',{font:24,bold:true,max:50});
+ text(app,847,480,'Next.js · React · TypeScript',{font:24,max:45});
+ text(app,847,580,'Authentication / roles / account management\nReservations / approvals / schedules\nInventory / borrowing / returns\nClearance / tasks / disposal / reports\nAI Chatbot / Inventory Forecasting',{font:22,max:52});
+ text(app,847,681,'Forecast recommendations: Head Lab review only',{font:19,max:55});
+ roles.forEach(([key],i)=>{
+  const sy=247+i*296,ey=390+i*65;
+  el('path',{d:'M379 '+sy+' L535 '+ey,fill:'none',stroke:'#000','stroke-width':2,'data-connection':key+'-application'},v);
+  const caption=text(v,419,sy+(ey<sy?20:-24),'HTTPS',{font:17,max:15});
+  caption.setAttribute('stroke','#fff');caption.setAttribute('stroke-width','5');caption.setAttribute('paint-order','stroke');
  });
- text(v,382,50,'Web access\nProtocol TBD',{font:16,max:19});
- path(v,[[782,290],[920,290]],id,{head:false});
- text(v,851,267,'Record access\nProtocol TBD',{font:16,max:18});
- path(v,[[770,490],[820,490],[820,610],[885,610]],id,{head:false});
- text(v,1004,509,'Credential email · transport TBD',{font:16,max:40});
- // Device counts and deployment assumptions are intentionally explicit.
- panel(20,586,750,91,'#c8d5e2');
- text(v,37,608,'3 client device types illustrated • Actual unit counts: TBD',{font:19,bold:true,anchor:'start',max:80});
- text(v,37,647,'All six roles use authorized, role-scoped access. Client compatibility needs testing.\nInfrastructure boxes are logical placements and may share a host.\nHTTPS recommended; no direct browser-to-records access or external AI provider assumed.',{font:16,anchor:'start',max:105});
+ const database=node(535,855,625,727,'«device» Database Server','database');
+ box(database,555,916,585,645);
+ text(database,847,943,'«executionEnvironment» PostgreSQL DBMS',{font:23,bold:true,max:55});
+ text(database,847,973,'«artifact» Relational schema — logical data stores',{font:19,max:60});
+ const stores=[...window.SystemDeploymentStores].sort((a,b)=>Number(a.id.slice(1))-Number(b.id.slice(1)));
+ stores.forEach((store,i)=>{
+  const y=994+i*55,g=el('g',{'data-store':store.id},database);
+  box(g,573,y,550,44);
+  text(g,848,y+27,store.number+' — '+store.name,{font:21,max:55});
+ });
+ el('line',{x1:847,y1:760,x2:847,y2:841,stroke:'#000','stroke-width':2,'data-connection':'application-database'},v);
+ text(v,1000,804,'Database connection · TLS',{font:19,max:35});
+ text(v,600,1620,'All roles: Desktop / Laptop / Tablet / Smartphone · Chrome / Edge / Safari',{font:21,max:100});
+ text(v,600,1650,'One application and one database · No direct client database access',{font:20,max:110});
+ text(v,600,1680,'AI runs in the backend; no external provider selected · Forecasts never automatically change stock',{font:19,max:115});
+ v.querySelectorAll('text,tspan').forEach(n=>n.style.setProperty('fill','#000'));
  return v;
 }
 function html(tag,cls,value){const n=document.createElement(tag);if(cls)n.className=cls;if(value)n.textContent=value;return n;}
@@ -92,20 +81,20 @@ function sheet(group,type,s){
  const code=processPage?'ACT-0'+s.id.slice(1):type==='deployment'?'DEP-01':type==='activity'?'SWIM-01':s.code;
  const id=type==='deployment'?'deployment-view':(processPage?'activity':type)+'-'+s.id;
  const wrap=html('div','sheet-scroll'),paper=html('article','sheet');paper.id=id;
- const header=html('header','sheet-head'),titles=html('div');titles.append(html('small','',(processPage?'activity':type==='activity'?'whole-system swimlane':type)+' diagram · NU Fairview laboratory system'),html('h2','',type==='deployment'?'Deployment — technology-neutral design':s.title));header.append(titles,html('span','page-code',code));paper.append(header);
- const subtitle=type==='deployment'?'Documented functions; candidate node placement. No implementation or hosting selection is asserted.':s.actors.join(' · ')+(s.recipient?' | Recipient: '+s.recipient:'');
+ const header=html('header','sheet-head'),titles=html('div');titles.append(html('small','',(processPage?'activity':type==='activity'?'whole-system swimlane':type)+' diagram · NU Fairview laboratory system'),html('h2','',type==='deployment'?'Deployment — proposed architecture':s.title));header.append(titles,html('span','page-code',code));paper.append(header);
+ const subtitle=type==='deployment'?'Shared browser access, application runtime and one relational database; proposed deployment.':s.actors.join(' · ')+(s.recipient?' | Recipient: '+s.recipient:'');
  paper.append(html('p','sheet-subtitle',subtitle));const canvas=html('div','canvas');canvas.append(processPage?window.SystemProcessActivity(s.model):type==='deployment'?deployment(id):type==='sequence'?window.SystemSequenceDiagram(s):window.SystemDiagramOverview[type](id));paper.append(canvas);
- paper.append(html('p','sheet-note',type==='deployment'?'The current paper says construction has not begun and the ERD is pending. The documentation site’s hosting and the paused collaboration-workspace draft are not the proposed laboratory application stack.':s.note));
+ paper.append(html('p','sheet-note',type==='deployment'?'Proposed Next.js / React / TypeScript application on Node.js with PostgreSQL. Backend AI modules support informational Q&A and read-only forecasts. Deployment and browser compatibility still require implementation testing.':s.note));
  const foot=html('footer','sheet-foot');const link=html('a','',type==='deployment'?'Sources: Project Overview · Tables 3–22 · DFD 1.0–5.0':'Whole system · DFD 1.0–5.0 · Tables 3–22 · D1–D10');link.href=type==='deployment'?'Docs.html#overview':'assets/figures-v2/dfd-level1/dfd-level1-source.html';
  if(processPage){link.textContent='DFD Level 2 · Process '+s.id.slice(1)+'.0 · Canonical subprocesses';link.href='assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process='+s.id;}
  if(type==='sequence'){link.textContent='Matching Activity '+s.processes[0].split('.')[0].slice(1)+'.0';link.href='#activity-'+s.processes[0].split('.')[0];}
- foot.append(link);if(type!=='deployment'){const pair=html('a','',type==='activity'?'Sequence workflows →':'← Whole-system Swimlane');pair.href=type==='activity'?'#sequence':'#activity-system';foot.append(pair);}foot.append(html('span','','A4 '+(type!=='deployment'?'portrait':'landscape')+' · '+(++pageNo)));paper.append(foot);wrap.append(paper);
- if(processPage||type==='activity'||type==='sequence'){
+ foot.append(link);if(type!=='deployment'){const pair=html('a','',type==='activity'?'Sequence workflows →':'← Whole-system Swimlane');pair.href=type==='activity'?'#sequence':'#activity-system';foot.append(pair);}foot.append(html('span','','A4 '+'portrait'+' · '+(++pageNo)));paper.append(foot);wrap.append(paper);
+ if(processPage||type==='activity'||type==='sequence'||type==='deployment'){
   paper.classList.add('process-sheet');header.remove();
   if(type==='sequence')paper.classList.add('sequence-sheet');
   const reference=html('details','process-reference');reference.append(html('summary','','Notes and DFD reference (not printed)'));
   const downloads=html('p','');
-  for(const ext of (processPage?['png','svg']:['png','svg','pdf'])){const name=processPage?'activity-'+s.id:type==='sequence'?'sequence-'+s.id:'swimlane-system';const asset=html('a','','Download '+ext.toUpperCase());asset.href='assets/system-diagrams/'+name+'.'+ext;asset.download=name+'.'+ext;downloads.append(asset,document.createTextNode(' · '));}
+  for(const ext of (processPage?['png','svg']:['png','svg','pdf'])){const name=processPage?'activity-'+s.id:type==='sequence'?'sequence-'+s.id:type==='deployment'?'deployment':'swimlane-system';const asset=html('a','','Download '+ext.toUpperCase());asset.href='assets/system-diagrams/'+name+'.'+ext;asset.download=name+'.'+ext;downloads.append(asset,document.createTextNode(' · '));}
   reference.append(downloads);
   for(const selector of ['.sheet-subtitle','.sheet-note','.sheet-foot'])reference.append(paper.querySelector(selector));
   if(type==='sequence'){
@@ -122,6 +111,9 @@ function sheet(group,type,s){
 }
 const whole={id:'system',title:'Whole-system workflow',actors:['Class Representative','Faculty','Dean','Head Laboratory','Physics Laboratory Staff','Circuits Laboratory Staff'],note:'Branches are alternative authorized operations, not mandatory sequential stages. Validate before saving; errors do not create valid transactions. Faculty scheduled activities need no extra approval; routed requests stay Pending until decided. Only Head manages logs/tasks/clearance; Class Representative only views assigned-class student clearance. Full conditions remain in Tables 3–22.'};
 const decompositionResponse=await fetch('assets/figures-v2/dfd-level2-compact/dfd-level2-model.json');
+const deploymentResponse=await fetch('assets/figures-v2/dfd-level1/dfd-level1-model.json');
+if(!deploymentResponse.ok)throw Error('Cannot load deployment data stores');
+window.SystemDeploymentStores=(await deploymentResponse.json()).stores;
 if(!decompositionResponse.ok)throw new Error('Cannot load the canonical DFD Level 2 subprocesses.');
 window.SystemDiagramChildProcesses=await decompositionResponse.json();
 sheet('activity','activity',{...whole,actors:['Class Representative','Faculty','Circuit Staff','Physics Staff','Head Lab','Dean'],note:'Simplified laboratory service lifecycle with six actor lanes. Supporting readiness is optional, not a new approval gate. Faculty scheduled activities bypass academic approval; Faculty out-of-schedule requests go to Dean. A Class Representative out-of-schedule request goes through available Faculty then Dean, or directly to Dean only when the assigned Faculty is unavailable. Dean reviews and decides inside the Dean partition. Standalone Q&A, inventory/disposal, cancellation and other detailed entry points remain in Activities 1–5. All four preparation paths connect directly to the join with condition (Rep or Faculty) and (Circuit or Physics): one requester plus staff of the selected laboratory. Dean routing uses an OR join. Circuit and Physics are exclusive assignments. A pending decision waits; only an explicit rejection follows the rejection branch. Completed reservations populate usage logs automatically. Clearance settlement does not silently complete an unresolved reservation.'});
@@ -132,7 +124,7 @@ for(const model of window.SystemDiagramChildProcesses){
   p1:'Login and account issuance are alternative operations. Only an already signed-in Head Laboratory creates Class Representative and Faculty accounts. Faculty receives its own credentials or passes representative credentials outside the system. Dean remains pre-assigned; its provisioning authority is pending. Invalid credentials create no session; invalid account details create no account.',
   p2:'Availability alone is read-only. Submit / reschedule continues through validation; cancellation enters validation directly. Faculty scheduled activities need no extra approval. Class Representative on-schedule requests require Faculty; out-of-schedule requests use available Faculty then Dean, or direct Dean only when the assigned Faculty is unavailable. Faculty out-of-schedule requests require Dean only. Intermediate Faculty approval retains Pending and the hold. Final approval permits issuance; rejection releases the hold. A stale or misrouted decision only shows the current status.',
   p3:'Class Representative and Faculty only. Question scope determines which records are read; no reservation is submitted, changed or approved. Unsupported questions are declined and missing evidence is reported as unavailable. Knowledge-base ownership remains pending.',
-  p4:'Branches are alternatives, not a mandatory inventory → issue → return → disposal chain. Validate authorization, status, quantities and condition before saving. Complete borrowing only with no outstanding balance. Unreturned consumables are consumed; equipment is broken / lost, never consumed. Only Head Laboratory raises or settles clearance.',
+  p4:'Branches are independently selected operations, not a mandatory inventory → issue → return → disposal → forecast chain. Only Head Lab requests the optional read-only forecast. D4 stock, D5 actual consumption / borrowing / returns and D2 item references support next-month consumable restock or concurrent equipment-shortage estimates. Missing history shows Insufficient history. No purchase or stock write occurs. Other operations retain their existing validations and clearance responsibilities.',
   p5:'Schedule, usage / daily tasks, clearance and reporting are independently selected operations. Only Head Laboratory manages or settles records; Class Representative only views assigned-class student clearance. Faculty and Laboratory Staff do not access these administration actions. Reporting is non-AI; completion after clearance settlement remains pending.'
  };
  sheet('process-activities','process',{id:model.id,title:'Process '+model.id.slice(1)+'.0 — '+model.name,model,actors,note:notes[model.id]});

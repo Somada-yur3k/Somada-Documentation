@@ -132,11 +132,15 @@ Generate these five images first:
 
 ## Batch H3 — Inventory and Daily Operations
 
-1. Inventory Overview
+1. Inventory Overview — include a Head Lab-only Inventory Forecast tab/action (not a separate sidebar module).
 2. Inventory Item Details / Movement History
 3. Broken / Loss / Consumed Records
 4. Lab Schedule Management
 5. Daily Task Management
+
+### Inventory Forecast screen — generate separately after Batch H3
+
+Use the same Head Lab visual style. Show Circuits / Physics selector, next-month forecast period and Generate / Refresh action. Results show item, current usable stock, estimated consumption or concurrent equipment demand, suggested consumable restock / possible equipment shortage, explanation, history coverage and generated date. Include loading, no inventory, Insufficient history and retrieval-error states. Keep rule-based current low-stock alerts distinct from predicted shortages. Head reviews only: no Buy, Auto-order or automatic stock-adjustment action. This is a design specification, not a claim of a deployed AI model; label a formula-only baseline as usage-based forecasting. Ordinary Staff, Class Rep, Faculty and Dean pages do not receive this feature.
 
 ## Batch H4 — Logs, Disposal, and Reporting
 

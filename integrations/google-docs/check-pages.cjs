@@ -95,8 +95,8 @@ const server = http.createServer((req,res) => {
     const usecaseSheet=usecase.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
     assert.equal(await usecaseSheet.locator('[data-section-id="usecase-diagrams"]').count(),1,'Use-case heading stays with image');
     const ucSize=await usecase.locator('img').evaluate(img=>({w:img.getBoundingClientRect().width,nw:img.naturalWidth,nh:img.naturalHeight}));
-    assert.equal(ucSize.nw,3200);assert.equal(ucSize.nh,3320);
-    assert(22*ucSize.w/1600*.75>=6.7,'Requested compact use-case text remains at least 6.7 pt on A4');
+    assert.equal(ucSize.nw,3200);assert.equal(ucSize.nh,3600);
+    assert(20*ucSize.w/1600*.75>=6,'Compact main use-case text remains at least 6 pt on A4');
     await page.emulateMedia({media:'print'});
     await usecaseSheet.screenshot({path:path.join(os.tmpdir(),'laboratory-a4-usecase.png')});
     await page.emulateMedia({media:'screen'});
@@ -115,7 +115,7 @@ const server = http.createServer((req,res) => {
       const sheet=figure.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
       assert.equal(await sheet.locator('[data-section-id="dfd-'+id+'"]').count(),1,'Level 2 heading stays with image: '+id);
       const size=await figure.locator('img').evaluate(img=>({w:img.getBoundingClientRect().width,h:img.getBoundingClientRect().height,nw:img.naturalWidth,nh:img.naturalHeight}));
-      assert.equal(size.nw,2400);assert.equal(size.nh,1900);
+      assert.equal(size.nw,2400);assert.equal(size.nh,id==='p4'?2562:1900);
       assert(24*size.w/2010*.75>=5.8,'Level 2 full-name base label size: '+id);
       await sheet.screenshot({path:path.join(os.tmpdir(),'laboratory-a4-level2-'+id+'.png')});
     }

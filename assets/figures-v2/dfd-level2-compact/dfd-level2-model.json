@@ -135,7 +135,10 @@
         "source": "p2.2",
         "target": "p2.3",
         "label": "Validated Request",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "internal"
       },
       {
@@ -154,7 +157,10 @@
         "source": "classrep",
         "target": "p2.2",
         "label": "On-Schedule Request",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "external"
       },
       {
@@ -163,7 +169,10 @@
         "source": "classrep",
         "target": "p2.2",
         "label": "Out-of-Schedule Request",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "external"
       },
       {
@@ -284,7 +293,10 @@
         "source": "p2.2",
         "target": "d2",
         "label": "Reservation Record",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "store"
       },
       {
@@ -293,7 +305,10 @@
         "source": "p2.3",
         "target": "d2",
         "label": "Reservation Record",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "store"
       },
       {
@@ -302,7 +317,10 @@
         "source": "p2.4",
         "target": "d2",
         "label": "Reservation Record",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "store"
       },
       {
@@ -311,7 +329,10 @@
         "source": "d2",
         "target": "p2.2",
         "label": "Reservation Data",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "store"
       },
       {
@@ -320,7 +341,10 @@
         "source": "d2",
         "target": "p2.4",
         "label": "Reservation Data",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "store"
       },
       {
@@ -345,7 +369,10 @@
         "source": "d2",
         "target": "p2.1",
         "label": "Reservation Data",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "store"
       },
       {
@@ -354,7 +381,10 @@
         "source": "d2",
         "target": "p2.3",
         "label": "Reservation Data",
-        "payloadFields": ["reservation_type", "student_ids"],
+        "payloadFields": [
+          "reservation_type",
+          "student_ids"
+        ],
         "kind": "store"
       }
     ]
@@ -363,7 +393,7 @@
     "id": "p3",
     "steps": [
       "Capture Authenticated Inquiry",
-      "Retrieve Authorized Records",
+      "Retrieve Laboratory Knowledge / Stock",
       "Compose Grounded Answer",
       "Record Question / Answer Exchange"
     ],
@@ -441,22 +471,6 @@
         "kind": "store"
       },
       {
-        "id": "p3-d2-read-child2",
-        "parentFlow": "p3-d2-read",
-        "source": "d2",
-        "target": "p3.2",
-        "label": "Reservation Status Data",
-        "kind": "store"
-      },
-      {
-        "id": "p3-d3-read-child2",
-        "parentFlow": "p3-d3-read",
-        "source": "d3",
-        "target": "p3.2",
-        "label": "Schedule Availability Data",
-        "kind": "store"
-      },
-      {
         "id": "p3-d4-read-child2",
         "parentFlow": "p3-d4-read",
         "source": "d4",
@@ -473,7 +487,10 @@
       "Retrieve Approved Reservation",
       "Issue Equipment & Create Slip",
       "Reconcile Return",
-      "Record Disposal"
+      "Record Disposal",
+      "Retrieve Forecast Inputs",
+      "Estimate Next-Month Needs",
+      "Present Inventory Forecast"
     ],
     "internal": [
       {
@@ -502,6 +519,20 @@
         "source": "p4.4",
         "target": "p4.5",
         "label": "Return outcome",
+        "kind": "internal"
+      },
+      {
+        "id": "p4-forecast-inputs",
+        "source": "p4.6",
+        "target": "p4.7",
+        "label": "Usage History & Data Status",
+        "kind": "internal"
+      },
+      {
+        "id": "p4-forecast-estimates",
+        "source": "p4.7",
+        "target": "p4.8",
+        "label": "Forecast Assessment",
         "kind": "internal"
       }
     ],
@@ -721,6 +752,46 @@
         "source": "d4",
         "target": "p4.3",
         "label": "Available Item Data",
+        "kind": "store"
+      },
+      {
+        "id": "p4-he-forecast-forecast",
+        "parentFlow": "p4-he-forecast",
+        "source": "headlab",
+        "target": "p4.6",
+        "label": "Forecast Request",
+        "kind": "external"
+      },
+      {
+        "id": "p4-he-forecast-result-forecast",
+        "parentFlow": "p4-he-forecast-result",
+        "source": "p4.8",
+        "target": "headlab",
+        "label": "Inventory Forecast",
+        "kind": "external"
+      },
+      {
+        "id": "p4-d2-history-forecast",
+        "parentFlow": "p4-d2-history",
+        "source": "d2",
+        "target": "p4.6",
+        "label": "Historical Request Data",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d4-read-forecast",
+        "parentFlow": "p4-d4-read",
+        "source": "d4",
+        "target": "p4.6",
+        "label": "Available Item Data",
+        "kind": "store"
+      },
+      {
+        "id": "p4-d5-read-forecast",
+        "parentFlow": "p4-d5-read",
+        "source": "d5",
+        "target": "p4.6",
+        "label": "Borrowing Slip Data",
         "kind": "store"
       }
     ]

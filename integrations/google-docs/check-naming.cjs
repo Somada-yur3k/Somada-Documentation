@@ -15,7 +15,7 @@ assert.equal(data.backlog.find(u=>u.id==='15').role,'Head Laboratory');
 const logEvents=data.events.filter(e=>e.diagramId==='mgmlogs');
 assert.equal(logEvents.length,3);
 assert(logEvents.every(e=>e.source==='Head Laboratory'));
-assert(data.gaps.find(g=>g.id==='14').proposed.includes('outside the current AI scope'));
+assert(data.useCases.find(u=>u.diagramId==='mgminv').dependencies.some(d=>d.diagramId==='forecast'&&d.type==='extend'));
 assert(data.gaps.find(g=>g.id==='16').proposed.includes('do not generate AI-written'));
 const server=http.createServer((req,res)=>{
   const file=path.resolve(root,'.'+new URL(req.url,'http://localhost').pathname);

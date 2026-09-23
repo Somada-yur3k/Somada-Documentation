@@ -69,7 +69,7 @@ const ACTORS = [
   },
   {
     id:'headlab', label:['Head','Laboratory'], color:'#2f7d1b', side:'right', cy:430,
-    uses:['login','issueacct','mgminv','issueeq','procret','procclear','wastedisp','mgmlogs','endterm']
+    uses:['login','issueacct','mgminv','forecast','issueeq','procret','procclear','wastedisp','mgmlogs','endterm']
   },
   {
     id:'physics', label:['Physics','Lab Staff'], color:'#707782', side:'right', cy:950,
@@ -113,11 +113,11 @@ const SUPPORT_UC = [
   {id:'searcheq',    x:960, cy:585,  label:['Search & Filter','Inventory']},
   {id:'selectres',   x:960, cy:685,  label:['Select Resources /','Equipment']},
   {id:'recordblc',   x:960, cy:900,  label:['Record Broken / Lost','/ Consumed Items']},
-  {id:'checkitem',   x:960, cy:1325, label:['Check Item','Availability']},
-  {id:'checksched',  x:960, cy:1420, label:['Check Schedule','Availability']},
-  {id:'checkstatus', x:960, cy:1515, label:['Check Reservation','Status']},
+  {id:'checkitem',   x:960, cy:1325, label:['Ask Equipment','Information /','Availability']},
+  {id:'headinfo',  x:960, cy:1420, label:['Ask Circuits / Physics','Laboratory Information']},
   {id:'checkhours',  x:960, cy:1610, label:['Check Operating','Hours']},
-  {id:'selecttype',  x:960, cy:750, label:['Select Reservation','Type']}
+  {id:'selecttype',  x:960, cy:750, label:['Select Reservation','Type']},
+  {id:'forecast', x:960, cy:1740, label:['Generate Inventory','Forecast']}
 ];
 
 const RELATIONSHIPS = [
@@ -129,18 +129,18 @@ const RELATIONSHIPS = [
   {from:'submitcombined',  to:'selectres', type:'include'},
   {from:'recordblc',   to:'procret',     type:'extend'},
   {from:'checkitem',   to:'askq',        type:'extend'},
-  {from:'checksched',  to:'askq',        type:'extend'},
-  {from:'checkstatus', to:'askq',        type:'extend'},
+  {from:'headinfo',  to:'askq',        type:'extend'},
   {from:'checkhours',  to:'askq',        type:'extend'},
-  {from:'selecttype',  to:'submitcombined', type:'extend', condition:'Class Representative: required for both schedule variants'}
+  {from:'selecttype',  to:'submitcombined', type:'extend', condition:'Class Representative: required for both schedule variants'},
+  {from:'forecast', to:'mgminv', type:'extend', condition:'Head Lab requests a next-month forecast'}
 ];
 
 const CANVAS_W = 1600;
-const CANVAS_H = 1660;
-const BOUNDARY = {x:220, y:90, w:1160, h:1515};
-const BASE_SIZE = {rx:125, ry:55};
+const CANVAS_H = 1800;
+const BOUNDARY = {x:220, y:90, w:1160, h:1655};
+const BASE_SIZE = {rx:115, ry:50};
 const LOGIN_SIZE = {rx:125, ry:55};
-const SUPPORT_SIZE = {rx:115, ry:45};
+const SUPPORT_SIZE = {rx:105, ry:44};
 const ACTOR_X = {left:75, right:1525};
 
 // Compact coordinates preserve the same actors, goals and dependencies.
@@ -148,9 +148,13 @@ BASE_UC.filter(u=>u.column==='left').forEach((u,i)=>{u.x=450;u.cy=300+i*118;});
 BASE_UC.filter(u=>u.column==='right').forEach((u,i)=>{u.x=1150;u.cy=400+i*160;});
 BASE_UC.find(u=>u.id==='login').x=800;
 BASE_UC.find(u=>u.id==='login').cy=210;
-SUPPORT_UC.forEach((u,i)=>{u.x=800;u.cy=[340,458,576,694,788,980,1100,1218,1336,1454,884][i];});
+SUPPORT_UC.forEach(u=>{u.x=800;u.cy=({addeq:340,updateeq:458,deleteeq:576,searcheq:694,selectres:788,recordblc:980,checkitem:1100,headinfo:1230,checkhours:1454,selecttype:884,forecast:1568})[u.id];});
+// Reserve an upper supporting-use-case row for the Head-only forecast.
+BASE_UC.filter(u=>u.id!=='login').forEach(u=>u.cy+=140);
+SUPPORT_UC.forEach(u=>{u.cy=u.id==='forecast'?340:u.cy+140;});
 ACTORS.find(a=>a.id==='faculty').cy=950;
 ACTORS.find(a=>a.id==='dean').cy=1470;
+BASE_UC.forEach(u=>{if(u.column==='left')u.x=470;if(u.column==='right')u.x=1130;});
 const shortLabels={
   selecttype:['Select Reservation','Type','Class Rep. required'],
   submitcombined:['Submit Request:','On-Schedule Non-Lab','or Out-of-Schedule'],
@@ -200,8 +204,8 @@ function ellipseSidePoint(useCase, side) {
 
 function labelPill(layer, x, y, label, flowId, angle) {
   const group = el('g', {class:'diagram-flow-label', 'data-flow-id':flowId,transform:`rotate(${angle} ${x} ${y})`});
-  const index=Number(flowId.split('-')[1]);
-  group.appendChild(textEl(x, y+(index===5?-7:index===2?7:([1,8,9,10,11].includes(index)?24:-7)), [`«${label}»`], {
+  const rawIndex=Number(flowId.split('-')[1]),index=rawIndex>=9?rawIndex+1:rawIndex;
+  group.appendChild(textEl(x, y+(index===5?-7:index===2?7:([0,1,8,9,10,11].includes(index)?24:-7)), [`«${label}»`], {
     'font-size':index===5?18:20, fill:'#111', 'font-family':'Arial,Helvetica,sans-serif'
   }));
   layer.appendChild(group);
@@ -256,11 +260,12 @@ const loginActorsBySide = Object.fromEntries(['left','right'].map(side => [side,
 ]));
 ACTORS.forEach(actor => {
   const hand = {
-    x:ACTOR_X[actor.side] + (actor.side === 'left' ? 58 : -58),
-    y:actor.cy - 17
+    x:ACTOR_X[actor.side] + (actor.side === 'left' ? 43.5 : -43.5),
+    y:actor.cy - 13.5
   };
   actor.uses.forEach(useCaseId => {
     const useCase = byId[useCaseId];
+    if(useCase.diagramHidden)return;
     const endpoint = ellipseSidePoint(useCase, actor.side);
     const flowId = `association-${actor.id}-${useCaseId}`;
     const left=actor.side==='left';
@@ -270,9 +275,7 @@ ACTORS.forEach(actor => {
     const inner=endpoint.x+(left?-22-i*7:22+i*7),top=158+i*8;
     associationLayer.appendChild(el('path', {
       class:'diagram-connector', 'data-flow-id':flowId,
-      d:useCaseId==='login'
-        ? `M ${hand.x} ${hand.y} L ${outer} ${hand.y} L ${outer} ${top} L ${inner} ${top} L ${endpoint.x} ${endpoint.y}`
-        : `M ${hand.x} ${hand.y} L ${endpoint.x.toFixed(1)} ${endpoint.y.toFixed(1)}`,
+      d:`M ${hand.x} ${hand.y} L ${endpoint.x.toFixed(1)} ${endpoint.y.toFixed(1)}`,
       fill:'none', stroke:'#111', 'stroke-width':1.8
     }));
   });
@@ -289,7 +292,8 @@ RELATIONSHIPS.forEach((relationship,index) => {
   const sourceEdge = ellipseSidePoint(source, targetIsRight ? 'right' : 'left');
   const targetEdge = ellipseSidePoint(target, targetIsRight ? 'left' : 'right');
   const flowId = `relationship-${index}-${relationship.type}`;
-  const points=[sourceEdge,targetEdge],t=index===5?.25:index===11?.5:index===2?.59:([6,10].includes(index)?.5:(relationship.type==='include'?.65:.35));
+  const slot=index>=9?index+1:index;
+  const points=[sourceEdge,targetEdge],t=slot===0?.55:slot===12?.15:slot===5?.25:slot===11?.5:slot===2?.59:([6,10].includes(slot)?.5:(relationship.type==='include'?.65:.35));
   const lx=sourceEdge.x+(targetEdge.x-sourceEdge.x)*t,ly=sourceEdge.y+(targetEdge.y-sourceEdge.y)*t;
   let angle=Math.atan2(targetEdge.y-sourceEdge.y,targetEdge.x-sourceEdge.x)*180/Math.PI;
   if(angle>90)angle-=180;if(angle<-90)angle+=180;
@@ -304,7 +308,7 @@ RELATIONSHIPS.forEach((relationship,index) => {
 
 const useCaseLayer = el('g', {'aria-label':'Use cases'});
 svg.appendChild(useCaseLayer);
-BASE_UC.concat(SUPPORT_UC).forEach(useCase => {
+BASE_UC.concat(SUPPORT_UC).filter(u=>!u.diagramHidden).forEach(useCase => {
   const size = useCaseSize(useCase);
   const support = SUPPORT_UC.includes(useCase);
   const group = el('g', {id:`usecase-${useCase.id}`});
@@ -315,9 +319,9 @@ BASE_UC.concat(SUPPORT_UC).forEach(useCase => {
     stroke:'#111', 'stroke-width':2
   }));
   group.appendChild(textEl(useCase.x, useCase.cy+5, useCase.label, {
-    'font-size':useCase.id==='selecttype'?18:support?20:22,
+    'font-size':useCase.id==='selecttype'?16:support?18:20,
     fill:'#101828', 'font-weight':support ? '500' : '600',
-    'font-family':'Arial,Helvetica,sans-serif', lineHeight:useCase.id==='selecttype'?18:support?21:23
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:useCase.id==='selecttype'?17:support?19:21
   }));
   useCaseLayer.appendChild(group);
 });
@@ -326,7 +330,7 @@ function drawActor(actor) {
   const x = ACTOR_X[actor.side];
   const y = actor.cy;
   const color = '#111';
-  const group = el('g', {id:`actor-${actor.id}`});
+  const group = el('g', {id:`actor-${actor.id}`,transform:`translate(${x} ${y}) scale(.75) translate(${-x} ${-y})`});
   group.appendChild(el('circle', {cx:x, cy:y-76, r:24, fill:'none', stroke:color, 'stroke-width':7}));
   group.appendChild(el('line', {x1:x, y1:y-52, x2:x, y2:y+22, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
   group.appendChild(el('line', {x1:x-58, y1:y-18, x2:x+58, y2:y-18, stroke:color, 'stroke-width':7, 'stroke-linecap':'round'}));
@@ -343,7 +347,7 @@ const actorLayer = el('g', {'aria-label':'Actors'});
 ACTORS.forEach(actor => actorLayer.appendChild(drawActor(actor)));
 svg.appendChild(actorLayer);
 
-const legend = el('g', {transform:'translate(250 1635)', 'aria-label':'Relationship legend'});
+const legend = el('g', {transform:'translate(250 1765)', 'aria-label':'Relationship legend'});
 legend.appendChild(el('line', {x1:0, y1:0, x2:55, y2:0, stroke:'#111', 'stroke-width':1.8, 'stroke-dasharray':'9 7', 'marker-end':'url(#openArrow)'}));
 legend.appendChild(textEl(72, 5, ['«include» required shared behavior'], {
   'font-size':20, fill:'#111', 'text-anchor':'start', 'font-family':'Arial,Helvetica,sans-serif'
@@ -371,7 +375,7 @@ document.querySelectorAll('.diagram-flow-label').forEach((label,i)=>{
 });
 if(!outputMode){
   const authored=svg.cloneNode(true);
-  window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-ordered-login-lanes-v5'});
+  window.SOMADADiagramEditor.init(svg, {storageKey:'usecase-guidance-compact-v6'});
   window.addEventListener('beforeprint',()=>svg.replaceWith(authored));
   window.addEventListener('afterprint',()=>authored.replaceWith(svg));
 }

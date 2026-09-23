@@ -43,18 +43,20 @@ window.SystemSequenceDiagram=function(model){
   }
   el('line',{x1:x,y1:p.kind==='actor'?headerBottom:240,x2:x,y2:bottom+15,stroke:'#000','stroke-width':1.7,'stroke-dasharray':'8 7','data-lifeline':p.id},g);
  });
+ let compact=false;
  function plan(steps,size){return steps.map(step=>{
   if(['alt','opt','par'].includes(step.kind)){
-   const operands=step.operands.map(o=>{const guard=wrap(step.kind==='par'?o.guard:'['+o.guard+']',size-1,1010),children=plan(o.steps,size);return{...o,guard,children,header:guard.length*(size-1)*1.16+22,height:children.reduce((h,c)=>h+c.height,0)};});
+   const operands=step.operands.map(o=>{const guard=wrap(step.kind==='par'?o.guard:'['+o.guard+']',size-1,1010),children=plan(o.steps,size);return{...o,guard,children,header:guard.length*(size-1)*1.16+(compact?16:22),height:children.reduce((h,c)=>h+c.height,0)};});
    return{...step,operands,height:operands.reduce((h,o)=>h+o.header+o.height,0)+20};
   }
   const from=participants[step.from],to=participants[step.to];
   const width=step.kind==='self'?participants.db.x-from.x-145:Math.abs(to.x-from.x)-48;
   const rows=wrap(step.label,size,width);
-  return{...step,rows,height:Math.max(step.kind==='self'?70:0,rows.length*size*1.16+30)};
+  return{...step,rows,height:Math.max(step.kind==='self'?(compact?60:70):0,rows.length*size*1.16+(compact?22:30))};
  });}
  let size=28,planned,total;
  for(const candidate of [28,26,24,22,20,18]){size=candidate;planned=plan(model.steps,size);total=planned.reduce((h,n)=>h+n.height,0);if(total<=bottom-top)break;}
+ if(total>bottom-top){compact=true;planned=plan(model.steps,size);total=planned.reduce((h,n)=>h+n.height,0);}
  if(total>bottom-top)throw Error(model.id+': interaction too dense for readable A4; split the workflow');
  const scale=(bottom-top)/total,messages=[],activations=[],fragments=[];
  function activation(participant,start,end,nested=false){

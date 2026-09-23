@@ -11,6 +11,10 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
  for(const id of ['p1','p2','p3','p4','p5']){
   await page.selectOption('#diagram',id);
   const seed=await page.evaluate(id=>window.SystemActivityGeometry[id],id);C.validate(seed,C.empty());assert.equal(C.review(seed,C.empty()).length,0,id+' authored geometry valid');
+  for(const [key,n]of Object.entries(seed.nodes).filter(([,n])=>n.kind==='flow-final')){
+   assert.equal(await page.locator('[data-node="'+key+'"] circle').count(),1,'Flow Final circle remains visible in editor');
+   assert.equal(await page.locator('[data-node="'+key+'"] path').count(),1,'Flow Final X remains visible in editor/export');
+  }
   assert.deepEqual(await page.evaluate(()=>window.__activityEditorFindings.filter(f=>f.level==='error')),[],id+' labels fit');
   const moved={nodes:{},edges:{}};const [key,n]=Object.entries(seed.nodes).find(([,n])=>n.kind==='action');moved.nodes[key]={dx:12,dy:8};C.validate(seed,moved);
   for(let i=0;i<seed.routes.length;i++){const r=seed.routes[i],points=C.route(seed,moved,i);for(let j=1;j<points.length;j++)assert(points[j][0]===points[j-1][0]||points[j][1]===points[j-1][1]);if(r.from===key)assert.deepEqual(points[0],[r.points[0][0]+12,r.points[0][1]+8]);if(r.to===key)assert.deepEqual(points.at(-1),[r.points.at(-1)[0]+12,r.points.at(-1)[1]+8]);}

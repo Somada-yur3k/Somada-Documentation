@@ -1,0 +1,22 @@
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'../..');
+let html=fs.readFileSync(path.join(root,'Docs.html'),'utf8');
+const data=vm.runInNewContext(html.match(/  const DATA = \{[\s\S]*?\n  \};/)[0]+'; DATA');
+const u=data.useCases.find(u=>u.diagramId==='askq');
+u.scenario='A signed-in Class Representative or Faculty member needs laboratory guidance or current equipment information.';
+u.briefDescription='The authenticated Q&A chatbot answers approved Circuits / Physics laboratory information, equipment information / availability, and laboratory operating hours. Laboratory answers explain the selected laboratory’s location, purpose, services, rules and approved contact information, never private account data. Equipment answers explain purpose, typical laboratory use and approved basic handling / safety guidance; current availability comes from inventory records and is not a reservation or stock hold. Date/time-specific availability is validated in the reservation form. Schedule-block selection, reservation tracking and clearance status remain in their existing pages, not chatbot answer categories.';
+u.related=['Ask Circuits / Physics Laboratory Information','Ask Equipment Information / Availability','Check Operating Hours'];
+u.flowActor=['Requester opens the chatbot from their authorized dashboard.','Requester asks about Circuits / Physics laboratory information, equipment information / availability, or operating hours.','Requester reads the answer and uses the reservation or records page when a transaction or status lookup is needed.'];
+u.flowSystem=['System checks the authenticated role and classifies the permitted question intent.','System retrieves approved laboratory knowledge for Circuits / Physics laboratory information, equipment purpose / guidance and operating hours; current equipment availability is read from inventory.','System returns an evidence-grounded answer. Availability is informational only and does not hold stock or guarantee availability for a future session.','System records the exchange in the requester-scoped conversation history.'];
+u.exceptions=['If approved information or inventory evidence is unavailable, state unavailable; do not invent contacts, equipment guidance, quantities or safety instructions.','For schedule blocks, direct the requester to the reservation form. For reservation tracking or clearance, direct them to their authorized records navigation without performing the lookup in chat.','Decline requests to create, modify, approve or reject reservations, purchase items, change inventory or expose private account/student information.'];
+u.dependencies=[
+ {diagramId:'headinfo',name:'Ask Circuits / Physics Laboratory Information',type:'extend',condition:'The question concerns approved Circuits / Physics laboratory information.',behavior:'Read the selected Circuits or Physics laboratory’s verified location, purpose, services, rules and approved contact information from laboratory knowledge; ask which laboratory when unclear, and state unavailable if not recorded.'},
+ {diagramId:'checkitem',name:'Ask Equipment Information / Availability',type:'extend',condition:'The question concerns equipment purpose, use, basic guidance or current availability.',behavior:'Read approved equipment guidance and current inventory evidence. No reservation or stock hold is created; future date/time availability is checked in the reservation form.'},
+ {diagramId:'checkhours',name:'Check Operating Hours',type:'extend',condition:'The question concerns laboratory operating hours.',behavior:'Read approved laboratory hours; state unavailable when evidence is missing.'}
+];
+const re=new RegExp('      \\{\\r?\\n        "id": "'+u.id+'",[\\s\\S]*?(?=,\\r?\\n      \\{\\r?\\n        "id": "uc-issueacct")');
+if(!re.test(html))throw Error('Chatbot boundary not found');
+html=html.replace(re,JSON.stringify(u,null,2).split('\n').map(s=>'      '+s).join('\n'));
+html=html.replace('The chatbot answers questions about items, schedules, operating hours and the requester’s own reservation status from authorized records;','The chatbot answers approved Circuits / Physics laboratory information, equipment information / availability and operating hours from authorized records;');
+fs.writeFileSync(path.join(root,'Docs.html'),html);
+console.log('Updated chatbot full description; retained authentication and table numbering.');

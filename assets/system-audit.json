@@ -1,23 +1,23 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-21T01:32:30.557Z",
+  "generatedAt": "2026-09-23T09:51:35.061Z",
   "title": "A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview",
   "sources": [
     {
       "path": "Docs.html",
-      "sha256": "898609ab2e40d79f7a4408e38b3204a7fe1ea723295b39bc44b94dcfdca3d09b"
+      "sha256": "e2bee6d41c618a9c7866c8dce8d6c9f8313a90af3bb769f697a24b0418b39855"
     },
     {
       "path": "assets/figures-v2/usecase-diagram-source.html",
-      "sha256": "46fd14c0dff100058fb5d50b0b20b5c93f3a3733c163bbb737ada50136f859b6"
+      "sha256": "8b9bf45d390de15b1cbe22a4035b40aa2dfe4c9b5c88b61cc630c2db1a470d3c"
     },
     {
       "path": "assets/figures-v2/dfd-level1/dfd-level1-model.json",
-      "sha256": "3b240ed191c8fc1b686d991b8de841d761c6749d63b390429ed7aad8b8bbbc35"
+      "sha256": "8223399b34929ea8f298a8669eb1e080502787d3b5e74942d3bcebf09a510469"
     },
     {
       "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-model.json",
-      "sha256": "8f08aa0f748f837dad5346ac2f702164bcb0ad071d721347b63939da9eb205d1"
+      "sha256": "cb8586ec7dd8e55cbe20bc830177015db5e859011e4dbf2bcb59c045183b2012"
     },
     {
       "path": "assets/figures-v2/dfd-level0/dfd-level0-portrait.js",
@@ -29,15 +29,15 @@
     },
     {
       "path": "assets/figures-v2/dfd-level2-compact/dfd-level2-renderer.js",
-      "sha256": "f59c70337114878e905f7d031b90bbec794e399de01a63424219063efc7a52a7"
+      "sha256": "2aaaa80483bf58227323ad37d0844ea19685941b832819ef4328778d97c4c039"
     },
     {
       "path": "integrations/system-audit/build.cjs",
-      "sha256": "49bb6320f9c94dd4795b89e8535127473da42f99e9502574631cae668dd447a7"
+      "sha256": "4362ddafd4bae6169357d9fba90237109a2ae59988aeef31e07b2162c21e23b1"
     },
     {
       "path": "assets/erd/model.js",
-      "sha256": "6c191cff06659944c2cddb713ee7aa030ac8fdfaf817b24554a5987f923c949a"
+      "sha256": "576ab00efb44c53c87636753cf31ddfb2fb6f2b6060c5a3c8380824d18ed75fa"
     },
     {
       "path": "assets/erd/render.js",
@@ -53,15 +53,15 @@
     },
     {
       "path": "assets/system-diagrams/process-activities.js",
-      "sha256": "38be78052a6ef85ada4c026460dc7cf7c6429158adce1cf5647ebfb4003f6e43"
+      "sha256": "21cfa4c8e6b1774ab84f5bf7e9e73640e7a6dd962be81d33e875e3eda59728e2"
     },
     {
       "path": "assets/system-diagrams/sequence-models.js",
-      "sha256": "7c65a42810e6a13926348add22d5e701dfc96cd8a2cb1b80ac0dd92b57284bcb"
+      "sha256": "11517dafc26740905b7154260e30a33cc205b9b1eb9a2ea7e5ae9c1619547af7"
     },
     {
       "path": "assets/system-diagrams/swimlane.js",
-      "sha256": "5ac41d0a2e0ff8fbc087be038a9daffe542f3cc9767c12c5243107e192ce988d"
+      "sha256": "81703e414368d7be354c182bbf142f22ff9f6080b1f661a555d1745e6e8e77ae"
     }
   ],
   "groups": [
@@ -69,8 +69,8 @@
       "id": "documentation",
       "name": "Documentation",
       "href": "Docs.html",
-      "passed": 66,
-      "total": 66,
+      "passed": 68,
+      "total": 68,
       "percent": 100,
       "status": "pass",
       "available": true
@@ -89,8 +89,8 @@
       "id": "dfd0",
       "name": "DFD Level 0",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html",
-      "passed": 48,
-      "total": 48,
+      "passed": 50,
+      "total": 50,
       "percent": 100,
       "status": "pass",
       "available": true
@@ -99,8 +99,8 @@
       "id": "dfd1",
       "name": "DFD Level 1",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html",
-      "passed": 85,
-      "total": 85,
+      "passed": 86,
+      "total": 86,
       "percent": 100,
       "status": "pass",
       "available": true
@@ -109,8 +109,8 @@
       "id": "dfd2",
       "name": "DFD Level 2",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html",
-      "passed": 117,
-      "total": 117,
+      "passed": 122,
+      "total": 122,
       "percent": 100,
       "status": "pass",
       "available": true
@@ -526,8 +526,6 @@
         "p3.4"
       ],
       "stores": [
-        "d2",
-        "d3",
         "d4",
         "d8",
         "d9"
@@ -539,8 +537,6 @@
         "p3-fa-answer-child3",
         "p3-d8-read-child2",
         "p3-d9-write-child4",
-        "p3-d2-read-child2",
-        "p3-d3-read-child2",
         "p3-d4-read-child2"
       ],
       "status": "pass",
@@ -584,26 +580,37 @@
         "Physics Laboratory Staff",
         "Circuits Laboratory Staff"
       ],
-      "events": 1,
+      "events": 2,
       "backlog": [
-        "10"
+        "10",
+        "10F"
       ],
       "parent": "p4",
       "steps": [
-        "p4.1"
+        "p4.1",
+        "p4.6",
+        "p4.7",
+        "p4.8"
       ],
       "stores": [
-        "d4"
+        "d2",
+        "d4",
+        "d5"
       ],
       "flowIds": [
         "p4-he-inventory-child1",
         "p4-ph-inventory-child1",
         "p4-ci-inventory-child1",
         "p4-d4-write-child1",
-        "p4-d4-read-child1"
+        "p4-d4-read-child1",
+        "p4-he-forecast-forecast",
+        "p4-he-forecast-result-forecast",
+        "p4-d2-history-forecast",
+        "p4-d4-read-forecast",
+        "p4-d5-read-forecast"
       ],
       "status": "pass",
-      "note": ""
+      "note": "Head-only optional Inventory Forecasting reads existing stock and actual usage. Dynamic advisory output; no stock/purchase write. Missing history suppresses estimates."
     },
     {
       "id": "issueeq",
@@ -1247,34 +1254,41 @@
     {
       "group": "documentation",
       "id": "event-19",
-      "label": "Laboratory staff maintain the equipment catalogue",
+      "label": "Head Laboratory requests an inventory forecast",
       "status": "pass",
       "href": "Docs.html#events"
     },
     {
       "group": "documentation",
       "id": "event-20",
-      "label": "Head Laboratory records the term schedule supplied by the Dean's office",
+      "label": "Laboratory staff maintain the equipment catalogue",
       "status": "pass",
       "href": "Docs.html#events"
     },
     {
       "group": "documentation",
       "id": "event-21",
-      "label": "Head Laboratory views automatically recorded completed-session usage",
+      "label": "Head Laboratory records the term schedule supplied by the Dean's office",
       "status": "pass",
       "href": "Docs.html#events"
     },
     {
       "group": "documentation",
       "id": "event-22",
-      "label": "Head Laboratory records a daily activity",
+      "label": "Head Laboratory views automatically recorded completed-session usage",
       "status": "pass",
       "href": "Docs.html#events"
     },
     {
       "group": "documentation",
       "id": "event-23",
+      "label": "Head Laboratory records a daily activity",
+      "status": "pass",
+      "href": "Docs.html#events"
+    },
+    {
+      "group": "documentation",
+      "id": "event-24",
       "label": "The term ends",
       "status": "pass",
       "href": "Docs.html#events"
@@ -1360,6 +1374,13 @@
       "group": "documentation",
       "id": "backlog-10",
       "label": "Backlog 10 — mapped scope",
+      "status": "pass",
+      "href": "Docs.html#backlog"
+    },
+    {
+      "group": "documentation",
+      "id": "backlog-10F",
+      "label": "Backlog 10F — mapped scope",
       "status": "pass",
       "href": "Docs.html#backlog"
     },
@@ -1464,35 +1485,35 @@
     {
       "group": "usecase",
       "id": "dependency-7",
-      "label": "extend: Check Item Availability → Ask Laboratory Question",
+      "label": "extend: Ask Equipment Information / Availability → Ask Laboratory Question",
       "status": "pass",
       "href": "Docs.html#usecase-full"
     },
     {
       "group": "usecase",
       "id": "dependency-8",
-      "label": "extend: Check Schedule Availability → Ask Laboratory Question",
+      "label": "extend: Ask Circuits / Physics Laboratory Information → Ask Laboratory Question",
       "status": "pass",
       "href": "Docs.html#usecase-full"
     },
     {
       "group": "usecase",
       "id": "dependency-9",
-      "label": "extend: Check Reservation Status → Ask Laboratory Question",
-      "status": "pass",
-      "href": "Docs.html#usecase-full"
-    },
-    {
-      "group": "usecase",
-      "id": "dependency-10",
       "label": "extend: Check Operating Hours → Ask Laboratory Question",
       "status": "pass",
       "href": "Docs.html#usecase-full"
     },
     {
       "group": "usecase",
-      "id": "dependency-11",
+      "id": "dependency-10",
       "label": "extend: Select Reservation Type → Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
+      "status": "pass",
+      "href": "Docs.html#usecase-full"
+    },
+    {
+      "group": "usecase",
+      "id": "dependency-11",
+      "label": "extend: Generate Inventory Forecast → Manage Equipment Inventory",
       "status": "pass",
       "href": "Docs.html#usecase-full"
     },
@@ -1871,6 +1892,20 @@
       "group": "dfd0",
       "id": "p5-he-report",
       "label": "End-Term Report — p5 → headlab",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-he-forecast",
+      "label": "Forecast Request — headlab → p4",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
+    },
+    {
+      "group": "dfd0",
+      "id": "p4-he-forecast-result",
+      "label": "Inventory Forecast — p4 → headlab",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level0/dfd-level0-source.html"
     },
@@ -2282,20 +2317,6 @@
     },
     {
       "group": "dfd1",
-      "id": "p3-d2-read",
-      "label": "Reservation Status Data — valid endpoints",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
-    },
-    {
-      "group": "dfd1",
-      "id": "p3-d3-read",
-      "label": "Schedule Availability Data — valid endpoints",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
-    },
-    {
-      "group": "dfd1",
       "id": "p3-d4-read",
       "label": "Item Availability Data — valid endpoints",
       "status": "pass",
@@ -2403,6 +2424,27 @@
       "group": "dfd1",
       "id": "p5-d7-write",
       "label": "Daily Task Record — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-he-forecast",
+      "label": "Forecast Request — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-he-forecast-result",
+      "label": "Inventory Forecast — valid endpoints",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
+    },
+    {
+      "group": "dfd1",
+      "id": "p4-d2-history",
+      "label": "Historical Request Data — valid endpoints",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level1/dfd-level1-source.html"
     },
@@ -2800,20 +2842,6 @@
     },
     {
       "group": "dfd2",
-      "id": "p3-d2-read-child2",
-      "label": "Reservation Status Data — d2 → p3.2",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
-    },
-    {
-      "group": "dfd2",
-      "id": "p3-d3-read-child2",
-      "label": "Schedule Availability Data — d3 → p3.2",
-      "status": "pass",
-      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3"
-    },
-    {
-      "group": "dfd2",
       "id": "p3-d4-read-child2",
       "label": "Item Availability Data — d4 → p3.2",
       "status": "pass",
@@ -3038,6 +3066,41 @@
     },
     {
       "group": "dfd2",
+      "id": "p4-he-forecast-forecast",
+      "label": "Forecast Request — headlab → p4.6",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-he-forecast-result-forecast",
+      "label": "Inventory Forecast — p4.8 → headlab",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d2-history-forecast",
+      "label": "Historical Request Data — d2 → p4.6",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d4-read-forecast",
+      "label": "Available Item Data — d4 → p4.6",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-d5-read-forecast",
+      "label": "Borrowing Slip Data — d5 → p4.6",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
       "id": "p4-internal1",
       "label": "Inventory data — valid child exchange",
       "status": "pass",
@@ -3061,6 +3124,20 @@
       "group": "dfd2",
       "id": "p4-internal4",
       "label": "Return outcome — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-forecast-inputs",
+      "label": "Usage History & Data Status — valid child exchange",
+      "status": "pass",
+      "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
+    },
+    {
+      "group": "dfd2",
+      "id": "p4-forecast-estimates",
+      "label": "Forecast Assessment — valid child exchange",
       "status": "pass",
       "href": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4"
     },
@@ -3399,17 +3476,18 @@
   "counts": {
     "actors": 6,
     "mainUseCases": 20,
+    "accessSpecifications": 0,
     "supportingUseCases": 11,
-    "associations": 42,
+    "associations": 43,
     "dependencies": 12,
-    "backlog": 19,
-    "events": 24,
-    "l0": 46,
-    "l1": 72,
+    "backlog": 20,
+    "events": 25,
+    "l0": 48,
+    "l1": 73,
     "stores": 10,
     "parents": 5,
-    "children": 21,
-    "l2": 89
+    "children": 24,
+    "l2": 92
   },
   "backlog": [
     {
@@ -3513,6 +3591,14 @@
       "note": ""
     },
     {
+      "id": "10F",
+      "status": "Not Started",
+      "features": [
+        "Manage Equipment Inventory"
+      ],
+      "note": ""
+    },
+    {
       "id": "11",
       "status": "Not Started",
       "features": [
@@ -3587,9 +3673,9 @@
       "name": "Reservation & Approval Records",
       "readers": [
         "p2",
-        "p3",
         "p4",
-        "p5"
+        "p5",
+        "p4"
       ],
       "writers": [
         "p2",
@@ -3661,7 +3747,6 @@
       "name": "Laboratory Schedule & Usage Logs",
       "readers": [
         "p2",
-        "p3",
         "p5"
       ],
       "writers": [

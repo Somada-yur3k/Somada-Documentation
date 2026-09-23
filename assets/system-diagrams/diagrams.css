@@ -3,6 +3,7 @@
 #activity-system,#process-activities .sheet{width:210mm;height:297mm;padding:6mm;page:swimlane-portrait}
 #process-activities .sheet{padding:4mm}
 @page swimlane-portrait{size:A4 portrait;margin:0}
+#deployment-view{width:210mm;height:297mm;padding:4mm;page:swimlane-portrait}
 .sequence-sheet{width:210mm;height:297mm;padding:6mm;page:swimlane-portrait}
 .sequence-index{max-width:1160px;margin:28px auto 8px;padding:24px;background:#fff;border:1px solid #d6dfe9;border-radius:10px;line-height:1.5}
 .sequence-index h2{margin:0 0 8px}.sequence-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 28px}.sequence-groups h3{font-size:15px}.sequence-groups ul{padding-left:20px}.sequence-groups li{margin:8px 0;font-size:13px}.sequence-related{line-height:1.8}

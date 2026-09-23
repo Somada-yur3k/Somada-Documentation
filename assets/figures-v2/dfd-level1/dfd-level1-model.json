@@ -166,7 +166,10 @@
       "source": "classrep",
       "target": "p2",
       "label": "On-Schedule Request",
-      "payloadFields": ["reservation_type", "student_ids"],
+      "payloadFields": [
+        "reservation_type",
+        "student_ids"
+      ],
       "kind": "external"
     },
     {
@@ -174,7 +177,10 @@
       "source": "classrep",
       "target": "p2",
       "label": "Out-of-Schedule Request",
-      "payloadFields": ["reservation_type", "student_ids"],
+      "payloadFields": [
+        "reservation_type",
+        "student_ids"
+      ],
       "kind": "external"
     },
     {
@@ -448,7 +454,10 @@
       "source": "p2",
       "target": "d2",
       "label": "Reservation Record",
-      "payloadFields": ["reservation_type", "student_ids"],
+      "payloadFields": [
+        "reservation_type",
+        "student_ids"
+      ],
       "kind": "store"
     },
     {
@@ -456,7 +465,10 @@
       "source": "d2",
       "target": "p2",
       "label": "Reservation Data",
-      "payloadFields": ["reservation_type", "student_ids"],
+      "payloadFields": [
+        "reservation_type",
+        "student_ids"
+      ],
       "kind": "store"
     },
     {
@@ -485,20 +497,6 @@
       "source": "p3",
       "target": "d9",
       "label": "Question / Answer Log",
-      "kind": "store"
-    },
-    {
-      "id": "p3-d2-read",
-      "source": "d2",
-      "target": "p3",
-      "label": "Reservation Status Data",
-      "kind": "store"
-    },
-    {
-      "id": "p3-d3-read",
-      "source": "d3",
-      "target": "p3",
-      "label": "Schedule Availability Data",
       "kind": "store"
     },
     {
@@ -611,6 +609,27 @@
       "source": "p5",
       "target": "d7",
       "label": "Daily Task Record",
+      "kind": "store"
+    },
+    {
+      "id": "p4-he-forecast",
+      "source": "headlab",
+      "target": "p4",
+      "label": "Forecast Request",
+      "kind": "external"
+    },
+    {
+      "id": "p4-he-forecast-result",
+      "source": "p4",
+      "target": "headlab",
+      "label": "Inventory Forecast",
+      "kind": "external"
+    },
+    {
+      "id": "p4-d2-history",
+      "source": "d2",
+      "target": "p4",
+      "label": "Historical Request Data",
       "kind": "store"
     }
   ]

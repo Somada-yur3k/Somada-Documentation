@@ -18,7 +18,7 @@ function draw(seed,state,selection=null){
   const ps=C.route(seed,state,i),d=ps.map((p,j)=>(j?'L':'M')+p.join(' ')).join(' ');
   element('path',{d,fill:'none',stroke:'#000','stroke-width':2.2,'marker-end':'url(#editor-arrow)'},lines);
   element('path',{d,class:'route-hit','data-edge':i,'data-editor-only':'true'},lines);
-  const value=state.edges[i]?.label??r.guard;
+  const value=state.edges[i]?.label??r.displayGuard??r.guard;
   if(value){let longest=0;for(let j=1;j<ps.length;j++){const length=Math.hypot(ps[j][0]-ps[j-1][0],ps[j][1]-ps[j-1][1]);if(length>Math.hypot(ps[longest+1][0]-ps[longest][0],ps[longest+1][1]-ps[longest][1]))longest=j-1;}
    const a=ps[longest],b=ps[longest+1],t=label(labels,(a[0]+b[0])/2,(a[1]+b[1])/2-12,value,18,260);t.setAttribute('data-edge',i);t.setAttribute('style','paint-order:stroke;stroke:white;stroke-width:5;stroke-linejoin:round');
   }
@@ -35,6 +35,7 @@ function draw(seed,state,selection=null){
   if(['decision','merge'].includes(n.kind))element('path',{d:`M${cx} ${y} L${x+n.w} ${cy} L${cx} ${y+n.h} L${x} ${cy} Z`,...common},g);
   if(n.kind==='initial')element('circle',{cx,cy,r:n.w/2,fill:'#000'},g);
   if(n.kind==='final'){element('circle',{cx,cy,r:n.w/2,...common},g);element('circle',{cx,cy,r:14,fill:'#000'},g);}
+  if(n.kind==='flow-final'){element('circle',{cx,cy,r:n.w/2,...common},g);element('path',{d:`M${cx-13} ${cy-13} L${cx+13} ${cy+13} M${cx+13} ${cy-13} L${cx-13} ${cy+13}`,fill:'none',stroke:'#000','stroke-width':2.6},g);}
   if(['fork','join'].includes(n.kind))element('rect',{x,y,width:n.w,height:n.h,fill:'#000'},g);
   if(n.joinSpec)label(labels,cx-135,y+n.h+29,'{joinSpec = '+n.joinSpec+'}',17,240);
   if(n.title)label(g,cx,cy,p.label??n.title,n.kind==='decision'?18:21,n.w-12);

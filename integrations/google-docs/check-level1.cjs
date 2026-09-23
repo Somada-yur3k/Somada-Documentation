@@ -40,8 +40,8 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     })}));
     const issues=[],crossings=[];
     const {routes,nodes,labelBoxes,constants:c,model}=data;
-    assert.equal(routes.length,72);assert.equal(new Set(routes.map(r=>r.id)).size,72);
-    assert(await page.locator('.diagram-connector').evaluateAll(paths=>paths.length===72&&paths.every(p=>getComputedStyle(p).stroke==='rgb(0, 0, 0)')),'All 72 connectors render black');
+    assert.equal(routes.length,73);assert.equal(new Set(routes.map(r=>r.id)).size,73);
+    assert(await page.locator('.diagram-connector').evaluateAll(paths=>paths.length===73&&paths.every(p=>getComputedStyle(p).stroke==='rgb(0, 0, 0)')),'All 73 connectors render black');
     assert(await page.locator('marker path').evaluateAll(paths=>paths.length===7&&paths.every(p=>getComputedStyle(p).fill==='rgb(0, 0, 0)')),'Actor and store arrowheads render black');
     assert.equal(nodes.headlab.y,Math.max(...Object.values(nodes).filter(n=>n.kind==='entity').map(n=>n.y)));
     for(const side of ['left','right']){
@@ -104,7 +104,7 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     for(const f of model.flows)assert.equal(await page.locator('.diagram-flow-label[data-flow-id="'+f.id+'"] text').textContent(),f.label,'Visible canonical label, not an abbreviation');
     assert(!/74 separate flows|Crossings without dots|Rep\. =/.test(await page.locator('#stage svg').textContent()),'No printed crossing or abbreviation footer');
     assert.equal(await page.locator('.diagram-flow-label rect').count(),0,'Plain labels have no background or border');
-    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),72,'Each plain label clears only its own connector stroke');
+    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),73,'Each plain label clears only its own connector stroke');
     const paint=await page.evaluate(async()=>{
       const {constants:c,labelBoxes}=window.__level1,svg=document.querySelector('#stage svg');
       const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'}));

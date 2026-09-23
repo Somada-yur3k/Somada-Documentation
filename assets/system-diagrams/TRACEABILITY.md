@@ -6,10 +6,10 @@ Open [System-Diagrams.html](../../System-Diagrams.html), [the complete A4 PDF](d
 
 ## Source authority
 
-- `Docs.html`: current overview, 19 backlog rows, 24 events, 20 full descriptions (Tables 3–22), current scope and pending ERD notice.
+- `Docs.html`: current overview, 20 backlog rows, 25 events, 20 full descriptions (Tables 3–22), current scope and pending ERD notice.
 - `assets/figures-v2/usecase-diagram-source.html`: the current six actors and 20 main use cases.
-- `assets/figures-v2/dfd-level1/dfd-level1-model.json`: five parents, ten canonical logical record groups, 72 flows.
-- `assets/figures-v2/dfd-level2-compact/dfd-level2-model.json`: 21 child processes and their directional exchanges.
+- `assets/figures-v2/dfd-level1/dfd-level1-model.json`: five parents, ten canonical logical record groups, 75 flows.
+- `assets/figures-v2/dfd-level2-compact/dfd-level2-model.json`: 24 child processes (the three forecasting children are intentionally deferred from Sequence diagrams) and their directional exchanges.
 - `README.md` and the consultation findings in `assets/system-audit.json`: boundaries and unresolved decisions.
 - [OMG UML 2.5.1](https://www.omg.org/spec/UML/2.5.1): notation, not a source of laboratory requirements.
 

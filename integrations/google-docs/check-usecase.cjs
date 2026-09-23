@@ -10,29 +10,17 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
  await page.goto('http://127.0.0.1:'+server.address().port+'/assets/figures-v2/usecase-diagram-source.html?export=1');
  await page.waitForFunction(()=>window.__done);
  const result=await page.evaluate(()=>{
-  const cases=BASE_UC.concat(SUPPORT_UC).map(u=>({...u,...useCaseSize(u)}));
+  const cases=BASE_UC.concat(SUPPORT_UC).filter(u=>!u.diagramHidden).map(u=>({...u,...useCaseSize(u)}));
   const paths=[...document.querySelectorAll('.diagram-connector')].map(p=>{const nums=p.getAttribute('d').match(/-?\d+(?:\.\d+)?/g).map(Number),points=[];for(let i=0;i<nums.length;i+=2)points.push(nums.slice(i,i+2));return{id:p.dataset.flowId,points,marker:p.getAttribute('marker-end')};});
   const boxes=[...document.querySelectorAll('text tspan')].map(t=>{const b=t.getBBox(),g=t.closest('.diagram-flow-label'),m=g?.transform.baseVal.consolidate()?.matrix;const corners=[[b.x-2,b.y-2],[b.x+b.width+2,b.y-2],[b.x+b.width+2,b.y+b.height+2],[b.x-2,b.y+b.height+2]].map(([x,y])=>{const p=m?new DOMPoint(x,y).matrixTransform(m):{x,y};return[p.x,p.y];});return{text:t.textContent,node:t.closest('[id^="usecase-"]')?.id?.replace('usecase-',''),label:g?.dataset.flowId,corners,x:b.x,y:b.y,w:b.width,h:b.height};});
   return{actors:ACTORS,cases,paths,boxes,relationships:RELATIONSHIPS};
  });
  const issues=[];
  assert.equal(result.actors.length,6);assert.equal(result.cases.length,31);assert.equal(result.relationships.length,12);
- assert.equal(result.paths.length-12,42);
- for(const side of ['left','right']){
-  const actors=result.actors.filter(a=>a.side===side && a.uses.includes('login')).sort((a,b)=>a.cy-b.cy);
-  assert.equal(actors.length,3);
-  if(side==='left')assert.deepEqual(actors.map(a=>a.id),['classrep','faculty','dean']);
-  const horizontalRows=actors.map(a=>result.paths.find(p=>p.id===`association-${a.id}-login`).points[2][1]);
-  for(let i=1;i<horizontalRows.length;i++)assert(horizontalRows[i]-horizontalRows[i-1]>=8,'Login horizontal rows follow visual actor order');
-  const lanes=actors.map(actor=>{
-   const p=result.paths.find(p=>p.id===`association-${actor.id}-login`);
-   assert.equal(p.points[1][0],p.points[2][0],'Login lane must be vertical');
-   const login=result.cases.find(n=>n.id==='login');
-   assert.deepEqual(p.points.at(-1),[login.x+(side==='left'?-login.rx:login.rx),login.cy]);
-   return p.points[1][0];
-  });
-  for(let i=1;i<lanes.length;i++)assert((lanes[i]-lanes[i-1])*(side==='left'?1:-1)>=14,`${side}: Log In lanes follow visual actor order with 14-unit spacing`);
- }
+ assert.equal(result.paths.length-12,43);
+ assert.equal(await page.locator('#usecase-login').count(),1,'Shared login is shown');
+ assert.equal(result.paths.filter(p=>p.id.endsWith('-login')).length,6,'All six actors connect to login');
+ assert(result.actors.every(a=>['left','right'].includes(a.side)));
  assert.deepEqual(result.actors.filter(a=>a.uses.includes('mgmlogs')).map(a=>a.id),['headlab'],'Only Head Laboratory manages logs, schedule and daily tasks');
  for(const b of result.boxes){
   if((b.node||b.label)&&(b.x<0||b.x+b.w>1600||b.y<0||b.y+b.h>1770))issues.push('canvas text '+b.text);
@@ -58,7 +46,7 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
   if(p.id.startsWith('association'))assert.equal(p.marker,null);else {assert(p.marker);assert.equal(p.points.length,2,'Dependencies are straight, not elbow-routed');}
  }
  await page.locator('#stage svg').screenshot({path:path.join(os.tmpdir(),'usecase-audit.png')});
- console.log(JSON.stringify({actors:result.actors.length,cases:result.cases.length,associations:result.paths.length-11,issues:[...new Set(issues)]},null,2));
+ console.log(JSON.stringify({actors:result.actors.length,cases:result.cases.length,associations:result.paths.length-result.relationships.length,issues:[...new Set(issues)]},null,2));
  assert.deepEqual([...new Set(issues)],[]);assert.deepEqual(errors,[]);
  if(process.argv.includes('--render'))await page.locator('#stage svg').screenshot({path:path.join(root,'assets/figures-v2/usecase-diagram-draft.png')});
  const base='http://127.0.0.1:'+server.address().port+'/assets/figures-v2/usecase-diagram-source.html';

@@ -34,7 +34,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL(req.url,'http://local').pathname);if(!p.startsWith(root+path.sep))return res.writeHead(403).end();fs.readFile(p,(e,b)=>{if(e)return res.writeHead(404).end();res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(p)]||'application/octet-stream');res.end(b);});});
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;try{
  browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('http://127.0.0.1:'+server.address().port+'/System-Diagrams.html?authored=1');await page.waitForFunction(()=>window.__systemDiagramsReady);
+ await page.goto('http://127.0.0.1:'+server.address().port+'/System-Diagrams.html?authored=1');await page.waitForFunction(()=>window.__systemDiagramsReady||window.__systemDiagramsError);assert.equal(await page.evaluate(()=>window.__systemDiagramsError),undefined,errors.join('\n'));
  assert.equal(await page.locator('.sheet').count(),7+sequences.length);assert.deepEqual(errors,[]);
  assert.deepEqual(await page.locator('.sheet').evaluateAll(nodes=>nodes.map(n=>n.id)),['activity-system','activity-p1','activity-p2','activity-p3','activity-p4','activity-p5',...sequences.map(m=>'sequence-'+m.id),'deployment-view']);
  await sequenceChecks.checkPage(page);
@@ -43,7 +43,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   assert.equal(await section.locator('svg').count(),1);
   assert.equal(await section.locator('[data-lane],.lane-bg').count(),0,model.id+' has no partitions or swimlanes');
   assert.deepEqual(await section.locator('[data-activity-node]').evaluateAll(nodes=>nodes.map(n=>{
-   const shape=n.matches('g')?n.querySelector('rect'):n,s=getComputedStyle(shape);
+   const shape=n.matches('g')?n.querySelector('rect,circle'):n,s=getComputedStyle(shape);
    return s.fill==='rgb(255, 255, 255)'||s.fill==='rgb(0, 0, 0)';
   })),await section.locator('[data-activity-node]').evaluateAll(nodes=>nodes.map(()=>true)),'Monochrome activity shapes');
   assert.equal(await section.locator('marker').getAttribute('markerWidth'),'8.5','Enlarged filled arrowheads');
@@ -51,12 +51,28 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   assert.deepEqual(children,model.steps.map((name,i)=>({id:model.id+'.'+(i+1),name})),model.id+' retains every canonical child exactly once');
   assert.equal(await section.locator('..').locator('.process-reference .sheet-foot a').first().getAttribute('href'),'assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process='+model.id);
   assert.equal(await section.locator('.sheet-head,.sheet-note,.sheet-foot,.sheet-subtitle').count(),0,'Only the titled diagram belongs inside the A4 artwork');
-  assert.equal(await section.locator('g[data-activity-node] text').count(),await section.locator('g[data-activity-node]').count(),'Only one action name per box; no descriptions');
+  assert.equal(await section.locator('g[data-uml-kind="action"] text').count(),await section.locator('g[data-uml-kind="action"]').count(),'Only one action name per box; no descriptions');
   const aliases=await section.locator('[data-child-ref]').evaluateAll(nodes=>nodes.map(n=>({id:n.dataset.childRef,name:n.dataset.childName})));
   for(const alias of aliases)assert.equal(alias.name,model.steps[Number(alias.id.split('.')[1])-1],'Repeated behavior retains its canonical mapping');
   assert(await section.locator('[data-child-process]').evaluateAll(nodes=>nodes.every(n=>!/^\d+\.\d+/.test(n.textContent))),'No process-number prefixes in action labels');
   const geometry=await page.evaluate(id=>window.SystemActivityGeometry[id],model.id);
-  assert.equal(await section.locator('svg').getAttribute('viewBox'),model.id==='p2'?'0 0 1200 2500':'0 0 1200 1697','Portrait activity artwork');
+  const finalKeys={p1:'account-end',p2:'other-end',p3:'end',p4:'other-end',p5:'report-end'};
+  assert.deepEqual(Object.entries(geometry.nodes).filter(([,n])=>n.kind==='final').map(([k])=>k),[finalKeys[model.id]],'One retained lower Activity Final under the adviser convention');
+  assert(Object.values(geometry.nodes).some(n=>n.kind==='flow-final'),'Branch endings use Flow Final');
+  assert.equal(await section.locator('svg').getAttribute('viewBox'),model.id==='p2'?'0 0 1200 2500':model.id==='p4'?'0 0 1200 2300':'0 0 1200 1697','Portrait activity artwork');
+  if(model.id==='p4'){
+   const route=(from,guard)=>geometry.routes.find(r=>r.from===from&&r.guard===guard)?.to;
+   assert.equal(route('forecast-choice','[Yes: Head Lab]'),'forecast-input');
+   assert.equal(route('forecast-valid','[Yes]'),'forecast-estimate');
+   assert.equal(route('forecast-valid','[No]'),'forecast-unavailable');
+   assert.equal(route('forecast-show',null),'forecast-review');
+   assert.equal(geometry.nodes['forecast-end'].kind,'flow-final');
+   assert.equal(geometry.nodes['other-end'].kind,'final');
+  }
+  for(const [key,node]of Object.entries(geometry.nodes).filter(([key])=>key.endsWith('-error-end'))){
+   assert.equal(node.kind,'flow-final','Invalid operation ends only its flow: '+key);
+   assert.equal(await section.locator('[data-activity-node="'+key+'"][data-uml-kind="flow-final"] path').count(),1,'Flow Final has an X');
+  }
   const actionSizes=Object.values(geometry.nodes).filter(n=>n.kind==='action').map(n=>[n.w,n.h]);
   assert(actionSizes.every(([w,h])=>w===260&&h===68),'Uniform compact action boxes across all five activities');
   assert(Object.values(geometry.nodes).filter(n=>['initial','final'].includes(n.kind)).every(n=>n.w===44&&n.h===44),'Larger, uniform initial/final nodes');
@@ -124,24 +140,39 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   assert.equal(Object.values(geometry.nodes).filter(n=>n.kind==='initial').length,1,'One continuous initial flow');
   assert(geometry.precondition.includes('signed in')||geometry.precondition.includes('signed-in'),'Explicit authenticated entry scope');
   assert(geometry.routes.every(r=>r.points.at(-1)[1]>=r.points[0][1]),'Top-to-bottom control flow');
-  const reachesEnd=new Set(finals);for(let i=0;i<Object.keys(geometry.nodes).length;i++)for(const r of geometry.routes)if(reachesEnd.has(r.to))reachesEnd.add(r.from);
-  assert.deepEqual([...reachesEnd].sort(),Object.keys(geometry.nodes).sort(),'All branches reach an activity final: '+model.id);
+  const reachesEnd=new Set(Object.entries(geometry.nodes).filter(([,n])=>['final','flow-final'].includes(n.kind)).map(([key])=>key));for(let i=0;i<Object.keys(geometry.nodes).length;i++)for(const r of geometry.routes)if(reachesEnd.has(r.to))reachesEnd.add(r.from);
+  assert.deepEqual([...reachesEnd].sort(),Object.keys(geometry.nodes).sort(),'All branches reach an Activity or Flow Final: '+model.id);
  }
- const deploymentKinds=['database','desktop','laptop','mail','phone','server'];
- for(const attribute of ['node','icon'])assert.deepEqual(await page.locator('#deployment-view [data-'+attribute+']').evaluateAll((nodes,attribute)=>nodes.map(n=>n.dataset[attribute]).sort(),attribute),deploymentKinds,'Deployment has six distinct illustrated nodes and icons');
- assert.match(await page.locator('#deployment-view').innerText(),/Actual unit counts: TBD/);
+ const dep=page.locator('#deployment-view svg'),deploymentText=await dep.locator('tspan').allTextContents().then(rows=>rows.join(' '));
+ assert.deepEqual(await dep.locator('[data-node]').evaluateAll(ns=>ns.map(n=>n.dataset.node).sort()),['application','classrep','database','dean','faculty','head','staff']);
+ assert.equal(await dep.getAttribute('viewBox'),'0 0 1200 1697');
+ assert.equal(await dep.locator('[data-store]').count(),10);
+ for(const term of ['Desktop','Laptop','Tablet','Smartphone','Class Representative','Faculty','Dean','Circuit Staff','Physics Staff','Head Lab','Web Browser','Next.js','React','TypeScript','Node.js','PostgreSQL','HTTPS','TLS','AI Chatbot','Inventory Forecasting'])assert(deploymentText.includes(term),'Deployment missing '+term);
+ for(const store of l1.stores)assert(deploymentText.includes(store.number+' — '+store.name),'Deployment missing store '+store.id);
+ assert(!/Email infrastructure|Protocol TBD|Not yet selected|SOMADA|\.html/i.test(deploymentText));
+ assert.deepEqual(await dep.locator('[data-connection]').evaluateAll(ns=>ns.map(n=>n.dataset.connection).sort()),['application-database','classrep-application','dean-application','faculty-application','head-application','staff-application']);
  assert.deepEqual(await page.locator('#activity-system [data-lane-name]').evaluateAll(ns=>ns.map(n=>n.dataset.laneName)),['Class Representative','Faculty','Circuit Staff','Physics Staff','Head Lab','Dean'],'Six distinct actor partitions');
  const swim=page.locator('#activity-system');
  assert.equal(await swim.locator('[data-uml-kind="initial"]').count(),1);
- assert.equal(await swim.locator('[data-uml-kind="fork"]').count(),1);
- assert.equal(await swim.locator('[data-uml-kind="join"]').count(),8,'Preparation join and seven explicit OR convergence bars');
- assert.equal(await swim.locator('[data-uml-kind="final"]').count(),4);
- assert.equal(await swim.locator('svg').getAttribute('viewBox'),'0 0 2520 3564','A4 portrait artwork ratio');
+ assert.equal(await swim.locator('[data-uml-kind="fork"]').count(),0,'Preparation is sequential');
+ assert.equal(await swim.locator('[data-uml-kind="join"]').count(),9,'Exclusive preparation outcomes converge separately');
+ assert.equal(await swim.locator('[data-uml-kind="final"]').count(),1);
+ assert.equal(await swim.locator('[data-uml-kind="flow-final"]').count(),3);
+ assert.equal(await swim.locator('svg').getAttribute('viewBox'),'0 0 2520 3800','Portrait artwork fits the A4 publication page');
  assert.equal(await swim.locator('[data-child-process]').count(),0,'Summary does not repeat every Level 2 step');
  assert.equal(await swim.locator('.sheet-head,.sheet-subtitle,.sheet-note,.sheet-foot').count(),0,'Reusable swimlane has no surrounding print chrome');
  assert(await swim.locator('[data-uml-kind="action"] rect').evaluateAll(nodes=>nodes.every(n=>Number(n.getAttribute('rx'))>0)),'UML actions use rounded rectangles');
  assert(await swim.locator('svg *').evaluateAll(nodes=>nodes.filter(n=>['rect','path','text','line'].includes(n.localName)).every(n=>{const s=getComputedStyle(n);return [s.fill,s.stroke].every(c=>['none','rgb(0, 0, 0)','rgb(255, 255, 255)'].includes(c));})),'Swimlane shapes, text and connectors are black and white');
  const whole=await page.evaluate(()=>window.SystemSwimlaneGeometry);
+ for(const key of ['prepare-requester','balance']){
+  const entry=whole.routes.find(r=>r.to===key).points.at(-1);
+  for(const r of whole.routes.filter(r=>r.from===key))assert(Math.hypot(entry[0]-r.points[0][0],entry[1]-r.points[0][1])>=60,key+' has separated entry and exit ports');
+ }
+ const circuitPreparation=whole.routes.find(r=>r.from==='prepare-circuit'&&r.to==='prepare-join');
+ assert.equal(circuitPreparation.points[0][0],whole.nodes['prepare-circuit'].x,'Circuit preparation exits the left edge');
+ for(const [from,to]of [['admin','faculty-handoff'],['faculty-handoff','classrep-receive'],['classrep-receive','classrep-login']])assert(whole.routes.some(r=>r.from===from&&r.to===to),'Explicit account hand-off: '+from+' → '+to);
+ assert.equal(whole.nodes['classrep-receive'].lane,0);
+ assert.equal(whole.nodes['classrep-login'].lane,0);
  for(const [key,n] of Object.entries(whole.nodes)){
   assert(n.x>=whole.laneBounds[n.lane]&&n.x+n.w<=whole.laneBounds[n.lane+1],key+' stays inside the responsible lane');
   assert(n.y>=130&&n.y+n.h<whole.height,key+' stays below lane headings and inside portrait artwork');
@@ -162,10 +193,12 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   const incoming=whole.routes.filter(r=>r.to===key),outgoing=whole.routes.filter(r=>r.from===key);
   if(n.kind==='decision'){assert.equal(incoming.length,1,key+' decision has one input');assert.equal(outgoing.length,2,key+' has two guarded alternatives');assert(outgoing.every(r=>r.guard),key+' guard labels');}
   if(n.kind==='fork'){assert.equal(incoming.length,1);assert.equal(outgoing.length,2);}
-   if(n.kind==='join'){assert.equal(incoming.length,key==='prepare-join'?4:2);assert.equal(outgoing.length,1);}
+   if(n.kind==='join'){assert.equal(incoming.length,2);assert.equal(outgoing.length,1);}
   if(n.kind==='merge'||n.kind==='connector')assert.equal(outgoing.length,1,key+' merges exclusive paths');
  }
- assert(whole.routes.some(r=>r.from==='off-schedule'&&r.to==='dean-route'),'Class Representative out-of-schedule requests route to Dean');
+ assert(whole.routes.some(r=>r.from==='direct-dean'&&r.to==='dean-route'&&r.guard==='[Yes]'),'Out-of-schedule Class Rep goes to Dean only when Faculty is unavailable');
+ assert(whole.routes.some(r=>r.from==='direct-dean'&&r.to==='review'&&r.guard==='[No]'),'Other Class Rep requests go to assigned Faculty');
+ assert(!whole.nodes['off-schedule'],'No escalation decision after Faculty approval');
  assert.equal(whole.nodes.dean.lane,5,'Dean reviews in own partition');
  assert.equal(whole.nodes['dean-route'].kind,'join','Dean routing uses the requested join bar');
  assert.equal(whole.nodes['dean-route'].joinSpec,'or','Either request proceeds without waiting for both');
@@ -179,14 +212,14 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  assert.equal(whole.nodes['approval-ready'].joinSpec,'or');
  const scheduledYes=whole.routes.find(r=>r.from==='faculty-scheduled'&&r.to==='approved');
  assert(Math.max(...scheduledYes.points.map(p=>p[1]))<whole.nodes['dean-rejected'].y,'On-schedule bypass ends above the lower rejection route');
- for(const [from,to] of [['faculty-request','faculty-scheduled'],['review','faculty-approved'],['faculty-approved','off-schedule']]){
+ for(const [from,to] of [['faculty-request','faculty-scheduled'],['review','faculty-approved'],['faculty-approved','approved']]){
   const r=whole.routes.find(r=>r.from===from&&r.to===to);
   assert(Math.hypot(r.points[1][0]-r.points[0][0],r.points[1][1]-r.points[0][1])>=48,from+' has a visible arrow shaft');
  }
  assert.equal(await swim.locator('[data-swimlane-node="approved"] rect').count(),1,'Visible bar makes convergence explicit');
  assert.equal(await swim.locator('[data-control-to="approved"][marker-end]').count(),2,'Each decision has its own arrowhead');
- const offNo=whole.routes.find(r=>r.from==='off-schedule'&&r.to==='approved');
- assert.equal(scheduledYes.guard,'[Yes]');assert.equal(offNo.guard,'[No]');
+ const offNo=whole.routes.find(r=>r.from==='faculty-approved'&&r.to==='approved');
+ assert.equal(scheduledYes.guard,'[Yes]');assert.equal(offNo.guard,'[Yes]');
  for(let i=1;i<scheduledYes.points.length;i++)for(let j=1;j<offNo.points.length;j++){
   const a=scheduledYes.points[i-1],b=scheduledYes.points[i],c=offNo.points[j-1],d=offNo.points[j];
   const vertical=a[0]===b[0]&&c[0]===d[0]&&a[0]===c[0];
@@ -200,7 +233,8 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  deanYes.points.slice(1).forEach((p,i)=>assert(p[1]>=deanYes.points[i][1],'Dean Yes never routes upward'));
  assert.equal(whole.nodes['dean-approved'].lane,5,'Dean decision stays in own partition');
  assert(!whole.nodes['requester-ready'],'Requester diamond removed');
- assert.equal(whole.nodes['prepare-join'].joinSpec,'(Rep or Faculty) and (Circuit or Physics)');
+ assert.equal(whole.nodes['prepare-join'].joinSpec,'or');
+ assert(whole.routes.some(r=>r.from==='requester-prepared'&&r.to==='lab'),'Requester preparation precedes staff selection');
  assert.equal(whole.nodes.returns.kind,'join');
  assert.equal(whole.nodes.returns.joinSpec,'or','Only the selected laboratory return path is required');
  assert.equal(whole.nodes['request-ready'].kind,'join','Optional Q&A paths enter a join bar');
@@ -222,10 +256,10 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   offsets.slice(1).forEach((v,i)=>assert(v-offsets[i]>=80,id+' input ports have visible spacing'));
  }
  assert(await swim.locator('[data-uml-kind="action"] rect').evaluateAll(ns=>ns.every(n=>Number(n.getAttribute('rx'))===Number(n.getAttribute('height'))/2)),'Capsule activity shapes match requested sample');
- assert.deepEqual(whole.routes.filter(r=>r.to==='prepare-join').map(r=>r.name).sort(),['Circuit','Faculty','Physics','Rep']);
+ assert.deepEqual(whole.routes.filter(r=>r.to==='prepare-join').map(r=>r.name).sort(),['Circuit','Physics']);
  assert(!whole.nodes['staff-ready'],'Staff preparation diamond removed');
  assert(whole.routes.some(r=>r.from==='prepare-physics'&&r.to==='prepare-join'),'Physics preparation connects directly to join');
- const reached=new Set(['start']),ended=new Set(Object.entries(whole.nodes).filter(([,n])=>n.kind==='final').map(([key])=>key));
+ const reached=new Set(['start']),ended=new Set(Object.entries(whole.nodes).filter(([,n])=>['final','flow-final'].includes(n.kind)).map(([key])=>key));
  for(let i=0;i<Object.keys(whole.nodes).length;i++)for(const r of whole.routes){if(reached.has(r.from))reached.add(r.to);if(ended.has(r.to))ended.add(r.from);}
  assert.deepEqual([...reached].sort(),Object.keys(whole.nodes).sort(),'Every separate task is reachable from sign-in');
  assert.deepEqual([...ended].sort(),Object.keys(whole.nodes).sort(),'Every branch can reach an outcome');
@@ -246,7 +280,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    if(sheet.scrollHeight>sheet.clientHeight+1)out.push([sheet.id,'sheet overflow']);
    const svg=sheet.querySelector('svg');
    const view=svg.viewBox.baseVal;
-   for(const group of svg.querySelectorAll('g[data-activity-node]')){
+   for(const group of svg.querySelectorAll('g[data-uml-kind="action"]')){
     const shape=group.querySelector('rect').getBBox();
     for(const t of group.querySelectorAll('text')){const b=t.getBBox();if(b.x<shape.x+3||b.x+b.width>shape.x+shape.width-3||b.y<shape.y+3||b.y+b.height>shape.y+shape.height-3)out.push([sheet.id,'text outside action',t.textContent]);}
    }
@@ -287,8 +321,8 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   await page.pdf({path:path.join(root,'assets/system-diagrams/diagrams.pdf'),preferCSSPageSize:true,printBackground:true});
   const pdf=fs.readFileSync(path.join(root,'assets/system-diagrams/diagrams.pdf')).toString('latin1');assert.equal((pdf.match(/\/Type \/Page\b/g)||[]).length,7+sequences.length);
   const pageBoxes=[...pdf.matchAll(/\/MediaBox\s*\[\s*0\s+0\s+([\d.]+)\s+([\d.]+)/g)].map(m=>[Number(m[1]),Number(m[2])]);
-  assert.equal(pageBoxes.filter(([w,h])=>Math.abs(w-595.28)<1&&Math.abs(h-841.89)<1).length,6+sequences.length,'Activities, Swimlane and workflow sequences are A4 portrait');
-  assert.equal(pageBoxes.filter(([w,h])=>Math.abs(w-841.89)<1&&Math.abs(h-595.28)<1).length,1,'Deployment remains A4 landscape');
+  assert.equal(pageBoxes.filter(([w,h])=>Math.abs(w-595.28)<1&&Math.abs(h-841.89)<1).length,7+sequences.length,'All diagrams are A4 portrait');
+  assert.equal(pageBoxes.filter(([w,h])=>Math.abs(w-841.89)<1&&Math.abs(h-595.28)<1).length,0,'No landscape pages remain');
   await page.pdf({path:path.join(root,'assets/system-diagrams/swimlane-system.pdf'),preferCSSPageSize:true,printBackground:true,pageRanges:'1'});
   const swimPdf=fs.readFileSync(path.join(root,'assets/system-diagrams/swimlane-system.pdf')).toString('latin1');
   assert.equal((swimPdf.match(/\/Type \/Page\b/g)||[]).length,1,'Standalone Swimlane PDF is one page');
@@ -299,6 +333,8 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    await section.screenshot({path:path.join(root,'assets/system-diagrams/preview-activity-'+model.id+'.png')});
    await exportDiagram(svg,'activity-'+model.id);
   }
+  await page.locator('#activity-system').screenshot({path:path.join(root,'assets/system-diagrams/preview-activity.png')});
+  await exportDiagram(page.locator('#activity-system svg'),'swimlane-system');
   if(!process.argv.includes('--activities-only')){
    await page.locator('#activity-system').screenshot({path:path.join(root,'assets/system-diagrams/preview-activity.png')});
    const swimlane=page.locator('#activity-system svg');
@@ -312,8 +348,10 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    await page.pdf({path:path.join(root,'assets/system-diagrams/sequences.pdf'),preferCSSPageSize:true,printBackground:true,pageRanges:'7-'+(6+sequences.length)});
    assert.equal((fs.readFileSync(path.join(root,'assets/system-diagrams/sequences.pdf')).toString('latin1').match(/\/Type \/Page\b/g)||[]).length,sequences.length);
     await page.locator('#sequence-p2').screenshot({path:path.join(root,'assets/system-diagrams/preview-sequence.png')});
+   await exportDiagram(page.locator('#deployment-view svg'),'deployment');
+   await page.pdf({path:path.join(root,'assets/system-diagrams/deployment.pdf'),preferCSSPageSize:true,printBackground:true,pageRanges:'12'});
    await page.locator('#deployment-view').screenshot({path:path.join(root,'assets/system-diagrams/preview-deployment.png')});
   }
  }
- console.log('PASS: five activities, overall Swimlane, '+sequences.length+' major-process sequences and deployment; '+(6+sequences.length)+' portrait + one landscape A4 pages.');
+ console.log('PASS: five activities, overall Swimlane, '+sequences.length+' major-process sequences and deployment; '+(7+sequences.length)+' portrait A4 pages.');
 }finally{await browser?.close();await new Promise(r=>server.close(r));}})().catch(e=>{console.error(e);process.exitCode=1;server.close();});

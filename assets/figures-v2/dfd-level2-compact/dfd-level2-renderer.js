@@ -4,7 +4,8 @@
 (async function(){
   'use strict';
   const params=new URLSearchParams(location.search),output=params.has('embed')||params.has('export');
-  const NS='http://www.w3.org/2000/svg',W=2010,H=1486.75,FONT=24,LABEL_GAP=6,LANE_GAP=20;
+  const NS='http://www.w3.org/2000/svg',FONT=24,LABEL_GAP=6,LANE_GAP=20;
+  let W=2010,H=1486.75;
   document.body.classList.toggle('output-mode',output);
   const entityLines={classrep:['Class Rep.'],faculty:['Faculty'],dean:['Dean'],
     headlab:['Head','Laboratory'],physics:['Physics','Lab Staff'],circuits:['Circuits','Lab Staff']};
@@ -65,7 +66,7 @@
     p1:[['Validate','Credentials'],['Establish','Role-Scoped','Session'],['Manage Class','Rep. / Faculty','Accounts']],
     p2:[['Retrieve','Availability'],['Validate &','Record','Reservation'],['Route','Approval','Decision'],['Update','Reservation','Status']],
     p3:[['Capture','Signed-In','Inquiry'],['Retrieve','Authorized','Records'],['Compose','Grounded','Answer'],['Record Q&A','Exchange']],
-    p4:[['Maintain','Inventory'],['Retrieve','Approved','Reservation'],['Issue Items &','Create Slip'],['Reconcile','Return'],['Record','Disposal']],
+    p4:[['Maintain','Inventory'],['Retrieve','Approved','Reservation'],['Issue Items &','Create Slip'],['Reconcile','Return'],['Record','Disposal'],['Retrieve','Forecast','Inputs'],['Estimate','Next-Month','Needs'],['Present','Inventory','Forecast']],
     p5:[['Maintain','Schedule'],['Record Usage','& Daily Tasks'],['Process','Clearance'],['Compile','Reporting','Metrics'],['Generate','End-Term','Report']]
   };
   const centre=n=>n.y+n.h/2;
@@ -92,7 +93,9 @@
     const steps=model.steps.map((name,i)=>({id:model.id+'.'+(i+1),number:model.id.slice(1)+'.'+(i+1),name,lines:childLines[model.id][i]}));
     const counts=steps.flatMap(n=>['external','store'].map(kind=>model.flows.filter(f=>f.kind===kind&&(f.source===n.id||f.target===n.id)).length));
     const P={x:920,w:195,h:Math.max(180,(Math.max(...counts)-1)*36+48)};
-    const total=steps.length*P.h+(steps.length-1)*76,first=(H-total)/2;
+    const total=steps.length*P.h+(steps.length-1)*76;
+    H=Math.max(H,total+180);
+    const first=(H-total)/2;
     steps.forEach((n,i)=>nodes[n.id]={...n,...P,y:first+i*(P.h+76),kind:'process'});
     const peerIds=new Set(model.flows.flatMap(f=>[f.source,f.target]).filter(id=>!nodes[id]));
     const actors=parent.entities.filter(n=>peerIds.has(n.id)),stores=parent.stores.filter(n=>peerIds.has(n.id));
@@ -100,14 +103,15 @@
     [...actors,...stores].forEach(n=>{const links=model.flows.filter(f=>f.source===n.id||f.target===n.id);targets[n.id]=links.reduce((sum,f)=>sum+centre(nodes[f.source===n.id?f.target:f.source]),0)/links.length;});
     const E={x:14,w:170,h:Math.max(170,...actors.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20))};
     // Uniform store peers within each figure, sized for its busiest port group.
-    const D={x:1744,w:250,h:Math.max(120,...stores.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20)),idw:64};
+    const storeX=Math.max(1744,1490+model.flows.filter(f=>f.kind==='store').length*LANE_GAP+30);
+    const D={x:storeX,w:250,h:Math.max(120,...stores.map(n=>model.flows.filter(f=>f.source===n.id||f.target===n.id).length*20+20)),idw:64};
+    W=Math.max(W,storeX+266);
     // Actor order follows the approved role column; Head Laboratory remains last.
     place(actors,targets,E.h).forEach(n=>nodes[n.id]={...n,...E,kind:'entity',lines:entityLines[n.id]});
     place(stores.slice().sort((a,b)=>targets[a.id]-targets[b.id]),targets,D.h).forEach(n=>nodes[n.id]={...n,...D,kind:'store',lines:storeLines[n.id]});
-    const svg=el('svg',{id:'diagram',xmlns:NS,width:1200,height:950,viewBox:'0 0 '+W+' '+H,role:'img','aria-label':'Process '+model.id.slice(1)+'.0 — '+model.name});
+    const svg=el('svg',{id:'diagram',xmlns:NS,width:1200,height:model.id==='p4'?Math.round(1200*H/W):950,viewBox:'0 0 '+W+' '+H,role:'img','aria-label':'Process '+model.id.slice(1)+'.0 — '+model.name});
     svg.appendChild(el('rect',{width:W,height:H,fill:'#fff'}));
     svg.appendChild(el('rect',{x:5,y:58,width:W-10,height:H-112,fill:'none',stroke:'#aaa','stroke-width':1.2}));
-    svg.appendChild(text(W/2,34,['Process '+model.id.slice(1)+'.0 — '+model.name],{'font-size':30,'font-weight':700}));
     const defs=el('defs');
     Object.entries({...colors,store:'#000000',internal:'#000000'}).forEach(([id,color])=>{
       const marker=el('marker',{id:'arrow-'+id,markerWidth:13,markerHeight:13,refX:12,refY:6,orient:'auto',markerUnits:'userSpaceOnUse'});

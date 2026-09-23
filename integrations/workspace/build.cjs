@@ -31,8 +31,8 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
    });
    let items=[],parent;
    if(id==='usecase'){
-    items=[...uc.BASE_UC,...uc.SUPPORT_UC].map(n=>({kind:'node',id:n.id,key:'node:'+n.id,label:n.label.join(' ')}));
-    for(const a of uc.ACTORS)for(const to of a.uses)items.push({kind:'flow',id:'association-'+a.id+'-'+to,key:'flow:association-'+a.id+'-'+to,source:a.id,target:to,label:a.label?.join(' ')||a.id});
+    items=[...uc.BASE_UC,...uc.SUPPORT_UC].filter(n=>!n.diagramHidden).map(n=>({kind:'node',id:n.id,key:'node:'+n.id,label:n.label.join(' ')}));
+    for(const a of uc.ACTORS)for(const to of a.uses.filter(id=>!uc.BASE_UC.find(u=>u.id===id)?.diagramHidden))items.push({kind:'flow',id:'association-'+a.id+'-'+to,key:'flow:association-'+a.id+'-'+to,source:a.id,target:to,label:a.label?.join(' ')||a.id});
     uc.RELATIONSHIPS.forEach((r,i)=>items.push({kind:'flow',id:'relationship-'+i,key:'flow:relationship-'+i,source:r.from,target:r.to,label:r.type}));
    }else{
     const flows=captured.l0||captured.l1?.flows||[...captured.l2.flows,...captured.l2.internal];

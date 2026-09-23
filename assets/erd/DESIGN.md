@@ -4,7 +4,17 @@ Status: draft for consultation, not an approved or deployed physical schema.
 
 Confirmed Reservation Type requirement: `RESERVATION.reservation_type` accepts `GROUP` or `STUDENT_ONLY` and is required for Class Representatives under both schedule variants. Faculty requests keep their existing workflow and may leave this field not applicable. Schedule classification remains in `REQUEST_REVISION.request_basis / usage_type`. `CLASS_GROUP` is the class/Faculty scope, not proof that the reservation is for a group. `REQUEST_MEMBER` retains existing selected members for Group; Student Only requires exactly one selected student from the assigned class; RESERVATION.requester_id retains the submitting representative account separately. Borrowing and clearance reuse these accountability links. A required single-student selector reuses STUDENT and REQUEST_MEMBER; no ordinary-student login or new entity is introduced. Rescheduling retains the saved type; unresolved legacy types require explicit classification. The dictionary states the role-dependent requirement because SQL nullability alone cannot express a cross-table role rule.
 
-The draft contains 25 entities and 51 foreign-key relationships on one complete A4 portrait sheet. It follows the current laboratory documentation and ten canonical DFD stores. It does not introduce forecasting, AI approval, or AI reservation submission. No database product or physical SQL type has been selected here.
+The draft contains 25 entities and 51 foreign-key relationships on one complete A4 portrait sheet. It follows the current laboratory documentation and ten canonical DFD stores. Inventory forecasts are dynamic read-only outputs, so no Forecast table or additional relationship is needed. AI approval and AI reservation submission remain excluded. No database product or physical SQL type has been selected here.
+
+## Inventory forecast data lineage
+
+- D4: ITEM and inventory records provide item category, laboratory, stock/condition and reorder level.
+- D5: BORROWING.issued_at and BORROWING_ITEM.qty_issued provide issue history; RETURN_ENTRY provides actual consumed, returned, broken/lost quantities and recorded_at.
+- D2: BORROWING_ITEM.request_item_id → REQUEST_ITEM.item_id identifies the ITEM; the revision links preserve request scope. Cancelled/rejected or merely requested quantities are not consumption.
+- Aggregate consumables from actual RETURN_ENTRY.qty_consumed once; do not add the matching inventory ledger decrement again.
+- Reusable-equipment estimates need reliable overlapping issue/return intervals and serviceable stock. Total monthly borrow counts are not concurrent demand. Incomplete timing/stock evidence produces Insufficient history, not an invented shortage estimate.
+- Output includes next-month period, current stock, estimate, advisory restock/shortage, explanation, historical coverage and generation timestamp. These are response fields, not new persisted columns. Head Lab reviews; generation never changes stock or creates a purchase.
+- Minimum history, model choice and forecast error require empirical validation. Initial usage-based forecasting is a baseline, not evidence of a trained AI model.
 
 ## Reading the sheets
 

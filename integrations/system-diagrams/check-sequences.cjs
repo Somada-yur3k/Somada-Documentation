@@ -45,9 +45,21 @@ for(const model of models){
 }
 const find=id=>models.find(m=>m.id===id),labels=id=>walk(find(id).steps).map(s=>s.label||'').join(' ');
 assert.match(find('p1').note,/never self-register/);assert.match(labels('p1'),/Authorize Head/);assert.match(labels('p1'),/Update details \/ active status/);
-assert.match(labels('p2'),/Pending Dean/);assert.match(labels('p2'),/Save final Approved or Rejected/);assert.match(labels('p2'),/Save valid request \/ change/);assert.match(find('p2').note,/GROUP or STUDENT_ONLY/);
+assert.doesNotMatch(labels('p2'),/Pending Dean|prior Faculty decision/);assert.match(labels('p2'),/Save final Approved or Rejected/);assert.match(labels('p2'),/Save valid request \/ change/);assert.match(find('p2').note,/GROUP or STUDENT_ONLY/);
+const reviewerBranches=find('p2').steps.filter(s=>s.kind==='opt').flatMap(s=>s.operands);
+assert.equal(reviewerBranches.length,2);
+assert.match(reviewerBranches[0].guard,/Class Rep: on-schedule or available Faculty/);
+assert.match(reviewerBranches[1].guard,/Out-of-schedule: Faculty requester or Faculty unavailable/);
+for(const branch of reviewerBranches){const calls=branch.steps.filter(s=>s.kind==='call'&&['faculty','dean'].includes(s.from));assert.equal(calls.length,1,'Each route has one final reviewer');}
 assert(walk(find('p3').steps).filter(s=>s.write).every(s=>s.stores.join()==='d9'),'Q&A writes only D9');
 assert.match(labels('p4'),/final approval/);assert.match(labels('p4'),/completed usage logs/);
+const forecast=walk(find('p4').steps).flatMap(s=>s.operands||[]).find(o=>o.guard==='Forecast requested by Head Lab only');
+assert(forecast,'Forecast is an explicit Head-only operation');
+assert(!walk(forecast.steps).some(s=>s.write),'Forecast never persists stock or forecast output');
+assert.deepEqual(find('p4').steps.find(s=>s.to==='db').stores,['d2','d4','d5']);
+assert.match(find('p4').steps.find(s=>s.to==='db').label,/actual usage history/);
+assert(walk(forecast.steps).some(s=>s.kind==='alt'&&s.operands.some(o=>o.guard==='Insufficient history')),'History fallback is shown');
+assert.deepEqual(find('p3').stores,['d4','d8','d9'],'Chatbot excludes reservation and schedule lookups');
 const reportParallel=walk(find('p5').steps).find(s=>s.kind==='par');
 assert.equal(reportParallel.operands.length,2,'End-term inputs remain independent reads');
 assert(reportParallel.operands.every(o=>o.steps.length===2&&o.steps[0].to==='db'&&!o.steps[0].write&&o.steps[1].kind==='reply'));
@@ -74,7 +86,7 @@ async function checkPage(page){
   assert.deepEqual(collision,[],model.id+' labels avoid activation bars');
  }
  await page.locator('#sequence-index a[href="#sequence-p2"]').click();assert.equal(new URL(page.url()).hash,'#sequence-p2');
- console.log('Sequence checks passed: five major processes; all 20 use cases and 21 DFD children remain covered.');
+ console.log('Sequence checks passed: five major processes; all 20 use cases and 24 DFD children covered, including forecasting.');
 }
 module.exports={checkPage};
 if(require.main===module)console.log('Sequence model checks passed: five major-process diagrams with matched messages and complete coverage.');

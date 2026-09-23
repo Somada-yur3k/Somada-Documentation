@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'../..'),dir='assets/figures-v2/';
 const model=JSON.parse(fs.readFileSync(path.join(root,dir,'dfd-level1/dfd-level1-model.json'),'utf8'));
-assert.equal(model.flows.length,72);
+assert.equal(model.flows.length,73);
 assert.equal(model.entities.at(-1).id,'headlab');
 assert.deepEqual(model.flows.filter(f=>f.label==='Daily Task Entry').map(f=>f.source),['headlab']);
  assert.deepEqual(model.flows.filter(f=>f.label==='Usage Entry').map(f=>f.source),['headlab']);
@@ -34,7 +34,7 @@ const server=http.createServer((req,res)=>{
     await page.waitForFunction(()=>window.__done||window.__error);
     assert.equal(await page.evaluate(()=>window.__error),undefined);
     const flows=await page.evaluate(()=>FLOWS);
-    assert.equal(flows.length,46);
+    assert.equal(flows.length,48);
     assert.deepEqual(flows.map(f=>signature({source:f.dir==='in'?f.entity:'system',target:f.dir==='in'?'system':f.entity,label:f.label})).sort(),model.flows.filter(f=>f.kind==='external').map(f=>signature({...f,source:f.source.startsWith('p')&&!['physics'].includes(f.source)?'system':f.source,target:f.target.startsWith('p')&&!['physics'].includes(f.target)?'system':f.target})).sort());
     const geometry=await page.evaluate(()=>window.__level0);
     for(const f of flows)assert.equal(await page.locator('.diagram-flow-label[data-flow-id="'+f.id+'"] text').textContent(),f.label,'Full canonical Level 0 label');
@@ -49,7 +49,7 @@ const server=http.createServer((req,res)=>{
       assert(a.x>=Math.min(...xs)+12&&a.x+a.w<=Math.max(...xs)-12,'Visible connectors on both sides: '+a.id);
     }
     assert.equal(await page.locator('.diagram-flow-label rect').count(),0);
-    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),46);
+    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),48);
     await page.setViewportSize({width:1200,height:1500});
     await page.locator('#stage svg').screenshot({path:path.join(os.tmpdir(),'somada-level0-scope.png')});
     if(process.argv.includes('--render'))await page.locator('#stage svg').screenshot({path:path.join(root,dir,'dfd-level0/dfd-level0-draft.png')});
