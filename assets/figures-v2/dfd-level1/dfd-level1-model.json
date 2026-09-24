@@ -91,7 +91,7 @@
     {
       "id": "d3",
       "number": "D3",
-      "name": "Laboratory Schedule & Usage Logs"
+      "name": "Laboratory Schedule"
     },
     {
       "id": "d7",
@@ -102,6 +102,11 @@
       "id": "d6",
       "number": "D6",
       "name": "Clearance Records"
+    },
+    {
+      "id": "d11",
+      "number": "D11",
+      "name": "Laboratory Usage Logs"
     }
   ],
   "flows": [
@@ -144,7 +149,7 @@
       "id": "p1-he-account",
       "source": "headlab",
       "target": "p1",
-      "label": "Account Management Details",
+      "label": "Verified Faculty Account Details",
       "kind": "external"
     },
     {
@@ -194,7 +199,7 @@
       "id": "p2-cr-availability",
       "source": "p2",
       "target": "classrep",
-      "label": "Schedule & Availability",
+      "label": "Schedule Availability Data",
       "kind": "external"
     },
     {
@@ -243,7 +248,7 @@
       "id": "p2-fa-availability",
       "source": "p2",
       "target": "faculty",
-      "label": "Schedule & Availability",
+      "label": "Schedule Availability Data",
       "kind": "external"
     },
     {
@@ -285,28 +290,28 @@
       "id": "p3-cr-inquiry",
       "source": "classrep",
       "target": "p3",
-      "label": "Inquiry",
+      "label": "Laboratory Inquiry",
       "kind": "external"
     },
     {
       "id": "p3-cr-answer",
       "source": "p3",
       "target": "classrep",
-      "label": "Answer",
+      "label": "Laboratory Answer",
       "kind": "external"
     },
     {
       "id": "p3-fa-inquiry",
       "source": "faculty",
       "target": "p3",
-      "label": "Inquiry",
+      "label": "Laboratory Inquiry",
       "kind": "external"
     },
     {
       "id": "p3-fa-answer",
       "source": "p3",
       "target": "faculty",
-      "label": "Answer",
+      "label": "Laboratory Answer",
       "kind": "external"
     },
     {
@@ -327,14 +332,14 @@
       "id": "p4-he-inventory",
       "source": "headlab",
       "target": "p4",
-      "label": "Inventory Update",
+      "label": "Inventory Update Details",
       "kind": "external"
     },
     {
       "id": "p4-he-equipment",
       "source": "headlab",
       "target": "p4",
-      "label": "Equipment Transaction",
+      "label": "Equipment Issue Details",
       "kind": "external"
     },
     {
@@ -348,14 +353,14 @@
       "id": "p4-ph-inventory",
       "source": "physics",
       "target": "p4",
-      "label": "Inventory Update",
+      "label": "Inventory Update Details",
       "kind": "external"
     },
     {
       "id": "p4-ph-equipment",
       "source": "physics",
       "target": "p4",
-      "label": "Equipment Transaction",
+      "label": "Equipment Issue Details",
       "kind": "external"
     },
     {
@@ -369,14 +374,14 @@
       "id": "p4-ci-inventory",
       "source": "circuits",
       "target": "p4",
-      "label": "Inventory Update",
+      "label": "Inventory Update Details",
       "kind": "external"
     },
     {
       "id": "p4-ci-equipment",
       "source": "circuits",
       "target": "p4",
-      "label": "Equipment Transaction",
+      "label": "Equipment Issue Details",
       "kind": "external"
     },
     {
@@ -397,14 +402,7 @@
       "id": "p5-he-schedule",
       "source": "headlab",
       "target": "p5",
-      "label": "Schedule Update",
-      "kind": "external"
-    },
-    {
-      "id": "p5-he-usage",
-      "source": "headlab",
-      "target": "p5",
-      "label": "Usage Entry",
+      "label": "Schedule Update Details",
       "kind": "external"
     },
     {
@@ -418,7 +416,7 @@
       "id": "p5-he-clearance",
       "source": "headlab",
       "target": "p5",
-      "label": "Clearance Action",
+      "label": "Clearance Details",
       "kind": "external"
     },
     {
@@ -566,14 +564,14 @@
       "id": "p5-d3-write",
       "source": "p5",
       "target": "d3",
-      "label": "Schedule / Usage Record",
+      "label": "Schedule Record",
       "kind": "store"
     },
     {
-      "id": "p5-d3-read",
-      "source": "d3",
+      "id": "p5-d11-read",
+      "source": "d11",
       "target": "p5",
-      "label": "Schedule / Usage Data",
+      "label": "Completed Usage Logs",
       "kind": "store"
     },
     {
@@ -630,6 +628,55 @@
       "source": "d2",
       "target": "p4",
       "label": "Historical Request Data",
+      "kind": "store"
+    },
+    {
+      "id": "p1-he-representative",
+      "source": "headlab",
+      "target": "p1",
+      "label": "Faculty-Verified Representative Details",
+      "kind": "external"
+    },
+    {
+      "id": "p4-he-equipment-return",
+      "source": "headlab",
+      "target": "p4",
+      "label": "Equipment Return Details",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ph-equipment-return",
+      "source": "physics",
+      "target": "p4",
+      "label": "Equipment Return Details",
+      "kind": "external"
+    },
+    {
+      "id": "p4-ci-equipment-return",
+      "source": "circuits",
+      "target": "p4",
+      "label": "Equipment Return Details",
+      "kind": "external"
+    },
+    {
+      "id": "p5-d2-completed",
+      "source": "d2",
+      "target": "p5",
+      "label": "Completed Reservation Data",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d5-reconciled",
+      "source": "d5",
+      "target": "p5",
+      "label": "Reconciled Return Data",
+      "kind": "store"
+    },
+    {
+      "id": "p5-d11-write",
+      "source": "p5",
+      "target": "d11",
+      "label": "Completed Session Usage Record",
       "kind": "store"
     }
   ]

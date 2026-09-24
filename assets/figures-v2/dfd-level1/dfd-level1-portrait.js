@@ -15,10 +15,10 @@
     headlab:['Head','Laboratory'],physics:['Physics','Lab Staff'],circuits:['Circuits','Lab Staff']};
   const processLines={p1:['Manage User','Access &','Accounts'],p2:['Manage','Reservations,','Availability','& Approvals'],
     p3:['Answer Lab','Questions'],p4:['Manage','Equipment &','Borrowing'],p5:['Manage Lab','Admin. &','Reporting']};
-  const storeLines={d1:['User','accounts'],d2:['Reservations','& approvals'],d3:['Lab schedule','& usage logs'],
+  const storeLines={d1:['User','accounts'],d2:['Reservations','& approvals'],d3:['Laboratory','schedule'],d11:['Laboratory','usage logs'],
     d4:['Equipment','inventory'],d5:['Borrowing','slip records'],d6:['Clearance','records'],d7:['Daily task','records'],
     d8:['Knowledge','base'],d9:['Chat history'],d10:['Disposal','records']};
-  const storeY={d1:230,d2:610,d8:940,d9:1056,d4:1260,d5:1410,d10:1560,d3:1780,d7:1890,d6:2000};
+  const storeY={d1:230,d2:610,d8:940,d9:1056,d4:1260,d5:1410,d10:1560,d3:1670,d11:1780,d7:1890,d6:2000};
   const ARROW_COLOR='#000000';
   function el(tag,attrs={},children=[]) {
     const node=document.createElementNS(NS,tag);
@@ -219,8 +219,8 @@
         const group=el('g',{class:'diagram-flow-label','data-flow-id':f.id,'data-full-label':f.label});
         const labelText=text(lx,p.py,[label],{'font-size':FONT});group.appendChild(labelText);labels.appendChild(group);
         const maxWidth=external?384:292, rowHeight=(P.h-48)/Math.max(1,p.count-1);
-        const naturalSize=Math.min(FONT,FONT*maxWidth/labelText.getBBox().width,(rowHeight-1)/1.1);
-        const size=f.label.includes('Reservation Type')?Math.min(FONT,Math.max(19.2,naturalSize),(rowHeight-1)/1.1):naturalSize;
+        // One font size for every arrow label, independent of wording length.
+        const size=20;
         labelText.setAttribute('font-size',size);
         if(labelText.getBBox().width>maxWidth){labelText.querySelector('tspan').setAttribute('textLength',maxWidth);labelText.querySelector('tspan').setAttribute('lengthAdjust','spacingAndGlyphs');}
         const initial=labelText.getBBox();labelText.querySelector('tspan').setAttribute('y',p.py-initial.y-initial.height/2+p.py);

@@ -107,7 +107,7 @@
 | FK | revision_id | id | No | REQUEST_REVISION.revision_id |
 | FK | student_id | id | No | STUDENT.student_id |
 
-## D3 — Laboratory Schedule & Usage Logs
+## D3 — Laboratory Schedule
 
 ### TERM
 
@@ -138,19 +138,6 @@
 | — | starts_at | datetime | No | — |
 | — | ends_at | datetime | No | — |
 | — | block_type | enum | No | — |
-
-### USAGE_LOG
-
-| Key | Field | Type | Nullable | Reference |
-|---|---|---|---|---|
-| PK | usage_id | id | No | — |
-| FK | revision_id | id | No | REQUEST_REVISION.revision_id |
-| FK | borrowing_id | id | Yes | BORROWING.borrowing_id |
-| FK | faculty_id | id | No | USER_ACCOUNT.account_id |
-| FK | recorded_by | id | No | USER_ACCOUNT.account_id |
-| — | actual_start | datetime | No | — |
-| — | actual_end | datetime | No | — |
-| — | remarks | text | Yes | — |
 
 ## D4 — Equipment Inventory
 
@@ -307,6 +294,21 @@
 | — | reason | text | No | — |
 | — | disposed_at | datetime | No | — |
 | — | status | enum | No | — |
+
+## D11 — Laboratory Usage Logs
+
+### USAGE_LOG
+
+| Key | Field | Type | Nullable | Reference |
+|---|---|---|---|---|
+| PK | usage_id | id | No | — |
+| FK | revision_id | id | No | REQUEST_REVISION.revision_id |
+| FK | borrowing_id | id | Yes | BORROWING.borrowing_id |
+| FK | faculty_id | id | No | USER_ACCOUNT.account_id |
+| FK | recorded_by | id | No | USER_ACCOUNT.account_id |
+| — | actual_start | datetime | No | — |
+| — | actual_end | datetime | No | — |
+| — | remarks | text | Yes | — |
 
 ## Relationship Register
 

@@ -15,19 +15,22 @@ window.SystemPortraitSwimlane=function(id){
  text(lanes,1260,35,'Laboratory Management — Overall Swimlane',40,true);
  ['Class Representative','Faculty','Circuit Staff','Physics Staff','Head Lab','Dean'].forEach((name,i)=>{el('rect',{x:bounds[i],y:64*Y,width:bounds[i+1]-bounds[i],height:3520*Y,class:'lane-bg','data-lane':i,'data-lane-name':name},lanes);el('line',{x1:bounds[i],x2:bounds[i+1],y1:125*Y,y2:125*Y,stroke:'#000','stroke-width':2.5},lanes);text(lanes,centers[i],95,name,30,true);});
  function node(key,lane,y,title,kind='action',process){
+  if(key==='start')y-=10;
+  if(key==='ask')y+=10;
+  if(key==='clearance'||key==='clearance-view')y+=10;
+  if(key==='balance-end')y+=15;
+  if(key==='faculty-request')y-=15;
   if(kind==='final'&&key!=='end')kind='flow-final';
   const x=centers[lane];let w=350,h=86;
   if(['admin','admin-tasks'].includes(key))w=310;
-  if(kind==='decision'){w=260;h=100;}
-  // Compact Faculty decisions leave visible shafts before their arrowheads.
-  if(kind==='decision'&&lane===1)h=100;
+  if(kind==='decision'){w=350;h=title.includes('\n')?130:100;}
   if(kind==='merge'){w=190;h=100;}
   // Invisible convergence point: alternative routes share one outgoing arrow.
   // User-requested simplified notation, not a standard UML merge symbol.
   if(kind==='connector'){w=0;h=0;}
   if(['initial','final','flow-final'].includes(kind)){w=46;h=46;}
   if(kind==='fork'||kind==='join'){w=340;h=16;}
-  if(key==='dean-route'){w=16;h=180;}
+  if(key==='dean-route'){w=180;h=16;}
   const logicalY=y;y=flowY(y)*Y;if(!['initial','final','flow-final','connector'].includes(kind))h*=Y;
   const n={x:x-w/2,y:y-h/2,w,h,lane,kind,title};nodes[key]=n;
   const g=el('g',{'data-swimlane-node':key,'data-uml-kind':kind,...(process?{'data-process':process}:{})},shapes);
@@ -42,13 +45,28 @@ window.SystemPortraitSwimlane=function(id){
   if(title)text(g,x,logicalY,title,kind==='decision'?26:['admin','admin-tasks'].includes(key)?25:28,kind==='action');return n;
  }
  const act=(key,lane,y,title,p)=>node(key,lane,y,title,'action',p),dec=(key,lane,y,title)=>node(key,lane,y,title,'decision');
- const point=(key,side)=>{if(Array.isArray(side))return side[2]==='raw'?[side[0],side[1]]:[side[0],flowY(side[1])*Y];const n=nodes[key];return side==='l'?[n.x,n.y+n.h/2]:side==='r'?[n.x+n.w,n.y+n.h/2]:side==='t'?[n.x+n.w/2,n.y]:[n.x+n.w/2,n.y+n.h];};
+ const point=(key,side)=>{const n=nodes[key];if(Array.isArray(side)){
+  const p=side[2]==='raw'?[side[0],side[1]]:[side[0],flowY(side[1])*Y];
+  // Preserve custom quarter-edge ports when enlarging decision diamonds.
+  if(n.kind==='decision'){const cx=n.x+n.w/2,cy=n.y+n.h/2;return[cx+(p[0]-cx)*n.w/260,cy+(p[1]-cy)*n.h/(100*Y)];}
+  return p;
+ }return side==='l'?[n.x,n.y+n.h/2]:side==='r'?[n.x+n.w,n.y+n.h/2]:side==='t'?[n.x+n.w/2,n.y]:[n.x+n.w/2,n.y+n.h];};
  function readableGuard(from,guard){
+  // Keep the help guards inside their own branch corridors, away from arrowheads.
+  if(from==='question'&&guard==='[Yes]')return '[Help\nneeded]';
+  if(from==='question'&&guard==='[No]')return '[No help\nneeded]';
+  if(from==='balance'&&guard==='[Yes]')return '[Balance\nunresolved]';
   const pairs={readiness:['Setup needed','No setup needed'],question:['Help needed','No help needed'],'direct-dean':['Off-schedule; Faculty unavailable','On-schedule / Faculty available'],'faculty-approved':['Approved','Rejected'],'dean-approved':['Approved','Rejected'],'faculty-scheduled':['Own on-schedule','Out-of-schedule'],balance:['Balance unresolved','No balance']};
   return guard&&pairs[from]&&/^\[(Yes|No)\]/.test(guard)?'['+pairs[from][guard==='[Yes]'?0:1]+']':guard;
  }
  function link(from,fs,to,ts,bends=[],guard,at){
+  if(from==='faculty-approved'&&to==='approved')bends=[[630,1407],[730,1407]];
   const points=[point(from,fs),...bends.map(([x,y,mode])=>mode==='raw'?[x,y]:[x,flowY(y)*Y]),point(to,ts)];
+  if(nodes[to].kind==='decision'&&Array.isArray(ts)&&bends.length){
+   const oldY=ts[2]==='raw'?ts[1]:flowY(ts[1])*Y,last=points.length-1;
+   if(points[last-1][1]===oldY)points[last-1][1]=points[last][1];
+   else if(points[last-1][0]===ts[0])points[last-1][0]=points[last][0];
+  }
   const clean=points.filter((p,i)=>!i||p[0]!==points[i-1][0]||p[1]!==points[i-1][1]);
   let d='M'+clean[0].join(' ');
   for(let i=1;i<clean.length-1;i++){
@@ -86,7 +104,7 @@ window.SystemPortraitSwimlane=function(id){
  nodes.ready.joinSpec='or';shapes.querySelector('[data-swimlane-node="ready"]').setAttribute('data-join-spec','or');
  dec('requester',1,575,'Requester?');link('ready','b','requester','r',[[1890,825],[1150,825],[1150,575]]);link('requester','l','question','r',[[420,575],[420,630]],'[Class Rep.]',[420,610]);
  act('faculty-request',1,720,'Check slots / ask AI;\nsubmit own request','p2');dec('faculty-scheduled',1,860,'On assigned\nschedule?');link('requester','b','faculty-request','t',[],'[Faculty]',[707,651]);link('faculty-request','b','faculty-scheduled','t');
- link('question','b','ask','t',[],'[Yes]',[285,700]);link('question','l','request-ready',[100,852],[[25,630],[25,815],[100,815]],'[No]',[110,710]);link('ask','b','request-ready',[210,852]);
+ link('question','b','ask','t',[],'[Yes]',[315,680]);link('question','l','request-ready',[100,852],[[25,630],[25,815],[100,815]],'[No]',[110,680]);link('ask','b','request-ready',[210,852]);
  act('select-type',0,892,'Choose class and type;\nselect student(s)','p2');link('request-ready','b','select-type','t');
  dec('reservation-type',0,925,'Group or\nStudent Only?');link('select-type','b','reservation-type','t');node('type-merge',0,960,'','join');
  nodes['type-merge'].joinSpec='or';shapes.querySelector('[data-swimlane-node="type-merge"]').setAttribute('data-join-spec','or');
@@ -100,7 +118,9 @@ window.SystemPortraitSwimlane=function(id){
  node('dean-route',5,1250,'','join');nodes['dean-route'].joinSpec='or';
  shapes.querySelector('[data-swimlane-node="dean-route"]').setAttribute('data-join-spec','or');
 
- act('dean',5,1460,'Review request;\nApprove / Reject','p2');link('dean-route','r','dean','t',[[2480,1250],[2480,1365],[2310,1365]]);link('direct-dean','b','dean-route',[2302,1310],[[210,1220],[2200,1220],[2200,1310]],'[Yes]',[310,1200]);
+ act('dean',5,1460,'Review request;\nApprove / Reject','p2');
+ link('dean-route','b','dean','t');
+ link('direct-dean','b','dean-route',[nodes['dean-route'].x+40,nodes['dean-route'].y,'raw'],[[210,1200],[nodes['dean-route'].x+40,1200]],'[Yes]',[310,1200]);
  dec('dean-approved',5,1605,'Dean\napproved?');link('dean','b','dean-approved','t');act('dean-rejected',0,1605,'View rejection notice','p2');node('dean-rejected-end',0,1730,'','final');link('dean-approved','l','dean-rejected','r',[],'[No]',[2070,1575]);link('dean-rejected','b','dean-rejected-end','t');
  node('approved',1,1450,'','join');node('approval-ready',1,1750,'','join');
  for(const key of ['approved','approval-ready']){nodes[key].joinSpec='or';shapes.querySelector(`[data-swimlane-node="${key}"]`).setAttribute('data-join-spec','or');}
@@ -108,7 +128,7 @@ window.SystemPortraitSwimlane=function(id){
  link('dean-approved','b','approval-ready',[710,1742],[[2310,1710],[710,1710]],'[Yes]',[2390,1705]);
  link('faculty-approved','b','approved',[730,1442],[[630,1395],[730,1395]],'[Yes]',[700,1360]);
  link('faculty-scheduled','b','approved',[530,1442],[[630,965],[435,965],[435,1400],[530,1400]],'[Yes]',[480,1370]);
- link('faculty-scheduled','r','dean-route',[2302,1190],[[2150,860],[2150,1190]],'[No]',[1450,885]);
+ link('faculty-scheduled','r','dean-route',[nodes['dean-route'].x+140,nodes['dean-route'].y,'raw'],[[2150,860],[2150,1180],[nodes['dean-route'].x+140,1180]],'[No]',[1450,885]);
  // Sequential preparation: requester first, then the selected laboratory staff.
  link('approved','b','approval-ready',[550,1742],[[630,1680],[550,1680]]);
  dec('prepare-requester',0,1835,'Requester?');link('approval-ready','b','prepare-requester',[275,1810],[[630,1810]]);
@@ -135,9 +155,9 @@ window.SystemPortraitSwimlane=function(id){
  link('circuit-service','b','returns',[970,2737],[[1050,2700],[970,2700]]);
  link('physics-service','b','returns',[1130,2737],[[1470,2695],[1130,2695]]);
 
- dec('balance',4,2745,'Unresolved\nbalance?');link('returns','b','balance',[1825,2720],[[1050,2810],[1700,2810],[1700,2720]]);act('clearance',4,2880,'Identify student;\ncreate clearance','p5');node('balance-end',0,2975,'','final');link('balance','b','clearance','t',[],'[Yes]',[1957,2816]);act('clearance-view',0,2880,'View student, item\nand clearance status','p5');link('clearance','l','clearance-view','r');link('clearance-view','b','balance-end','t');
+ dec('balance',4,2745,'Unresolved\nbalance?');link('returns','b','balance',[1825,2770],[[1050,2810],[1700,2810],[1700,2770]]);act('clearance',4,2880,'Identify student;\ncreate clearance','p5');node('balance-end',0,2975,'','final');link('balance','b','clearance','t',[],'[Yes]',[2020,2805]);act('clearance-view',0,2880,'View student, item\nand clearance status','p5');link('clearance','l','clearance-view','r');link('clearance-view','b','balance-end','t');
  act('completed',1,2745,'View Completed status;\nlogs saved automatically','p2');link('balance','l','completed','r',[[1745,2745],[1745,2680],[860,2680],[860,2745]],'[No]',[1700,2710]);
- act('report',4,3050,'View automatic logs;\nexport report if needed','p5');link('completed','b','report','l',[[630,3050]]);node('end',4,3120,'','final');link('report','r','end','r',[[2090,3050],[2090,3120]]);
+ act('report',4,3050,'View automatic logs;\nexport report if needed','p5');link('completed','b','report','l',[[630,3050]]);node('end',4,3150,'','final');link('report','b','end','t');
  window.SystemSwimlaneGeometry={nodes,routes,laneBounds:bounds,width:2520,height:3800};return svg;
 };
 })();

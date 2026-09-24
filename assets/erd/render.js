@@ -220,6 +220,6 @@ for(const table of model.tables){const section=html('section',dict);section.id='
  if(table.unique.length)html('p',section,'Unique combinations: '+table.unique.map(u=>'('+u.join(', ')+')').join('; '));
 }
 const relBody=document.getElementById('relationships');relations.forEach(r=>{const row=html('tr',relBody);[r.id,r.parent+'.'+r.key,r.optional?'0..1':'1',r.table+'.'+r.field,r.one?'0..1':'0..*'].forEach(v=>html('td',row,v));});
-document.getElementById('summary-counts').textContent=model.tables.length+' entities · '+relations.length+' foreign-key relationships · 10 DFD stores · one grouped landscape diagram';
+document.getElementById('summary-counts').textContent=model.tables.length+' entities · '+relations.length+' foreign-key relationships · 11 DFD stores · one grouped landscape diagram';
 document.getElementById('print-erd').onclick=()=>window.print();window.ErdRelations=relations;window.__erdReady=true;
 })();

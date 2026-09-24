@@ -74,6 +74,8 @@ async function checkPage(page){
  const all=await page.evaluate(()=>window.SystemSequenceGeometry);
  for(const model of models){
   const g=all[model.id],view=page.locator('#sequence-'+model.id);
+  const artworkLabels=await view.locator('svg text').allTextContents();
+  assert(!artworkLabels.some(t=>t.includes(model.code)||t===model.title),'No redundant sequence title/code in artwork');
   assert.equal(await view.locator('svg').getAttribute('viewBox'),'0 0 1200 1697');
   assert(g.fontSize>=18,'At least ~8.4 pt on the A4 artwork');
   assert.equal(await view.locator('[data-lifeline]').count(),model.participants.length);

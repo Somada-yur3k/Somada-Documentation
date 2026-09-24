@@ -4,7 +4,9 @@
     "steps": [
       "Validate Credentials",
       "Establish Role-Scoped Session",
-      "Manage Class Representative / Faculty Accounts"
+      "Create / Manage Faculty Account",
+      "Create / Manage Class Rep Account",
+      "Generate & Issue Account Credentials"
     ],
     "internal": [
       {
@@ -18,7 +20,21 @@
         "id": "p1-internal2",
         "source": "p1.2",
         "target": "p1.3",
-        "label": "Authorized session",
+        "label": "Authorized Head Lab Session",
+        "kind": "internal"
+      },
+      {
+        "id": "p1-internal5",
+        "source": "p1.4",
+        "target": "p1.5",
+        "label": "Validated Representative Account",
+        "kind": "internal"
+      },
+      {
+        "id": "p1-internal3",
+        "source": "p1.3",
+        "target": "p1.4",
+        "label": "Verified Faculty Reference",
         "kind": "internal"
       }
     ],
@@ -43,7 +59,7 @@
       {
         "id": "p1-fa-crcredentials-child3",
         "parentFlow": "p1-fa-crcredentials",
-        "source": "p1.3",
+        "source": "p1.5",
         "target": "faculty",
         "label": "Issued Account Credentials",
         "kind": "external"
@@ -69,7 +85,7 @@
         "parentFlow": "p1-he-account",
         "source": "headlab",
         "target": "p1.3",
-        "label": "Account Management Details",
+        "label": "Verified Faculty Account Details",
         "kind": "external"
       },
       {
@@ -91,7 +107,7 @@
       {
         "id": "p1-d1-write-child3",
         "parentFlow": "p1-d1-write",
-        "source": "p1.3",
+        "source": "p1.5",
         "target": "d1",
         "label": "Account Record",
         "kind": "store"
@@ -110,6 +126,38 @@
         "source": "d1",
         "target": "p1.1",
         "label": "Account Data",
+        "kind": "store"
+      },
+      {
+        "id": "p1-he-representative-child",
+        "source": "headlab",
+        "target": "p1.4",
+        "label": "Faculty-Verified Representative Details",
+        "kind": "external",
+        "parentFlow": "p1-he-representative"
+      },
+      {
+        "id": "p1-d1-read-child3-representative",
+        "parentFlow": "p1-d1-read",
+        "source": "d1",
+        "target": "p1.4",
+        "label": "Account Data",
+        "kind": "store"
+      },
+      {
+        "id": "p1-fa-crcredentials-child3-faculty",
+        "parentFlow": "p1-fa-crcredentials",
+        "source": "p1.3",
+        "target": "faculty",
+        "label": "Issued Account Credentials",
+        "kind": "external"
+      },
+      {
+        "id": "p1-d1-write-child3-faculty",
+        "parentFlow": "p1-d1-write",
+        "source": "p1.3",
+        "target": "d1",
+        "label": "Account Record",
         "kind": "store"
       }
     ]
@@ -188,7 +236,7 @@
         "parentFlow": "p2-cr-availability",
         "source": "p2.1",
         "target": "classrep",
-        "label": "Schedule & Availability",
+        "label": "Schedule Availability Data",
         "kind": "external"
       },
       {
@@ -244,7 +292,7 @@
         "parentFlow": "p2-fa-availability",
         "source": "p2.1",
         "target": "faculty",
-        "label": "Schedule & Availability",
+        "label": "Schedule Availability Data",
         "kind": "external"
       },
       {
@@ -427,7 +475,7 @@
         "parentFlow": "p3-cr-inquiry",
         "source": "classrep",
         "target": "p3.1",
-        "label": "Inquiry",
+        "label": "Laboratory Inquiry",
         "kind": "external"
       },
       {
@@ -435,7 +483,7 @@
         "parentFlow": "p3-cr-answer",
         "source": "p3.3",
         "target": "classrep",
-        "label": "Answer",
+        "label": "Laboratory Answer",
         "kind": "external"
       },
       {
@@ -443,7 +491,7 @@
         "parentFlow": "p3-fa-inquiry",
         "source": "faculty",
         "target": "p3.1",
-        "label": "Inquiry",
+        "label": "Laboratory Inquiry",
         "kind": "external"
       },
       {
@@ -451,7 +499,7 @@
         "parentFlow": "p3-fa-answer",
         "source": "p3.3",
         "target": "faculty",
-        "label": "Answer",
+        "label": "Laboratory Answer",
         "kind": "external"
       },
       {
@@ -559,7 +607,7 @@
         "parentFlow": "p4-he-inventory",
         "source": "headlab",
         "target": "p4.1",
-        "label": "Inventory Update",
+        "label": "Inventory Update Details",
         "kind": "external"
       },
       {
@@ -567,7 +615,7 @@
         "parentFlow": "p4-he-equipment",
         "source": "headlab",
         "target": "p4.3",
-        "label": "Equipment Transaction",
+        "label": "Equipment Issue Details",
         "kind": "external"
       },
       {
@@ -583,7 +631,7 @@
         "parentFlow": "p4-ph-inventory",
         "source": "physics",
         "target": "p4.1",
-        "label": "Inventory Update",
+        "label": "Inventory Update Details",
         "kind": "external"
       },
       {
@@ -591,7 +639,7 @@
         "parentFlow": "p4-ph-equipment",
         "source": "physics",
         "target": "p4.3",
-        "label": "Equipment Transaction",
+        "label": "Equipment Issue Details",
         "kind": "external"
       },
       {
@@ -607,7 +655,7 @@
         "parentFlow": "p4-ci-inventory",
         "source": "circuits",
         "target": "p4.1",
-        "label": "Inventory Update",
+        "label": "Inventory Update Details",
         "kind": "external"
       },
       {
@@ -615,7 +663,7 @@
         "parentFlow": "p4-ci-equipment",
         "source": "circuits",
         "target": "p4.3",
-        "label": "Equipment Transaction",
+        "label": "Equipment Issue Details",
         "kind": "external"
       },
       {
@@ -724,26 +772,26 @@
       },
       {
         "id": "p4-he-equipment-child4",
-        "parentFlow": "p4-he-equipment",
+        "parentFlow": "p4-he-equipment-return",
         "source": "headlab",
         "target": "p4.4",
-        "label": "Equipment Transaction",
+        "label": "Equipment Return Details",
         "kind": "external"
       },
       {
         "id": "p4-ph-equipment-child4",
-        "parentFlow": "p4-ph-equipment",
+        "parentFlow": "p4-ph-equipment-return",
         "source": "physics",
         "target": "p4.4",
-        "label": "Equipment Transaction",
+        "label": "Equipment Return Details",
         "kind": "external"
       },
       {
         "id": "p4-ci-equipment-child4",
-        "parentFlow": "p4-ci-equipment",
+        "parentFlow": "p4-ci-equipment-return",
         "source": "circuits",
         "target": "p4.4",
-        "label": "Equipment Transaction",
+        "label": "Equipment Return Details",
         "kind": "external"
       },
       {
@@ -800,19 +848,13 @@
     "id": "p5",
     "steps": [
       "Maintain Schedule",
-      "Record Usage & Daily Tasks",
+      "Record Completed Session Usage",
       "Process Clearance",
       "Compile Reporting Metrics",
-      "Generate End-Term Report"
+      "Generate End-Term Report",
+      "Maintain Daily Tasks"
     ],
     "internal": [
-      {
-        "id": "p5-internal1",
-        "source": "p5.1",
-        "target": "p5.2",
-        "label": "Schedule data",
-        "kind": "internal"
-      },
       {
         "id": "p5-internal4",
         "source": "p5.4",
@@ -836,22 +878,14 @@
         "parentFlow": "p5-he-schedule",
         "source": "headlab",
         "target": "p5.1",
-        "label": "Schedule Update",
-        "kind": "external"
-      },
-      {
-        "id": "p5-he-usage-child2",
-        "parentFlow": "p5-he-usage",
-        "source": "headlab",
-        "target": "p5.2",
-        "label": "Usage Entry",
+        "label": "Schedule Update Details",
         "kind": "external"
       },
       {
         "id": "p5-he-task-child2",
         "parentFlow": "p5-he-task",
         "source": "headlab",
-        "target": "p5.2",
+        "target": "p5.6",
         "label": "Daily Task Entry",
         "kind": "external"
       },
@@ -860,7 +894,7 @@
         "parentFlow": "p5-he-clearance",
         "source": "headlab",
         "target": "p5.3",
-        "label": "Clearance Action",
+        "label": "Clearance Details",
         "kind": "external"
       },
       {
@@ -892,23 +926,23 @@
         "parentFlow": "p5-d3-write",
         "source": "p5.1",
         "target": "d3",
-        "label": "Schedule / Usage Record",
+        "label": "Schedule Record",
         "kind": "store"
       },
       {
         "id": "p5-d3-write-child2",
-        "parentFlow": "p5-d3-write",
+        "parentFlow": "p5-d11-write",
         "source": "p5.2",
-        "target": "d3",
-        "label": "Schedule / Usage Record",
+        "target": "d11",
+        "label": "Completed Session Usage Record",
         "kind": "store"
       },
       {
         "id": "p5-d3-read-child4",
-        "parentFlow": "p5-d3-read",
-        "source": "d3",
+        "parentFlow": "p5-d11-read",
+        "source": "d11",
         "target": "p5.4",
-        "label": "Schedule / Usage Data",
+        "label": "Completed Usage Logs",
         "kind": "store"
       },
       {
@@ -946,7 +980,7 @@
       {
         "id": "p5-d7-write-child2",
         "parentFlow": "p5-d7-write",
-        "source": "p5.2",
+        "source": "p5.6",
         "target": "d7",
         "label": "Daily Task Record",
         "kind": "store"
@@ -958,6 +992,22 @@
         "target": "p5.3",
         "label": "Borrowing Slip Data",
         "kind": "store"
+      },
+      {
+        "id": "p5-d2-completed-child",
+        "source": "d2",
+        "target": "p5.2",
+        "label": "Completed Reservation Data",
+        "kind": "store",
+        "parentFlow": "p5-d2-completed"
+      },
+      {
+        "id": "p5-d5-reconciled-child",
+        "source": "d5",
+        "target": "p5.2",
+        "label": "Reconciled Return Data",
+        "kind": "store",
+        "parentFlow": "p5-d5-reconciled"
       }
     ]
   }

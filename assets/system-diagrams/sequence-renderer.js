@@ -28,7 +28,7 @@ window.SystemSequenceDiagram=function(model){
   const t=el('text',{'text-anchor':anchor,'font-size':size,'font-weight':bold?700:400,...(halo?{stroke:'#fff','stroke-width':6,'paint-order':'stroke','stroke-linejoin':'round'}:{})},parent);
   rows.forEach((r,i)=>el('tspan',{x,y:y+i*size*1.16},t).textContent=r);return t;
  }
- text(labels,600,42,wrap(model.code+' · '+model.title,30,1150),30,'middle',true);
+ // Titles and sequence codes belong to the document captions/navigation, not the artwork.
  text(labels,600,82,wrap(model.precondition,19,1120),19);
  const headerBottom=280,top=318,bottom=1650;
  model.participants.forEach(p=>{

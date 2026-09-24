@@ -6,9 +6,9 @@ Status: draft for consultation, not an approved or deployed physical schema.
 
 `ERD-A4.html` is a separate, container-free A4 layout using the same canonical model. The existing landscape artwork and Documentation figure remain available and are not overwritten. Its exports are `erd-a4-complete.svg`, `erd-a4-complete.png` and `erd-a4.pdf` in this directory.
 
-The A4 renderer uses four staggered columns, 28-unit data rows and compact endpoint symbols. Parent symbols are assigned collision-checked slots separate from child symbols; every endpoint has a white backplate for clarity. All 102 symbol/label bounding boxes must have a visible gap, and long parallel connector routes must be separated by at least 12 SVG units. Crossings are overpasses, not new relationships. Shared PK stems are intentional; each relationship retains its own cardinality marker.
+The A4 renderer uses five staggered functional columns, 28-unit data rows and compact endpoint symbols. Tables are spread across the full portrait height, while dedicated horizontal and vertical lanes route connectors around every unrelated table and cardinality marker. Parent relationships use distinct perimeter ports instead of a shared PK stem. All 102 symbol/label bounding boxes retain a visible gap, exact connector merges are prohibited, and long parallel routes remain at least 6 SVG units apart. White crossing gaps are overpasses, not new relationships.
 
-The A4 cardinality bars/prongs are 8 units tall (reduced from 12), optionality circles have a 3-unit radius, and symbol backplates are 21 units tall. Parent endpoint slots use a 30-unit initial pitch with collision checks. Table rows, text sizes and relationship semantics are unchanged by this compact-marker adjustment.
+The A4 cardinality bars and crow's-foot prongs are no more than 10 units tall, optionality circles have a 4-unit radius, and white symbol backplates are 24 units tall. Parent endpoint ports use a 28-unit pitch and are distributed across both sides of high-degree tables when needed. Table content and relationship semantics are unchanged by the layout refactor.
 
 Hover or keyboard focus highlights both endpoints, their tables and the full relationship path. Escape or pointer exit clears the highlight. The viewer has 100%, 150% and 200% zoom; printing always uses one 210 x 297 mm page regardless of screen zoom. PNG and PDF exports are static. The full 25-table schema necessarily has small text at A4 size; use the interactive viewer or landscape version for detailed inspection.
 
@@ -16,7 +16,7 @@ Run `node integrations/erd/check-a4.cjs --render` to validate and regenerate thi
 
 Confirmed Reservation Type requirement: `RESERVATION.reservation_type` accepts `GROUP` or `STUDENT_ONLY` and is required for Class Representatives under both schedule variants. Faculty requests keep their existing workflow and may leave this field not applicable. Schedule classification remains in `REQUEST_REVISION.request_basis / usage_type`. `CLASS_GROUP` is the class/Faculty scope, not proof that the reservation is for a group. `REQUEST_MEMBER` retains existing selected members for Group; Student Only requires exactly one selected student from the assigned class; RESERVATION.requester_id retains the submitting representative account separately. Borrowing and clearance reuse these accountability links. A required single-student selector reuses STUDENT and REQUEST_MEMBER; no ordinary-student login or new entity is introduced. Rescheduling retains the saved type; unresolved legacy types require explicit classification. The dictionary states the role-dependent requirement because SQL nullability alone cannot express a cross-table role rule.
 
-The draft contains 25 entities and 51 foreign-key relationships on one complete grouped landscape sheet. It follows the current laboratory documentation and ten canonical DFD stores. Inventory forecasts are dynamic read-only outputs, so no Forecast table or additional relationship is needed. AI approval and AI reservation submission remain excluded. No database product or physical SQL type has been selected here.
+The draft contains 25 entities and 51 foreign-key relationships on one complete grouped landscape sheet. It follows the current laboratory documentation and eleven canonical DFD stores. Inventory forecasts are dynamic read-only outputs, so no Forecast table or additional relationship is needed. AI approval and AI reservation submission remain excluded. No database product or physical SQL type has been selected here.
 
 ## Inventory forecast data lineage
 
@@ -48,7 +48,8 @@ Logical types, nullability, unique keys, composite uniqueness, and additional co
 | --- | --- |
 | D1 User Accounts | STUDENT, USER_ACCOUNT, CLASS_GROUP, GROUP_MEMBER |
 | D2 Reservation Records | RESERVATION, REQUEST_REVISION, APPROVAL, REQUEST_ITEM, REQUEST_MEMBER |
-| D3 Laboratory Schedules / Usage | TERM, LABORATORY, SCHEDULE_BLOCK, USAGE_LOG |
+| D3 Laboratory Schedule | TERM, LABORATORY, SCHEDULE_BLOCK |
+| D11 Laboratory Usage Logs | USAGE_LOG |
 | D4 Inventory Records | ITEM_CATEGORY, ITEM, STOCK_MOVEMENT |
 | D5 Borrowing Slip Records | BORROWING, BORROWING_ITEM, BORROWING_MEMBER, RETURN_ENTRY |
 | D6 Clearance Records | CLEARANCE |
@@ -106,3 +107,5 @@ The Documentation page embeds the complete grouped landscape ERD and identifies 
 ## Artwork cleanup
 
 The reusable SVG/PNG includes the reference-style title, colored module panels, all 25 entities and all 102 cardinality endpoints. The website retains the dictionary and relationship register below the diagram.
+
+D11 contains completed Physics and Circuits laboratory usage logs. Completion and return reconciliation generate the records automatically. End-term reports use D11 as their primary source, with linked inventory and borrowing data for item metrics; D3 scheduling data is not a report source.

@@ -246,8 +246,11 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  assert.equal(whole.nodes.clearance.lane,4,'Head Lab identifies the student and creates clearance');
  assert.equal(whole.nodes['clearance-view'].lane,0,'Class Rep only receives the status view');
  assert(whole.routes.some(r=>r.from==='clearance'&&r.to==='clearance-view'),'Head-created clearance leads to Class Rep status view');
+ const reportEnd=whole.routes.find(r=>r.from==='report'&&r.to==='end');
+ assert(reportEnd&&reportEnd.points.length===2&&reportEnd.points[0][0]===reportEnd.points[1][0],
+  'Report reaches the final node directly from its bottom edge');
  assert(whole.nodes['admin-tasks'].y-(whole.nodes.admin.y+whole.nodes.admin.h)>=45,'Head Lab actions have visible separation');
- for(const [id,vertical] of [['ready',false],['dean-route',true],['prepare-join',false],['returns',false],['approved',false],['approval-ready',false],['request-ready',false],['type-merge',false]]){
+ for(const [id,vertical] of [['ready',false],['dean-route',false],['prepare-join',false],['returns',false],['approved',false],['approval-ready',false],['request-ready',false],['type-merge',false]]){
   const n=whole.nodes[id],incoming=whole.routes.filter(r=>r.to===id),ports=incoming.map(r=>r.points.at(-1));
   assert.equal(n.h>n.w,vertical,id+' bar orientation');
   ports.forEach(([x,y])=>assert(Math.abs(vertical?x-n.x:y-n.y)<1e-6,id+' inputs enter the same broad face'));

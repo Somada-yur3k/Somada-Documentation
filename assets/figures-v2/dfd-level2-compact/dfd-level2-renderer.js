@@ -9,7 +9,7 @@
   document.body.classList.toggle('output-mode',output);
   const entityLines={classrep:['Class Rep.'],faculty:['Faculty'],dean:['Dean'],
     headlab:['Head','Laboratory'],physics:['Physics','Lab Staff'],circuits:['Circuits','Lab Staff']};
-  const storeLines={d1:['User','accounts'],d2:['Reservations','& approvals'],d3:['Lab schedule','& usage logs'],
+  const storeLines={d1:['User','accounts'],d2:['Reservations','& approvals'],d3:['Laboratory','schedule'],d11:['Laboratory','usage logs'],
     d4:['Equipment','inventory'],d5:['Borrowing','slip records'],d6:['Clearance','records'],d7:['Daily task','records'],
     d8:['Knowledge','base'],d9:['Chat history'],d10:['Disposal','records']};
   const colors={classrep:'#000000',faculty:'#000000',dean:'#000000',headlab:'#000000',physics:'#000000',circuits:'#000000'};
@@ -63,17 +63,17 @@
   }
 
   const childLines={
-    p1:[['Validate','Credentials'],['Establish','Role-Scoped','Session'],['Manage Class','Rep. / Faculty','Accounts']],
+    p1:[['Validate','Credentials'],['Establish','Role-Scoped','Session'],['Manage','Faculty','Accounts'],['Manage Class','Rep. Accounts'],['Issue Account','Credentials']],
     p2:[['Retrieve','Availability'],['Validate &','Record','Reservation'],['Route','Approval','Decision'],['Update','Reservation','Status']],
     p3:[['Capture','Signed-In','Inquiry'],['Retrieve','Authorized','Records'],['Compose','Grounded','Answer'],['Record Q&A','Exchange']],
     p4:[['Maintain','Inventory'],['Retrieve','Approved','Reservation'],['Issue Items &','Create Slip'],['Reconcile','Return'],['Record','Disposal'],['Retrieve','Forecast','Inputs'],['Estimate','Next-Month','Needs'],['Present','Inventory','Forecast']],
-    p5:[['Maintain','Schedule'],['Record Usage','& Daily Tasks'],['Process','Clearance'],['Compile','Reporting','Metrics'],['Generate','End-Term','Report']]
+    p5:[['Maintain','Schedule'],['Record','Completed','Usage'],['Process','Clearance'],['Compile','Reporting','Metrics'],['Generate','End-Term','Report'],['Maintain','Daily Tasks']]
   };
   const centre=n=>n.y+n.h/2;
   function place(items,targets,height){
     const top=90,bottom=H-85,gap=24;
     const entries=items.map((n,i)=>({...n,desired:targets[n.id],order:i}));
-    entries.forEach((n,i)=>n.y=Math.max(top,n.desired-height/2,i?entries[i-1].y+height+gap:top));
+    entries.forEach((n,i)=>n.y=Math.max(top,i?entries[i-1].y+height+gap:top,Math.min(n.desired-height/2,bottom-height-(entries.length-1-i)*(height+gap))));
     const overflow=entries.at(-1).y+height-bottom;
     if(overflow>0)entries.forEach(n=>n.y-=overflow);
     for(let i=entries.length-2;i>=0;i--)entries[i].y=Math.min(entries[i].y,entries[i+1].y-height-gap);
@@ -211,7 +211,7 @@
     clearLabelStrokes(svg);
     window.__level2={model,parent,nodes,routes,labelBoxes,constants:{W,H,P,E,D,FONT,LANE_GAP}};
     if(!output){
-      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-traceability-'+model.id+'-full-labels-v9'});
+      const authored=svg.cloneNode(true);window.SOMADADiagramEditor.init(svg,{storageKey:'dfd-level2-traceability-'+model.id+'-full-labels-v10'});
       svg.querySelectorAll('.diagram-connector-hit').forEach(hit=>hit.removeAttribute('stroke-dasharray'));
       window.addEventListener('beforeprint',()=>svg.replaceWith(authored));window.addEventListener('afterprint',()=>authored.replaceWith(svg));
     }
