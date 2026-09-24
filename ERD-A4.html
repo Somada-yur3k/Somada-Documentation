@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A4 ERD - Laboratory Management System</title>
+<link rel="stylesheet" href="assets/erd/style.css"><link rel="stylesheet" href="assets/erd/a4.css">
+<script defer src="assets/erd/model.js"></script><script defer src="assets/erd/a4-render.js"></script><script defer src="assets/erd/a4-viewer.js"></script></head>
+<body>
+<header><h1>ERD — A4 portrait</h1><p id="summary-counts" class="muted">Preparing diagram...</p>
+<p>Separate print-ready version. All 25 tables and 51 relationships are retained. White gaps at line crossings mean an overpass, not a joined relationship. Hover or keyboard-focus a cardinality to highlight both endpoints and the complete connector.</p>
+<div class="actions"><a href="ERD.html">Landscape version</a><a href="Docs.html#erd">Documentation</a><button id="print-erd">Print A4</button><a href="assets/erd/erd-a4.pdf" download>Download A4 PDF</a><label>Zoom <select id="erd-zoom"><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select></label></div>
+<p id="relationship-status" aria-live="polite">Hover or focus a cardinality to trace its relationship.</p>
+<p class="muted">The full schema uses small print at A4 size. Use zoom or the landscape version for detailed reading. Hover highlights are available in this interactive page; PNG/PDF exports are static.</p></header>
+<nav id="erd-sections" aria-label="Diagram sections"></nav><main id="erd-sheets"></main>
+<section class="review"><details><summary>Data dictionary</summary><div id="dictionary"></div></details><details id="relationships-wrap"><summary>Relationship register</summary><table><thead><tr><th>ID</th><th>Parent PK</th><th>Parents per child</th><th>Child FK</th><th>Children per parent</th></tr></thead><tbody id="relationships"></tbody></table></details></section>
+<noscript>Enable JavaScript or open the A4 PDF.</noscript></body></html>

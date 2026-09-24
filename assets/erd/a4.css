@@ -1,0 +1,6 @@
+.erd-sheet{width:210mm;height:297mm;padding:3mm}
+.erd-wrap{overflow-x:auto}
+#relationship-status{min-height:3em;padding:12px;background:#edf5ff;border-left:3px solid #0065d1;font-size:14px}
+.actions label{padding:10px 13px}.actions select{font:inherit}
+@page{size:A4 portrait;margin:0}
+@media print{.erd-sheet{width:210mm!important;height:297mm!important;padding:3mm}.downloads{display:none!important}[data-highlight-layer]{display:none}}

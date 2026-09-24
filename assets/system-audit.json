@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-23T11:47:35.545Z",
+  "generatedAt": "2026-09-24T00:29:01.295Z",
   "title": "A Web-Based Physics and Circuits Laboratory Management System with AI Capabilities for NU Fairview",
   "sources": [
     {
       "path": "Docs.html",
-      "sha256": "23cb3bde2482235dfa21a93dc6ed7b8a2c8011a33aafe655fe5eb79df1a0f2c5"
+      "sha256": "9cf6d2f561708ffa2928af011d865f368c4f33ccd73b2326521c2cc09c5fd134"
     },
     {
       "path": "assets/figures-v2/usecase-diagram-source.html",
@@ -37,11 +37,11 @@
     },
     {
       "path": "assets/erd/model.js",
-      "sha256": "576ab00efb44c53c87636753cf31ddfb2fb6f2b6060c5a3c8380824d18ed75fa"
+      "sha256": "e043e0f276d854b5d7c5b494068d65136dcb0f967c28e7027ea90f49889d0c7a"
     },
     {
       "path": "assets/erd/render.js",
-      "sha256": "7857a41bec39baebdea5c38e3ed64b8204ab43033507806df3445180ece87fdd"
+      "sha256": "2a9ba6d9562503d0b4c7e1b6b8d8eca4e183b037804dbe16fff7c48f0445d6bc"
     },
     {
       "path": "Reservation-Form.html",
