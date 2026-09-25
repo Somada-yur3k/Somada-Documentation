@@ -554,13 +554,6 @@
       "kind": "store"
     },
     {
-      "id": "p5-d2-read",
-      "source": "d2",
-      "target": "p5",
-      "label": "Reservation Summary",
-      "kind": "store"
-    },
-    {
       "id": "p5-d3-write",
       "source": "p5",
       "target": "d3",
@@ -572,13 +565,6 @@
       "source": "d11",
       "target": "p5",
       "label": "Completed Usage Logs",
-      "kind": "store"
-    },
-    {
-      "id": "p5-d4-read",
-      "source": "d4",
-      "target": "p5",
-      "label": "Inventory Summary",
       "kind": "store"
     },
     {

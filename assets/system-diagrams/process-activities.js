@@ -77,13 +77,17 @@ function draw(model){
  function refuseOther(last,y){action('other',200,y,'No permitted\noperation selected');terminal('other-end',200,y+85,true);link(last+'-choice','b','other','t',[],'[No]',[243,y-68]);link('other','b','other-end','t');}
  if(model.id==='p1'){
   terminal('start',600,165);action('choose',600,260,'Choose access\noperation');link('start','b','choose','t');decision('operation',600,390,'Log in?');link('choose','b','operation','t');
+  terminal('error-end',600,1500,true);
+  terminal('account-end',600,1600,true);
   for(const [key,x,login]of [['login',350,true],['account',850,false]]){
    action(key+'-input',x,550,login?'Enter credentials':'Enter verified details;\nFaculty / Class Rep.');action(key+'-check',x,710,login?'Validate credentials':'Check role, ID, section;\nclass / Faculty links',login?0:undefined);
    decision(key+'-valid',x,860,'Valid?');action(key+'-save',x,1020,login?'Establish role-scoped\nsession':'Create / update details\nand active status',login?1:2);action(key+'-result',x,1180,login?'View role dashboard':'If new: email Faculty;\nFaculty hands to Rep.');
-   action(key+'-error',x,1380,login?'Show login error;\nno session created':'Show correction;\nno account changed');terminal(key+'-end',x,1600,true);
+   action(key+'-error',x,1380,login?'Show login error;\nno session created':'Show correction;\nno account changed');
    link('operation',login?'l':'r',key+'-input','t',[[x,390]],login?'[Yes]':'[No: manage accounts, Head]',[x,461]);link(key+'-input','b',key+'-check','t');link(key+'-check','b',key+'-valid','t');link(key+'-valid','b',key+'-save','t',[],'[Yes]',[x+50,947]);link(key+'-save','b',key+'-result','t');
    const errorTrack=login?40:1160,successTrack=login?130:1070;
-   link(key+'-valid',login?'l':'r',key+'-error',login?'l':'r',[[errorTrack,860],[errorTrack,1380]],'[No]',[login?110:1090,838]);link(key+'-result',login?'l':'r',key+'-end',login?'l':'r',[[successTrack,1180],[successTrack,1600]]);terminal(key+'-error-end',x,1500,true);link(key+'-error','b',key+'-error-end','t');
+   link(key+'-valid',login?'l':'r',key+'-error',login?'l':'r',[[errorTrack,860],[errorTrack,1380]],'[No]',[login?110:1090,838]);
+   link(key+'-result',login?'l':'r','account-end',login?'l':'r',[[successTrack,1180],[successTrack,1600]]);
+   link(key+'-error','b','error-end',login?'l':'r',[[x,1500]]);
   }
  }else if(model.id==='p3'){
   terminal('start',600,170);action('ask',600,290,'Ask laboratory\nquestion');action('capture',600,450,'Capture inquiry',0);decision('scope',600,620,'Permitted?');link('start','b','ask','t');link('ask','b','capture','t');link('capture','b','scope','t');

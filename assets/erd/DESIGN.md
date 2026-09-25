@@ -108,4 +108,4 @@ The Documentation page embeds the complete grouped landscape ERD and identifies 
 
 The reusable SVG/PNG includes the reference-style title, colored module panels, all 25 entities and all 102 cardinality endpoints. The website retains the dictionary and relationship register below the diagram.
 
-D11 contains completed Physics and Circuits laboratory usage logs. Completion and return reconciliation generate the records automatically. End-term reports use D11 as their primary source, with linked inventory and borrowing data for item metrics; D3 scheduling data is not a report source.
+D11 contains completed Physics and Circuits laboratory usage logs. Completion and return reconciliation generate the records automatically. End-term reports read only D11 completed usage logs. Reservation, borrowing and inventory summaries are not direct report inputs; required metric values must be available in the recorded usage information. Missing values are flagged rather than invented. D3 scheduling data is not a report source.

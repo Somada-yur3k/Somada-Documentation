@@ -26,6 +26,14 @@
     });
     copy.querySelectorAll('.anchor-link,.figure-editor-link,.zoom-hint').forEach(node => node.remove());
     copy.querySelectorAll('br').forEach(node => node.replaceWith('\n'));
+    // Standalone list items are collected separately from their parent list.
+    // Include their visible number in the exported paragraph as well.
+    if (element.matches('li')) {
+      const list = element.parentElement;
+      const prefix = list.tagName === 'OL'
+        ? `${(Number(list.getAttribute('start')) || 1) + Array.from(list.children).indexOf(element)}. ` : '• ';
+      copy.prepend(prefix);
+    }
     copy.querySelectorAll('li').forEach(node => {
       const prefix = node.parentElement.tagName === 'OL'
         ? `${Array.from(node.parentElement.children).indexOf(node)+1}. ` : '• ';

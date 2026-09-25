@@ -56,8 +56,10 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
     }
    }
    if(id==='p5'){
-    const inputs=['d11','d2'].map(peer=>routes.find(r=>r.source===peer&&r.target==='p5.4'));
-    assert(inputs.every(Boolean));
+    assert.deepEqual(routes.filter(r=>r.target==='p5.4').map(r=>r.source),['d11'],'Reporting reads completed usage logs only');
+    assert(routes.some(r=>r.source==='d5'&&r.target==='p5.3'),'Borrowing evidence for clearance remains');
+    assert(routes.some(r=>r.source==='d2'&&r.target==='p5.2'),'Completed reservations still populate usage logs');
+    assert(routes.some(r=>r.source==='d5'&&r.target==='p5.2'),'Reconciled returns still populate usage logs');
     assert(!routes.some(r=>r.source==='d3'&&r.target==='p5.4'),'Schedule is not a report input');
     assert(routes.some(r=>r.source==='p5.2'&&r.target==='d11'),'Completed usage is stored independently');
     const report=routes.find(r=>r.source==='p5.5'&&r.target==='headlab');

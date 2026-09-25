@@ -146,8 +146,11 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
  const dep=page.locator('#deployment-view svg'),deploymentText=await dep.locator('tspan').allTextContents().then(rows=>rows.join(' '));
  assert.deepEqual(await dep.locator('[data-node]').evaluateAll(ns=>ns.map(n=>n.dataset.node).sort()),['application','classrep','database','dean','faculty','head','staff']);
  assert.equal(await dep.getAttribute('viewBox'),'0 0 1200 1697');
- assert.equal(await dep.locator('[data-store]').count(),10);
- for(const term of ['Desktop','Laptop','Tablet','Smartphone','Class Representative','Faculty','Dean','Circuit Staff','Physics Staff','Head Lab','Web Browser','Next.js','React','TypeScript','Node.js','PostgreSQL','HTTPS','TLS','AI Chatbot','Inventory Forecasting'])assert(deploymentText.includes(term),'Deployment missing '+term);
+ assert.equal(await dep.locator('[data-store]').count(),l1.stores.length);
+ assert.equal(await dep.locator('[data-device-icon="desktop"]').count(),5);
+ assert.equal(await dep.locator('[data-device-icon="mobile"]').count(),5);
+ assert(!/All roles:|One application and one database|AI runs in the backend/.test(deploymentText));
+ for(const term of ['Desktop','Mobile','Class Representative','Faculty','Dean','Circuit Staff','Physics Staff','Head Lab','Web Browser','Next.js','React','TypeScript','Node.js','PostgreSQL','HTTPS','TLS','AI Chatbot','Inventory Forecasting'])assert(deploymentText.includes(term),'Deployment missing '+term);
  for(const store of l1.stores)assert(deploymentText.includes(store.number+' — '+store.name),'Deployment missing store '+store.id);
  assert(!/Email infrastructure|Protocol TBD|Not yet selected|SOMADA|\.html/i.test(deploymentText));
  assert.deepEqual(await dep.locator('[data-connection]').evaluateAll(ns=>ns.map(n=>n.dataset.connection).sort()),['application-database','classrep-application','dean-application','faculty-application','head-application','staff-application']);

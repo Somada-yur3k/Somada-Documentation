@@ -75,7 +75,7 @@ const server = http.createServer((req,res) => {
     assert.deepEqual(result.missingCells,[],'All table cell contents appear in preview');
     assert.deepEqual(result.overflow,[],'Content fits the page area');
     assert(result.sourceLastRow);
-    assert.equal(await page.locator('.doc-pages figure img').count(),22,'Final-term Figures 1–22 are complete');
+    assert.equal(await page.locator('.doc-pages figure img').count(),19,'Figures 1–19 include the two-page whole-system sequence');
     assert.equal(await page.locator('.doc-source #erd img').count(),1,'One complete portrait ERD is available for sync');
     assert.match(await page.locator('.doc-source #erd img').getAttribute('src'),/assets\/erd\/erd-complete\.png$/,'Only the new ERD, never the archived image');
     const level1=page.locator('.doc-pages .dfd-level1-figure');
@@ -156,15 +156,16 @@ const server = http.createServer((req,res) => {
     const finalImages=await page.evaluate(async()=>{
       const values=[];for(const id of ['sequence-diagrams','deployment-diagram']){const s=await window.__collectSyncSection(id);values.push(...s.blocks.filter(b=>b.kind==='image').map(b=>({caption:b.caption,width:b.width,height:b.height})));}return values;
     });
-    assert.deepEqual(finalImages.map(b=>Number(b.caption.match(/^Figure (\d+):/)[1])),[17,18,19,20,21,22]);
-    assert(finalImages.every(b=>b.width===2400&&b.height>b.width));
+    assert.deepEqual(finalImages.map(b=>Number(b.caption.match(/^Figure (\d+):/)[1])),[17,18,19]);
+    assert.deepEqual(finalImages.map(b=>b.width),[3600,3600,2400]);
+    assert(finalImages.every(b=>b.height>b.width));
     for(const id of ['sequence-diagrams','deployment-diagram']){
       const section=page.locator('.doc-pages [data-section-id="'+id+'"]').first();
       const sheet=section.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
       assert.equal(await sheet.locator('figure').count(),1,'New section heading shares its first diagram page');
       await sheet.screenshot({path:path.join(os.tmpdir(),'final-term-'+id+'.png')});
     }
-    console.log('Final-term figures passed: 22 images; Activity, Swimlane, Sequence and Deployment capture complete.');
+    console.log('Final-term figures passed: 19 images; Activity, Swimlane, two-page Sequence and Deployment capture complete.');
     console.log('Read-only Google Docs capture passed: six diagrams; Level 1 portrait 1880 x 2140 with full labels.');
     await page.locator('.doc-pages .toc-row[href="#backlog"]').click();
     await page.waitForTimeout(700);

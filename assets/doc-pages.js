@@ -5,7 +5,7 @@
     'usecase-diagrams','usecase-full','gap-analysis','context-diagram','dfd',
     'dfd-p1','dfd-p2','dfd-p3','dfd-p4','dfd-p5','erd',
     'activity-diagrams','activity-p2','activity-p3','activity-p4','activity-p5','swimlane-diagram',
-    'sequence-diagrams','sequence-p2','sequence-p3','sequence-p4','sequence-p5','deployment-diagram','references']);
+    'sequence-diagrams','sequence-whole-1','sequence-whole-2','sequence-p2','sequence-p3','sequence-p4','sequence-p5','deployment-diagram','references']);
 
   async function render(source, target, onProgress) {
     if (!window.Paged) throw new Error('The page-layout library did not load. Reload this page.');

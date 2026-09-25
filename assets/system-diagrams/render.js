@@ -40,7 +40,10 @@ function deployment(id){
   text(g,195,y+116,'Web Browser',{font:23,bold:true});
   artifact(g,57,y+135,276,48);
   text(g,195,y+160,'«artifact» Web interface',{font:19,max:40});
-  icon(g,195,y+211,i===0);
+  icon(g,125,y+205,false);
+  icon(g,265,y+205,true);
+  text(g,125,y+265,'Desktop',{font:16});
+  text(g,265,y+265,'Mobile',{font:16});
  });
  const app=node(535,290,625,470,'«device» Application Server','application');
  box(app,555,353,585,386);
@@ -56,11 +59,12 @@ function deployment(id){
   const caption=text(v,419,sy+(ey<sy?20:-24),'HTTPS',{font:17,max:15});
   caption.setAttribute('stroke','#fff');caption.setAttribute('stroke-width','5');caption.setAttribute('paint-order','stroke');
  });
- const database=node(535,855,625,727,'«device» Database Server','database');
- box(database,555,916,585,645);
+ const stores=[...window.SystemDeploymentStores].sort((a,b)=>Number(a.id.slice(1))-Number(b.id.slice(1)));
+ const storesBottom=994+(stores.length-1)*55+44;
+ const database=node(535,855,625,storesBottom+41-855,'«device» Database Server','database');
+ box(database,555,916,585,storesBottom+20-916);
  text(database,847,943,'«executionEnvironment» PostgreSQL DBMS',{font:23,bold:true,max:55});
  text(database,847,973,'«artifact» Relational schema — logical data stores',{font:19,max:60});
- const stores=[...window.SystemDeploymentStores].sort((a,b)=>Number(a.id.slice(1))-Number(b.id.slice(1)));
  stores.forEach((store,i)=>{
   const y=994+i*55,g=el('g',{'data-store':store.id},database);
   box(g,573,y,550,44);
@@ -68,9 +72,6 @@ function deployment(id){
  });
  el('line',{x1:847,y1:760,x2:847,y2:841,stroke:'#000','stroke-width':2,'data-connection':'application-database'},v);
  text(v,1000,804,'Database connection · TLS',{font:19,max:35});
- text(v,600,1620,'All roles: Desktop / Laptop / Tablet / Smartphone · Chrome / Edge / Safari',{font:21,max:100});
- text(v,600,1650,'One application and one database · No direct client database access',{font:20,max:110});
- text(v,600,1680,'AI runs in the backend; no external provider selected · Forecasts never automatically change stock',{font:19,max:115});
  v.querySelectorAll('text,tspan').forEach(n=>n.style.setProperty('fill','#000'));
  return v;
 }
@@ -130,6 +131,7 @@ for(const model of window.SystemDiagramChildProcesses){
  sheet('process-activities','process',{id:model.id,title:'Process '+model.id.slice(1)+'.0 — '+model.name,model,actors,note:notes[model.id]});
 }
 const index=html('nav','sequence-index');index.id='sequence-index';index.setAttribute('aria-label','Sequence workflows');
+const overviewLink=html('a','','Whole-system sequence — two connected pages');overviewLink.href='Sequence-Overview.html';index.append(overviewLink);
 index.append(html('h2','','Sequence Diagrams — five major processes'),html('p','','One A4 portrait page per DFD Level 1 major process. Related use cases are summarized with guarded fragments. Calls are solid; replies are dashed. Database labels identify logical DFD record groups, not a selected DBMS.'));
 const catalog=html('a','','Grouping decisions and evidence');catalog.href='assets/system-diagrams/SEQUENCE-PLAN.md';index.append(catalog);
 const sequenceDownload=html('a','','Download sequence-only PDF');sequenceDownload.href='assets/system-diagrams/sequences.pdf';sequenceDownload.download='sequences.pdf';index.append(document.createTextNode(' · '),sequenceDownload);

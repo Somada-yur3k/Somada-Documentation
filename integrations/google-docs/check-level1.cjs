@@ -40,8 +40,8 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     })}));
     const issues=[],crossings=[];
     const {routes,nodes,labelBoxes,constants:c,model}=data;
-    assert.equal(routes.length,79);assert.equal(new Set(routes.map(r=>r.id)).size,79);
-    assert(await page.locator('.diagram-connector').evaluateAll(paths=>paths.length===79&&paths.every(p=>getComputedStyle(p).stroke==='rgb(0, 0, 0)')),'All 79 connectors render black');
+    assert.equal(routes.length,77);assert.equal(new Set(routes.map(r=>r.id)).size,77);
+    assert(await page.locator('.diagram-connector').evaluateAll(paths=>paths.length===77&&paths.every(p=>getComputedStyle(p).stroke==='rgb(0, 0, 0)')),'All 77 connectors render black');
     assert(await page.locator('marker path').evaluateAll(paths=>paths.length===7&&paths.every(p=>getComputedStyle(p).fill==='rgb(0, 0, 0)')),'Actor and store arrowheads render black');
     assert.equal(nodes.headlab.y,Math.max(...Object.values(nodes).filter(n=>n.kind==='entity').map(n=>n.y)));
     for(const side of ['left','right']){
@@ -105,7 +105,7 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     for(const f of model.flows)assert.equal(await page.locator('.diagram-flow-label[data-flow-id="'+f.id+'"] text').textContent(),f.label,'Visible canonical label, not an abbreviation');
     assert(!/74 separate flows|Crossings without dots|Rep\. =/.test(await page.locator('#stage svg').textContent()),'No printed crossing or abbreviation footer');
     assert.equal(await page.locator('.diagram-flow-label rect').count(),0,'Plain labels have no background or border');
-    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),79,'Each plain label clears only its own connector stroke');
+    assert.equal(await page.locator('.diagram-connector[stroke-dasharray]').count(),77,'Each plain label clears only its own connector stroke');
     const paint=await page.evaluate(async()=>{
       const {constants:c,labelBoxes}=window.__level1,svg=document.querySelector('#stage svg');
       const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'}));
@@ -180,6 +180,6 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
     await page.getByRole('button',{name:'Reset edits'}).click();
     assert.equal((await label.getAttribute('transform'))||'',before||'');
     assert.equal(await connector.getAttribute('d'),originalPath,'Reset restores authored path');
-    console.log('Level 1 audit passed: 72 flows, balanced, unique nodes/ports, no merges, white label clearances, wider actor/store lanes, hover/label and route drag/persistence/reset/authored export.');
+    console.log('Level 1 audit passed: 77 flows, balanced, unique nodes/ports, no merges, white label clearances, wider actor/store lanes, hover/label and route drag/persistence/reset/authored export.');
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>server.close());

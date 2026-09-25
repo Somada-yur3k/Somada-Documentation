@@ -914,14 +914,6 @@
         "kind": "external"
       },
       {
-        "id": "p5-d2-read-child4",
-        "parentFlow": "p5-d2-read",
-        "source": "d2",
-        "target": "p5.4",
-        "label": "Reservation Summary",
-        "kind": "store"
-      },
-      {
         "id": "p5-d3-write-child1",
         "parentFlow": "p5-d3-write",
         "source": "p5.1",
@@ -943,22 +935,6 @@
         "source": "d11",
         "target": "p5.4",
         "label": "Completed Usage Logs",
-        "kind": "store"
-      },
-      {
-        "id": "p5-d4-read-child4",
-        "parentFlow": "p5-d4-read",
-        "source": "d4",
-        "target": "p5.4",
-        "label": "Inventory Summary",
-        "kind": "store"
-      },
-      {
-        "id": "p5-d5-read-child4",
-        "parentFlow": "p5-d5-read",
-        "source": "d5",
-        "target": "p5.4",
-        "label": "Borrowing Slip Data",
         "kind": "store"
       },
       {
