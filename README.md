@@ -2,6 +2,8 @@
 
 Documentation for the NU Fairview Physics and Circuits Laboratory project. Open `Docs.html` for the current paper and `index.html` for navigation.
 
+Selected diagram pages in `Docs.html` have individual **Download A4 PDF** buttons: DFD Process 2.0, the second Activity Diagram (Figure 12 / Process 2.0), complete ERD A4, Swimlane, Figure 2 Use Case Diagram, and Deployment. Each download contains one complete A4 portrait diagram. The controls sit outside the paper and are excluded from print and the Google Docs sync source. PDFs are in `assets/downloads/diagrams/`, with review copies in `output/pdf/`. Regenerate and verify with `node integrations/system-diagrams/export-selected-diagrams.cjs`; `PLAYWRIGHT_MODULE` and `PDFJS_ROOT` can point to installed browser/PDF runtimes.
+
 ## Local workspace and deployment root
 
 This repository now lives in `PBL1/Documentation/`. Its sibling `PBL1/System/` is reserved for a separate application repository and is not part of this repository. Run documentation scripts from `Documentation/`.
@@ -16,7 +18,7 @@ Head Laboratory is the sole administrator of laboratory logs, schedules and dail
 
 CSS filenames, storage keys, and the internal diagram editor API retain their legacy names for compatibility; these are not the project name. The Apps Script legacy cover-title matcher is also retained to update existing Google Doc copies safely.
 
-There is no current approved ERD. The paper shows a pending-design notice instead of the old schema image or entity list. The original image and legacy data remain archived in the repository, but are not presented as current schema or included in Google Docs sync content.
+The paper now contains the screen-aligned connected ERD baseline and its complete one-page A4 appendix. This is a logical persistent-data design; Supabase deployment and database enforcement remain implementation work. The readable viewer and dictionary use the same canonical model.
 
 ## Navigation and publication checks
 
@@ -26,10 +28,14 @@ Run `node integrations/google-docs/check-navigation.cjs` with Playwright availab
 
 ## System Alignment Analytics
 
-Open `Analytics.html` from any primary menu. This is a design-audit page, not an application usage dashboard or an AI feature. It shows traceability for 20 main use cases, explicit structural checks, the six planned artifact categories, recorded backlog status, fixes, and unresolved consultation decisions. ERD is pending; no database-completion score or production-readiness claim is made.
+Open `Analytics.html` from any primary menu. This is a design-audit page, not an application usage dashboard or an AI feature. It shows traceability for 20 main use cases, explicit structural checks, the six planned artifact categories, recorded backlog status, fixes, and unresolved consultation decisions. The connected ERD baseline is documented separately; audit percentages do not measure database completion or production readiness. Rebuild audit fingerprints after changes to the paper or ERD sources.
 
 With Playwright and Edge available, run `node integrations/system-audit/build.cjs --write` to regenerate `assets/system-audit.json`, then `node integrations/system-audit/build.cjs --check` and `node integrations/system-audit/check.cjs`. Set `PLAYWRIGHT_MODULE` if Playwright is installed outside the workspace. The build renders DFD 0 for comparison and reads the documentation, use-case source and canonical DFD models. Percentages use the formulas listed on the page; they are not a panel grade. The page verifies source fingerprints and refuses to display stale percentages. Rebuild after source changes and include the generated JSON when publishing.
 
 The current review adds seven Level 2 realizations of existing parent flows: D2 reads at 2.1 and 2.3; three laboratory-role return inputs at 4.4; D4 stock at 4.3; D5 borrower evidence at 5.3. The later Lab End-Term Report clarification removes D7 daily-task and D10 disposal reporting reads: With the subsequent inventory-forecast extension, Level 1 has 75 flows, Level 2 has 94 boundary realizations across 24 children, and Level 0 has 48 external flows. The clearance-to-report internal flow is also removed. No actor or main use case was removed.
 
 Live Server is supported: fingerprint verification ignores only its recognized, marked auto-reload script immediately before the closing body tag. Authored HTML, other scripts and comments remain fingerprinted, so actual source edits still require an audit rebuild. CRLF/LF differences are normalized on both build and browser sides.
+
+## Connected ERD baseline
+
+ERD.html, ERD-A4.html and ERD-PRINT.html use the same screen-aligned model. The single portrait A4 diagram contains all 30 entities, 208 fields and 61 connecting relationships together. The browser dictionary preserves full definitions and workflow/implementation boundaries. SERVICE_REQUEST is distinct from the future confirmed RESERVATION; laboratory and room scope are separate. See assets/erd/DESIGN.md and integrations/erd/SCREEN-ALIGNMENT.md. No Supabase or remote Google Doc is changed.

@@ -1,0 +1,2185 @@
+{
+  "version": 4,
+  "status": "Screen-aligned logical baseline; Supabase not deployed",
+  "updated": "2026-09-27",
+  "tables": [
+    {
+      "name": "USER_ACCOUNT",
+      "store": "D1",
+      "implementation": "Demo / sample data",
+      "purpose": "Profile and role context for login, account management and staff scoping. account_id maps to Supabase auth.users.id at integration.",
+      "fields": [
+        {
+          "name": "account_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "student_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "STUDENT",
+            "field": "student_id"
+          },
+          "unique": true
+        },
+        {
+          "name": "staff_lab_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "LABORATORY",
+            "field": "lab_id"
+          }
+        },
+        {
+          "name": "login_identifier",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "first_name",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "middle_name",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        },
+        {
+          "name": "last_name",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "contact_number",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        },
+        {
+          "name": "department",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        },
+        {
+          "name": "role",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "HEADLAB",
+            "FACULTY",
+            "CLASSREP",
+            "DEAN",
+            "PHYSICS_STAFF",
+            "CIRCUITS_STAFF"
+          ]
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "ACTIVE",
+            "INACTIVE"
+          ]
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "Passwords belong to Supabase Auth; no password_hash or temporary password is stored in the profile.",
+        "Only Class Representative accounts require student_id. Ordinary student participants do not need login accounts.",
+        "Physics Staff requires the Physics lab; Circuits Staff requires the Circuits lab. Other roles have no staff lab.",
+        "Headlab create/edit screens currently manage UI records, not actual Auth accounts."
+      ],
+      "unique": []
+    },
+    {
+      "name": "STUDENT",
+      "store": "D1",
+      "implementation": "Demo / sample data",
+      "purpose": "Participant identity; NU ID is independent of the submitting Class Representative account.",
+      "fields": [
+        {
+          "name": "student_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "student_number",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "full_name",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "program",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        }
+      ],
+      "checks": [
+        "student_number matches YYYY-NNNNNNN, e.g. 2024-1031816.",
+        "The demo collects participant names and IDs; it does not resolve a real authorized roster."
+      ],
+      "unique": []
+    },
+    {
+      "name": "SECTION",
+      "store": "D1",
+      "implementation": "Demo / sample data",
+      "purpose": "Named class section used by Faculty assignments and the fixed participant section.",
+      "fields": [
+        {
+          "name": "section_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "section_code",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "program",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [],
+      "unique": []
+    },
+    {
+      "name": "FACULTY_SECTION",
+      "store": "D1",
+      "implementation": "Demo / sample data",
+      "purpose": "Many assigned sections per Faculty, scoped to a laboratory before a subject/class is created.",
+      "fields": [
+        {
+          "name": "faculty_section_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "faculty_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "section_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "SECTION",
+            "field": "section_id"
+          }
+        },
+        {
+          "name": "lab_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "LABORATORY",
+            "field": "lab_id"
+          }
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "faculty_id must reference a FACULTY account."
+      ],
+      "unique": [
+        [
+          "faculty_id",
+          "section_id",
+          "lab_id"
+        ]
+      ]
+    },
+    {
+      "name": "CLASS_GROUP",
+      "store": "D1",
+      "implementation": "Demo / sample data",
+      "purpose": "Subject/class assignment. This table does not mean the Group request type.",
+      "fields": [
+        {
+          "name": "group_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "term_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "TERM",
+            "field": "term_id"
+          }
+        },
+        {
+          "name": "faculty_section_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "FACULTY_SECTION",
+            "field": "faculty_section_id"
+          }
+        },
+        {
+          "name": "subject_code",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "subject_name",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "Selected section, laboratory and assigned Faculty are derived from faculty_section_id."
+      ],
+      "unique": [
+        [
+          "term_id",
+          "faculty_section_id",
+          "subject_code"
+        ]
+      ]
+    },
+    {
+      "name": "CLASS_REP_ASSIGNMENT",
+      "store": "D1",
+      "implementation": "Demo / sample data",
+      "purpose": "Headlab Classrep form: fixed section, designated Faculty, laboratory and existing subject/class.",
+      "fields": [
+        {
+          "name": "rep_assignment_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "account_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "section_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "SECTION",
+            "field": "section_id"
+          }
+        },
+        {
+          "name": "group_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "CLASS_GROUP",
+            "field": "group_id"
+          }
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "assigned_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "account_id must reference a CLASSREP account.",
+        "The selected CLASS_GROUP must resolve to this section; designated Faculty and laboratory come from its FACULTY_SECTION.",
+        "Enforce one active Class Representative per section and one active assignment per Classrep. Apply conditional uniqueness only to active records."
+      ],
+      "unique": []
+    },
+    {
+      "name": "GROUP_MEMBER",
+      "store": "D1",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Authorized roster for the assigned subject/class; required for real participant ownership checks.",
+      "fields": [
+        {
+          "name": "group_member_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "group_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "CLASS_GROUP",
+            "field": "group_id"
+          }
+        },
+        {
+          "name": "student_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "STUDENT",
+            "field": "student_id"
+          }
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [],
+      "unique": [
+        [
+          "group_id",
+          "student_id"
+        ]
+      ]
+    },
+    {
+      "name": "TERM",
+      "store": "D3",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Term boundary for subject assignments and weekly schedules.",
+      "fields": [
+        {
+          "name": "term_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "term_code",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "starts_on",
+          "type": "date",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "ends_on",
+          "type": "date",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "starts_on <= ends_on."
+      ],
+      "unique": []
+    },
+    {
+      "name": "LABORATORY",
+      "store": "D3",
+      "implementation": "Demo / sample data",
+      "purpose": "Physics or Circuits laboratory scope; one laboratory can contain several rooms.",
+      "fields": [
+        {
+          "name": "lab_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "lab_code",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "lab_name",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "lab_code is PHYSICS or CIRCUITS. Staff data access uses this ID, not a room ID."
+      ],
+      "unique": []
+    },
+    {
+      "name": "LAB_ROOM",
+      "store": "D3",
+      "implementation": "Demo / sample data",
+      "purpose": "Room Number choices under a laboratory, e.g. Physics 201/202 and Circuits 301/302.",
+      "fields": [
+        {
+          "name": "room_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "lab_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "LABORATORY",
+            "field": "lab_id"
+          }
+        },
+        {
+          "name": "room_name",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [],
+      "unique": [
+        [
+          "lab_id",
+          "room_name"
+        ]
+      ]
+    },
+    {
+      "name": "REGULAR_SCHEDULE",
+      "store": "D3",
+      "implementation": "Demo / sample data",
+      "purpose": "Recurring laboratory or lecture blocks rendered by Room Availability.",
+      "fields": [
+        {
+          "name": "regular_schedule_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "term_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "TERM",
+            "field": "term_id"
+          }
+        },
+        {
+          "name": "room_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "LAB_ROOM",
+            "field": "room_id"
+          }
+        },
+        {
+          "name": "group_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "CLASS_GROUP",
+            "field": "group_id"
+          }
+        },
+        {
+          "name": "block_type",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "LABORATORY",
+            "LECTURE"
+          ]
+        },
+        {
+          "name": "weekday",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "start_time",
+          "type": "time",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "end_time",
+          "type": "time",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "valid_from",
+          "type": "date",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "valid_until",
+          "type": "date",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "weekday is 1-6 (Monday-Saturday) in the current form. start_time < end_time.",
+        "Regular blocks repeat within their effective dates. Do not store recurring classes as one fixed dated request.",
+        "The room laboratory must match the class laboratory when group_id is present."
+      ],
+      "unique": []
+    },
+    {
+      "name": "SERVICE_REQUEST",
+      "store": "D2",
+      "implementation": "Demo / sample data",
+      "purpose": "Submitted request header shown in Dean, requester status and laboratory Staff request queues.",
+      "fields": [
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "reference_no",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "requester_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "PENDING_FACULTY_APPROVAL",
+            "PENDING_DEAN_APPROVAL",
+            "AWAITING_RESERVATION",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        {
+          "name": "submitted_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "requester_id must reference CLASSREP or FACULTY. Identity, reference and initial status are derived on the server.",
+        "Academic Approved means eligible for later laboratory processing, not an already reserved room.",
+        "Header status reflects the current revision and its decision. No sample flag is required in the production model."
+      ],
+      "unique": []
+    },
+    {
+      "name": "REQUEST_REVISION",
+      "store": "D2",
+      "implementation": "Demo / sample data",
+      "purpose": "Detached request snapshot: laboratory, class, room/time, request/activity type and notes.",
+      "fields": [
+        {
+          "name": "revision_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "request_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "SERVICE_REQUEST",
+            "field": "request_id"
+          }
+        },
+        {
+          "name": "lab_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "LABORATORY",
+            "field": "lab_id"
+          }
+        },
+        {
+          "name": "group_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "CLASS_GROUP",
+            "field": "group_id"
+          }
+        },
+        {
+          "name": "room_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "LAB_ROOM",
+            "field": "room_id"
+          }
+        },
+        {
+          "name": "regular_schedule_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "REGULAR_SCHEDULE",
+            "field": "regular_schedule_id"
+          }
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "revision_no",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "request_type",
+          "type": "enum",
+          "key": "",
+          "nullable": true,
+          "values": [
+            "GROUP",
+            "STUDENT_ONLY"
+          ]
+        },
+        {
+          "name": "activity_type",
+          "type": "enum",
+          "key": "",
+          "nullable": true,
+          "values": [
+            "LABORATORY_ACTIVITY",
+            "NON_LABORATORY_ACTIVITY"
+          ]
+        },
+        {
+          "name": "schedule_type",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "ON_SCHEDULE",
+            "OUT_OF_SCHEDULE"
+          ]
+        },
+        {
+          "name": "request_for",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "ONE_TIME"
+          ]
+        },
+        {
+          "name": "starts_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "ends_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        },
+        {
+          "name": "is_current",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "A submitted request needs exactly one current revision; UNIQUE(request_id) WHERE is_current. The demo saves revision 1 and locks it against edits.",
+        "Classrep: request_type is required; activity_type is null. Faculty: activity_type is required; request_type is null.",
+        "Laboratory Activity is Faculty-only and must be On-Schedule. Non-Laboratory Activity permits either schedule type.",
+        "Selected room, class and regular schedule must belong to lab_id. On-Schedule exactly follows the assigned block; Out-of-Schedule must be outside the assigned class time and vacant.",
+        "Current demo office blocks are Monday-Saturday, 07:00-17:00, in 30-minute increments. Persist timestamps using Asia/Manila input conversion.",
+        "Notes are at most 1,000 characters. Future reschedule must create a new revision and invalidate old approval; rescheduling is not implemented."
+      ],
+      "unique": [
+        [
+          "request_id",
+          "revision_no"
+        ]
+      ]
+    },
+    {
+      "name": "APPROVAL",
+      "store": "D2",
+      "implementation": "Demo / sample data",
+      "purpose": "Exactly one selected Faculty or Dean reviewer where academic approval is required.",
+      "fields": [
+        {
+          "name": "approval_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "revision_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "REQUEST_REVISION",
+            "field": "revision_id"
+          },
+          "unique": true
+        },
+        {
+          "name": "approver_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "reviewer_role",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "FACULTY",
+            "DEAN"
+          ]
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        {
+          "name": "remarks",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": true
+        }
+      ],
+      "checks": [
+        "Classrep On-Schedule -> assigned Faculty. Classrep Out-of-Schedule -> selected assigned Faculty or Dean.",
+        "Faculty On-Schedule, including Laboratory Activity -> no APPROVAL row. Faculty Non-Laboratory Activity Out-of-Schedule -> Dean.",
+        "Current Classrep UI explicitly selects Faculty or Dean; automatic Faculty availability/escalation is not implemented.",
+        "approver_id must resolve to an eligible account of reviewer_role. Dean sees only Out-of-Schedule requests routed to Dean.",
+        "Decision can be made only once while Pending. Rejection requires nonblank remarks up to 1,000 characters; decided_at is null while Pending.",
+        "Dean decisions work in the demo. Faculty review screen is still unfinished. No route_order or sequential Faculty-then-Dean chain."
+      ],
+      "unique": []
+    },
+    {
+      "name": "REQUEST_ITEM",
+      "store": "D2",
+      "implementation": "Demo / sample data",
+      "purpose": "Requested catalogue items or additional manual equipment/materials; quantities are not issued stock.",
+      "fields": [
+        {
+          "name": "request_item_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "revision_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "REQUEST_REVISION",
+            "field": "revision_id"
+          }
+        },
+        {
+          "name": "item_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "ITEM",
+            "field": "item_id"
+          }
+        },
+        {
+          "name": "name_snapshot",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "kind_snapshot",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "Equipment",
+            "Material"
+          ]
+        },
+        {
+          "name": "unit_snapshot",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "qty_requested",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "item_id may be null for Additional Items; name/type/quantity are still mandatory.",
+        "Selected catalogue item must belong to the request laboratory. One catalogue item row per revision; manual rows have no forced item FK.",
+        "qty_requested is 1-999; catalogue quantity cannot exceed sample stock in the current demo. Live stock and holds must be checked transactionally.",
+        "Preserve item name/unit/type snapshots even if the catalogue item is later renamed or archived."
+      ],
+      "unique": []
+    },
+    {
+      "name": "REQUEST_MEMBER",
+      "store": "D2",
+      "implementation": "Demo / sample data",
+      "purpose": "Selected students for Classrep Group or Student Only, on both schedule variants.",
+      "fields": [
+        {
+          "name": "request_member_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "revision_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "REQUEST_REVISION",
+            "field": "revision_id"
+          }
+        },
+        {
+          "name": "student_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "STUDENT",
+            "field": "student_id"
+          }
+        },
+        {
+          "name": "name_snapshot",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "student_no_snapshot",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "GROUP needs one or more unique students; STUDENT_ONLY needs exactly one. Faculty requests have no student rows.",
+        "Resolve every student to an active GROUP_MEMBER of the selected class before persistent submission. The demo validates syntax/uniqueness, not an actual roster."
+      ],
+      "unique": [
+        [
+          "revision_id",
+          "student_id"
+        ]
+      ]
+    },
+    {
+      "name": "RESERVATION",
+      "store": "D2",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Confirmed dated room booking, created only by later laboratory processing after any required academic approval.",
+      "fields": [
+        {
+          "name": "reservation_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "revision_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "REQUEST_REVISION",
+            "field": "revision_id"
+          },
+          "unique": true
+        },
+        {
+          "name": "processed_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "RESERVED",
+            "CANCELLED",
+            "COMPLETED"
+          ]
+        },
+        {
+          "name": "reserved_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "No reservation is created by the current Submit or Dean Approve actions.",
+        "Room/time is inherited from the immutable revision. Recheck regular classes and conflicting live bookings atomically before confirming.",
+        "processor must be Staff of the revision laboratory or Headlab. Holds/cancellation policies remain future implementation; do not claim the demo saves holds."
+      ],
+      "unique": []
+    },
+    {
+      "name": "ITEM_CATEGORY",
+      "store": "D4",
+      "implementation": "Demo / sample data",
+      "purpose": "Category tags for equipment/material search and inventory management.",
+      "fields": [
+        {
+          "name": "category_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "category_name",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "unique": []
+    },
+    {
+      "name": "ITEM",
+      "store": "D4",
+      "implementation": "Demo / sample data",
+      "purpose": "Inventory row owned by one laboratory; shared equipment types still have distinct stock per lab.",
+      "fields": [
+        {
+          "name": "item_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "lab_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "LABORATORY",
+            "field": "lab_id"
+          }
+        },
+        {
+          "name": "category_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "ITEM_CATEGORY",
+            "field": "category_id"
+          }
+        },
+        {
+          "name": "item_name",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "item_type",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "Equipment",
+            "Material"
+          ]
+        },
+        {
+          "name": "unit",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "stock_quantity",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "condition_status",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "Usable",
+            "Maintenance"
+          ]
+        },
+        {
+          "name": "reorder_level",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "stock_quantity is a whole number from 0 to 9,999 for the Staff form; reorder_level defaults to the current low-stock threshold 5.",
+        "Staff can mutate only their own lab_id. Case-insensitive item name uniqueness applies within a lab.",
+        "Use archival rather than deleting referenced production items; demo deletion is temporary.",
+        "The Staff demo inventory and request sample catalogue are currently separate. Supabase integration must use this single ITEM source and synchronize stock with the movement ledger."
+      ],
+      "unique": [
+        [
+          "lab_id",
+          "item_name"
+        ]
+      ]
+    },
+    {
+      "name": "STOCK_MOVEMENT",
+      "store": "D4",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Auditable stock ledger for receipts, adjustments, issues, returns, consumption and disposal.",
+      "fields": [
+        {
+          "name": "movement_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "item_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "ITEM",
+            "field": "item_id"
+          }
+        },
+        {
+          "name": "recorded_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "borrowing_item_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "BORROWING_ITEM",
+            "field": "borrowing_item_id"
+          }
+        },
+        {
+          "name": "return_entry_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "RETURN_ENTRY",
+            "field": "return_entry_id"
+          }
+        },
+        {
+          "name": "disposal_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "DISPOSAL",
+            "field": "disposal_id"
+          }
+        },
+        {
+          "name": "on_hand_delta",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "owned_delta",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "movement_type",
+          "type": "enum",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "recorded_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "Update ITEM stock and the source transaction in the same database transaction. Ledger posting is not yet implemented.",
+        "Each source event must be idempotent; do not deduct stock both from a request and a borrowing event."
+      ],
+      "unique": []
+    },
+    {
+      "name": "DISPOSAL",
+      "store": "D10",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Documented physical waste disposal; lost items are not physical waste.",
+      "fields": [
+        {
+          "name": "disposal_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "item_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "ITEM",
+            "field": "item_id"
+          }
+        },
+        {
+          "name": "recorded_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "return_entry_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "RETURN_ENTRY",
+            "field": "return_entry_id"
+          }
+        },
+        {
+          "name": "quantity",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "waste_class",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "disposed_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "Disposal quantity must be positive and supported by physical stock or a damaged return."
+      ],
+      "unique": []
+    },
+    {
+      "name": "BORROWING",
+      "store": "D5",
+      "implementation": "Demo / sample data",
+      "purpose": "Borrowing slip header for the Staff record screen; issuance is a future transaction.",
+      "fields": [
+        {
+          "name": "borrowing_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "reservation_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "RESERVATION",
+            "field": "reservation_id"
+          }
+        },
+        {
+          "name": "borrower_account_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "issued_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "slip_no",
+          "type": "text",
+          "key": "",
+          "nullable": false,
+          "unique": true
+        },
+        {
+          "name": "issued_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "due_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "key": "",
+          "nullable": false,
+          "values": [
+            "BORROWED",
+            "RETURNED"
+          ]
+        },
+        {
+          "name": "closed_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": true
+        }
+      ],
+      "checks": [
+        "Current Staff borrowing slips are isolated sample records, not created from demo requests. The target FK joins a slip to a confirmed reservation.",
+        "Issuer must be Staff of the reservation laboratory or Headlab; no cross-laboratory issue.",
+        "Borrower account preserves the submitting Classrep/Faculty identity; selected accountable students remain in BORROWING_MEMBER."
+      ],
+      "unique": []
+    },
+    {
+      "name": "BORROWING_ITEM",
+      "store": "D5",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Actual issued quantities, separate from requested quantities.",
+      "fields": [
+        {
+          "name": "borrowing_item_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "borrowing_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "BORROWING",
+            "field": "borrowing_id"
+          }
+        },
+        {
+          "name": "request_item_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "REQUEST_ITEM",
+            "field": "request_item_id"
+          }
+        },
+        {
+          "name": "item_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "ITEM",
+            "field": "item_id"
+          }
+        },
+        {
+          "name": "qty_issued",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "All request items must belong to the borrowing reservation revision and laboratory. Manual additional items must be resolved to a stock ITEM before issuance.",
+        "Cumulative issued quantity cannot exceed authorized/requested quantity without an approved revision."
+      ],
+      "unique": [
+        [
+          "borrowing_id",
+          "request_item_id",
+          "item_id"
+        ]
+      ]
+    },
+    {
+      "name": "BORROWING_MEMBER",
+      "store": "D5",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Accountable selected students, never all students in a section automatically.",
+      "fields": [
+        {
+          "name": "borrow_member_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "borrowing_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "BORROWING",
+            "field": "borrowing_id"
+          }
+        },
+        {
+          "name": "request_member_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "REQUEST_MEMBER",
+            "field": "request_member_id"
+          }
+        }
+      ],
+      "checks": [
+        "Member must belong to the same request revision as the borrowing reservation. Classrep slips preserve selected participants; Faculty requests have no participant rows."
+      ],
+      "unique": [
+        [
+          "borrowing_id",
+          "request_member_id"
+        ]
+      ]
+    },
+    {
+      "name": "RETURN_ENTRY",
+      "store": "D5",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Partial-return history and outcome quantities for each issued item.",
+      "fields": [
+        {
+          "name": "return_entry_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "borrowing_item_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "BORROWING_ITEM",
+            "field": "borrowing_item_id"
+          }
+        },
+        {
+          "name": "received_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "qty_good",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "qty_broken",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "qty_lost",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "qty_consumed",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "recorded_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "Quantities are nonnegative and total reconciled quantity cannot exceed issued quantity. At least one outcome quantity is positive.",
+        "Good returns restore reusable availability; loss/consumption are not physical good returns. Apply stock effects once."
+      ],
+      "unique": []
+    },
+    {
+      "name": "CLEARANCE",
+      "store": "D6",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Student liabilities from a documented return and accountable selected participant.",
+      "fields": [
+        {
+          "name": "clearance_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "return_entry_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "RETURN_ENTRY",
+            "field": "return_entry_id"
+          }
+        },
+        {
+          "name": "borrow_member_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "BORROWING_MEMBER",
+            "field": "borrow_member_id"
+          }
+        },
+        {
+          "name": "raised_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "settled_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "quantity",
+          "type": "integer",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "raised_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "settled_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": true
+        }
+      ],
+      "checks": [
+        "Clearance remains a Classrep/student workflow. Faculty has no clearance page or implied student participants.",
+        "Student accountability and return must come from the same borrowing transaction; allocate liability explicitly without charging every section member or counting a loss twice."
+      ],
+      "unique": []
+    },
+    {
+      "name": "USAGE_LOG",
+      "store": "D11",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Actual laboratory use after a reservation; distinct from planned time.",
+      "fields": [
+        {
+          "name": "usage_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "reservation_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "RESERVATION",
+            "field": "reservation_id"
+          }
+        },
+        {
+          "name": "borrowing_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": true,
+          "ref": {
+            "table": "BORROWING",
+            "field": "borrowing_id"
+          }
+        },
+        {
+          "name": "recorded_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "actual_start",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "actual_end",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "remarks",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        }
+      ],
+      "checks": [
+        "Room-only use can have no borrowing slip. Faculty identity comes from the reservation class assignment."
+      ],
+      "unique": []
+    },
+    {
+      "name": "DAILY_TASK",
+      "store": "D7",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Laboratory Staff work log retained for the broader documented system.",
+      "fields": [
+        {
+          "name": "task_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "lab_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "LABORATORY",
+            "field": "lab_id"
+          }
+        },
+        {
+          "name": "recorded_by",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "task_date",
+          "type": "date",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "activity",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "work_availability",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "overtime_hours",
+          "type": "numeric",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "remarks",
+          "type": "text",
+          "key": "",
+          "nullable": true
+        }
+      ],
+      "checks": [],
+      "unique": []
+    },
+    {
+      "name": "KNOWLEDGE_ARTICLE",
+      "store": "D8",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Curated information for the future Lab Assistant; not an approval engine.",
+      "fields": [
+        {
+          "name": "article_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "topic",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [],
+      "unique": []
+    },
+    {
+      "name": "CHAT_EXCHANGE",
+      "store": "D9",
+      "implementation": "Planned persistent workflow",
+      "purpose": "Future authenticated Lab Assistant question/answer history.",
+      "fields": [
+        {
+          "name": "chat_id",
+          "type": "uuid",
+          "key": "PK",
+          "nullable": false
+        },
+        {
+          "name": "requester_id",
+          "type": "uuid",
+          "key": "FK",
+          "nullable": false,
+          "ref": {
+            "table": "USER_ACCOUNT",
+            "field": "account_id"
+          }
+        },
+        {
+          "name": "question",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "answer",
+          "type": "text",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "intent",
+          "type": "enum",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "response_status",
+          "type": "enum",
+          "key": "",
+          "nullable": false
+        },
+        {
+          "name": "asked_at",
+          "type": "timestamptz",
+          "key": "",
+          "nullable": false
+        }
+      ],
+      "checks": [
+        "Chat does not approve requests, reserve a room, mutate inventory or create a Forecast entity."
+      ],
+      "unique": []
+    }
+  ],
+  "pages": [
+    {
+      "id": "identity",
+      "title": "Accounts and Student Identity",
+      "tables": [
+        "USER_ACCOUNT",
+        "STUDENT",
+        "SECTION"
+      ],
+      "code": "A1"
+    },
+    {
+      "id": "classes",
+      "title": "Faculty, Classrep and Class Membership",
+      "tables": [
+        "FACULTY_SECTION",
+        "CLASS_GROUP",
+        "CLASS_REP_ASSIGNMENT",
+        "GROUP_MEMBER"
+      ],
+      "code": "A2"
+    },
+    {
+      "id": "schedule",
+      "title": "Laboratories, Rooms and Regular Schedule",
+      "tables": [
+        "LABORATORY",
+        "LAB_ROOM",
+        "TERM",
+        "REGULAR_SCHEDULE"
+      ],
+      "code": "A3"
+    },
+    {
+      "id": "requests",
+      "title": "Service Requests and Immutable Revisions",
+      "tables": [
+        "SERVICE_REQUEST",
+        "REQUEST_REVISION"
+      ],
+      "code": "A4"
+    },
+    {
+      "id": "review",
+      "title": "Approval, Requested Items and Participants",
+      "tables": [
+        "APPROVAL",
+        "REQUEST_ITEM",
+        "REQUEST_MEMBER",
+        "RESERVATION"
+      ],
+      "code": "A5"
+    },
+    {
+      "id": "inventory",
+      "title": "Laboratory Inventory and Stock Ledger",
+      "tables": [
+        "ITEM_CATEGORY",
+        "ITEM",
+        "STOCK_MOVEMENT",
+        "DISPOSAL"
+      ],
+      "code": "A6"
+    },
+    {
+      "id": "borrowing",
+      "title": "Borrowing Slips, Issuance and Returns",
+      "tables": [
+        "BORROWING",
+        "BORROWING_ITEM",
+        "BORROWING_MEMBER",
+        "RETURN_ENTRY"
+      ],
+      "code": "A7"
+    },
+    {
+      "id": "administration",
+      "title": "Student Clearance and Laboratory Logs",
+      "tables": [
+        "CLEARANCE",
+        "USAGE_LOG",
+        "DAILY_TASK"
+      ],
+      "code": "A8"
+    },
+    {
+      "id": "assistant",
+      "title": "Lab Assistant Extension",
+      "tables": [
+        "KNOWLEDGE_ARTICLE",
+        "CHAT_EXCHANGE"
+      ],
+      "code": "A9"
+    }
+  ],
+  "evidence": [
+    [
+      "Headlab account forms",
+      "src/features/accounts/types.ts; account-form-data.ts",
+      "Names, optional middle name, email/contact/notes, Faculty assigned sections, Classrep NU ID/designated Faculty/existing class; UI records only."
+    ],
+    [
+      "Classrep six-step request",
+      "src/features/lab-dashboard/request-review.ts; request-participants.ts",
+      "Group or Student Only on both schedule variants; unique student IDs; assigned Faculty On-Schedule; explicit Faculty/Dean selection Out-of-Schedule."
+    ],
+    [
+      "Faculty activity request",
+      "src/features/lab-dashboard/faculty-request-model.ts",
+      "Laboratory Activity skips Schedule Type and uses On-Schedule. Non-Laboratory Activity adds On/Out choice; Out routes to Dean. No student selection."
+    ],
+    [
+      "Schedule and Room Availability",
+      "src/features/lab-dashboard/room-availability.ts",
+      "Laboratory type and room are separate; weekly assigned/lecture blocks, dated sample requests, one-time requests and time conflicts."
+    ],
+    [
+      "Equipment and Materials",
+      "src/features/lab-dashboard/request-review.ts; equipment-catalog.ts",
+      "Optional item list; catalogue stock/type/lab validation; Additional Items do not require a catalogue ID."
+    ],
+    [
+      "Demo request persistence and Dean",
+      "src/features/demo-requests/store.ts; types.ts",
+      "Server-derived requester/reference/route/status, immutable snapshots, one pending-to-final Dean decision and required rejection reason. No room reservation or notification is created."
+    ],
+    [
+      "Staff laboratory workspaces",
+      "src/features/staff/store.ts; types.ts; src/app/api/demo/staff/",
+      "Separate Physics/Circuits inventory rows, integer stock and condition, isolated sample borrowing slips, laboratory-filtered submitted requests. Inventory is not yet connected to the request sample catalogue."
+    ],
+    [
+      "Role routes and authentication",
+      "src/features/demo-auth/types.ts; session.ts",
+      "Six fixed demo roles. Supabase Auth and database/RLS are not deployed. Profiles must use Auth identity rather than store passwords in app tables."
+    ]
+  ],
+  "sheets": [
+    {
+      "id": "complete",
+      "title": "Laboratory Management System - Connected ERD",
+      "main": [
+        "USER_ACCOUNT",
+        "STUDENT",
+        "SECTION",
+        "FACULTY_SECTION",
+        "CLASS_GROUP",
+        "CLASS_REP_ASSIGNMENT",
+        "GROUP_MEMBER",
+        "TERM",
+        "LABORATORY",
+        "LAB_ROOM",
+        "REGULAR_SCHEDULE",
+        "SERVICE_REQUEST",
+        "REQUEST_REVISION",
+        "APPROVAL",
+        "REQUEST_ITEM",
+        "REQUEST_MEMBER",
+        "RESERVATION",
+        "ITEM_CATEGORY",
+        "ITEM",
+        "STOCK_MOVEMENT",
+        "DISPOSAL",
+        "BORROWING",
+        "BORROWING_ITEM",
+        "BORROWING_MEMBER",
+        "RETURN_ENTRY",
+        "CLEARANCE",
+        "USAGE_LOG",
+        "DAILY_TASK",
+        "KNOWLEDGE_ARTICLE",
+        "CHAT_EXCHANGE"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,530 @@
+[
+  {
+    "id": "use-case",
+    "name": "Use Case",
+    "source": "assets/figures-v2/usecase-diagram-source.html?export=1",
+    "width": 1600,
+    "height": 1800,
+    "texts": 82,
+    "shapes": 38,
+    "connectors": 80,
+    "groups": 0,
+    "images": 0,
+    "validation": {
+      "cells": 200,
+      "rendered": 200,
+      "expected": 200,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1600,
+        "height": 1800
+      }
+    }
+  },
+  {
+    "id": "dfd-level-0",
+    "name": "DFD Level 0 - Context",
+    "source": "assets/figures-v2/dfd-level0/dfd-level0-source.html?export=1",
+    "width": 1200,
+    "height": 1500,
+    "texts": 68,
+    "shapes": 9,
+    "connectors": 51,
+    "groups": 7,
+    "images": 0,
+    "validation": {
+      "cells": 135,
+      "rendered": 135,
+      "expected": 135,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1200,
+        "height": 1500
+      }
+    }
+  },
+  {
+    "id": "dfd-level-1",
+    "name": "DFD Level 1",
+    "source": "assets/figures-v2/dfd-level1/dfd-level1-source.html?export=1",
+    "width": 1880,
+    "height": 2140,
+    "texts": 139,
+    "shapes": 23,
+    "connectors": 104,
+    "groups": 22,
+    "images": 0,
+    "validation": {
+      "cells": 288,
+      "rendered": 288,
+      "expected": 288,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1880,
+        "height": 2140
+      }
+    }
+  },
+  {
+    "id": "dfd-level-2-p1",
+    "name": "DFD Level 2 - Process 1.0",
+    "source": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p1&export=1",
+    "width": 2010,
+    "height": 1624,
+    "texts": 52,
+    "shapes": 14,
+    "connectors": 26,
+    "groups": 12,
+    "images": 0,
+    "validation": {
+      "cells": 104,
+      "rendered": 104,
+      "expected": 104,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 2010,
+        "height": 1624
+      }
+    }
+  },
+  {
+    "id": "dfd-level-2-p2",
+    "name": "DFD Level 2 - Process 2.0",
+    "source": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p2&export=1",
+    "width": 2010,
+    "height": 1486.75,
+    "texts": 60,
+    "shapes": 12,
+    "connectors": 39,
+    "groups": 10,
+    "images": 0,
+    "validation": {
+      "cells": 121,
+      "rendered": 121,
+      "expected": 121,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 2010,
+        "height": 1486.75
+      }
+    }
+  },
+  {
+    "id": "dfd-level-2-p3",
+    "name": "DFD Level 2 - Process 3.0",
+    "source": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p3&export=1",
+    "width": 2010,
+    "height": 1486.75,
+    "texts": 38,
+    "shapes": 11,
+    "connectors": 20,
+    "groups": 9,
+    "images": 0,
+    "validation": {
+      "cells": 78,
+      "rendered": 78,
+      "expected": 78,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 2010,
+        "height": 1486.75
+      }
+    }
+  },
+  {
+    "id": "dfd-level-2-p4",
+    "name": "DFD Level 2 - Process 4.0",
+    "source": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p4&export=1",
+    "width": 2106,
+    "height": 2248,
+    "texts": 92,
+    "shapes": 19,
+    "connectors": 54,
+    "groups": 17,
+    "images": 0,
+    "validation": {
+      "cells": 182,
+      "rendered": 182,
+      "expected": 182,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 2106,
+        "height": 2248
+      }
+    }
+  },
+  {
+    "id": "dfd-level-2-p5",
+    "name": "DFD Level 2 - Process 5.0",
+    "source": "assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html?process=p5&export=1",
+    "width": 2010,
+    "height": 1640,
+    "texts": 59,
+    "shapes": 16,
+    "connectors": 34,
+    "groups": 14,
+    "images": 0,
+    "validation": {
+      "cells": 123,
+      "rendered": 123,
+      "expected": 123,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 2010,
+        "height": 1640
+      }
+    }
+  },
+  {
+    "id": "activity-p1",
+    "name": "Activity - Process 1.0",
+    "source": "assets/system-diagrams/activity-p1.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 29,
+    "shapes": 19,
+    "connectors": 18,
+    "groups": 12,
+    "images": 0,
+    "validation": {
+      "cells": 78,
+      "rendered": 78,
+      "expected": 78,
+      "missingText": [],
+      "bounds": {
+        "x": 25.709999084472656,
+        "y": 71.8,
+        "width": 1143.3900009155273,
+        "height": 1551.5
+      }
+    }
+  },
+  {
+    "id": "activity-p2",
+    "name": "Activity - Process 2.0",
+    "source": "assets/system-diagrams/activity-p2.svg",
+    "width": 1800,
+    "height": 2550,
+    "texts": 125,
+    "shapes": 106,
+    "connectors": 72,
+    "groups": 40,
+    "images": 0,
+    "validation": {
+      "cells": 343,
+      "rendered": 343,
+      "expected": 343,
+      "missingText": [],
+      "bounds": {
+        "x": 42.0098,
+        "y": 39.72,
+        "width": 1752.0902,
+        "height": 2493.080048828125
+      }
+    }
+  },
+  {
+    "id": "activity-p3",
+    "name": "Activity - Process 3.0",
+    "source": "assets/system-diagrams/activity-p3.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 19,
+    "shapes": 15,
+    "connectors": 12,
+    "groups": 10,
+    "images": 0,
+    "validation": {
+      "cells": 56,
+      "rendered": 56,
+      "expected": 56,
+      "missingText": [],
+      "bounds": {
+        "x": 218.9,
+        "y": 71.8,
+        "width": 765.49331,
+        "height": 1561.5
+      }
+    }
+  },
+  {
+    "id": "activity-p4",
+    "name": "Activity - Process 4.0",
+    "source": "assets/system-diagrams/activity-p4.svg",
+    "width": 1200,
+    "height": 2300,
+    "texts": 71,
+    "shapes": 44,
+    "connectors": 40,
+    "groups": 25,
+    "images": 0,
+    "validation": {
+      "cells": 180,
+      "rendered": 180,
+      "expected": 180,
+      "missingText": [],
+      "bounds": {
+        "x": 68.9,
+        "y": 71.8,
+        "width": 1112.1999999999998,
+        "height": 2171.4999999999995
+      }
+    }
+  },
+  {
+    "id": "activity-p5",
+    "name": "Activity - Process 5.0",
+    "source": "assets/system-diagrams/activity-p5.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 60,
+    "shapes": 36,
+    "connectors": 34,
+    "groups": 20,
+    "images": 0,
+    "validation": {
+      "cells": 150,
+      "rendered": 150,
+      "expected": 150,
+      "missingText": [],
+      "bounds": {
+        "x": 40.90999984741211,
+        "y": 71.8,
+        "width": 1140.1900001525878,
+        "height": 1621.5
+      }
+    }
+  },
+  {
+    "id": "swimlane-system",
+    "name": "Whole-System Swimlane",
+    "source": "assets/system-diagrams/swimlane-system.svg",
+    "width": 3780,
+    "height": 6440,
+    "texts": 184,
+    "shapes": 160,
+    "connectors": 190,
+    "groups": 100,
+    "images": 0,
+    "validation": {
+      "cells": 634,
+      "rendered": 634,
+      "expected": 634,
+      "missingText": [],
+      "bounds": {
+        "x": 1.5,
+        "y": 3.5,
+        "width": 3778,
+        "height": 6425.75
+      }
+    }
+  },
+  {
+    "id": "sequence-whole-1",
+    "name": "Whole-System Sequence - Page 1",
+    "source": "assets/system-diagrams/sequence-whole-1.svg",
+    "width": 1800,
+    "height": 3080.89990234375,
+    "texts": 69,
+    "shapes": 42,
+    "connectors": 47,
+    "groups": 7,
+    "images": 0,
+    "validation": {
+      "cells": 165,
+      "rendered": 165,
+      "expected": 165,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1800,
+        "height": 3056.39990234375
+      }
+    }
+  },
+  {
+    "id": "sequence-whole-2",
+    "name": "Whole-System Sequence - Page 2",
+    "source": "assets/system-diagrams/sequence-whole-2.svg",
+    "width": 1800,
+    "height": 2986.300048828125,
+    "texts": 67,
+    "shapes": 40,
+    "connectors": 44,
+    "groups": 7,
+    "images": 0,
+    "validation": {
+      "cells": 158,
+      "rendered": 158,
+      "expected": 158,
+      "missingText": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1800,
+        "height": 2961.800048828125
+      }
+    }
+  },
+  {
+    "id": "deployment",
+    "name": "Deployment",
+    "source": "assets/system-diagrams/deployment.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 91,
+    "shapes": 86,
+    "connectors": 8,
+    "groups": 39,
+    "images": 0,
+    "validation": {
+      "cells": 224,
+      "rendered": 224,
+      "expected": 224,
+      "missingText": [],
+      "bounds": {
+        "x": 39,
+        "y": 13.96,
+        "width": 1136,
+        "height": 1627.04
+      }
+    }
+  },
+  {
+    "id": "sequence-p1",
+    "name": "Process Sequence - 1.0",
+    "source": "assets/system-diagrams/sequence-p1.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 35,
+    "shapes": 21,
+    "connectors": 25,
+    "groups": 0,
+    "images": 0,
+    "validation": {
+      "cells": 81,
+      "rendered": 81,
+      "expected": 81,
+      "missingText": [],
+      "bounds": {
+        "x": 10.550000190734863,
+        "y": 65,
+        "width": 1187.549999809265,
+        "height": 1601.8500000000001
+      }
+    }
+  },
+  {
+    "id": "sequence-p2",
+    "name": "Process Sequence - 2.0",
+    "source": "assets/system-diagrams/sequence-p2.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 46,
+    "shapes": 26,
+    "connectors": 34,
+    "groups": 0,
+    "images": 0,
+    "validation": {
+      "cells": 106,
+      "rendered": 106,
+      "expected": 106,
+      "missingText": [],
+      "bounds": {
+        "x": 7.639999866485596,
+        "y": 65,
+        "width": 1190.4600001335143,
+        "height": 1601.8500000000001
+      }
+    }
+  },
+  {
+    "id": "sequence-p3",
+    "name": "Process Sequence - 3.0",
+    "source": "assets/system-diagrams/sequence-p3.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 25,
+    "shapes": 14,
+    "connectors": 17,
+    "groups": 0,
+    "images": 0,
+    "validation": {
+      "cells": 56,
+      "rendered": 56,
+      "expected": 56,
+      "missingText": [],
+      "bounds": {
+        "x": 14.1,
+        "y": 65,
+        "width": 1174,
+        "height": 1601.8500000000001
+      }
+    }
+  },
+  {
+    "id": "sequence-p4",
+    "name": "Process Sequence - 4.0",
+    "source": "assets/system-diagrams/sequence-p4.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 39,
+    "shapes": 23,
+    "connectors": 32,
+    "groups": 0,
+    "images": 0,
+    "validation": {
+      "cells": 94,
+      "rendered": 94,
+      "expected": 94,
+      "missingText": [],
+      "bounds": {
+        "x": 14.1,
+        "y": 65,
+        "width": 1174,
+        "height": 1601.8500000000001
+      }
+    }
+  },
+  {
+    "id": "sequence-p5",
+    "name": "Process Sequence - 5.0",
+    "source": "assets/system-diagrams/sequence-p5.svg",
+    "width": 1200,
+    "height": 1697,
+    "texts": 38,
+    "shapes": 21,
+    "connectors": 27,
+    "groups": 0,
+    "images": 0,
+    "validation": {
+      "cells": 86,
+      "rendered": 86,
+      "expected": 86,
+      "missingText": [],
+      "bounds": {
+        "x": 14.1,
+        "y": 65,
+        "width": 1184,
+        "height": 1601.8500000000001
+      }
+    }
+  }
+]

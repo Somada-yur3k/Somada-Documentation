@@ -65,6 +65,21 @@ const server=http.createServer((req,res)=>{
    });
    console.log('PASS: actual two-page PDF rendered; both pages are A4 portrait.');
   }
+  if(process.argv.includes('--docs')){
+   await page.goto('http://127.0.0.1:'+server.address().port+'/Docs.html',{waitUntil:'load',timeout:120000});
+   await page.waitForFunction(()=>document.querySelectorAll('.a4-page-number').length>0,null,{timeout:120000});
+   for(const index of [1,2]){
+    const figure=page.locator('.doc-pages figure').filter({has:page.locator('img[src*="sequence-whole-'+index+'.png"]')});assert.equal(await figure.count(),1);
+    const sheet=figure.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
+    assert.equal(await sheet.locator('figcaption').filter({hasText:'Figure '+(16+index)+':'}).count(),1,'Sequence caption retained on its figure page');
+    const bounds=await figure.locator('img').evaluate(img=>({width:img.naturalWidth,height:img.naturalHeight,box:img.getBoundingClientRect().toJSON(),area:img.closest('.pagedjs_area').getBoundingClientRect().toJSON()}));
+    assert(bounds.width===3600&&bounds.height>0&&bounds.box.bottom<=bounds.area.bottom+2,'Updated sequence image fits its A4 document page');
+    await sheet.screenshot({path:path.join(require('node:os').tmpdir(),'sequence-docs-'+index+'-qa.png')});
+   }
+   const paragraphs=await page.locator('.doc-pages p').allTextContents();
+   assert(paragraphs.some(p=>p.includes('Cancellation Result from 2.2 directly to 2.4')),'Revised technical explanation survives document pagination');
+   assert.deepEqual(errors,[]);console.log('PASS: updated Figures 17 and 18 fit Docs A4 pages; captions and revised explanation retained.');
+  }
   console.log('Exported two-page whole-system sequence PDF; retained five detailed diagrams.');
  }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const root=process.env.ERD_DOC_ROOT?path.resolve(process.env.ERD_DOC_ROOT):path.resolve(__dirname,'../..');
+const asset=path.join(root,'assets/erd');
+const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new URL(req.url,'http://local').pathname);if(!file.startsWith(root+path.sep))return res.writeHead(403).end();fs.readFile(file,(error,data)=>{if(error)return res.writeHead(404).end();res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml'})[path.extname(file)]||'application/octet-stream'}).end(data);});});
+(async()=>{let browser;await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));try{browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1400,height:1100},deviceScaleFactor:3});const errors=[];page.on('pageerror',error=>{errors.push(error.message);console.error(error.message)});page.on('console',message=>{if(message.type()==='error')console.error(message.text())});await page.goto('http://127.0.0.1:'+server.address().port+'/ERD-A4.html',{timeout:300000});assert.deepEqual(errors,[]);await page.waitForFunction(()=>window.__erdReady,{timeout:300000});
+assert.equal(await page.locator('[data-table]').count(),30);assert.equal(await page.locator('[data-field]').count(),208);assert.equal(await page.locator('[data-relation]').count(),61);
+const geometry=await page.evaluate(()=>window.ErdGeometry.complete);fs.writeFileSync(path.join(asset,'geometry.json'),JSON.stringify(geometry,null,2));
+const svg=await page.locator('.erd-sheet svg').evaluate(element=>element.outerHTML);for(const name of ['erd-a4-complete','erd-complete'])fs.writeFileSync(path.join(asset,name+'.svg'),svg);
+for(const name of ['render.js','print-render.js'])fs.copyFileSync(path.join(asset,'a4-render.js'),path.join(asset,name));
+fs.writeFileSync(path.join(asset,'artwork.js'),`window.LabErdArtwork=${JSON.stringify({complete:svg})};window.LabErdPages=[{id:'complete',title:'Complete one-page ERD'}];\n`);
+await page.locator('.erd-sheet svg').screenshot({path:path.join(asset,'erd-a4-complete.png')});fs.copyFileSync(path.join(asset,'erd-a4-complete.png'),path.join(asset,'erd-complete.png'));
+await page.emulateMedia({media:'print'});const pdf=path.join(asset,'erd-a4.pdf');await page.pdf({path:pdf,format:'A4',preferCSSPageSize:true,printBackground:true});for(const alias of ['erd.pdf','erd-a4-readable.pdf'])fs.copyFileSync(pdf,path.join(asset,alias));fs.mkdirSync(path.join(root,'output/pdf'),{recursive:true});fs.copyFileSync(pdf,path.join(root,'output/pdf/erd-a4-readable.pdf'));
+for(const mirror of ['output/pdf/erd-complete-a4.pdf','assets/downloads/diagrams/erd-complete-a4.pdf']){const destination=path.join(root,mirror);fs.mkdirSync(path.dirname(destination),{recursive:true});fs.copyFileSync(pdf,destination);}
+console.log('Generated complete one-page ERD: 30 entities, 208 fields, 61 routed relationships.');
+}finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}})().catch(error=>{console.error(error);process.exitCode=1;});

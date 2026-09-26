@@ -77,6 +77,7 @@
       const page = section && section.closest('.pagedjs_page');
       if (page) link.querySelector('.toc-page').textContent = page.dataset.pageNumber;
     });
+    if (window.installDiagramPdfExports) window.installDiagramPdfExports(target);
     return pages.length;
   }
 

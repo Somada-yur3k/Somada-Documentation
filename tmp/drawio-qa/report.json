@@ -1,0 +1,31 @@
+{
+  "tables": 30,
+  "fields": 208,
+  "relationships": 61,
+  "cardinalities": 0,
+  "missingTerminals": [],
+  "changedPathTerminals": [],
+  "diagonalSegments": [],
+  "nonOrthogonalStyles": [],
+  "markers": [
+    {
+      "name": "ERmandOne",
+      "supported": true
+    },
+    {
+      "name": "ERzeroToOne",
+      "supported": true
+    },
+    {
+      "name": "ERzeroToMany",
+      "supported": true
+    }
+  ],
+  "bounds": {
+    "x": 14.25,
+    "y": 64.25,
+    "width": 1946,
+    "height": 2266.4500000000003
+  },
+  "oneA4Page": true
+}

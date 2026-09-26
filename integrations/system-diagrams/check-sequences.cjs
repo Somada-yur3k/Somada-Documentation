@@ -2,6 +2,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'../..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const models=require('../../assets/system-diagrams/sequence-models.js');
+const processFlag=process.argv.find(a=>a.startsWith('--process=')),processId=processFlag?.slice('--process='.length);
+if(processId)assert(models.some(m=>m.id===processId),'Valid sequence process selector');
+const selectedModels=processId?models.filter(m=>m.id===processId):models;
 const docs=vm.runInNewContext(read('Docs.html').match(/  const DATA = \{[\s\S]*?\n  \};/)[0]+'; DATA');
 const l1=JSON.parse(read('assets/figures-v2/dfd-level1/dfd-level1-model.json'));
 const l2=JSON.parse(read('assets/figures-v2/dfd-level2-compact/dfd-level2-model.json'));
@@ -11,7 +14,7 @@ assert.equal(models.length,5,'Exactly one sequence diagram per major process');
 assert.deepEqual(models.map(m=>m.id),['p1','p2','p3','p4','p5']);
 assert.equal(new Set(models.map(m=>m.id)).size,5);
 for(const uc of docs.useCases)assert(models.some(m=>m.uses.includes(uc.diagramId)),'Missing use case '+uc.diagramId);
-for(const child of children)assert(models.some(m=>m.processes.includes(child)),'Missing DFD child '+child);
+for(const child of children.filter(c=>!processId||c.startsWith(processId+'.')))assert(selectedModels.some(m=>m.processes.includes(child)),'Missing DFD child '+child);
 for(const model of models){
  assert.equal(model.source,model.id);
  assert(model.processes.length>0&&model.processes.every(p=>p.startsWith(model.id+'.')&&children.includes(p)),'Only matching major process: '+model.id);
@@ -45,11 +48,17 @@ for(const model of models){
 }
 const find=id=>models.find(m=>m.id===id),labels=id=>walk(find(id).steps).map(s=>s.label||'').join(' ');
 assert.match(find('p1').note,/never self-register/);assert.match(labels('p1'),/Authorize Head/);assert.match(labels('p1'),/Update details \/ active status/);
-assert.doesNotMatch(labels('p2'),/Pending Dean|prior Faculty decision/);assert.match(labels('p2'),/Save final Approved or Rejected/);assert.match(labels('p2'),/Save valid request \/ change/);assert.match(find('p2').note,/GROUP or STUDENT_ONLY/);
+assert.doesNotMatch(labels('p2'),/Pending Dean|prior Faculty decision/);assert.match(labels('p2'),/Save final Approved or Rejected/);assert.match(labels('p2'),/Save valid revision \/ holds/);assert.match(find('p2').note,/GROUP or STUDENT_ONLY/);
+const cancellation=walk(find('p2').steps).flatMap(s=>s.operands||[]).find(o=>o.guard==='Cancel owned request: 2.2 to 2.4; no approval');
+assert(cancellation,'Cancellation Result bypass is explicit');
+assert(!walk(cancellation.steps).some(s=>['faculty','dean'].includes(s.from)||['faculty','dean'].includes(s.to)),'Cancellation does not call an academic reviewer');
+assert(walk(cancellation.steps).filter(s=>s.write).every(s=>s.stores.join()==='d2'));
+assert.match(find('p2').note,/old approval cannot authorize new timing/);
+assert.match(find('p2').note,/Neither Faculty alternative uses Group \/ Student Only/);
 const reviewerBranches=find('p2').steps.filter(s=>s.kind==='opt').flatMap(s=>s.operands);
 assert.equal(reviewerBranches.length,2);
-assert.match(reviewerBranches[0].guard,/Class Rep: on-schedule or available Faculty/);
-assert.match(reviewerBranches[1].guard,/Out-of-schedule: Faculty requester or Faculty unavailable/);
+assert.match(reviewerBranches[0].guard,/Pending Class Rep: on-schedule or available Faculty/);
+assert.match(reviewerBranches[1].guard,/Pending out-of-schedule: Faculty \/ Faculty unavailable/);
 for(const branch of reviewerBranches){const calls=branch.steps.filter(s=>s.kind==='call'&&['faculty','dean'].includes(s.from));assert.equal(calls.length,1,'Each route has one final reviewer');}
 assert(walk(find('p3').steps).filter(s=>s.write).every(s=>s.stores.join()==='d9'),'Q&A writes only D9');
 assert.match(labels('p4'),/final approval/);assert.match(labels('p4'),/completed usage logs/);
@@ -72,7 +81,7 @@ async function checkPage(page){
  assert.equal(await page.locator('.sequence-sheet').count(),5);
  assert.equal(await page.locator('#sequence-index a[href^="#sequence-"]').count(),5);
  const all=await page.evaluate(()=>window.SystemSequenceGeometry);
- for(const model of models){
+ for(const model of selectedModels){
   const g=all[model.id],view=page.locator('#sequence-'+model.id);
   const artworkLabels=await view.locator('svg text').allTextContents();
   assert(!artworkLabels.some(t=>t.includes(model.code)||t===model.title),'No redundant sequence title/code in artwork');
@@ -88,7 +97,7 @@ async function checkPage(page){
   assert.deepEqual(collision,[],model.id+' labels avoid activation bars');
  }
  await page.locator('#sequence-index a[href="#sequence-p2"]').click();assert.equal(new URL(page.url()).hash,'#sequence-p2');
- console.log('Sequence checks passed: five major processes; all 20 use cases and 24 DFD children covered, including forecasting.');
+ console.log(processId?'Sequence checks passed: '+processId+' matching DFD subprocesses, balanced messages and readable A4 layout.':'Sequence checks passed: five major processes; all use cases and DFD children covered.');
 }
 module.exports={checkPage};
-if(require.main===module)console.log('Sequence model checks passed: five major-process diagrams with matched messages and complete coverage.');
+if(require.main===module)console.log(processId?'Sequence model checks passed: '+processId+' subprocess coverage and balanced messages.':'Sequence model checks passed: five major-process diagrams with matched messages and complete coverage.');

@@ -1,0 +1,4203 @@
+{
+  "header": 28,
+  "row": 26,
+  "nodes": [
+    {
+      "name": "TERM",
+      "x": 100,
+      "y": 65,
+      "w": 240,
+      "h": 132,
+      "fields": [
+        "term_id",
+        "term_code",
+        "starts_on",
+        "ends_on"
+      ],
+      "reference": false,
+      "column": 0
+    },
+    {
+      "name": "LABORATORY",
+      "x": 100,
+      "y": 340,
+      "w": 240,
+      "h": 132,
+      "fields": [
+        "lab_id",
+        "lab_code",
+        "lab_name",
+        "active"
+      ],
+      "reference": false,
+      "column": 0
+    },
+    {
+      "name": "LAB_ROOM",
+      "x": 100,
+      "y": 610,
+      "w": 240,
+      "h": 132,
+      "fields": [
+        "room_id",
+        "lab_id",
+        "room_name",
+        "active"
+      ],
+      "reference": false,
+      "column": 0
+    },
+    {
+      "name": "REGULAR_SCHEDULE",
+      "x": 100,
+      "y": 900,
+      "w": 240,
+      "h": 288,
+      "fields": [
+        "regular_schedule_id",
+        "term_id",
+        "room_id",
+        "group_id",
+        "block_type",
+        "weekday",
+        "start_time",
+        "end_time",
+        "valid_from",
+        "valid_until"
+      ],
+      "reference": false,
+      "column": 0
+    },
+    {
+      "name": "DAILY_TASK",
+      "x": 100,
+      "y": 1500,
+      "w": 240,
+      "h": 262,
+      "fields": [
+        "task_id",
+        "lab_id",
+        "recorded_by",
+        "task_date",
+        "activity",
+        "status",
+        "work_availability",
+        "overtime_hours",
+        "remarks"
+      ],
+      "reference": false,
+      "column": 0
+    },
+    {
+      "name": "KNOWLEDGE_ARTICLE",
+      "x": 100,
+      "y": 1900,
+      "w": 240,
+      "h": 158,
+      "fields": [
+        "article_id",
+        "topic",
+        "content",
+        "category",
+        "updated_at"
+      ],
+      "reference": false,
+      "column": 0
+    },
+    {
+      "name": "SECTION",
+      "x": 485,
+      "y": 65,
+      "w": 240,
+      "h": 132,
+      "fields": [
+        "section_id",
+        "section_code",
+        "program",
+        "active"
+      ],
+      "reference": false,
+      "column": 1
+    },
+    {
+      "name": "FACULTY_SECTION",
+      "x": 485,
+      "y": 335,
+      "w": 240,
+      "h": 158,
+      "fields": [
+        "faculty_section_id",
+        "faculty_id",
+        "section_id",
+        "lab_id",
+        "active"
+      ],
+      "reference": false,
+      "column": 1
+    },
+    {
+      "name": "CLASS_GROUP",
+      "x": 485,
+      "y": 640,
+      "w": 240,
+      "h": 184,
+      "fields": [
+        "group_id",
+        "term_id",
+        "faculty_section_id",
+        "subject_code",
+        "subject_name",
+        "active"
+      ],
+      "reference": false,
+      "column": 1
+    },
+    {
+      "name": "CLASS_REP_ASSIGNMENT",
+      "x": 485,
+      "y": 970,
+      "w": 240,
+      "h": 184,
+      "fields": [
+        "rep_assignment_id",
+        "account_id",
+        "section_id",
+        "group_id",
+        "active",
+        "assigned_at"
+      ],
+      "reference": false,
+      "column": 1
+    },
+    {
+      "name": "USER_ACCOUNT",
+      "x": 485,
+      "y": 1300,
+      "w": 240,
+      "h": 418,
+      "fields": [
+        "account_id",
+        "student_id",
+        "staff_lab_id",
+        "login_identifier",
+        "email",
+        "first_name",
+        "middle_name",
+        "last_name",
+        "contact_number",
+        "department",
+        "role",
+        "status",
+        "notes",
+        "created_at",
+        "updated_at"
+      ],
+      "reference": false,
+      "column": 1
+    },
+    {
+      "name": "STUDENT",
+      "x": 485,
+      "y": 1850,
+      "w": 240,
+      "h": 132,
+      "fields": [
+        "student_id",
+        "student_number",
+        "full_name",
+        "program"
+      ],
+      "reference": false,
+      "column": 1
+    },
+    {
+      "name": "CHAT_EXCHANGE",
+      "x": 485,
+      "y": 2090,
+      "w": 240,
+      "h": 210,
+      "fields": [
+        "chat_id",
+        "requester_id",
+        "question",
+        "answer",
+        "intent",
+        "response_status",
+        "asked_at"
+      ],
+      "reference": false,
+      "column": 1
+    },
+    {
+      "name": "SERVICE_REQUEST",
+      "x": 870,
+      "y": 65,
+      "w": 240,
+      "h": 158,
+      "fields": [
+        "request_id",
+        "reference_no",
+        "requester_id",
+        "status",
+        "submitted_at"
+      ],
+      "reference": false,
+      "column": 2
+    },
+    {
+      "name": "REQUEST_REVISION",
+      "x": 870,
+      "y": 405,
+      "w": 240,
+      "h": 470,
+      "fields": [
+        "revision_id",
+        "request_id",
+        "lab_id",
+        "group_id",
+        "room_id",
+        "regular_schedule_id",
+        "created_by",
+        "revision_no",
+        "request_type",
+        "activity_type",
+        "schedule_type",
+        "request_for",
+        "starts_at",
+        "ends_at",
+        "notes",
+        "is_current",
+        "created_at"
+      ],
+      "reference": false,
+      "column": 2
+    },
+    {
+      "name": "APPROVAL",
+      "x": 870,
+      "y": 1130,
+      "w": 240,
+      "h": 236,
+      "fields": [
+        "approval_id",
+        "revision_id",
+        "approver_id",
+        "reviewer_role",
+        "decision",
+        "remarks",
+        "created_at",
+        "decided_at"
+      ],
+      "reference": false,
+      "column": 2
+    },
+    {
+      "name": "REQUEST_ITEM",
+      "x": 870,
+      "y": 1540,
+      "w": 240,
+      "h": 210,
+      "fields": [
+        "request_item_id",
+        "revision_id",
+        "item_id",
+        "name_snapshot",
+        "kind_snapshot",
+        "unit_snapshot",
+        "qty_requested"
+      ],
+      "reference": false,
+      "column": 2
+    },
+    {
+      "name": "REQUEST_MEMBER",
+      "x": 870,
+      "y": 1850,
+      "w": 240,
+      "h": 158,
+      "fields": [
+        "request_member_id",
+        "revision_id",
+        "student_id",
+        "name_snapshot",
+        "student_no_snapshot"
+      ],
+      "reference": false,
+      "column": 2
+    },
+    {
+      "name": "GROUP_MEMBER",
+      "x": 870,
+      "y": 2110,
+      "w": 240,
+      "h": 132,
+      "fields": [
+        "group_member_id",
+        "group_id",
+        "student_id",
+        "active"
+      ],
+      "reference": false,
+      "column": 2
+    },
+    {
+      "name": "RESERVATION",
+      "x": 1255,
+      "y": 200,
+      "w": 240,
+      "h": 158,
+      "fields": [
+        "reservation_id",
+        "revision_id",
+        "processed_by",
+        "status",
+        "reserved_at"
+      ],
+      "reference": false,
+      "column": 3
+    },
+    {
+      "name": "BORROWING",
+      "x": 1255,
+      "y": 590,
+      "w": 240,
+      "h": 262,
+      "fields": [
+        "borrowing_id",
+        "reservation_id",
+        "borrower_account_id",
+        "issued_by",
+        "slip_no",
+        "issued_at",
+        "due_at",
+        "status",
+        "closed_at"
+      ],
+      "reference": false,
+      "column": 3
+    },
+    {
+      "name": "BORROWING_ITEM",
+      "x": 1255,
+      "y": 1110,
+      "w": 240,
+      "h": 158,
+      "fields": [
+        "borrowing_item_id",
+        "borrowing_id",
+        "request_item_id",
+        "item_id",
+        "qty_issued"
+      ],
+      "reference": false,
+      "column": 3
+    },
+    {
+      "name": "BORROWING_MEMBER",
+      "x": 1255,
+      "y": 1460,
+      "w": 240,
+      "h": 106,
+      "fields": [
+        "borrow_member_id",
+        "borrowing_id",
+        "request_member_id"
+      ],
+      "reference": false,
+      "column": 3
+    },
+    {
+      "name": "RETURN_ENTRY",
+      "x": 1255,
+      "y": 1770,
+      "w": 240,
+      "h": 236,
+      "fields": [
+        "return_entry_id",
+        "borrowing_item_id",
+        "received_by",
+        "qty_good",
+        "qty_broken",
+        "qty_lost",
+        "qty_consumed",
+        "recorded_at"
+      ],
+      "reference": false,
+      "column": 3
+    },
+    {
+      "name": "USAGE_LOG",
+      "x": 1255,
+      "y": 2120,
+      "w": 240,
+      "h": 210,
+      "fields": [
+        "usage_id",
+        "reservation_id",
+        "borrowing_id",
+        "recorded_by",
+        "actual_start",
+        "actual_end",
+        "remarks"
+      ],
+      "reference": false,
+      "column": 3
+    },
+    {
+      "name": "ITEM_CATEGORY",
+      "x": 1640,
+      "y": 65,
+      "w": 240,
+      "h": 80,
+      "fields": [
+        "category_id",
+        "category_name"
+      ],
+      "reference": false,
+      "column": 4
+    },
+    {
+      "name": "ITEM",
+      "x": 1640,
+      "y": 350,
+      "w": 240,
+      "h": 314,
+      "fields": [
+        "item_id",
+        "lab_id",
+        "category_id",
+        "item_name",
+        "item_type",
+        "unit",
+        "stock_quantity",
+        "condition_status",
+        "reorder_level",
+        "active",
+        "updated_at"
+      ],
+      "reference": false,
+      "column": 4
+    },
+    {
+      "name": "STOCK_MOVEMENT",
+      "x": 1640,
+      "y": 1000,
+      "w": 240,
+      "h": 288,
+      "fields": [
+        "movement_id",
+        "item_id",
+        "recorded_by",
+        "borrowing_item_id",
+        "return_entry_id",
+        "disposal_id",
+        "on_hand_delta",
+        "owned_delta",
+        "movement_type",
+        "recorded_at"
+      ],
+      "reference": false,
+      "column": 4
+    },
+    {
+      "name": "DISPOSAL",
+      "x": 1640,
+      "y": 1500,
+      "w": 240,
+      "h": 262,
+      "fields": [
+        "disposal_id",
+        "item_id",
+        "recorded_by",
+        "return_entry_id",
+        "quantity",
+        "waste_class",
+        "reason",
+        "disposed_at",
+        "status"
+      ],
+      "reference": false,
+      "column": 4
+    },
+    {
+      "name": "CLEARANCE",
+      "x": 1640,
+      "y": 1900,
+      "w": 240,
+      "h": 288,
+      "fields": [
+        "clearance_id",
+        "return_entry_id",
+        "borrow_member_id",
+        "raised_by",
+        "settled_by",
+        "quantity",
+        "reason",
+        "status",
+        "raised_at",
+        "settled_at"
+      ],
+      "reference": false,
+      "column": 4
+    }
+  ],
+  "paths": [
+    {
+      "table": "REQUEST_ITEM",
+      "field": "item_id",
+      "parent": "ITEM",
+      "key": "item_id",
+      "optional": true,
+      "one": false,
+      "id": "R27",
+      "points": [
+        [
+          1640,
+          650
+        ],
+        [
+          1582,
+          650
+        ],
+        [
+          1582,
+          1633
+        ],
+        [
+          1162,
+          1633
+        ],
+        [
+          1110,
+          1633
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "right",
+      "parentMarker": [
+        1634,
+        650
+      ]
+    },
+    {
+      "table": "USAGE_LOG",
+      "field": "reservation_id",
+      "parent": "RESERVATION",
+      "key": "reservation_id",
+      "optional": false,
+      "one": false,
+      "id": "R56",
+      "points": [
+        [
+          1495,
+          344
+        ],
+        [
+          1553,
+          344
+        ],
+        [
+          1553,
+          2187
+        ],
+        [
+          1547,
+          2187
+        ],
+        [
+          1495,
+          2187
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1501,
+        344
+      ]
+    },
+    {
+      "table": "RESERVATION",
+      "field": "processed_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R31",
+      "points": [
+        [
+          485,
+          1366
+        ],
+        [
+          427,
+          1366
+        ],
+        [
+          427,
+          293
+        ],
+        [
+          1203,
+          293
+        ],
+        [
+          1255,
+          293
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        479,
+        1366
+      ]
+    },
+    {
+      "table": "GROUP_MEMBER",
+      "field": "group_id",
+      "parent": "CLASS_GROUP",
+      "key": "group_id",
+      "optional": false,
+      "one": false,
+      "id": "R11",
+      "points": [
+        [
+          725,
+          810
+        ],
+        [
+          783,
+          810
+        ],
+        [
+          792.5,
+          810
+        ],
+        [
+          792.5,
+          2177
+        ],
+        [
+          818,
+          2177
+        ],
+        [
+          870,
+          2177
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        810
+      ]
+    },
+    {
+      "table": "CLEARANCE",
+      "field": "raised_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R54",
+      "points": [
+        [
+          725,
+          1600
+        ],
+        [
+          783,
+          1600
+        ],
+        [
+          799,
+          1600
+        ],
+        [
+          799,
+          2019
+        ],
+        [
+          1588,
+          2019
+        ],
+        [
+          1640,
+          2019
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1600
+      ]
+    },
+    {
+      "table": "CLEARANCE",
+      "field": "settled_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": true,
+      "one": false,
+      "id": "R55",
+      "points": [
+        [
+          725,
+          1652
+        ],
+        [
+          783,
+          1652
+        ],
+        [
+          783,
+          2045
+        ],
+        [
+          1588,
+          2045
+        ],
+        [
+          1640,
+          2045
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1652
+      ]
+    },
+    {
+      "table": "SERVICE_REQUEST",
+      "field": "requester_id",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R17",
+      "points": [
+        [
+          485,
+          1314
+        ],
+        [
+          427,
+          1314
+        ],
+        [
+          420.5,
+          1314
+        ],
+        [
+          420.5,
+          224
+        ],
+        [
+          799,
+          224
+        ],
+        [
+          799,
+          158
+        ],
+        [
+          818,
+          158
+        ],
+        [
+          870,
+          158
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        479,
+        1314
+      ]
+    },
+    {
+      "table": "USAGE_LOG",
+      "field": "recorded_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R58",
+      "points": [
+        [
+          725,
+          1704
+        ],
+        [
+          783,
+          1704
+        ],
+        [
+          805.5,
+          1704
+        ],
+        [
+          805.5,
+          2010
+        ],
+        [
+          773,
+          2010
+        ],
+        [
+          773,
+          2100
+        ],
+        [
+          1190.5,
+          2100
+        ],
+        [
+          1190.5,
+          2239
+        ],
+        [
+          1203,
+          2239
+        ],
+        [
+          1255,
+          2239
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1704
+      ]
+    },
+    {
+      "table": "ITEM",
+      "field": "lab_id",
+      "parent": "LABORATORY",
+      "key": "lab_id",
+      "optional": false,
+      "one": false,
+      "id": "R32",
+      "points": [
+        [
+          340,
+          354
+        ],
+        [
+          398,
+          354
+        ],
+        [
+          476,
+          354
+        ],
+        [
+          476,
+          321
+        ],
+        [
+          1246,
+          321
+        ],
+        [
+          1246,
+          417
+        ],
+        [
+          1588,
+          417
+        ],
+        [
+          1640,
+          417
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        346,
+        354
+      ]
+    },
+    {
+      "table": "USAGE_LOG",
+      "field": "borrowing_id",
+      "parent": "BORROWING",
+      "key": "borrowing_id",
+      "optional": true,
+      "one": false,
+      "id": "R57",
+      "points": [
+        [
+          1495,
+          838
+        ],
+        [
+          1553,
+          838
+        ],
+        [
+          1562.5,
+          838
+        ],
+        [
+          1562.5,
+          2213
+        ],
+        [
+          1547,
+          2213
+        ],
+        [
+          1495,
+          2213
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1501,
+        838
+      ]
+    },
+    {
+      "table": "BORROWING",
+      "field": "borrower_account_id",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R43",
+      "points": [
+        [
+          725,
+          1314
+        ],
+        [
+          783,
+          1314
+        ],
+        [
+          812,
+          1314
+        ],
+        [
+          812,
+          880
+        ],
+        [
+          1177.5,
+          880
+        ],
+        [
+          1177.5,
+          683
+        ],
+        [
+          1203,
+          683
+        ],
+        [
+          1255,
+          683
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1314
+      ]
+    },
+    {
+      "table": "BORROWING",
+      "field": "issued_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R44",
+      "points": [
+        [
+          725,
+          1418
+        ],
+        [
+          783,
+          1418
+        ],
+        [
+          1171,
+          1418
+        ],
+        [
+          1171,
+          709
+        ],
+        [
+          1203,
+          709
+        ],
+        [
+          1255,
+          709
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1418
+      ]
+    },
+    {
+      "table": "STOCK_MOVEMENT",
+      "field": "recorded_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R35",
+      "points": [
+        [
+          725,
+          1470
+        ],
+        [
+          783,
+          1470
+        ],
+        [
+          783,
+          1093
+        ],
+        [
+          1588,
+          1093
+        ],
+        [
+          1640,
+          1093
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1470
+      ]
+    },
+    {
+      "table": "REQUEST_MEMBER",
+      "field": "revision_id",
+      "parent": "REQUEST_REVISION",
+      "key": "revision_id",
+      "optional": false,
+      "one": false,
+      "id": "R28",
+      "points": [
+        [
+          1110,
+          861
+        ],
+        [
+          1168,
+          861
+        ],
+        [
+          1184,
+          861
+        ],
+        [
+          1184,
+          1917
+        ],
+        [
+          1162,
+          1917
+        ],
+        [
+          1110,
+          1917
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1116,
+        861
+      ]
+    },
+    {
+      "table": "DISPOSAL",
+      "field": "recorded_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R40",
+      "points": [
+        [
+          725,
+          1522
+        ],
+        [
+          783,
+          1522
+        ],
+        [
+          1171,
+          1522
+        ],
+        [
+          1171,
+          1593
+        ],
+        [
+          1588,
+          1593
+        ],
+        [
+          1640,
+          1593
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1522
+      ]
+    },
+    {
+      "table": "USER_ACCOUNT",
+      "field": "staff_lab_id",
+      "parent": "LABORATORY",
+      "key": "lab_id",
+      "optional": true,
+      "one": false,
+      "id": "R02",
+      "points": [
+        [
+          340,
+          432
+        ],
+        [
+          398,
+          432
+        ],
+        [
+          414,
+          432
+        ],
+        [
+          414,
+          1393
+        ],
+        [
+          433,
+          1393
+        ],
+        [
+          485,
+          1393
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        346,
+        432
+      ]
+    },
+    {
+      "table": "REQUEST_REVISION",
+      "field": "created_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R23",
+      "points": [
+        [
+          485,
+          1522
+        ],
+        [
+          427,
+          1522
+        ],
+        [
+          407.5,
+          1522
+        ],
+        [
+          407.5,
+          602
+        ],
+        [
+          818,
+          602
+        ],
+        [
+          870,
+          602
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        479,
+        1522
+      ]
+    },
+    {
+      "table": "REQUEST_REVISION",
+      "field": "regular_schedule_id",
+      "parent": "REGULAR_SCHEDULE",
+      "key": "regular_schedule_id",
+      "optional": true,
+      "one": false,
+      "id": "R22",
+      "points": [
+        [
+          340,
+          1096
+        ],
+        [
+          398,
+          1096
+        ],
+        [
+          398,
+          576
+        ],
+        [
+          818,
+          576
+        ],
+        [
+          870,
+          576
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        346,
+        1096
+      ]
+    },
+    {
+      "table": "RETURN_ENTRY",
+      "field": "received_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R51",
+      "points": [
+        [
+          725,
+          1548
+        ],
+        [
+          783,
+          1548
+        ],
+        [
+          861,
+          1548
+        ],
+        [
+          861,
+          1820
+        ],
+        [
+          1190.5,
+          1820
+        ],
+        [
+          1190.5,
+          1863
+        ],
+        [
+          1203,
+          1863
+        ],
+        [
+          1255,
+          1863
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1548
+      ]
+    },
+    {
+      "table": "DAILY_TASK",
+      "field": "lab_id",
+      "parent": "LABORATORY",
+      "key": "lab_id",
+      "optional": false,
+      "one": false,
+      "id": "R59",
+      "points": [
+        [
+          340,
+          458
+        ],
+        [
+          398,
+          458
+        ],
+        [
+          349,
+          458
+        ],
+        [
+          349,
+          582
+        ],
+        [
+          42,
+          582
+        ],
+        [
+          42,
+          1484
+        ],
+        [
+          375,
+          1484
+        ],
+        [
+          375,
+          1567
+        ],
+        [
+          392,
+          1567
+        ],
+        [
+          340,
+          1567
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        346,
+        458
+      ]
+    },
+    {
+      "table": "STOCK_MOVEMENT",
+      "field": "return_entry_id",
+      "parent": "RETURN_ENTRY",
+      "key": "return_entry_id",
+      "optional": true,
+      "one": false,
+      "id": "R37",
+      "points": [
+        [
+          1495,
+          1784
+        ],
+        [
+          1553,
+          1784
+        ],
+        [
+          1588,
+          1784
+        ],
+        [
+          1588,
+          1145
+        ],
+        [
+          1640,
+          1145
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1501,
+        1784
+      ]
+    },
+    {
+      "table": "DISPOSAL",
+      "field": "item_id",
+      "parent": "ITEM",
+      "key": "item_id",
+      "optional": false,
+      "one": false,
+      "id": "R39",
+      "points": [
+        [
+          1880,
+          650
+        ],
+        [
+          1938,
+          650
+        ],
+        [
+          1932,
+          650
+        ],
+        [
+          1932,
+          1567
+        ],
+        [
+          1880,
+          1567
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1886,
+        650
+      ]
+    },
+    {
+      "table": "BORROWING_ITEM",
+      "field": "item_id",
+      "parent": "ITEM",
+      "key": "item_id",
+      "optional": false,
+      "one": false,
+      "id": "R47",
+      "points": [
+        [
+          1640,
+          364
+        ],
+        [
+          1582,
+          364
+        ],
+        [
+          1569,
+          364
+        ],
+        [
+          1569,
+          1229
+        ],
+        [
+          1547,
+          1229
+        ],
+        [
+          1495,
+          1229
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "right",
+      "parentMarker": [
+        1634,
+        364
+      ]
+    },
+    {
+      "table": "REQUEST_ITEM",
+      "field": "revision_id",
+      "parent": "REQUEST_REVISION",
+      "key": "revision_id",
+      "optional": false,
+      "one": false,
+      "id": "R26",
+      "points": [
+        [
+          1110,
+          731
+        ],
+        [
+          1168,
+          731
+        ],
+        [
+          1190.5,
+          731
+        ],
+        [
+          1190.5,
+          1607
+        ],
+        [
+          1162,
+          1607
+        ],
+        [
+          1110,
+          1607
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1116,
+        731
+      ]
+    },
+    {
+      "table": "REQUEST_REVISION",
+      "field": "room_id",
+      "parent": "LAB_ROOM",
+      "key": "room_id",
+      "optional": false,
+      "one": false,
+      "id": "R21",
+      "points": [
+        [
+          340,
+          624
+        ],
+        [
+          398,
+          624
+        ],
+        [
+          818,
+          624
+        ],
+        [
+          818,
+          550
+        ],
+        [
+          870,
+          550
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        346,
+        624
+      ]
+    },
+    {
+      "table": "FACULTY_SECTION",
+      "field": "faculty_id",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R03",
+      "points": [
+        [
+          485,
+          1470
+        ],
+        [
+          427,
+          1470
+        ],
+        [
+          35.5,
+          1470
+        ],
+        [
+          35.5,
+          486
+        ],
+        [
+          433,
+          486
+        ],
+        [
+          433,
+          402
+        ],
+        [
+          485,
+          402
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        479,
+        1470
+      ]
+    },
+    {
+      "table": "CLASS_GROUP",
+      "field": "term_id",
+      "parent": "TERM",
+      "key": "term_id",
+      "optional": false,
+      "one": false,
+      "id": "R06",
+      "points": [
+        [
+          340,
+          79
+        ],
+        [
+          398,
+          79
+        ],
+        [
+          398,
+          560
+        ],
+        [
+          388,
+          560
+        ],
+        [
+          388,
+          582
+        ],
+        [
+          433,
+          582
+        ],
+        [
+          433,
+          707
+        ],
+        [
+          485,
+          707
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        346,
+        79
+      ]
+    },
+    {
+      "table": "CLASS_REP_ASSIGNMENT",
+      "field": "section_id",
+      "parent": "SECTION",
+      "key": "section_id",
+      "optional": false,
+      "one": false,
+      "id": "R09",
+      "points": [
+        [
+          725,
+          183
+        ],
+        [
+          783,
+          183
+        ],
+        [
+          783,
+          1063
+        ],
+        [
+          777,
+          1063
+        ],
+        [
+          725,
+          1063
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        731,
+        183
+      ]
+    },
+    {
+      "table": "BORROWING_MEMBER",
+      "field": "borrowing_id",
+      "parent": "BORROWING",
+      "key": "borrowing_id",
+      "optional": false,
+      "one": false,
+      "id": "R48",
+      "points": [
+        [
+          1495,
+          760
+        ],
+        [
+          1553,
+          760
+        ],
+        [
+          1575.5,
+          760
+        ],
+        [
+          1575.5,
+          1527
+        ],
+        [
+          1547,
+          1527
+        ],
+        [
+          1495,
+          1527
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1501,
+        760
+      ]
+    },
+    {
+      "table": "REGULAR_SCHEDULE",
+      "field": "term_id",
+      "parent": "TERM",
+      "key": "term_id",
+      "optional": false,
+      "one": false,
+      "id": "R14",
+      "points": [
+        [
+          340,
+          183
+        ],
+        [
+          398,
+          183
+        ],
+        [
+          349,
+          183
+        ],
+        [
+          349,
+          321
+        ],
+        [
+          29,
+          321
+        ],
+        [
+          29,
+          889
+        ],
+        [
+          349,
+          889
+        ],
+        [
+          349,
+          967
+        ],
+        [
+          392,
+          967
+        ],
+        [
+          340,
+          967
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        346,
+        183
+      ]
+    },
+    {
+      "table": "REQUEST_REVISION",
+      "field": "lab_id",
+      "parent": "LABORATORY",
+      "key": "lab_id",
+      "optional": false,
+      "one": false,
+      "id": "R19",
+      "points": [
+        [
+          340,
+          406
+        ],
+        [
+          398,
+          406
+        ],
+        [
+          407.5,
+          406
+        ],
+        [
+          407.5,
+          498
+        ],
+        [
+          818,
+          498
+        ],
+        [
+          870,
+          498
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        346,
+        406
+      ]
+    },
+    {
+      "table": "CLEARANCE",
+      "field": "borrow_member_id",
+      "parent": "BORROWING_MEMBER",
+      "key": "borrow_member_id",
+      "optional": false,
+      "one": false,
+      "id": "R53",
+      "points": [
+        [
+          1495,
+          1474
+        ],
+        [
+          1553,
+          1474
+        ],
+        [
+          1569,
+          1474
+        ],
+        [
+          1569,
+          1993
+        ],
+        [
+          1588,
+          1993
+        ],
+        [
+          1640,
+          1993
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1501,
+        1474
+      ]
+    },
+    {
+      "table": "BORROWING_ITEM",
+      "field": "request_item_id",
+      "parent": "REQUEST_ITEM",
+      "key": "request_item_id",
+      "optional": false,
+      "one": false,
+      "id": "R46",
+      "points": [
+        [
+          1110,
+          1684
+        ],
+        [
+          1168,
+          1684
+        ],
+        [
+          1203,
+          1684
+        ],
+        [
+          1203,
+          1203
+        ],
+        [
+          1255,
+          1203
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1116,
+        1684
+      ]
+    },
+    {
+      "table": "CHAT_EXCHANGE",
+      "field": "requester_id",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R61",
+      "points": [
+        [
+          485,
+          1704
+        ],
+        [
+          427,
+          1704
+        ],
+        [
+          427,
+          2157
+        ],
+        [
+          433,
+          2157
+        ],
+        [
+          485,
+          2157
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        479,
+        1704
+      ]
+    },
+    {
+      "table": "BORROWING_MEMBER",
+      "field": "request_member_id",
+      "parent": "REQUEST_MEMBER",
+      "key": "request_member_id",
+      "optional": false,
+      "one": false,
+      "id": "R49",
+      "points": [
+        [
+          1110,
+          1890
+        ],
+        [
+          1168,
+          1890
+        ],
+        [
+          1168,
+          1666
+        ],
+        [
+          1213.5,
+          1666
+        ],
+        [
+          1213.5,
+          1553
+        ],
+        [
+          1203,
+          1553
+        ],
+        [
+          1255,
+          1553
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1116,
+        1890
+      ]
+    },
+    {
+      "table": "APPROVAL",
+      "field": "revision_id",
+      "parent": "REQUEST_REVISION",
+      "key": "revision_id",
+      "optional": false,
+      "one": true,
+      "id": "R24",
+      "points": [
+        [
+          1110,
+          601
+        ],
+        [
+          1168,
+          601
+        ],
+        [
+          1168,
+          700
+        ],
+        [
+          1197,
+          700
+        ],
+        [
+          1197,
+          1197
+        ],
+        [
+          1162,
+          1197
+        ],
+        [
+          1110,
+          1197
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1116,
+        601
+      ]
+    },
+    {
+      "table": "RETURN_ENTRY",
+      "field": "borrowing_item_id",
+      "parent": "BORROWING_ITEM",
+      "key": "borrowing_item_id",
+      "optional": false,
+      "one": false,
+      "id": "R50",
+      "points": [
+        [
+          1495,
+          1150
+        ],
+        [
+          1553,
+          1150
+        ],
+        [
+          1547,
+          1150
+        ],
+        [
+          1547,
+          1442
+        ],
+        [
+          1598.5,
+          1442
+        ],
+        [
+          1598.5,
+          1540
+        ],
+        [
+          1575.5,
+          1540
+        ],
+        [
+          1575.5,
+          1837
+        ],
+        [
+          1547,
+          1837
+        ],
+        [
+          1495,
+          1837
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1501,
+        1150
+      ]
+    },
+    {
+      "table": "DISPOSAL",
+      "field": "return_entry_id",
+      "parent": "RETURN_ENTRY",
+      "key": "return_entry_id",
+      "optional": true,
+      "one": false,
+      "id": "R41",
+      "points": [
+        [
+          1495,
+          1914
+        ],
+        [
+          1553,
+          1914
+        ],
+        [
+          1598.5,
+          1914
+        ],
+        [
+          1598.5,
+          1619
+        ],
+        [
+          1588,
+          1619
+        ],
+        [
+          1640,
+          1619
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1501,
+        1914
+      ]
+    },
+    {
+      "table": "STOCK_MOVEMENT",
+      "field": "item_id",
+      "parent": "ITEM",
+      "key": "item_id",
+      "optional": false,
+      "one": false,
+      "id": "R34",
+      "points": [
+        [
+          1880,
+          364
+        ],
+        [
+          1938,
+          364
+        ],
+        [
+          1938,
+          1067
+        ],
+        [
+          1932,
+          1067
+        ],
+        [
+          1880,
+          1067
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1886,
+        364
+      ]
+    },
+    {
+      "table": "GROUP_MEMBER",
+      "field": "student_id",
+      "parent": "STUDENT",
+      "key": "student_id",
+      "optional": false,
+      "one": false,
+      "id": "R12",
+      "points": [
+        [
+          725,
+          1968
+        ],
+        [
+          783,
+          1968
+        ],
+        [
+          766.5,
+          1968
+        ],
+        [
+          766.5,
+          2203
+        ],
+        [
+          818,
+          2203
+        ],
+        [
+          870,
+          2203
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1968
+      ]
+    },
+    {
+      "table": "REGULAR_SCHEDULE",
+      "field": "group_id",
+      "parent": "CLASS_GROUP",
+      "key": "group_id",
+      "optional": true,
+      "one": false,
+      "id": "R16",
+      "points": [
+        [
+          485,
+          758
+        ],
+        [
+          427,
+          758
+        ],
+        [
+          392,
+          758
+        ],
+        [
+          392,
+          1019
+        ],
+        [
+          340,
+          1019
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "right",
+      "parentMarker": [
+        479,
+        758
+      ]
+    },
+    {
+      "table": "REQUEST_REVISION",
+      "field": "group_id",
+      "parent": "CLASS_GROUP",
+      "key": "group_id",
+      "optional": false,
+      "one": false,
+      "id": "R20",
+      "points": [
+        [
+          725,
+          654
+        ],
+        [
+          783,
+          654
+        ],
+        [
+          799,
+          654
+        ],
+        [
+          799,
+          524
+        ],
+        [
+          818,
+          524
+        ],
+        [
+          870,
+          524
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        654
+      ]
+    },
+    {
+      "table": "RESERVATION",
+      "field": "revision_id",
+      "parent": "REQUEST_REVISION",
+      "key": "revision_id",
+      "optional": false,
+      "one": true,
+      "id": "R30",
+      "points": [
+        [
+          1110,
+          419
+        ],
+        [
+          1168,
+          419
+        ],
+        [
+          1203,
+          419
+        ],
+        [
+          1203,
+          267
+        ],
+        [
+          1255,
+          267
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1116,
+        419
+      ]
+    },
+    {
+      "table": "DAILY_TASK",
+      "field": "recorded_by",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R60",
+      "points": [
+        [
+          485,
+          1652
+        ],
+        [
+          427,
+          1652
+        ],
+        [
+          392,
+          1652
+        ],
+        [
+          392,
+          1593
+        ],
+        [
+          340,
+          1593
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "right",
+      "parentMarker": [
+        479,
+        1652
+      ]
+    },
+    {
+      "table": "APPROVAL",
+      "field": "approver_id",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R25",
+      "points": [
+        [
+          485,
+          1600
+        ],
+        [
+          427,
+          1600
+        ],
+        [
+          427,
+          1428
+        ],
+        [
+          401,
+          1428
+        ],
+        [
+          401,
+          1223
+        ],
+        [
+          818,
+          1223
+        ],
+        [
+          870,
+          1223
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        479,
+        1600
+      ]
+    },
+    {
+      "table": "USER_ACCOUNT",
+      "field": "student_id",
+      "parent": "STUDENT",
+      "key": "student_id",
+      "optional": true,
+      "one": true,
+      "id": "R01",
+      "points": [
+        [
+          725,
+          1864
+        ],
+        [
+          783,
+          1864
+        ],
+        [
+          812,
+          1864
+        ],
+        [
+          812,
+          1580
+        ],
+        [
+          783,
+          1580
+        ],
+        [
+          783,
+          1484
+        ],
+        [
+          799,
+          1484
+        ],
+        [
+          799,
+          1367
+        ],
+        [
+          777,
+          1367
+        ],
+        [
+          725,
+          1367
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        731,
+        1864
+      ]
+    },
+    {
+      "table": "BORROWING_ITEM",
+      "field": "borrowing_id",
+      "parent": "BORROWING",
+      "key": "borrowing_id",
+      "optional": false,
+      "one": false,
+      "id": "R45",
+      "points": [
+        [
+          1495,
+          604
+        ],
+        [
+          1553,
+          604
+        ],
+        [
+          1575.5,
+          604
+        ],
+        [
+          1575.5,
+          742
+        ],
+        [
+          1944.5,
+          742
+        ],
+        [
+          1944.5,
+          1296
+        ],
+        [
+          1631,
+          1296
+        ],
+        [
+          1631,
+          1177
+        ],
+        [
+          1547,
+          1177
+        ],
+        [
+          1495,
+          1177
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1501,
+        604
+      ]
+    },
+    {
+      "table": "CLEARANCE",
+      "field": "return_entry_id",
+      "parent": "RETURN_ENTRY",
+      "key": "return_entry_id",
+      "optional": false,
+      "one": false,
+      "id": "R52",
+      "points": [
+        [
+          1495,
+          1992
+        ],
+        [
+          1553,
+          1992
+        ],
+        [
+          1575.5,
+          1992
+        ],
+        [
+          1575.5,
+          1967
+        ],
+        [
+          1588,
+          1967
+        ],
+        [
+          1640,
+          1967
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1501,
+        1992
+      ]
+    },
+    {
+      "table": "STOCK_MOVEMENT",
+      "field": "disposal_id",
+      "parent": "DISPOSAL",
+      "key": "disposal_id",
+      "optional": true,
+      "one": false,
+      "id": "R38",
+      "points": [
+        [
+          1880,
+          1644
+        ],
+        [
+          1938,
+          1644
+        ],
+        [
+          1938,
+          1171
+        ],
+        [
+          1932,
+          1171
+        ],
+        [
+          1880,
+          1171
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1886,
+        1644
+      ]
+    },
+    {
+      "table": "STOCK_MOVEMENT",
+      "field": "borrowing_item_id",
+      "parent": "BORROWING_ITEM",
+      "key": "borrowing_item_id",
+      "optional": true,
+      "one": false,
+      "id": "R36",
+      "points": [
+        [
+          1495,
+          1124
+        ],
+        [
+          1553,
+          1124
+        ],
+        [
+          1588,
+          1124
+        ],
+        [
+          1588,
+          1119
+        ],
+        [
+          1640,
+          1119
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        1501,
+        1124
+      ]
+    },
+    {
+      "table": "FACULTY_SECTION",
+      "field": "lab_id",
+      "parent": "LABORATORY",
+      "key": "lab_id",
+      "optional": false,
+      "one": false,
+      "id": "R05",
+      "points": [
+        [
+          340,
+          380
+        ],
+        [
+          398,
+          380
+        ],
+        [
+          407.5,
+          380
+        ],
+        [
+          407.5,
+          307
+        ],
+        [
+          42,
+          307
+        ],
+        [
+          42,
+          507
+        ],
+        [
+          443.5,
+          507
+        ],
+        [
+          443.5,
+          454
+        ],
+        [
+          433,
+          454
+        ],
+        [
+          485,
+          454
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        346,
+        380
+      ]
+    },
+    {
+      "table": "BORROWING",
+      "field": "reservation_id",
+      "parent": "RESERVATION",
+      "key": "reservation_id",
+      "optional": false,
+      "one": false,
+      "id": "R42",
+      "points": [
+        [
+          1495,
+          214
+        ],
+        [
+          1553,
+          214
+        ],
+        [
+          1582,
+          214
+        ],
+        [
+          1582,
+          644
+        ],
+        [
+          1547,
+          644
+        ],
+        [
+          1547,
+          657
+        ],
+        [
+          1495,
+          657
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1501,
+        214
+      ]
+    },
+    {
+      "table": "REQUEST_MEMBER",
+      "field": "student_id",
+      "parent": "STUDENT",
+      "key": "student_id",
+      "optional": false,
+      "one": false,
+      "id": "R29",
+      "points": [
+        [
+          725,
+          1916
+        ],
+        [
+          783,
+          1916
+        ],
+        [
+          818,
+          1916
+        ],
+        [
+          818,
+          1943
+        ],
+        [
+          870,
+          1943
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "left",
+      "parentMarker": [
+        731,
+        1916
+      ]
+    },
+    {
+      "table": "REQUEST_REVISION",
+      "field": "request_id",
+      "parent": "SERVICE_REQUEST",
+      "key": "request_id",
+      "optional": false,
+      "one": false,
+      "id": "R18",
+      "points": [
+        [
+          1110,
+          131
+        ],
+        [
+          1168,
+          131
+        ],
+        [
+          1168,
+          472
+        ],
+        [
+          1162,
+          472
+        ],
+        [
+          1110,
+          472
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1116,
+        131
+      ]
+    },
+    {
+      "table": "CLASS_REP_ASSIGNMENT",
+      "field": "account_id",
+      "parent": "USER_ACCOUNT",
+      "key": "account_id",
+      "optional": false,
+      "one": false,
+      "id": "R08",
+      "points": [
+        [
+          485,
+          1548
+        ],
+        [
+          427,
+          1548
+        ],
+        [
+          394.5,
+          1548
+        ],
+        [
+          394.5,
+          1134
+        ],
+        [
+          433,
+          1134
+        ],
+        [
+          433,
+          1037
+        ],
+        [
+          485,
+          1037
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        479,
+        1548
+      ]
+    },
+    {
+      "table": "CLASS_REP_ASSIGNMENT",
+      "field": "group_id",
+      "parent": "CLASS_GROUP",
+      "key": "group_id",
+      "optional": false,
+      "one": false,
+      "id": "R10",
+      "points": [
+        [
+          725,
+          706
+        ],
+        [
+          783,
+          706
+        ],
+        [
+          799,
+          706
+        ],
+        [
+          799,
+          1089
+        ],
+        [
+          777,
+          1089
+        ],
+        [
+          725,
+          1089
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        731,
+        706
+      ]
+    },
+    {
+      "table": "CLASS_GROUP",
+      "field": "faculty_section_id",
+      "parent": "FACULTY_SECTION",
+      "key": "faculty_section_id",
+      "optional": false,
+      "one": false,
+      "id": "R07",
+      "points": [
+        [
+          725,
+          375
+        ],
+        [
+          783,
+          375
+        ],
+        [
+          792.5,
+          375
+        ],
+        [
+          792.5,
+          644
+        ],
+        [
+          805.5,
+          644
+        ],
+        [
+          805.5,
+          733
+        ],
+        [
+          777,
+          733
+        ],
+        [
+          725,
+          733
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        731,
+        375
+      ]
+    },
+    {
+      "table": "REGULAR_SCHEDULE",
+      "field": "room_id",
+      "parent": "LAB_ROOM",
+      "key": "room_id",
+      "optional": false,
+      "one": false,
+      "id": "R15",
+      "points": [
+        [
+          340,
+          728
+        ],
+        [
+          398,
+          728
+        ],
+        [
+          381.5,
+          728
+        ],
+        [
+          381.5,
+          938
+        ],
+        [
+          437,
+          938
+        ],
+        [
+          437,
+          993
+        ],
+        [
+          392,
+          993
+        ],
+        [
+          340,
+          993
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        346,
+        728
+      ]
+    },
+    {
+      "table": "ITEM",
+      "field": "category_id",
+      "parent": "ITEM_CATEGORY",
+      "key": "category_id",
+      "optional": false,
+      "one": false,
+      "id": "R33",
+      "points": [
+        [
+          1880,
+          105
+        ],
+        [
+          1938,
+          105
+        ],
+        [
+          1944.5,
+          105
+        ],
+        [
+          1944.5,
+          443
+        ],
+        [
+          1932,
+          443
+        ],
+        [
+          1880,
+          443
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        1886,
+        105
+      ]
+    },
+    {
+      "table": "FACULTY_SECTION",
+      "field": "section_id",
+      "parent": "SECTION",
+      "key": "section_id",
+      "optional": false,
+      "one": false,
+      "id": "R04",
+      "points": [
+        [
+          725,
+          79
+        ],
+        [
+          783,
+          79
+        ],
+        [
+          792.5,
+          79
+        ],
+        [
+          792.5,
+          336
+        ],
+        [
+          799,
+          336
+        ],
+        [
+          799,
+          428
+        ],
+        [
+          777,
+          428
+        ],
+        [
+          725,
+          428
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "right",
+      "childSide": "right",
+      "parentMarker": [
+        731,
+        79
+      ]
+    },
+    {
+      "table": "LAB_ROOM",
+      "field": "lab_id",
+      "parent": "LABORATORY",
+      "key": "lab_id",
+      "optional": false,
+      "one": false,
+      "id": "R13",
+      "points": [
+        [
+          100,
+          406
+        ],
+        [
+          42,
+          406
+        ],
+        [
+          48,
+          406
+        ],
+        [
+          48,
+          677
+        ],
+        [
+          100,
+          677
+        ]
+      ],
+      "labelPlaced": false,
+      "parentSide": "left",
+      "childSide": "left",
+      "parentMarker": [
+        94,
+        406
+      ]
+    }
+  ],
+  "labelBoxes": [],
+  "markerBoxes": [
+    {
+      "x": 1110,
+      "y": 1615,
+      "w": 46,
+      "h": 26,
+      "id": "R27",
+      "end": "child"
+    },
+    {
+      "x": 1495,
+      "y": 2169,
+      "w": 46,
+      "h": 26,
+      "id": "R56",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 275,
+      "w": 46,
+      "h": 26,
+      "id": "R31",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 2159,
+      "w": 46,
+      "h": 26,
+      "id": "R11",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 2001,
+      "w": 46,
+      "h": 26,
+      "id": "R54",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 2027,
+      "w": 46,
+      "h": 26,
+      "id": "R55",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 140,
+      "w": 46,
+      "h": 26,
+      "id": "R17",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 2221,
+      "w": 46,
+      "h": 26,
+      "id": "R58",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 399,
+      "w": 46,
+      "h": 26,
+      "id": "R32",
+      "end": "child"
+    },
+    {
+      "x": 1495,
+      "y": 2195,
+      "w": 46,
+      "h": 26,
+      "id": "R57",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 665,
+      "w": 46,
+      "h": 26,
+      "id": "R43",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 691,
+      "w": 46,
+      "h": 26,
+      "id": "R44",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 1075,
+      "w": 46,
+      "h": 26,
+      "id": "R35",
+      "end": "child"
+    },
+    {
+      "x": 1110,
+      "y": 1899,
+      "w": 46,
+      "h": 26,
+      "id": "R28",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 1575,
+      "w": 46,
+      "h": 26,
+      "id": "R40",
+      "end": "child"
+    },
+    {
+      "x": 439,
+      "y": 1375,
+      "w": 46,
+      "h": 26,
+      "id": "R02",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 584,
+      "w": 46,
+      "h": 26,
+      "id": "R23",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 558,
+      "w": 46,
+      "h": 26,
+      "id": "R22",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 1845,
+      "w": 46,
+      "h": 26,
+      "id": "R51",
+      "end": "child"
+    },
+    {
+      "x": 340,
+      "y": 1549,
+      "w": 46,
+      "h": 26,
+      "id": "R59",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 1127,
+      "w": 46,
+      "h": 26,
+      "id": "R37",
+      "end": "child"
+    },
+    {
+      "x": 1880,
+      "y": 1549,
+      "w": 46,
+      "h": 26,
+      "id": "R39",
+      "end": "child"
+    },
+    {
+      "x": 1495,
+      "y": 1211,
+      "w": 46,
+      "h": 26,
+      "id": "R47",
+      "end": "child"
+    },
+    {
+      "x": 1110,
+      "y": 1589,
+      "w": 46,
+      "h": 26,
+      "id": "R26",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 532,
+      "w": 46,
+      "h": 26,
+      "id": "R21",
+      "end": "child"
+    },
+    {
+      "x": 439,
+      "y": 384,
+      "w": 46,
+      "h": 26,
+      "id": "R03",
+      "end": "child"
+    },
+    {
+      "x": 439,
+      "y": 689,
+      "w": 46,
+      "h": 26,
+      "id": "R06",
+      "end": "child"
+    },
+    {
+      "x": 725,
+      "y": 1045,
+      "w": 46,
+      "h": 26,
+      "id": "R09",
+      "end": "child"
+    },
+    {
+      "x": 1495,
+      "y": 1509,
+      "w": 46,
+      "h": 26,
+      "id": "R48",
+      "end": "child"
+    },
+    {
+      "x": 340,
+      "y": 949,
+      "w": 46,
+      "h": 26,
+      "id": "R14",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 480,
+      "w": 46,
+      "h": 26,
+      "id": "R19",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 1975,
+      "w": 46,
+      "h": 26,
+      "id": "R53",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 1185,
+      "w": 46,
+      "h": 26,
+      "id": "R46",
+      "end": "child"
+    },
+    {
+      "x": 439,
+      "y": 2139,
+      "w": 46,
+      "h": 26,
+      "id": "R61",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 1535,
+      "w": 46,
+      "h": 26,
+      "id": "R49",
+      "end": "child"
+    },
+    {
+      "x": 1110,
+      "y": 1179,
+      "w": 46,
+      "h": 26,
+      "id": "R24",
+      "end": "child"
+    },
+    {
+      "x": 1495,
+      "y": 1819,
+      "w": 46,
+      "h": 26,
+      "id": "R50",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 1601,
+      "w": 46,
+      "h": 26,
+      "id": "R41",
+      "end": "child"
+    },
+    {
+      "x": 1880,
+      "y": 1049,
+      "w": 46,
+      "h": 26,
+      "id": "R34",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 2185,
+      "w": 46,
+      "h": 26,
+      "id": "R12",
+      "end": "child"
+    },
+    {
+      "x": 340,
+      "y": 1001,
+      "w": 46,
+      "h": 26,
+      "id": "R16",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 506,
+      "w": 46,
+      "h": 26,
+      "id": "R20",
+      "end": "child"
+    },
+    {
+      "x": 1209,
+      "y": 249,
+      "w": 46,
+      "h": 26,
+      "id": "R30",
+      "end": "child"
+    },
+    {
+      "x": 340,
+      "y": 1575,
+      "w": 46,
+      "h": 26,
+      "id": "R60",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 1205,
+      "w": 46,
+      "h": 26,
+      "id": "R25",
+      "end": "child"
+    },
+    {
+      "x": 725,
+      "y": 1349,
+      "w": 46,
+      "h": 26,
+      "id": "R01",
+      "end": "child"
+    },
+    {
+      "x": 1495,
+      "y": 1159,
+      "w": 46,
+      "h": 26,
+      "id": "R45",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 1949,
+      "w": 46,
+      "h": 26,
+      "id": "R52",
+      "end": "child"
+    },
+    {
+      "x": 1880,
+      "y": 1153,
+      "w": 46,
+      "h": 26,
+      "id": "R38",
+      "end": "child"
+    },
+    {
+      "x": 1594,
+      "y": 1101,
+      "w": 46,
+      "h": 26,
+      "id": "R36",
+      "end": "child"
+    },
+    {
+      "x": 439,
+      "y": 436,
+      "w": 46,
+      "h": 26,
+      "id": "R05",
+      "end": "child"
+    },
+    {
+      "x": 1495,
+      "y": 639,
+      "w": 46,
+      "h": 26,
+      "id": "R42",
+      "end": "child"
+    },
+    {
+      "x": 824,
+      "y": 1925,
+      "w": 46,
+      "h": 26,
+      "id": "R29",
+      "end": "child"
+    },
+    {
+      "x": 1110,
+      "y": 454,
+      "w": 46,
+      "h": 26,
+      "id": "R18",
+      "end": "child"
+    },
+    {
+      "x": 439,
+      "y": 1019,
+      "w": 46,
+      "h": 26,
+      "id": "R08",
+      "end": "child"
+    },
+    {
+      "x": 725,
+      "y": 1071,
+      "w": 46,
+      "h": 26,
+      "id": "R10",
+      "end": "child"
+    },
+    {
+      "x": 725,
+      "y": 715,
+      "w": 46,
+      "h": 26,
+      "id": "R07",
+      "end": "child"
+    },
+    {
+      "x": 340,
+      "y": 975,
+      "w": 46,
+      "h": 26,
+      "id": "R15",
+      "end": "child"
+    },
+    {
+      "x": 1880,
+      "y": 425,
+      "w": 46,
+      "h": 26,
+      "id": "R33",
+      "end": "child"
+    },
+    {
+      "x": 725,
+      "y": 410,
+      "w": 46,
+      "h": 26,
+      "id": "R04",
+      "end": "child"
+    },
+    {
+      "x": 54,
+      "y": 659,
+      "w": 46,
+      "h": 26,
+      "id": "R13",
+      "end": "child"
+    },
+    {
+      "x": 731,
+      "y": 1846,
+      "w": 46,
+      "h": 26,
+      "id": "R01",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1898,
+      "w": 46,
+      "h": 26,
+      "id": "R29",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1950,
+      "w": 46,
+      "h": 26,
+      "id": "R12",
+      "end": "parent"
+    },
+    {
+      "x": 48,
+      "y": 388,
+      "w": 46,
+      "h": 26,
+      "id": "R13",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 336,
+      "w": 46,
+      "h": 26,
+      "id": "R32",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 362,
+      "w": 46,
+      "h": 26,
+      "id": "R05",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 388,
+      "w": 46,
+      "h": 26,
+      "id": "R19",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 414,
+      "w": 46,
+      "h": 26,
+      "id": "R02",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 440,
+      "w": 46,
+      "h": 26,
+      "id": "R59",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1296,
+      "w": 46,
+      "h": 26,
+      "id": "R17",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1348,
+      "w": 46,
+      "h": 26,
+      "id": "R31",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1452,
+      "w": 46,
+      "h": 26,
+      "id": "R03",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1504,
+      "w": 46,
+      "h": 26,
+      "id": "R23",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1530,
+      "w": 46,
+      "h": 26,
+      "id": "R08",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1582,
+      "w": 46,
+      "h": 26,
+      "id": "R25",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1634,
+      "w": 46,
+      "h": 26,
+      "id": "R60",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 1686,
+      "w": 46,
+      "h": 26,
+      "id": "R61",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1296,
+      "w": 46,
+      "h": 26,
+      "id": "R43",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1400,
+      "w": 46,
+      "h": 26,
+      "id": "R44",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1452,
+      "w": 46,
+      "h": 26,
+      "id": "R35",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1504,
+      "w": 46,
+      "h": 26,
+      "id": "R40",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1530,
+      "w": 46,
+      "h": 26,
+      "id": "R51",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1582,
+      "w": 46,
+      "h": 26,
+      "id": "R54",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1634,
+      "w": 46,
+      "h": 26,
+      "id": "R55",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 1686,
+      "w": 46,
+      "h": 26,
+      "id": "R58",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 61,
+      "w": 46,
+      "h": 26,
+      "id": "R04",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 165,
+      "w": 46,
+      "h": 26,
+      "id": "R09",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 61,
+      "w": 46,
+      "h": 26,
+      "id": "R06",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 165,
+      "w": 46,
+      "h": 26,
+      "id": "R14",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 357,
+      "w": 46,
+      "h": 26,
+      "id": "R07",
+      "end": "parent"
+    },
+    {
+      "x": 433,
+      "y": 740,
+      "w": 46,
+      "h": 26,
+      "id": "R16",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 636,
+      "w": 46,
+      "h": 26,
+      "id": "R20",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 688,
+      "w": 46,
+      "h": 26,
+      "id": "R10",
+      "end": "parent"
+    },
+    {
+      "x": 731,
+      "y": 792,
+      "w": 46,
+      "h": 26,
+      "id": "R11",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 606,
+      "w": 46,
+      "h": 26,
+      "id": "R21",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 710,
+      "w": 46,
+      "h": 26,
+      "id": "R15",
+      "end": "parent"
+    },
+    {
+      "x": 1116,
+      "y": 113,
+      "w": 46,
+      "h": 26,
+      "id": "R18",
+      "end": "parent"
+    },
+    {
+      "x": 346,
+      "y": 1078,
+      "w": 46,
+      "h": 26,
+      "id": "R22",
+      "end": "parent"
+    },
+    {
+      "x": 1116,
+      "y": 401,
+      "w": 46,
+      "h": 26,
+      "id": "R30",
+      "end": "parent"
+    },
+    {
+      "x": 1116,
+      "y": 583,
+      "w": 46,
+      "h": 26,
+      "id": "R24",
+      "end": "parent"
+    },
+    {
+      "x": 1116,
+      "y": 713,
+      "w": 46,
+      "h": 26,
+      "id": "R26",
+      "end": "parent"
+    },
+    {
+      "x": 1116,
+      "y": 843,
+      "w": 46,
+      "h": 26,
+      "id": "R28",
+      "end": "parent"
+    },
+    {
+      "x": 1588,
+      "y": 346,
+      "w": 46,
+      "h": 26,
+      "id": "R47",
+      "end": "parent"
+    },
+    {
+      "x": 1588,
+      "y": 632,
+      "w": 46,
+      "h": 26,
+      "id": "R27",
+      "end": "parent"
+    },
+    {
+      "x": 1886,
+      "y": 346,
+      "w": 46,
+      "h": 26,
+      "id": "R34",
+      "end": "parent"
+    },
+    {
+      "x": 1886,
+      "y": 632,
+      "w": 46,
+      "h": 26,
+      "id": "R39",
+      "end": "parent"
+    },
+    {
+      "x": 1886,
+      "y": 87,
+      "w": 46,
+      "h": 26,
+      "id": "R33",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 1106,
+      "w": 46,
+      "h": 26,
+      "id": "R36",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 1132,
+      "w": 46,
+      "h": 26,
+      "id": "R50",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 1766,
+      "w": 46,
+      "h": 26,
+      "id": "R37",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 1896,
+      "w": 46,
+      "h": 26,
+      "id": "R41",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 1974,
+      "w": 46,
+      "h": 26,
+      "id": "R52",
+      "end": "parent"
+    },
+    {
+      "x": 1886,
+      "y": 1626,
+      "w": 46,
+      "h": 26,
+      "id": "R38",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 196,
+      "w": 46,
+      "h": 26,
+      "id": "R42",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 326,
+      "w": 46,
+      "h": 26,
+      "id": "R56",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 586,
+      "w": 46,
+      "h": 26,
+      "id": "R45",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 742,
+      "w": 46,
+      "h": 26,
+      "id": "R48",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 820,
+      "w": 46,
+      "h": 26,
+      "id": "R57",
+      "end": "parent"
+    },
+    {
+      "x": 1116,
+      "y": 1666,
+      "w": 46,
+      "h": 26,
+      "id": "R46",
+      "end": "parent"
+    },
+    {
+      "x": 1116,
+      "y": 1872,
+      "w": 46,
+      "h": 26,
+      "id": "R49",
+      "end": "parent"
+    },
+    {
+      "x": 1501,
+      "y": 1456,
+      "w": 46,
+      "h": 26,
+      "id": "R53",
+      "end": "parent"
+    }
+  ]
+}

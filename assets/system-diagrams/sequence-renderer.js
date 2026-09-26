@@ -30,7 +30,7 @@ window.SystemSequenceDiagram=function(model){
  }
  // Titles and sequence codes belong to the document captions/navigation, not the artwork.
  text(labels,600,82,wrap(model.precondition,19,1120),19);
- const headerBottom=280,top=318,bottom=1650;
+ const headerBottom=280,top=model.id==='p2'?300:318,bottom=1650;
  model.participants.forEach(p=>{
   const x=participants[p.id].x,g=el('g',{'data-sequence-participant':p.id,'data-participant-kind':p.kind},lifelines);
   if(p.kind==='actor'){
@@ -52,12 +52,13 @@ window.SystemSequenceDiagram=function(model){
   const from=participants[step.from],to=participants[step.to];
   const width=step.kind==='self'?participants.db.x-from.x-145:Math.abs(to.x-from.x)-48;
   const rows=wrap(step.label,size,width);
-  return{...step,rows,height:Math.max(step.kind==='self'?(compact?60:70):0,rows.length*size*1.16+(compact?22:30))};
+  const gap=compact?(model.id==='p2'?21:22):30;
+  return{...step,rows,height:Math.max(step.kind==='self'?(compact?60:70):0,rows.length*size*1.16+gap)};
  });}
  let size=28,planned,total;
  for(const candidate of [28,26,24,22,20,18]){size=candidate;planned=plan(model.steps,size);total=planned.reduce((h,n)=>h+n.height,0);if(total<=bottom-top)break;}
  if(total>bottom-top){compact=true;planned=plan(model.steps,size);total=planned.reduce((h,n)=>h+n.height,0);}
- if(total>bottom-top)throw Error(model.id+': interaction too dense for readable A4; split the workflow');
+ if(total>bottom-top)throw Error(model.id+': interaction too dense for readable A4 ('+Math.ceil(total)+' units; '+(bottom-top)+' available); split the workflow');
  const scale=(bottom-top)/total,messages=[],activations=[],fragments=[];
  function activation(participant,start,end,nested=false){
   if(end<=start)return;const x=participants[participant].x+(nested?10:0);

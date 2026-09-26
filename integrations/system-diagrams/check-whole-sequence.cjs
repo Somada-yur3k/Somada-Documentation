@@ -19,6 +19,21 @@ async function checkPage(page){
  for(const actor of actors.slice(0,5))assert(results.some(r=>r.connections.some(c=>c.includes(actor))),actor+' participates');
  assert(results[0].text.includes('Continue on Page 2'));assert(results[1].text.includes('Continued from Page 1'));
  assert(results[1].text.includes('D11'));assert(results[1].text.includes('Insufficient history'));
+ const pages=await page.evaluate(()=>window.SystemWholeSequencePages),groups=pages[0].groups;
+ const request=groups.find(g=>g.title==='Select one requester route');
+ assert(request.branches[0].messages.every(m=>!['faculty','dean'].includes(m.from)),'Class Representative never selects an academic reviewer');
+ assert.deepEqual(request.branches[0].messages.slice(-3).map(m=>[m.from,m.to,m.label]),[
+  ['rep','system','Select class, student(s), schedule and room'],
+  ['rep','system','Select Equipment / Materials and requested quantities'],
+  ['rep','system','Review Information; read-only Approval Route; Submit']
+ ],'Class Representative schedule, equipment quantities and final review are separate ordered interactions');
+ assert(request.branches[1].guard.includes('Laboratory Activity uses assigned block'));
+ const cancellation=pages.flatMap(p=>p.groups).flatMap(g=>g.branches).find(b=>b.guard.includes('Cancellation Result'));
+ assert(cancellation&&cancellation.guard.includes('2.4'));
+ assert(cancellation.messages.every(m=>!['faculty','dean'].includes(m.from)&&!['faculty','dean'].includes(m.to)),'Cancellation bypasses academic review');
+ const resultsGroup=groups.find(g=>g.title==='Return the actual requester\'s result only');
+ assert.deepEqual(resultsGroup.branches.map(b=>b.messages.map(m=>m.to)),[['rep'],['faculty']],'Owned confirmation is not sent to both requesters');
+ assert(results[0].text.includes('Group / Student Only'));assert(results[0].text.includes('Automatic Approval Route preview'));assert(results.some(r=>r.text.includes('retain Request Type')));
  console.log('PASS: two pages, identical actor order, continuous numbering, all actors participate, no overlapping/clipped message labels.');
 }
 module.exports={checkPage};

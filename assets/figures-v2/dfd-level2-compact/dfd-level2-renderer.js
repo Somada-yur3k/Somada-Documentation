@@ -185,7 +185,15 @@
       draw(f,points,external?700:1297,py,f.label,external?peerId:'store',external?'left':'right');
     });
     model.internal.forEach(f=>{
-      const a=nodes[f.source],b=nodes[f.target],y=(a.y+a.h+b.y)/2,x1=P.x+10,x2=P.x+P.w-10;
+      const a=nodes[f.source],b=nodes[f.target];
+      if(f.id==='p2-internal4'){
+        // Cancellation bypasses academic review. A separate right-side lane
+        // keeps its arrowhead and label distinct from the approval result.
+        const x=P.x+P.w,lane=1440,top=a.y+a.h+24,bottom=b.y+52;
+        draw(f,[[x,a.y+a.h-12],[x+20,a.y+a.h-12],[x+20,top],[lane,top],[lane,bottom],[x,bottom]],1297,top,f.label,'internal','internal');
+        return;
+      }
+      const y=(a.y+a.h+b.y)/2,x1=P.x+10,x2=P.x+P.w-10;
       draw(f,[[x1,a.y+a.h],[x1,y],[x2,y],[x2,b.y]],(x1+x2)/2,y,f.label,'internal','internal');
     });
     Object.values(nodes).forEach(n=>{

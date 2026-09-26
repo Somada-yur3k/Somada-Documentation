@@ -16,24 +16,35 @@ const pages=[
     msg('system','faculty','Representative credentials',true),msg('faculty','rep','Manual credential handover'))]),
   group('ref','Authenticated access and request preparation',[
    branch('All five actor lanes use role-scoped login; requester interaction shown for Class Representative',
-    msg('rep','system','Log in; choose laboratory'),msg('system','db','Check D1; read D2 / D3 / D4'),msg('system','rep','Login result; schedule and available items',true))]),
+    msg('rep','system','Log in with issued credentials'),msg('system','db','Check D1 role and laboratory scope'),msg('system','rep','Login result; permitted operations',true))]),
   group('alt','Select one requester route',[
-   branch('Class Representative: on-schedule non-laboratory OR out-of-schedule',msg('rep','system','Submit Group / Student Only request; select class and students')),
-   branch('Faculty: Laboratory Activity OR Non-Laboratory Activity',msg('faculty','system','Submit on-schedule / out-of-schedule request'))]),
+   branch('Class Representative: laboratory; Request Type; Schedule Type; room/slot; equipment; review/submit',
+    msg('rep','system','Choose laboratory; Group / Student Only; Schedule Type'),
+    msg('system','rep','Automatic Approval Route preview',true),
+    msg('rep','system','Select class, student(s), schedule and room'),
+    msg('rep','system','Select Equipment / Materials and requested quantities'),
+    msg('rep','system','Review Information; read-only Approval Route; Submit')),
+   branch('Faculty: Laboratory Activity uses assigned block; Non-Laboratory Activity collects Schedule Type + slot',
+    msg('faculty','system','Choose laboratory and activity kind'),
+    msg('system','faculty','Assigned block / Schedule Type and slot',true),
+    msg('faculty','system','Equipment / Materials; read-only route; submit'))]),
   group('ref','Validate request before saving',[
-   branch('Validate role, class, students, time and quantities; invalid requests return errors without a hold',
-    msg('system','db','Read class, schedule and stock'))]),
+   branch('2.1 availability; 2.2 validates role, class, students, schedule and items. Invalid forms do not create a hold',
+    msg('system','db','Read schedule, stock and current revision'))]),
   group('alt','Exactly one approval route for a valid request',[
-   branch('Faculty on-schedule laboratory OR non-laboratory activity: no approval',msg('system','db','Save Approved; hold block')),
+   branch('Faculty on-schedule laboratory OR non-laboratory activity: no approval row',msg('system','db','Save Approved; applicable holds')),
    branch('Class Representative on-schedule, or out-of-schedule with assigned Faculty available',
-    msg('system','db','Save Pending; hold block'),msg('system','faculty','Routed request for review'),msg('faculty','system','Approve / reject',true)),
+    msg('system','db','Save Pending; applicable holds'),msg('system','rep','Pending; assigned Faculty reviewer',true),msg('faculty','system','Open routed revision; approve / reject')),
    branch('Faculty out-of-schedule, or Class Representative out-of-schedule with Faculty unavailable',
-    msg('system','db','Save Pending; hold block'),msg('system','dean','Routed request for review'),msg('dean','system','Approve / reject',true))]),
-  group('ref','Decision and confirmation',[
-   branch('For routed requests, save D2 decision; rejection releases hold. Notify the actual requester only; no escalation',
-    msg('system','db','Save final decision'),msg('system','rep','Own request status / decision',true),msg('system','faculty','Own request status / decision',true))])
+    msg('system','db','Save Pending; Dean is current reviewer'),msg('dean','system','Open routed revision; approve / reject'))]),
+  group('opt','Final decision on a routed current revision',[
+   branch('2.3 checks the assigned reviewer and current revision; 2.4 saves final Approved / Rejected. No escalation',
+    msg('system','db','Save decision; release rejected hold'))]),
+  group('alt','Return the actual requester\'s result only',[
+   branch('Class Representative request: Pending remains visible until the selected reviewer decides',msg('system','rep','Own status / history; current reviewer',true)),
+   branch('Faculty request: Approved without review, or Pending / final Dean decision',msg('system','faculty','Own status / history; Dean only if required',true))])
  ]},
- {id:2,title:'Equipment release, returns, accountability and reporting',intro:'Continued from Page 1. Only finally approved reservations proceed to issuance.',groups:[
+ {id:2,title:'Reservation changes, equipment release, returns and reporting',intro:'Continued from Page 1. Status actions are independent; issuance requires final approval.',groups:[
   group('ref','Equipment check and issuance',[
    branch('Assigned Physics / Circuits Staff shown; Head Lab may perform the same authorized issue / return work',
     msg('staff','system','Open approved reservation'),msg('system','db','Read D2 approval; D4 stock'),msg('system','staff','Approved items and borrowers',true),
@@ -65,9 +76,19 @@ const pages=[
  ]}
 ];
 // Independent operations can be requested separately; they are not issuance prerequisites.
-pages[0].groups.push(group('alt','Optional independent operations - select an authorized action, or skip',[
- branch('Requester: eligible cancellation / rescheduling, or read-only status / history',
-  msg('rep','system','Own reservation action'),msg('faculty','system','Own reservation action')),
+pages[0].groups.push(group('alt','View Status - select the actual requester',[
+ branch('Class Representative: own records only; Pending remains visible',
+  msg('rep','system','Open own View Status record'),msg('system','db','Read D2 owned status/history'),msg('system','rep','Own status/history; current reviewer',true)),
+ branch('Faculty: own records only; review of others is a separate routed action',
+  msg('faculty','system','Open own View Status record'),msg('system','db','Read D2 owned status/history'),msg('system','faculty','Own status/history; current reviewer',true))
+]));
+pages[1].groups.unshift(group('alt','Optional action inside View Status - choose one eligible action, or skip',[
+ branch('Eligible edit/reschedule: retain Request Type; validate new revision and recheck automatic route',
+  msg('system','db','Save valid revision / keep invalid unchanged')),
+ branch('Eligible cancellation: 2.2 Cancellation Result goes directly to 2.4; no new Faculty/Dean review',
+  msg('system','db','Save Cancelled; release hold'))
+]));
+pages[1].groups.push(group('opt','Other independent operations',[
  branch('Assigned Staff or Head: inventory / disposal; Head only: schedule / daily tasks / account updates',
   msg('staff','system','Inventory / disposal action'),msg('head','system','Administration action'))
 ]));
@@ -92,13 +113,14 @@ pages.forEach(page=>{
   text(g,x,i<5?220:142,label.split('\n'),25,'middle',true);
   el('line',{x1:x,y1:255,x2:x,y2:2470,stroke:'#999','stroke-width':1.5,'stroke-dasharray':'8 7'},g);
  });
- const font=27;
+ const font=30,guardFont=22,guardLine=guardFont*1.15,frameHeader=34,guardGap=13,frameGap=8;
  const planned=page.groups.map(group=>({...group,branches:group.branches.map(branch=>({...branch,
-  lines:wrap(branch.guard,24,1660),messages:branch.messages.map(m=>{
-   const lines=wrap((++number)+'. '+m.label,font,Math.max(560,Math.abs(positions[m.to]-positions[m.from])-36));
-   return {...m,number,lines,height:lines.length*font*1.15+25};
+  lines:wrap('['+branch.guard+']',guardFont,1660),messages:branch.messages.map(m=>{
+   const lines=wrap((++number)+'. '+m.label,font,Math.max(640,Math.abs(positions[m.to]-positions[m.from])-36));
+   measure.font=font+'px Arial';const labelWidth=Math.max(...lines.map(line=>measure.measureText(line).width));
+   return {...m,number,lines,labelWidth,height:lines.length*font*1.15+18};
   })}))}));
- const total=planned.reduce((sum,g)=>sum+40+g.branches.reduce((n,b)=>n+b.lines.length*27.6+15+b.messages.reduce((s,m)=>s+m.height,0),0)+12,0);
+ const total=planned.reduce((sum,g)=>sum+frameHeader+g.branches.reduce((n,b)=>n+b.lines.length*guardLine+guardGap+b.messages.reduce((s,m)=>s+m.height,0),0)+frameGap,0);
  // Preserve text size; grow the portrait canvas if content requires it.
  const bottom=Math.max(H-90,285+total),height=bottom+90;
  svg.setAttribute('viewBox',`0 0 ${W} ${height}`);
@@ -106,24 +128,26 @@ pages.forEach(page=>{
  let y=285;
  for(const group of planned){
   const start=y;const frame=el('rect',{x:20,y,width:1760,height:1,fill:'none',stroke:'#555','stroke-width':1.5},frames);
-  el('rect',{x:20,y,width:1760,height:37,fill:'#eef1f4'},frames);
-  text(messages,35,y+27,[group.kind+'  '+group.title],25,'start',true);y+=40;
+  el('rect',{x:20,y,width:1760,height:frameHeader-2,fill:'#eef1f4'},frames);
+  text(messages,35,y+25,[group.kind+'  '+group.title],24,'start',true);y+=frameHeader;
   group.branches.forEach((branch,index)=>{
    if(index)el('line',{x1:20,y1:y,x2:1780,y2:y,stroke:'#555','stroke-dasharray':'7 5'},frames);
-   el('rect',{x:30,y,width:1740,height:branch.lines.length*27.6+12,fill:'#fff'},frames);
-   text(messages,45,y+25,wrap('['+branch.guard+']',24,1660),24,'start');y+=branch.lines.length*27.6+15;
+   el('rect',{x:30,y,width:1740,height:branch.lines.length*guardLine+guardGap-3,fill:'#fff'},frames);
+   text(messages,45,y+guardFont,branch.lines,guardFont,'start');y+=branch.lines.length*guardLine+guardGap;
    for(const m of branch.messages){
     const a=positions[m.from],b=positions[m.to],arrowY=y+m.height-9;
-    const label=text(messages,Math.min(1480,Math.max(320,(a+b)/2)),y+font,m.lines,font);label.dataset.messageLabel=String(m.number);
+    const labelX=Math.max(30+m.labelWidth/2,Math.min(W-30-m.labelWidth/2,(a+b)/2));
+    const label=text(messages,labelX,y+font,m.lines,font);label.dataset.messageLabel=String(m.number);
     label.setAttribute('stroke','#fff');label.setAttribute('stroke-width','7');label.setAttribute('paint-order','stroke');label.setAttribute('stroke-linejoin','round');
     el('path',{d:`M${a} ${arrowY} H${b}`,fill:'none',stroke:'#111','stroke-width':2,...(m.reply?{'stroke-dasharray':'8 6'}:{}),'marker-end':`url(#arrow-${page.id})`,'data-step':m.number,'data-from':m.from,'data-to':m.to},messages);
     y+=m.height;
    }
   });
-  y+=12;frame.setAttribute('height',y-start);
+  y+=frameGap;frame.setAttribute('height',y-start);
  }
  text(svg,900,height-32,[page.id===1?'Continue on Page 2 - same actors; finally approved requests proceed to issuance':'End of overview - optional services are independent; detailed processes remain available separately'],23);
  const section=document.createElement('section');section.className='sequence-page';section.id='sequence-whole-'+page.id;section.append(svg);document.querySelector('main').append(section);
 });
+window.SystemWholeSequencePages=pages;
 window.__wholeSequenceReady=true;
 })();

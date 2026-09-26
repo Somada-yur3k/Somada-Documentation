@@ -20,16 +20,16 @@ require('./check-approval.cjs');
 // Faculty, or directly to Dean only when the assigned Faculty is unavailable;
 // Faculty on-schedule → regular schedule; Faculty out-of-schedule → Dean.
 const p2Activity=read('assets/system-diagrams/process-activities.js');
-assert.match(p2Activity,/decision\('approval-requester',800,1850,'Class Rep\.\?'/);
-assert.match(p2Activity,/decision\('classrep-schedule',720,1970,'On-schedule\?'/);
-assert.match(p2Activity,/decision\('faculty-available',400,2080,'Faculty\\navailable\?'/);
-assert.match(p2Activity,/approvalJoin\('faculty-merge',700,2170\)/);
-assert.match(p2Activity,/action\('classrep-faculty-review',700,2250,'Faculty: review\\nApprove or Reject'/);
-assert.match(p2Activity,/action\('classrep-final',700,2335,'Save final\\nApproved \/ Rejected'/);
-assert.match(p2Activity,/decision\('faculty-schedule',1000,1970,'On-schedule\?'/);
-assert.match(p2Activity,/action\('faculty-regular',1000,2100,'Save on-schedule\\nrequest; no approval'/);
-assert.match(p2Activity,/approvalJoin\('dean-merge',700,2410\)/);
-assert.match(p2Activity,/action\('dean-review',700,2490,'Dean: final\\nApprove or Reject'/);
+assert.match(p2Activity,/decision\('approval-requester',\d+,\d+,'Class Rep\.\?'/);
+assert.match(p2Activity,/decision\('classrep-schedule',\d+,\d+,'On-schedule\?'/);
+assert.match(p2Activity,/decision\('faculty-available',\d+,\d+,'Faculty\\navailable\?'/);
+assert.match(p2Activity,/approvalJoin\('faculty-merge',\d+,\d+\)/);
+assert.match(p2Activity,/action\('classrep-faculty-review',\d+,\d+,'Faculty: review\\nApprove or Reject'/);
+assert.match(p2Activity,/action\('classrep-final',\d+,\d+,'Save final\\nApproved \/ Rejected'/);
+assert.match(p2Activity,/decision\('faculty-schedule',\d+,\d+,'On-schedule\?'/);
+assert.match(p2Activity,/action\('faculty-regular',\d+,\d+,'Confirm Approved;\\nno academic approval'/);
+assert.match(p2Activity,/approvalJoin\('dean-merge',\d+,\d+\)/);
+assert.match(p2Activity,/action\('dean-review',\d+,\d+,'Dean: final\\nApprove or Reject'/);
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL(req.url,'http://local').pathname);if(!p.startsWith(root+path.sep))return res.writeHead(403).end();fs.readFile(p,(e,b)=>{if(e)return res.writeHead(404).end();res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(p)]||'application/octet-stream');res.end(b);});});
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;try{
@@ -60,7 +60,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   const finalKeys={p1:'account-end',p2:'other-end',p3:'end',p4:'other-end',p5:'report-end'};
   assert.deepEqual(Object.entries(geometry.nodes).filter(([,n])=>n.kind==='final').map(([k])=>k),[finalKeys[model.id]],'One retained lower Activity Final under the adviser convention');
   assert(Object.values(geometry.nodes).some(n=>n.kind==='flow-final'),'Branch endings use Flow Final');
-  assert.equal(await section.locator('svg').getAttribute('viewBox'),model.id==='p2'?'0 0 1200 2710':model.id==='p4'?'0 0 1200 2300':'0 0 1200 1697','Portrait activity artwork');
+  assert.equal(await section.locator('svg').getAttribute('viewBox'),model.id==='p2'?'0 0 1800 2550':model.id==='p4'?'0 0 1200 2300':'0 0 1200 1697','Portrait activity artwork');
   if(model.id==='p4'){
    const route=(from,guard)=>geometry.routes.find(r=>r.from===from&&r.guard===guard)?.to;
    assert.equal(route('forecast-choice','[Yes: Head Lab]'),'forecast-input');
@@ -91,7 +91,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   const forks=Object.entries(geometry.nodes).filter(([,n])=>n.kind==='fork'),joins=Object.entries(geometry.nodes).filter(([,n])=>n.kind==='join');
   assert.equal(forks.length,model.id==='p5'?1:0,'Fork only for independent reporting reads');
   assert.equal(joins.filter(([,n])=>n.joinSpec!=='or').length,forks.length,'Every parallel fork has its synchronization join');
-  assert.equal(joins.filter(([,n])=>n.joinSpec==='or').length,model.id==='p2'?3:0,'P2 uses OR joins for alternative reservation and approval routes');
+  assert.equal(joins.filter(([,n])=>n.joinSpec==='or').length,model.id==='p2'?5:0,'P2 uses OR joins for form entries, routing and approval alternatives');
   for(const [key,n] of Object.entries(geometry.nodes)){
    assert(n.x>=0&&n.x+n.w<=geometry.width&&n.y>80&&n.y+n.h<geometry.height,key+' stays inside the publication canvas');
    const incoming=geometry.routes.filter(r=>r.to===key),outgoing=geometry.routes.filter(r=>r.from===key);
@@ -104,7 +104,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    }
    if(n.kind==='action'){assert.equal(incoming.length,1,'No implicit AND-join of exclusive alternatives: '+key);assert.equal(outgoing.length,1,'No implicit fork: '+key);}
    if(n.kind==='fork'){assert.equal(incoming.length,1);assert.equal(outgoing.length,2);assert(outgoing.every(r=>!r.guard),'Concurrent branches have no exclusive guards');}
-   if(n.kind==='join'){assert.equal(incoming.length,key==='type-merge'?3:2);assert.equal(outgoing.length,1);}
+   if(n.kind==='join'){assert.equal(incoming.length,key==='equipment-ready'?3:2);assert.equal(outgoing.length,1);}
    if(n.kind==='final')assert.equal(outgoing.length,0,'A final cannot continue');
   }
   if(model.id==='p5'){
@@ -116,7 +116,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   }
   if(model.id==='p2'){
    const route=(from,guard)=>geometry.routes.find(r=>r.from===from&&r.guard===guard)?.to;
-   assert.equal(geometry.nodes['group-info'].x,geometry.nodes['individual-info'].x,'Group and Student Only steps use one aligned column');
+   assert(geometry.nodes['group-info'].x<geometry.nodes['individual-info'].x,'Type alternatives have separate columns');
    assert(geometry.nodes['group-info'].y<geometry.nodes['individual-info'].y,'Group confirmation is above Student Only selection');
    const facultyRoute=geometry.routes.find(r=>r.from==='request-role'&&r.guard==='[No: Faculty]');
    const incomingRole=geometry.routes.find(r=>r.to==='request-role');
@@ -129,21 +129,26 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    assert.equal(classRepRoute.points.length,2,'Class Rep. arrow goes straight down to Reservation Type selection');
    assert.equal(classRepRoute.points[0][0],classRepRoute.points[1][0]);
    assert.equal(classRepRoute.points[0][1],geometry.nodes['request-role'].y+geometry.nodes['request-role'].h);
-   assert.deepEqual(geometry.routes.filter(r=>r.to==='type-merge').map(r=>r.points.at(-1)[0]).sort((a,b)=>a-b),[350,440,600],
-    'Faculty, Group, and Student Only paths have separate entry arrows into the OR join');
+   assert.deepEqual(geometry.routes.filter(r=>r.to==='type-merge').map(r=>r.points.at(-1)[0]).sort((a,b)=>a-b),[1040,1280],
+    'Group and Student Only have separate entry arrows into the Class Representative OR Join');
+   assert.equal(facultyRoute.to,'faculty-activity');
+   assert.equal(route('faculty-activity','[Laboratory Activity]'),'equipment-ready');
+   assert.equal(route('faculty-activity','[Non-Laboratory Activity]'),'faculty-request-options');
+   assert.equal(route('faculty-request-options',null),'equipment-ready');
+   assert.equal(route('request-room',null),'equipment-ready');
+   assert.equal(route('equipment-ready',null),'request-items');
    assert.equal(route('type-merge',null),'request-schedule-type','Type alternatives join before Schedule Type');
    const form=['request-input','select-type','request-schedule-type','request-room','request-items','request-review'];
-   for(const [i,key] of form.entries())assert(geometry.nodes[key].title.startsWith(String(i+1)+' '),'Six visible reservation form steps');
+   for(const [i,key] of form.slice(0,4).entries())assert(geometry.nodes[key].title.startsWith(String(i+1)+' '),'Class Representative numbered form steps');
+   assert.match(geometry.nodes['request-items'].title,/^Equipment \/ Materials/);assert.match(geometry.nodes['request-review'].title,/^Review Information/);
    assert.equal(route('request-review',null),'request-valid','Final Submit precedes validation and saving');
    assert.equal(route('request-valid','[Yes]'),'request-save');assert.equal(route('request-valid','[No]'),'request-error');
    assert.equal(route('request-save',null),'request-confirm','Saved status and reviewer are returned after saving');
    assert.match(geometry.nodes['request-confirm'].title,/Current Reviewer/);
-   for(const key of ['availability','cancel','tracking']){
-    assert.equal(route(key+'-valid','[Yes]'),key+'-save','Allowed path stays below the decision: '+key);
-    assert.equal(route(key+'-valid','[No]'),key+'-error','Correction path stays to the right: '+key);
-    assert.equal(route(key+'-save',null),key+'-end','Successful path reaches its Flow Final: '+key);
-    assert.equal(route(key+'-error',null),key+'-end','Correction path reaches the same Flow Final: '+key);
-   }
+   assert.deepEqual(['request-choice','status-choice','approval-choice','clearance-choice'].map(k=>geometry.nodes[k].title.replace(/\n/g,' ')),['Submit Form?','View Status?','Routed Reviewer?','View Clearance?']);
+   assert.equal(route('status-action','[Edit / reschedule]'),'edit-valid');assert.equal(route('edit-valid','[Eligible edit]'),'form-ready');
+   assert.equal(route('status-action','[Cancel request]'),'cancel-check');assert.equal(route('cancel-valid','[Eligible]'),'cancel-save');
+   assert.equal(route('clearance-role','[Class Representative]'),'clearance-view');assert.equal(geometry.nodes['clearance-view'].processReference,'p5.3');
    assert.equal(route('approval-requester','[Yes: Class Rep.]'),'classrep-schedule','Requester type is checked before applying Class Rep rules');
    assert.equal(route('approval-requester','[No: Faculty]'),'faculty-schedule','Requester type is checked before applying Faculty rules');
    assert.equal(route('classrep-schedule','[Yes]'),'faculty-merge','On-schedule Class Rep requests go to Faculty');
@@ -155,8 +160,9 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    assert.equal(route('faculty-schedule','[Yes]'),'faculty-regular','Regular Faculty class schedules need no approval');
    assert.equal(route('faculty-schedule','[No]'),'dean-merge','Only out-of-schedule Faculty requests go to Dean');
    assert.equal(route('dean-merge',null),'dean-review','Dean reviews both eligible routes');
-   assert.deepEqual(geometry.routes.find(r=>r.from==='dean-final').points,[[700,2609],[700,2638]],'Dean final arrow is straight into its Flow Final');
-   assert.equal(geometry.routes.find(r=>r.from==='faculty-available'&&r.guard==='[No]').points[1][0],150,'Unavailable route stays clear of the nearby Activity Final');
+   const deanFinal=geometry.routes.find(r=>r.from==='dean-final').points;
+   assert.equal(deanFinal.length,2,'Dean final arrow is straight into its Flow Final');assert.equal(deanFinal[0][0],deanFinal[1][0]);
+   assert.equal(geometry.routes.find(r=>r.from==='faculty-available'&&r.guard==='[No]').points[1][0],850,'Unavailable route stays clear of clearance endpoints');
    assert.match(geometry.nodes['classrep-final'].title,/Save final\nApproved \/ Rejected/);
    for(const [key,n]of Object.entries(geometry.nodes).filter(([,n])=>n.kind==='final')){
     for(const [other,b]of Object.entries(geometry.nodes))if(other!==key)assert(!(n.x<b.x+b.w&&n.x+n.w>b.x&&n.y<b.y+b.h&&n.y+n.h>b.y),'Activity 2 final node overlaps '+other);
@@ -182,177 +188,28 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   const finals=Object.entries(geometry.nodes).filter(([,n])=>n.kind==='final').map(([key])=>key);assert(finals.length>0,'Every complete activity has a final');
   assert.equal(Object.values(geometry.nodes).filter(n=>n.kind==='initial').length,1,'One continuous initial flow');
   assert(geometry.precondition.includes('signed in')||geometry.precondition.includes('signed-in'),'Explicit authenticated entry scope');
-  assert(geometry.routes.every(r=>r.points.at(-1)[1]>=r.points[0][1]),'Top-to-bottom control flow');
+  assert(geometry.routes.every(r=>r.points.at(-1)[1]>=r.points[0][1]||(model.id==='p2'&&r.to==='form-ready')),'Top-to-bottom control flow, except the explicit eligible-edit/form-entry loop');
   const reachesEnd=new Set(Object.entries(geometry.nodes).filter(([,n])=>['final','flow-final'].includes(n.kind)).map(([key])=>key));for(let i=0;i<Object.keys(geometry.nodes).length;i++)for(const r of geometry.routes)if(reachesEnd.has(r.to))reachesEnd.add(r.from);
   assert.deepEqual([...reachesEnd].sort(),Object.keys(geometry.nodes).sort(),'All branches reach an Activity or Flow Final: '+model.id);
  }
- const dep=page.locator('#deployment-view svg'),deploymentText=await dep.locator('tspan').allTextContents().then(rows=>rows.join(' '));
- assert.deepEqual(await dep.locator('[data-node]').evaluateAll(ns=>ns.map(n=>n.dataset.node).sort()),['application','classrep','database','dean','faculty','head','staff']);
+ const dep=page.locator('#deployment-view svg'),deploymentText=await dep.locator('tspan').allTextContents().then(rows=>rows.join(' ').replace(/\s+/g,' ').trim());
+ assert.deepEqual(await dep.locator('[data-node]').evaluateAll(ns=>ns.map(n=>n.dataset.node).sort()),['ai-services','application','classrep','clients','database','dean','faculty','head','staff']);
  assert.equal(await dep.getAttribute('viewBox'),'0 0 1200 1697');
  assert.equal(await dep.locator('[data-store]').count(),l1.stores.length);
  assert.equal(await dep.locator('[data-device-icon="desktop"]').count(),5);
  assert.equal(await dep.locator('[data-device-icon="mobile"]').count(),5);
  assert(!/All roles:|One application and one database|AI runs in the backend/.test(deploymentText));
- for(const term of ['Desktop','Mobile','Class Representative','Faculty','Dean','Circuit Staff','Physics Staff','Head Lab','Web Browser','Next.js','React','TypeScript','Node.js','PostgreSQL','HTTPS','TLS','AI Chatbot','Inventory Forecasting'])assert(deploymentText.includes(term),'Deployment missing '+term);
+ for(const term of ['Desktop','Mobile','Class Representative','Faculty','Dean','Circuit Staff','Physics Staff','Head Lab','Web Browser','Next.js','React','TypeScript','Tailwind CSS','Node.js','PostgreSQL','HTTPS','TLS','AI Chatbot','Inventory Forecasting','RAG','XGBoost','n8n','Model: Gemini 3.5 Flash-Lite','Google Gemini API (Free Tier)'])assert(deploymentText.includes(term),'Deployment missing '+term);
  for(const store of l1.stores)assert(deploymentText.includes(store.number+' — '+store.name),'Deployment missing store '+store.id);
  assert(!/Email infrastructure|Protocol TBD|Not yet selected|SOMADA|\.html/i.test(deploymentText));
- assert.deepEqual(await dep.locator('[data-connection]').evaluateAll(ns=>ns.map(n=>n.dataset.connection).sort()),['application-database','classrep-application','dean-application','faculty-application','head-application','staff-application']);
+ assert.deepEqual(await dep.locator('[data-connection]').evaluateAll(ns=>ns.map(n=>n.dataset.connection).sort()),['application-ai','application-database','clients-application']);
+ assert.equal(await dep.locator('[data-component]').count(),9,'Application service components');
+ assert.deepEqual(await dep.locator('[data-environment]').evaluateAll(ns=>ns.map(n=>n.dataset.environment).sort()),['ai-runtime','browser','node-runtime','postgresql']);
  assert.deepEqual(await page.locator('#activity-system [data-lane-name]').evaluateAll(ns=>ns.map(n=>n.dataset.laneName)),['Class Representative','Faculty','Circuit Staff','Physics Staff','Head Lab','Dean'],'Six distinct actor partitions');
- const swim=page.locator('#activity-system');
- assert.equal(await swim.locator('[data-uml-kind="initial"]').count(),1);
- assert.equal(await swim.locator('[data-uml-kind="fork"]').count(),2,'Account handover splits independent actor activities');
- assert.equal(await swim.locator('[data-uml-kind="join"]').count(),8,'Exclusive preparation outcomes converge separately');
- assert.equal(await swim.locator('[data-uml-kind="final"]').count(),1);
- assert.equal(await swim.locator('[data-uml-kind="flow-final"]').count(),4);
- assert.equal(await swim.locator('svg').getAttribute('viewBox'),'0 0 2520 4260','Portrait artwork fits the A4 publication page');
- assert.equal(await swim.locator('[data-child-process]').count(),0,'Summary does not repeat every Level 2 step');
- assert.equal(await swim.locator('.sheet-head,.sheet-subtitle,.sheet-note,.sheet-foot').count(),0,'Reusable swimlane has no surrounding print chrome');
- assert(await swim.locator('[data-uml-kind="action"] rect').evaluateAll(nodes=>nodes.every(n=>Number(n.getAttribute('rx'))>0)),'UML actions use rounded rectangles');
- assert(await swim.locator('svg *').evaluateAll(nodes=>nodes.filter(n=>['rect','path','text','line'].includes(n.localName)).every(n=>{const s=getComputedStyle(n);return [s.fill,s.stroke].every(c=>['none','rgb(0, 0, 0)','rgb(255, 255, 255)'].includes(c));})),'Swimlane shapes, text and connectors are black and white');
- const whole=await page.evaluate(()=>window.SystemSwimlaneGeometry);
- for(const key of ['prepare-requester','balance']){
-  const entry=whole.routes.find(r=>r.to===key).points.at(-1);
-  for(const r of whole.routes.filter(r=>r.from===key))assert(Math.hypot(entry[0]-r.points[0][0],entry[1]-r.points[0][1])>=60,key+' has separated entry and exit ports');
- }
- const circuitPreparation=whole.routes.find(r=>r.from==='prepare-circuit'&&r.to==='prepare-join');
- assert.equal(circuitPreparation.points[0][0],whole.nodes['prepare-circuit'].x,'Circuit preparation exits the left edge');
- for(const [from,to]of [['admin','faculty-credentials'],['faculty-credentials','faculty-identity'],['faculty-identity','classrep-account'],['classrep-account','headlab-fork'],['headlab-fork','faculty-handoff'],['faculty-handoff','faculty-fork'],['faculty-fork','classrep-receive'],['classrep-receive','classrep-login'],['faculty-fork','faculty-login'],['classrep-login','question'],['faculty-login','faculty-request']])assert(whole.routes.some(r=>r.from===from&&r.to===to),'Explicit account hand-off or requester flow: '+from+' → '+to);
- assert(!whole.routes.some(r=>['classrep-login','faculty-login'].includes(r.from)&&r.to==='admin-tasks'),'Requester login never starts Head Lab operations');
- assert.equal(whole.nodes['admin-tasks'].lane,4,'Schedule and daily tasks stay in the Head Lab lane');
- assert(whole.routes.some(r=>r.from==='headlab-fork'&&r.to==='admin-tasks'),'Head Lab has its own independent operations branch');
- assert.equal(whole.nodes['classrep-receive'].lane,0);
- assert.equal(whole.nodes['classrep-login'].lane,0);
- for(const [key,n] of Object.entries(whole.nodes)){
-  assert(n.x>=whole.laneBounds[n.lane]&&n.x+n.w<=whole.laneBounds[n.lane+1],key+' stays inside the responsible lane');
-  assert(n.y>=130&&n.y+n.h<whole.height,key+' stays below lane headings and inside portrait artwork');
- }
- for(const route of whole.routes){
-  const finalA=route.points.at(-2),finalB=route.points.at(-1);
-  assert(Math.hypot(finalB[0]-finalA[0],finalB[1]-finalA[1])>=30,route.from+' → '+route.to+' keeps a visible shaft before its arrowhead');
-  route.points.slice(1).forEach((b,i)=>{
-   const a=route.points[i];assert(a[0]===b[0]||a[1]===b[1],'Orthogonal whole-system flow');
-   for(const [key,n] of Object.entries(whole.nodes)){
-    if(key===route.from||key===route.to)continue;
-    const cross=a[0]===b[0]?a[0]>n.x&&a[0]<n.x+n.w&&Math.max(a[1],b[1])>n.y&&Math.min(a[1],b[1])<n.y+n.h:a[1]>n.y&&a[1]<n.y+n.h&&Math.max(a[0],b[0])>n.x&&Math.min(a[0],b[0])<n.x+n.w;
-    assert(!cross,route.from+' → '+route.to+' crosses '+key);
-   }
-  });
- }
- for(const [key,n] of Object.entries(whole.nodes)){
-  const incoming=whole.routes.filter(r=>r.to===key),outgoing=whole.routes.filter(r=>r.from===key);
-  if(n.kind==='decision'){assert.equal(incoming.length,1,key+' decision has one input');assert.equal(outgoing.length,2,key+' has two guarded alternatives');assert(outgoing.every(r=>r.guard),key+' guard labels');}
-  if(n.kind==='fork'){assert.equal(incoming.length,1);assert.equal(outgoing.length,2);}
-   if(n.kind==='join'){assert.equal(incoming.length,2);assert.equal(outgoing.length,1);}
-  if(n.kind==='merge'||n.kind==='connector')assert.equal(outgoing.length,1,key+' merges exclusive paths');
- }
- assert(whole.routes.some(r=>r.from==='faculty-available'&&r.to==='dean-route'&&r.guard==='[No]'),'Out-of-schedule Class Rep goes to Dean only when Faculty is unavailable');
- assert(whole.routes.some(r=>r.from==='classrep-schedule'&&r.to==='faculty-review-ready'&&r.guard==='[Yes]'),'On-schedule Class Rep requests go to assigned Faculty');
- assert(whole.routes.some(r=>r.from==='faculty-available'&&r.to==='faculty-review-ready'&&r.guard==='[Yes]'),'Available Faculty reviews out-of-schedule Class Rep requests');
- assert(whole.routes.some(r=>r.from==='faculty-review-ready'&&r.to==='review'));
- assert(!whole.nodes['off-schedule'],'No escalation decision after Faculty approval');
- assert.equal(whole.nodes.dean.lane,5,'Dean reviews in own partition');
- assert.equal(whole.nodes['dean-route'].kind,'join','Dean routing uses the requested join bar');
- assert.equal(whole.nodes['dean-route'].joinSpec,'or','Either request proceeds without waiting for both');
- assert.equal(whole.routes.filter(r=>r.to==='dean-route').length,2);
- assert.equal(await swim.locator('[data-swimlane-node="dean-route"] rect').count(),1);
- assert.equal(await swim.locator('[data-control-to="dean-route"][marker-end]').count(),2);
- assert(whole.routes.some(r=>r.from==='dean-route'&&r.to==='dean'));
- assert(whole.routes.some(r=>r.from==='dean'&&r.to==='dean-approved'));
- assert.equal(whole.nodes.approved.kind,'join','Approval alternatives meet only at a visible join');
- assert.equal(whole.nodes.approved.joinSpec,'or');
- assert.equal(whole.nodes['approval-ready'].joinSpec,'or');
- const scheduledYes=whole.routes.find(r=>r.from==='faculty-scheduled'&&r.to==='approved');
- assert(Math.max(...scheduledYes.points.map(p=>p[1]))<whole.nodes['dean-rejected'].y,'On-schedule bypass ends above the lower rejection route');
- for(const [from,to] of [['faculty-request','faculty-activity'],['faculty-submit','faculty-scheduled'],['review','faculty-approved'],['faculty-approved','approved']]){
-  const r=whole.routes.find(r=>r.from===from&&r.to===to);
-  assert(Math.hypot(r.points[1][0]-r.points[0][0],r.points[1][1]-r.points[0][1])>=30,from+' has a visible arrow shaft');
- }
- assert.equal(await swim.locator('[data-swimlane-node="approved"] rect').count(),1,'Visible bar makes convergence explicit');
- assert.equal(await swim.locator('[data-control-to="approved"][marker-end]').count(),2,'Each decision has its own arrowhead');
- const offNo=whole.routes.find(r=>r.from==='faculty-approved'&&r.to==='approved');
- assert.equal(scheduledYes.guard,'[Yes]');assert.equal(offNo.guard,'[Yes]');
- for(let i=1;i<scheduledYes.points.length;i++)for(let j=1;j<offNo.points.length;j++){
-  const a=scheduledYes.points[i-1],b=scheduledYes.points[i],c=offNo.points[j-1],d=offNo.points[j];
-  const vertical=a[0]===b[0]&&c[0]===d[0]&&a[0]===c[0];
-  const horizontal=a[1]===b[1]&&c[1]===d[1]&&a[1]===c[1];
-  if(vertical||horizontal){const k=vertical?1:0;assert(Math.min(Math.max(a[k],b[k]),Math.max(c[k],d[k]))<=Math.max(Math.min(a[k],b[k]),Math.min(c[k],d[k])),'Yes and No do not share an arrow segment');}
- }
- assert.equal(whole.routes.filter(r=>r.to==='approved').length,2,'On-schedule approval paths retain their short upper convergence');
- assert.equal(whole.routes.filter(r=>r.to==='approval-ready').length,2,'Dean approval meets the approved flow below the decision');
- const deanYes=whole.routes.find(r=>r.from==='dean-approved'&&r.to==='approval-ready');
- assert(deanYes,'Dean Yes route preserved');
- deanYes.points.slice(1).forEach((p,i)=>assert(p[1]>=deanYes.points[i][1],'Dean Yes never routes upward'));
- assert.equal(whole.nodes['dean-approved'].lane,5,'Dean decision stays in own partition');
- assert(!whole.nodes['requester-ready'],'Requester diamond removed');
- assert.equal(whole.nodes['prepare-join'].joinSpec,'or');
- assert(whole.routes.some(r=>r.from==='approved-dispatch'&&r.to==='lab'),'Approved request reaches selected lab independently of status viewing');
- assert(whole.routes.some(r=>r.from==='requester-prepared'&&r.to==='approved-status-end'),'Status-view branch ends without stopping staff processing');
- assert.equal(whole.nodes.returns.kind,'join');
- assert.equal(whole.nodes.returns.joinSpec,'or','Only the selected laboratory return path is required');
- assert.equal(whole.nodes['request-ready'].kind,'join','Optional Q&A paths enter a join bar');
- assert.equal(whole.nodes['request-ready'].joinSpec,'or');
- assert.equal(whole.nodes['type-merge'].kind,'join','Reservation Type alternatives enter the requested join bar');
- assert.equal(whole.nodes['type-merge'].joinSpec,'or');
- assert.equal(whole.nodes.question.kind,'decision','Need Q&A remains a decision');
- assert.equal(whole.nodes.clearance.lane,4,'Head Lab identifies the student and creates clearance');
- assert.equal(whole.nodes['clearance-view'].lane,0,'Class Rep only receives the status view');
- assert(whole.routes.some(r=>r.from==='clearance'&&r.to==='clearance-view'),'Head-created clearance leads to Class Rep status view');
- const reportEnd=whole.routes.find(r=>r.from==='report'&&r.to==='end');
- assert(reportEnd&&reportEnd.points.length===2&&reportEnd.points[0][0]===reportEnd.points[1][0],
-  'Report reaches the final node directly from its bottom edge');
- assert(whole.nodes['admin-tasks'].y-(whole.nodes.admin.y+whole.nodes.admin.h)>=45,'Head Lab actions have visible separation');
- for(const [id,vertical] of [['dean-route',false],['faculty-review-ready',false],['prepare-join',false],['returns',false],['approved',false],['approval-ready',false],['request-ready',false],['type-merge',false]]){
-  const n=whole.nodes[id],incoming=whole.routes.filter(r=>r.to===id),ports=incoming.map(r=>r.points.at(-1));
-  assert.equal(n.h>n.w,vertical,id+' bar orientation');
-  ports.forEach(([x,y])=>assert(Math.abs(vertical?x-n.x:y-n.y)<1e-6,id+' inputs enter the same broad face'));
-  for(const route of incoming){const a=route.points.at(-2),b=route.points.at(-1);assert(vertical?a[1]===b[1]&&a[0]<b[0]:a[0]===b[0]&&a[1]<b[1],id+' arrow approaches perpendicular to the bar');}
-  const offsets=ports.map(p=>p[vertical?1:0]).sort((a,b)=>a-b);
-  offsets.slice(1).forEach((v,i)=>assert(v-offsets[i]>=80,id+' input ports have visible spacing'));
- }
- assert(await swim.locator('[data-uml-kind="action"] rect').evaluateAll(ns=>ns.every(n=>Number(n.getAttribute('rx'))===Number(n.getAttribute('height'))/2)),'Capsule activity shapes match requested sample');
- assert.deepEqual(whole.routes.filter(r=>r.to==='prepare-join').map(r=>r.name).sort(),['Circuit','Physics']);
- assert(!whole.nodes['staff-ready'],'Staff preparation diamond removed');
- assert(whole.routes.some(r=>r.from==='prepare-physics'&&r.to==='prepare-join'),'Physics preparation connects directly to join');
- const reached=new Set(['start']),ended=new Set(Object.entries(whole.nodes).filter(([,n])=>['final','flow-final'].includes(n.kind)).map(([key])=>key));
- for(let i=0;i<Object.keys(whole.nodes).length;i++)for(const r of whole.routes){if(reached.has(r.from))reached.add(r.to);if(ended.has(r.to))ended.add(r.from);}
- assert.deepEqual([...reached].sort(),Object.keys(whole.nodes).sort(),'Every separate task is reachable from sign-in');
- assert.deepEqual([...ended].sort(),Object.keys(whole.nodes).sort(),'Every branch can reach an outcome');
- const overflow=await swim.locator('[data-swimlane-node]').evaluateAll(groups=>groups.filter(g=>{
-  if(!g.querySelector('text'))return false;
-  const box=g.querySelector('.flow-shape').getBBox(),t=g.querySelector('text').getBBox();
-  return t.x<box.x+4||t.y<box.y+4||t.x+t.width>box.x+box.width-4||t.y+t.height>box.y+box.height-4;
- }).map(g=>g.dataset.swimlaneNode));
- assert.deepEqual(overflow,[],'Every task label stays inside its own shape');
- const swimlaneLabelIssues=await swim.locator('svg').evaluate(svg=>{
-  const labels=[...svg.querySelectorAll('[data-flow-label]')].map(t=>({id:t.dataset.flowLabel,text:t.textContent,box:t.getBBox()}));
-  const shapes=[...svg.querySelectorAll('[data-swimlane-node]')].map(g=>({id:g.dataset.swimlaneNode,box:g.getBBox()}));
-  const overlap=(a,b)=>Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x)>4&&Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y)>4;
-  const issues=[];
-  for(const label of labels){
-   if(/[\[\]]/.test(label.text))issues.push([label.id,'bracketed guard']);
-   for(const shape of shapes)if(overlap(label.box,shape.box))issues.push([label.id,'overlaps '+shape.id]);
-   for(const route of window.SystemSwimlaneGeometry.routes)for(let i=1;i<route.points.length;i++){
-    const a=route.points[i-1],b=route.points[i],r=label.box;
-    if(a[0]===b[0]&&a[0]>r.x+3&&a[0]<r.x+r.width-3&&Math.max(a[1],b[1])>r.y+3&&Math.min(a[1],b[1])<r.y+r.height-3||
-      a[1]===b[1]&&a[1]>r.y+3&&a[1]<r.y+r.height-3&&Math.max(a[0],b[0])>r.x+3&&Math.min(a[0],b[0])<r.x+r.width-3)
-     issues.push([label.id,'covers '+route.from+' → '+route.to]);
-   }
-  }
-  for(let i=0;i<labels.length;i++)for(let j=i+1;j<labels.length;j++)if(overlap(labels[i].box,labels[j].box))issues.push([labels[i].id,'overlaps '+labels[j].id]);
-  return issues;
- });
- assert.deepEqual(swimlaneLabelIssues,[],'Swimlane guard labels stay clear of shapes, connectors, and other labels');
- assert(await swim.locator('[data-uml-kind="decision"]').evaluateAll(decisions=>decisions.every(g=>{
-  const width=g.querySelector('path').getBBox().width;
-  return width<=330&&width>=280;
- })), 'Decision diamonds are narrower than their actor lanes, with room for longer text');
- assert(await swim.locator('[data-flow-label]').evaluateAll(labels=>labels.every(t=>Number(t.getAttribute('font-size'))>=21)),
-  'Swimlane branch labels remain legible in the A4 export');
- assert(await swim.locator('svg').evaluate(svg=>{
-  const label=svg.querySelector('[data-flow-label="prepare-requester-to-prepare-user"]').getBBox();
-  const decision=window.SystemSwimlaneGeometry.nodes['prepare-requester'];
-  return label.y>decision.y+decision.h;
- }), 'Class Rep. requester guard is below its own decision');
+ // The focused Swimlane regression is shared by full-publication QA.
+ // It validates ownership, both role forms, approval routing, all geometry and
+ // requester status outcomes without relying on obsolete node counts.
+ await new Promise((resolve,reject)=>require('node:child_process').execFile(process.execPath,[path.join(__dirname,'check-swimlane.cjs')],{env:process.env,timeout:120000},(error,stdout,stderr)=>{if(error)reject(new Error(stdout+stderr));else{console.log(stdout.trim());resolve();}}));
  for(const id of ['activity-system']){
   assert.equal(await page.locator('#'+id+' svg').count(),1,'One complete SVG per overview');
   const covered=await page.locator('#'+id+' [data-process]').evaluateAll(nodes=>[...new Set(nodes.map(n=>n.dataset.process))].sort());
@@ -409,7 +266,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
   assert.equal(pageBoxes.filter(([w,h])=>Math.abs(w-841.89)<1&&Math.abs(h-595.28)<1).length,0,'No landscape pages remain');
   await page.pdf({path:path.join(root,'assets/system-diagrams/swimlane-system.pdf'),preferCSSPageSize:true,printBackground:true,pageRanges:'1'});
   const swimPdf=fs.readFileSync(path.join(root,'assets/system-diagrams/swimlane-system.pdf')).toString('latin1');
-  assert.equal((swimPdf.match(/\/Type \/Page\b/g)||[]).length,1,'Standalone Swimlane PDF is one page');
+  assert.equal((swimPdf.match(/\/Type \/Page\b/g)||[]).length,1,'Standalone Swimlane PDF has one page');
   await page.setViewportSize({width:1440,height:1600});
   for(const model of l2){
    const section=page.locator('#activity-'+model.id),svg=section.locator('svg');

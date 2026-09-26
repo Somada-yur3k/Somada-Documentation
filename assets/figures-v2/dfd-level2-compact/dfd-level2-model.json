@@ -175,7 +175,15 @@
         "id": "p2-internal1",
         "source": "p2.1",
         "target": "p2.2",
-        "label": "Availability data",
+        "label": "Availability Data",
+        "payloadFields": [
+          "lab_id",
+          "group_id",
+          "block_id",
+          "starts_at",
+          "ends_at",
+          "item_id"
+        ],
         "kind": "internal"
       },
       {
@@ -183,7 +191,14 @@
         "source": "p2.2",
         "target": "p2.3",
         "label": "Validated Request",
+        "operations": [
+          "submit",
+          "edit",
+          "reschedule"
+        ],
         "payloadFields": [
+          "request_id",
+          "revision_id",
           "reservation_type",
           "student_ids",
           "requester_id",
@@ -204,7 +219,28 @@
         "id": "p2-internal3",
         "source": "p2.3",
         "target": "p2.4",
-        "label": "Decision data",
+        "label": "Routing & Decision Data",
+        "payloadFields": [
+          "revision_id",
+          "approver_id",
+          "decision",
+          "status"
+        ],
+        "kind": "internal"
+      },
+      {
+        "id": "p2-internal4",
+        "source": "p2.2",
+        "target": "p2.4",
+        "label": "Cancellation Result",
+        "operations": [
+          "cancel"
+        ],
+        "payloadFields": [
+          "request_id",
+          "revision_id",
+          "status"
+        ],
         "kind": "internal"
       }
     ],

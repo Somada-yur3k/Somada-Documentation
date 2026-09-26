@@ -1,0 +1,5 @@
+.diagram-pdf-toolbar { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; width: 210mm; padding: 0; margin-bottom: -14px; font: 13px/1.4 Arial, sans-serif; }
+.diagram-pdf-toolbar a { display: inline-flex; align-items: center; min-height: 40px; padding: 9px 14px; border: 1px solid #c8d7ef; border-radius: 7px; background: #fff; color: #164892; text-decoration: none; }
+.diagram-pdf-toolbar a:hover { background: #eff5ff; border-color: #8eaedf; }
+.diagram-pdf-toolbar a:focus-visible { outline: 3px solid #3866ae; outline-offset: 3px; }
+@media print { .diagram-pdf-toolbar { display: none !important; } }

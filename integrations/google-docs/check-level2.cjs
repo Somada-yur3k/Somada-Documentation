@@ -18,7 +18,16 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
    await page.waitForFunction(()=>window.__done||window.__error);assert.equal(await page.evaluate(()=>window.__error),undefined,id);
    const d=await page.evaluate(()=>({...window.__level2,nodeText:[...document.querySelectorAll('[data-node-id] text')].map(t=>{const b=t.getBBox();return{id:t.closest('[data-node-id]').dataset.nodeId,text:t.textContent,x:b.x,y:b.y,w:b.width,h:b.height};})}));
    const {model,parent,nodes,routes,labelBoxes}=d,issues=[],ports=[];
-   if(id==='p2')for(const [i,name] of model.steps.entries())assert(d.nodeText.filter(t=>t.id==='p2.'+(i+1)).map(t=>t.text).join('').replace(/\s/g,'').endsWith(name.replace(/\s/g,'')),'P2 publication label matches the canonical subprocess');
+   if(id==='p2'){
+    for(const [i,name] of model.steps.entries())assert(d.nodeText.filter(t=>t.id==='p2.'+(i+1)).map(t=>t.text).join('').replace(/\s/g,'').endsWith(name.replace(/\s/g,'')),'P2 publication label matches the canonical subprocess');
+    assert.equal(model.steps.length,4,'Form pages are not separate DFD processes');
+    assert.deepEqual(model.internal.find(f=>f.label==='Validated Request').operations,['submit','edit','reschedule']);
+    const cancellation=routes.find(r=>r.label==='Cancellation Result');
+    assert(cancellation&&cancellation.source==='p2.2'&&cancellation.target==='p2.4','Eligible cancellation bypasses 2.3 approval');
+    assert.deepEqual(cancellation.operations,['cancel']);
+    assert(!model.flows.some(f=>f.source==='d6'||f.target==='d6'),'Clearance remains under 5.3, not 2.0');
+    assert(model.flows.filter(f=>f.label==='Approval Decision').every(f=>['faculty','dean'].includes(f.source)&&f.target==='p2.3'),'Only routed academic reviewers submit decisions');
+   }
    assert(await page.locator('.diagram-connector').evaluateAll(ns=>ns.length>0&&ns.every(n=>getComputedStyle(n).stroke==='rgb(0, 0, 0)')),id+' all arrows are black');
    assert(await page.locator('marker path').evaluateAll(ns=>ns.length>0&&ns.every(n=>getComputedStyle(n).fill==='rgb(0, 0, 0)')),id+' all arrowheads are black');
    for(const f of [...model.flows,...model.internal]){

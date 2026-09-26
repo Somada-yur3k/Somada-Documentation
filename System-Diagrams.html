@@ -10,8 +10,10 @@
 <script src="assets/system-diagrams/sequence-models.js" defer></script>
 <script src="assets/system-diagrams/sequence-renderer.js" defer></script>
 <script src="assets/system-diagrams/overview.js" defer></script>
+<script src="assets/system-diagrams/arrow-labels.js" defer></script>
 <script src="assets/system-diagrams/swimlane.js" defer></script>
 <script src="assets/system-diagrams/process-activities.js" defer></script>
+<script src="assets/system-diagrams/deployment.js" defer></script>
 <script src="assets/system-diagrams/render.js" defer></script>
 <script src="assets/activity-editor/config.js" defer></script>
 <script src="assets/activity-editor/core.js" defer></script>
@@ -27,10 +29,10 @@
 </nav>
 <header class="intro"><p class="eyebrow">UML supplement / existing system model</p><h1>Five major processes. Five clear sequences.</h1><p>Start with the overall Swimlane and five process Activity Diagrams. The five Sequence Diagrams follow the same one-to-one major-process structure, using UML combined fragments to summarize related use cases without repeating them across many pages. Deployment uses one portrait page. The complete supplement contains 12 A4 pages.</p>
  <div class="tools"><button id="print" type="button">Print / Save A4 PDF</button><a href="Activity-Editor.html">Edit Activity Diagrams</a><a href="assets/system-diagrams/TRACEABILITY.md">Evidence & limitations</a><a href="assets/system-diagrams/diagrams.pdf" download>Download A4 PDF</a><a href="ERD.html">Logical ERD draft</a></div>
- <p class="notice">Deployment is a technology-neutral design view—not a claim of a live laboratory application. Hosting, DBMS, email transport and AI provider are not specified in the current paper. Existing policy gaps stay explicit.</p>
+ <p class="notice">Deployment shows the proposed Next.js / React / TypeScript / Tailwind CSS application on Node.js with PostgreSQL. The RAG prototype proposes Google Gemini 3.5 Flash-Lite through the Gemini API Free Tier, subject to quotas and data-use restrictions. Forecasting proposes XGBoost; n8n is optional workflow automation. Application hosting remains undecided, and this is not a claim of a live laboratory system.</p>
 </header>
 <nav class="section-nav" aria-label="System diagram sections"><a href="#activity">Whole Swimlane</a><a href="#activity-p1">Activity 1.0</a><a href="#activity-p2">Activity 2.0</a><a href="#activity-p3">Activity 3.0</a><a href="#activity-p4">Activity 4.0</a><a href="#activity-p5">Activity 5.0</a><a href="#sequence">Sequence</a><a href="#deployment">Deployment</a></nav>
 <main><section id="activity" class="diagram-group" aria-label="Whole-system swimlane"></section><section id="process-activities" class="diagram-group" aria-label="Activity diagrams by process"></section><section id="sequence" class="diagram-group" aria-label="Sequence diagrams"></section><section id="deployment" class="diagram-group" aria-label="Deployment diagram"></section></main>
-<footer class="site-footer">UML notation reference: <a href="https://www.omg.org/spec/UML/2.5.1" target="_blank" rel="noopener">OMG UML 2.5.1</a>. D1–D10 identify logical record groups, not ten approved physical tables. This supplement does not modify or sync Google Docs.</footer>
+<footer class="site-footer">UML notation reference: <a href="https://www.omg.org/spec/UML/2.5.1" target="_blank" rel="noopener">OMG UML 2.5.1</a>. D1–D11 identify logical record groups, not eleven physical databases. This supplement does not modify or sync Google Docs.</footer>
 <noscript>Enable JavaScript for interactive navigation, or <a href="assets/system-diagrams/diagrams.pdf">open the PDF supplement</a>.</noscript>
 </body></html>
