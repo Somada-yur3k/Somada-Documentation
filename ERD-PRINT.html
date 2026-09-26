@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Readable A4 ERD - Laboratory Management System</title>
+<link rel="stylesheet" href="assets/erd/style.css"><link rel="stylesheet" href="assets/erd/print.css">
+<script defer src="assets/erd/model.js"></script><script defer src="assets/erd/print-model.js"></script>
+<script defer src="assets/erd/print-render.js"></script>
+</head>
+<body>
+<header>
+ <h1>ERD - readable A4 edition</h1>
+ <p id="summary-counts">Preparing print pages...</p>
+ <p>One schema overview and six detailed pages. All 25 tables, fields, keys and 51 relationships are retained. Each full table appears once. A1-A6 identify the detail pages; repeated table names in relationship rows are references, not new entities.</p>
+ <p>Each relationship has its own Crow's Foot connector row, so unrelated lines cannot merge. The left endpoint states parents per child; the right endpoint states children per parent. FK-row tags match R01-R51 in the register.</p>
+ <div class="actions"><button id="print-erd">Print seven A4 pages</button><a href="assets/erd/erd-a4-readable.pdf" download>Download A4 PDF</a><a href="Docs.html#erd">Documentation</a><a href="ERD.html">Complete landscape ERD</a><a href="ERD-A4.html">Compact one-page version</a></div>
+ <p id="relationship-status" aria-live="polite">Hover or focus either cardinality to highlight its relationship and the tables present on this page.</p>
+</header>
+<nav id="erd-sections" aria-label="ERD print pages"></nav>
+<main id="erd-sheets"></main>
+<section class="review"><h2>Cross-page relationship register</h2><p>The schema has not been merged or redesigned. A1-A6 are document references, not DFD data stores.</p><div id="relationships"></div></section>
+<noscript>Enable JavaScript, or open the seven-page PDF.</noscript>
+</body>
+</html>

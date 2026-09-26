@@ -20,6 +20,14 @@ The older document is never targeted. The integration is prepared locally; it ca
 
 ## One-time setup
 
+### Readable ERD appendix — build `2026-09-26-readable-erd-appendix`
+
+The main ERD section contains the complete A4 portrait image, while **Appendix A - Detailed Entity-Relationship Diagrams** contains six larger A4 detail images. All 25 tables and 51 relationships remain unchanged. Select both **Entity-Relationship Diagram** and **Appendix A - Detailed ERDs** when publishing this edition.
+
+For an existing connection, replace `Code.gs`, save, then use **Deploy → Manage deployments → Edit → New version → Deploy**. Keep the existing private deployment URL and sync key. The updated script creates a missing appendix after References and replaces it on later updates without duplicating it. References are not selected or replaced. Refresh the Google Docs table of contents and review pagination after syncing; no live update is made by the local changes.
+
+Read-only checks: `node integrations/google-docs/check-erd-appendix.cjs` validates section boundaries, and `node integrations/erd/check-print.cjs --docs` checks the local A4 pages and collected image payloads. These checks never send an update to Google.
+
 1. Sign into the Google account that can edit the new document copy.
 2. Open https://script.google.com and create a **New project** named **Laboratory Documentation Sync**.
 3. Replace the default `Code.gs` with the complete contents of [Code.gs](Code.gs) in this folder, then save.

@@ -1,0 +1,11 @@
+.erd-sheet{width:210mm;height:297mm;padding:8mm;flex-direction:column}
+.erd-sheet svg{width:100%;height:100%;display:block}
+#erd-sections{display:flex;flex-wrap:wrap;gap:10px;max-width:1000px;margin:auto;padding:14px}
+#erd-sections a{padding:7px 10px;background:white;border:1px solid #cbd5e1;text-decoration:none}
+#relationship-status{padding:12px;border-left:3px solid #0065d1;background:#f1f6fc;min-height:3em}
+.downloads{max-width:794px}
+.review table{width:100%;border-collapse:collapse;font-size:14px}
+.review th,.review td{padding:9px;border:1px solid #cbd5e1;text-align:left}
+.review{overflow-x:auto}
+@page{size:A4 portrait;margin:0}
+@media print{#erd-sections{display:none}.erd-wrap{padding:0;overflow:visible;break-after:page}.erd-wrap:last-child{break-after:auto}.erd-sheet{width:210mm;height:297mm;padding:8mm;margin:0}.downloads{display:none}}

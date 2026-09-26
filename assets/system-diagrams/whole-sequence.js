@@ -19,12 +19,12 @@ const pages=[
     msg('rep','system','Log in; choose laboratory'),msg('system','db','Check D1; read D2 / D3 / D4'),msg('system','rep','Login result; schedule and available items',true))]),
   group('alt','Select one requester route',[
    branch('Class Representative: on-schedule non-laboratory OR out-of-schedule',msg('rep','system','Submit Group / Student Only request; select class and students')),
-   branch('Faculty: regular scheduled activity OR out-of-schedule',msg('faculty','system','Submit class activity / out-of-schedule request'))]),
+   branch('Faculty: Laboratory Activity OR Non-Laboratory Activity',msg('faculty','system','Submit on-schedule / out-of-schedule request'))]),
   group('ref','Validate request before saving',[
    branch('Validate role, class, students, time and quantities; invalid requests return errors without a hold',
     msg('system','db','Read class, schedule and stock'))]),
   group('alt','Exactly one approval route for a valid request',[
-   branch('Faculty regular scheduled activity: no additional academic approval',msg('system','db','Save Approved; hold block')),
+   branch('Faculty on-schedule laboratory OR non-laboratory activity: no approval',msg('system','db','Save Approved; hold block')),
    branch('Class Representative on-schedule, or out-of-schedule with assigned Faculty available',
     msg('system','db','Save Pending; hold block'),msg('system','faculty','Routed request for review'),msg('faculty','system','Approve / reject',true)),
    branch('Faculty out-of-schedule, or Class Representative out-of-schedule with Faculty unavailable',
@@ -55,7 +55,7 @@ const pages=[
   group('opt','Completed usage and End-Term Report',[
    branch('Head Lab selects laboratory / term; report metrics use completed usage in D11 only',
     msg('head','system','View logs / export report'),msg('system','db','Read completed D11 usage logs'),
-    msg('system','head','Average Use; Top 5; Frequency; Recent Activity',true))]),
+    msg('system','head','Item shares; use/unit; Top 5; frequency + log',true))]),
   group('alt','Optional informational AI services - select a service, or skip',[
    branch('Either requester, not both: D4 inventory + D8 knowledge; own D9 history; no schedule / status lookup',
     msg('rep','system','Ask laboratory question'),msg('faculty','system','Ask laboratory question'),

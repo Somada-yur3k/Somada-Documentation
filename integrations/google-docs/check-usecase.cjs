@@ -16,8 +16,8 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
   return{actors:ACTORS,cases,paths,boxes,relationships:RELATIONSHIPS};
  });
  const issues=[];
- assert.equal(result.actors.length,6);assert.equal(result.cases.length,31);assert.equal(result.relationships.length,12);
- assert.equal(result.paths.length-12,43);
+ assert.equal(result.actors.length,6);assert.equal(result.cases.length,30);assert.equal(result.relationships.length,11);
+ assert.equal(result.paths.length-11,43);
  assert.equal(await page.locator('#usecase-login').count(),1,'Shared login is shown');
  assert.equal(result.paths.filter(p=>p.id.endsWith('-login')).length,6,'All six actors connect to login');
  assert(result.actors.every(a=>['left','right'].includes(a.side)));
@@ -46,9 +46,9 @@ const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new 
   if(p.id.startsWith('association'))assert.equal(p.marker,null);else {assert(p.marker);assert.equal(p.points.length,2,'Dependencies are straight, not elbow-routed');}
  }
  await page.locator('#stage svg').screenshot({path:path.join(os.tmpdir(),'usecase-audit.png')});
+ if(process.argv.includes('--render'))await page.locator('#stage svg').screenshot({path:path.join(root,'assets/figures-v2/usecase-diagram-draft.png')});
  console.log(JSON.stringify({actors:result.actors.length,cases:result.cases.length,associations:result.paths.length-result.relationships.length,issues:[...new Set(issues)]},null,2));
  assert.deepEqual([...new Set(issues)],[]);assert.deepEqual(errors,[]);
- if(process.argv.includes('--render'))await page.locator('#stage svg').screenshot({path:path.join(root,'assets/figures-v2/usecase-diagram-draft.png')});
  const base='http://127.0.0.1:'+server.address().port+'/assets/figures-v2/usecase-diagram-source.html';
  await page.goto(base);await page.waitForFunction(()=>window.__done);
  const label=page.locator('.diagram-flow-label').first();const authored=await label.getAttribute('transform');await label.hover();

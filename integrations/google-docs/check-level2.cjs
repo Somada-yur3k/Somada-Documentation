@@ -2,6 +2,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),http=require('node:http'),os=require('node:os');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'../..'),dir='assets/figures-v2/dfd-level2-compact/';
+const processFlag=process.argv.find(a=>a.startsWith('--process='));
+const ids=processFlag?[processFlag.slice('--process='.length)]:['p1','p2','p3','p4','p5'];
+assert(ids.every(id=>/^p[1-5]$/.test(id)),'Valid process selector');
 const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+new URL(req.url,'http://localhost').pathname);if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}fs.readFile(file,(e,data)=>{if(e){res.writeHead(404).end();return;}res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'})[path.extname(file)]||'application/octet-stream');res.end(data);});});
 const segs=points=>points.slice(1).map((b,i)=>({a:points[i],b}));
 const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
@@ -10,11 +13,12 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({channel:'msedge',headless:true});
  try{
   const page=await browser.newPage({viewport:{width:1200,height:950},deviceScaleFactor:2}),errors=[];page.on('pageerror',e=>errors.push(e.message));
-  for(const id of ['p1','p2','p3','p4','p5']){
+  for(const id of ids){
    await page.goto(`http://127.0.0.1:${server.address().port}/${dir}dfd-level2-compact.html?process=${id}&export=1`);
    await page.waitForFunction(()=>window.__done||window.__error);assert.equal(await page.evaluate(()=>window.__error),undefined,id);
    const d=await page.evaluate(()=>({...window.__level2,nodeText:[...document.querySelectorAll('[data-node-id] text')].map(t=>{const b=t.getBBox();return{id:t.closest('[data-node-id]').dataset.nodeId,text:t.textContent,x:b.x,y:b.y,w:b.width,h:b.height};})}));
    const {model,parent,nodes,routes,labelBoxes}=d,issues=[],ports=[];
+   if(id==='p2')for(const [i,name] of model.steps.entries())assert(d.nodeText.filter(t=>t.id==='p2.'+(i+1)).map(t=>t.text).join('').replace(/\s/g,'').endsWith(name.replace(/\s/g,'')),'P2 publication label matches the canonical subprocess');
    assert(await page.locator('.diagram-connector').evaluateAll(ns=>ns.length>0&&ns.every(n=>getComputedStyle(n).stroke==='rgb(0, 0, 0)')),id+' all arrows are black');
    assert(await page.locator('marker path').evaluateAll(ns=>ns.length>0&&ns.every(n=>getComputedStyle(n).fill==='rgb(0, 0, 0)')),id+' all arrowheads are black');
    for(const f of [...model.flows,...model.internal]){
@@ -92,7 +96,7 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
    assert.deepEqual(issues,[]);
    if(process.argv.includes('--render'))await page.locator('#diagram').screenshot({path:path.join(root,dir,'png/dfd-level2-'+id+'.png')});
   }
-  for(const id of ['p1','p2','p3','p4','p5']){
+  for(const id of ids){
     const base=`http://127.0.0.1:${server.address().port}/${dir}dfd-level2-compact.html?process=${id}`;
     // Every interactive trace and edit affects just its own flow, with fixed endpoints.
     await page.goto(base);await page.waitForFunction(()=>window.__done);
@@ -136,6 +140,6 @@ const hits=(s,b)=>s.a[1]===s.b[1]?s.a[1]>b.y&&s.a[1]<b.y+b.h&&Math.max(s.a[0],s.
     assert.equal((await label.getAttribute('transform'))||'',before||'');
     assert.equal(await connector.getAttribute('d'),originalPath,'Reset restores authored path');
   }
-  assert.deepEqual(errors,[]);console.log('All five Level 2 models, figures, editor interactions and authored exports passed.');
+  assert.deepEqual(errors,[]);console.log(ids.join(', ')+' Level 2 models, figures, editor interactions and authored exports passed.');
  }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});

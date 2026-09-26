@@ -75,9 +75,10 @@ const server = http.createServer((req,res) => {
     assert.deepEqual(result.missingCells,[],'All table cell contents appear in preview');
     assert.deepEqual(result.overflow,[],'Content fits the page area');
     assert(result.sourceLastRow);
-    assert.equal(await page.locator('.doc-pages figure img').count(),19,'Figures 1–19 include the two-page whole-system sequence');
-    assert.equal(await page.locator('.doc-source #erd img').count(),1,'One complete portrait ERD is available for sync');
-    assert.match(await page.locator('.doc-source #erd img').getAttribute('src'),/assets\/erd\/erd-complete\.png$/,'Only the new ERD, never the archived image');
+    assert.equal(await page.locator('.doc-pages figure img').count(),25,'Figures 1–19 plus six ERD appendix images');
+    assert.equal(await page.locator('.doc-source #erd img').count(),1,'One complete A4 portrait ERD is available for sync');
+    assert.match(await page.locator('.doc-source #erd img').getAttribute('src'),/assets\/erd\/erd-a4-complete\.png$/,'Main section uses the complete A4 portrait image');
+    assert.equal(await page.locator('.doc-source #erd-appendix img').count(),6,'Complete ERD definitions are split across six detail pages');
     const level1=page.locator('.doc-pages .dfd-level1-figure');
     assert.equal(await level1.count(),1,'Level 1 figure is not split or duplicated');
     const level1Page=level1.locator('xpath=ancestor::div[contains(concat(" ",normalize-space(@class)," ")," pagedjs_page ")][1]');
@@ -132,11 +133,13 @@ const server = http.createServer((req,res) => {
     assert.equal(captured[0].width,1880);assert.equal(captured[0].height,2140);
     assert(captured.every(image=>image.png),'Every DFD exports as a PNG');
     const erdCapture=await page.evaluate(async()=>{const {blocks}=await window.__collectSyncSection('erd');return blocks.filter(b=>b.kind==='image').map(b=>({width:b.width,height:b.height,png:b.data.startsWith('iVBORw0KGgo')}));});
-    assert.equal(erdCapture.length,1,'One complete ERD image in Google Docs payload');
+    assert.equal(erdCapture.length,1,'One complete portrait image in the main ERD Google Docs payload');
     assert(erdCapture[0].png&&erdCapture[0].height>erdCapture[0].width,'ERD payload is portrait PNG');
-    const erdFigure=page.locator('.doc-pages figure').filter({has:page.locator('img[src*="erd-complete.png"]')});
-    assert.equal(await erdFigure.count(),1,'The complete ERD is not split or repeated');
-    console.log('ERD read-only sync capture passed: one complete portrait PNG. No cloud write.');
+    const erdFigure=page.locator('.doc-pages figure').filter({has:page.locator('img[src*="erd-a4-complete.png"]')});
+    assert.equal(await erdFigure.count(),1,'The complete portrait figure is not repeated');
+    const appendix=await page.evaluate(async()=>{const {blocks}=await window.__collectSyncSection('erd-appendix');return {images:blocks.filter(b=>b.kind==='image').length,breaks:blocks.filter(b=>b.pageBreakBefore).length};});
+    assert.equal(appendix.images,6);assert.equal(appendix.breaks,5);
+    console.log('ERD read-only sync capture passed: one complete portrait plus six detail PNGs. No cloud write.');
     const supplements=await page.evaluate(async()=>{
       const activity=await window.__collectSyncSection('activity-diagrams'),swimlane=await window.__collectSyncSection('swimlane-diagram');
       return [activity,swimlane].map(s=>({id:s.id,images:s.blocks.filter(b=>b.kind==='image').map(b=>({width:b.width,height:b.height,caption:b.caption,png:b.data.startsWith('iVBORw0KGgo')})),breaks:s.blocks.filter(b=>b.pageBreakBefore).length}));
@@ -165,7 +168,7 @@ const server = http.createServer((req,res) => {
       assert.equal(await sheet.locator('figure').count(),1,'New section heading shares its first diagram page');
       await sheet.screenshot({path:path.join(os.tmpdir(),'final-term-'+id+'.png')});
     }
-    console.log('Final-term figures passed: 19 images; Activity, Swimlane, two-page Sequence and Deployment capture complete.');
+    console.log('Final-term figures passed: 19 main images plus six ERD detail pages; all diagram captures complete.');
     console.log('Read-only Google Docs capture passed: six diagrams; Level 1 portrait 1880 x 2140 with full labels.');
     await page.locator('.doc-pages .toc-row[href="#backlog"]').click();
     await page.waitForTimeout(700);

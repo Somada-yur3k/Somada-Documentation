@@ -64,7 +64,7 @@
 
   const childLines={
     p1:[['Validate','Credentials'],['Establish','Role-Scoped','Session'],['Manage','Faculty','Accounts'],['Manage Class','Rep. Accounts'],['Issue Account','Credentials']],
-    p2:[['Retrieve','Availability'],['Validate &','Record','Reservation'],['Route','Approval','Decision'],['Update','Reservation','Status']],
+    p2:[['Retrieve','Availability'],['Validate &','Record','Reservation'],['Route and','Process','Approval'],['Update','Reservation','Status']],
     p3:[['Capture','Signed-In','Inquiry'],['Retrieve','Authorized','Records'],['Compose','Grounded','Answer'],['Record Q&A','Exchange']],
     p4:[['Maintain','Inventory'],['Retrieve','Approved','Reservation'],['Issue Items &','Create Slip'],['Reconcile','Return'],['Record','Disposal'],['Retrieve','Forecast','Inputs'],['Estimate','Next-Month','Needs'],['Present','Inventory','Forecast']],
     p5:[['Maintain','Schedule'],['Record','Completed','Usage'],['Process','Clearance'],['Compile','Reporting','Metrics'],['Generate','End-Term','Report'],['Maintain','Daily Tasks']]

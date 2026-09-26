@@ -16,7 +16,7 @@ The Sequence section now follows the same five-parent structure as DFD Level 1 a
 - Every one of the 20 documented use cases and all 21 DFD Level 2 child processes remains traceable through sequence metadata.
 - Alternative operations are not claimed to happen in one transaction. The `alt` frame shows that one applicable interaction path is followed.
 - Human actors communicate with the Web System, never directly with the Database.
-- Faculty and Dean approval actions remain separate actor messages inside SEQ-02. Out-of-schedule Class Representative requests use available Faculty then Dean; they may route directly to Dean only when the assigned Faculty is unavailable. Faculty out-of-schedule requests require Dean.
+- Faculty and Dean approval actions remain separate actor messages inside SEQ-02. Out-of-schedule Class Representative requests go to available assigned Faculty OR directly to Dean when that Faculty is unavailable. The selected reviewer makes the final decision; Faculty approval does not lead to further Dean review. Faculty out-of-schedule requests require Dean.
 - The end-term report retains a `par` fragment for its two independent read-only evidence inputs, followed by an optional export.
 - Solid filled-head calls, dashed open-head replies, lifelines, activations, and UML combined fragments follow the project’s UML notation guide.
 

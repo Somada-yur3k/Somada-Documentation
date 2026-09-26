@@ -387,7 +387,7 @@
       { id:"02", role:"Head Laboratory", want:`create and manage system accounts for Class Representatives and Faculty`, soThat:`both requester roles receive the access they need without self-registration`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"03", role:"Class Representative / Faculty", want:`choose Physics or Circuits Laboratory and view its schedule and availability before filing an allowed request`, soThat:`I can view only the slots and resources for the laboratory I need`, priority:"Must", sprint:1, status:"Not Started" },
       { id:"04A", role:"Faculty", want:`submit a scheduled laboratory activity covered by the term schedule, selecting any resources the class needs`, soThat:`I can arrange the regular class laboratory activity without another academic approval`, priority:"Must", sprint:2, status:"Not Started" },
-      { id:"04B", role:"Class Representative", want:`submit an on-schedule non-laboratory request within my class's assigned schedule after choosing As a Group or As a Student Only`, soThat:`the reservation identifies the selected classmates or individual student separately from my account and is routed to assigned Faculty for approval`, priority:"Must", sprint:2, status:"Not Started" },
+      { id:"04B", role:"Class Representative / Faculty", want:`submit an on-schedule non-laboratory request within my assigned class schedule; Class Representatives select Group or Student Only`, soThat:`Class Representative requests identify the actual students and go to assigned Faculty for approval, while validated Faculty requests proceed without additional academic approval`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"04C", role:"Class Representative / Faculty", want:`submit an out-of-schedule laboratory request for a vacant block; Class Representatives must choose As a Group or As a Student Only`, soThat:`Class Representative requests receive a final decision from available assigned Faculty or go directly to the Dean when that Faculty is unavailable; Faculty requests go directly to the Dean`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"05", role:"Class Representative / Faculty", want:`cancel or reschedule a reservation I already submitted`, soThat:`I can update a changed plan without retaining an unused booking or submitting a new request`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"06", role:"Faculty", want:`review and approve or reject a routed on-schedule non-laboratory or out-of-schedule request from my assigned Class Representative`, soThat:`my approval or rejection is final for either schedule type; rejection releases the hold`, priority:"Must", sprint:2, status:"Not Started" },
@@ -402,7 +402,7 @@
       { id:"14", role:"Head Laboratory / Laboratory Staff", want:`log items withdrawn for disposal and flag those that are hazardous waste`, soThat:`I can track withdrawn items and their reasons for disposal and separate hazardous waste for proper collection`, priority:"Should", sprint:3, status:"Not Started" },
       { id:"15", role:"Head Laboratory", want:`maintain schedules, usage logs, and daily task records across both laboratories`, soThat:`vacant blocks are published for reservations and session usage is recorded for reporting`, priority:"Must", sprint:2, status:"Not Started" },
       { id:"16", role:"Head Laboratory / Laboratory Staff", want:`view a live dashboard of inventory, requests, and usage for my assigned laboratory`, soThat:`I can track availability and activity without a physical count`, priority:"Should", sprint:3, status:"Not Started" },
-      { id:"17", role:"Head Laboratory", want:`generate separate Physics and Circuits Lab End-Term Reports with Average Equipment Use, Top 5 Equipment & Consumables, Laboratory Frequency Usage, and supporting Recent Activity`, soThat:`I can review recorded item use and laboratory-session frequency for the selected term`, priority:"Should", sprint:4, status:"Not Started" },
+      { id:"17", role:"Head Laboratory", want:`generate separate Physics and Circuits Lab End-Term Reports with four summary tables: Average Equipment Use, Equipment Average Use, Top 5 Equipment & Consumables, and Laboratory Frequency Usage, with supporting Recent Activity`, soThat:`I can review requester shares, use per existing item, and laboratory-session frequency for the selected term`, priority:"Should", sprint:4, status:"Not Started" },
     ],
 
     events: [
@@ -452,20 +452,20 @@
         "diagramId": "submitscheduled"
       },
       {
-        "event": "Class Representative submits an on-schedule non-laboratory request",
-        "trigger": "Class Representative selects an assigned block and academic purpose, selects Reservation Type (As a Group or As a Student Only), selects the participating class students or one individual student, and submits",
-        "source": "Class Representative",
+        "event": "A requester submits an on-schedule non-laboratory request",
+        "trigger": "Requester chooses the laboratory and On-Schedule, selects the assigned class block and resources, then reviews and submits. Class Representative also selects Group or Student Only and the applicable students; Faculty first selects Non-Laboratory Activity and skips the student request-type choice",
+        "source": "Class Representative, Faculty",
         "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
-        "response": "Reservation Type is required; GROUP or STUDENT_ONLY is stored with the Pending request and accountable students, and the request is routed to assigned Faculty for approval",
-        "destination": "Reservation Records, Faculty dashboard",
+        "response": "A Class Representative request is saved as Pending with GROUP or STUDENT_ONLY and the actual students; assigned Faculty is its current reviewer. A validated Faculty on-schedule non-laboratory request is saved as Approved without an approval row and sent to the selected laboratory for processing",
+        "destination": "Reservation Records, requester dashboard, assigned Faculty or selected laboratory as applicable",
         "diagramId": "submitcombined"
       },
       {
         "event": "A requester submits an out-of-schedule request",
-        "trigger": "Class Representative or Faculty selects a vacant out-of-schedule block; Class Representative must select As a Group or As a Student Only and the applicable class students before submitting",
+        "trigger": "Class Representative or Faculty chooses the laboratory and Out-of-Schedule, selects a vacant block and resources, reviews the system-generated Approval Route and submits; Class Representative also selects Group or Student Only and the applicable class students",
         "source": "Class Representative, Faculty",
         "useCase": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
-        "response": "The system validates and stores Reservation Type (GROUP or STUDENT_ONLY) for Class Representative requests. The request is saved as Pending and the block is held. Class Representative requests go to assigned Faculty for a final decision when available, or directly to the Dean only when that Faculty is unavailable. Faculty requests go directly to the Dean",
+        "response": "The system saves the request as Pending, holds the block and shows the current reviewer in the confirmation. Class Representative requests go to assigned Faculty for a final decision when available, or directly to the Dean only when that Faculty is unavailable. Faculty requests go directly to the Dean",
         "destination": "Reservation Records, approver dashboard",
         "diagramId": "submitcombined"
       },
@@ -627,7 +627,7 @@
         "trigger": "Head Laboratory triggers the end-of-term report",
         "source": "Head Laboratory",
         "useCase": "Generate End-Term Report",
-        "response": "Separate Physics and Circuits reports display Average Equipment Use, Top 5 Equipment & Consumables, Laboratory Frequency Usage, and supporting Recent Activity for the selected term. Neither report includes a disposal, daily-task or clearance appendix",
+        "response": "Separate Physics and Circuits reports display four summary tables: Average Equipment Use, Equipment Average Use, Top 5 Equipment & Consumables, and Laboratory Frequency Usage, with supporting Recent Activity for the selected term. Neither report includes a disposal, daily-task or clearance appendix",
         "destination": "Head Laboratory, then NU Fairview administration",
         "diagramId": "endterm"
       }
@@ -759,7 +759,7 @@
         "useCaseName": "Submit Scheduled Laboratory Activity",
         "scenario": "A Faculty member arranges a regular laboratory activity already covered by the class's term schedule.",
         "triggeringEvent": "Faculty completes the scheduled laboratory activity form and submits it.",
-        "briefDescription": "Faculty submits a laboratory activity covered by the class's assigned schedule without additional academic approval. The system validates the schedule and selected resources before making the reservation available for laboratory processing.",
+        "briefDescription": "Faculty first chooses Physics or Circuits Laboratory and selects Laboratory Activity. This path uses the class's assigned laboratory schedule and does not ask Faculty to choose On-Schedule or Out-of-Schedule. Faculty completes Schedule & Room Availability, Equipment & Materials, and Review Information & Submit. The system validates the class schedule, room and resources before saving the request as Approved without additional academic approval and sending it to the selected laboratory for processing. An activity outside the assigned schedule cannot use this path to bypass Dean approval.",
         "actors": "Faculty",
         "related": [
           "Choose Laboratory",
@@ -782,15 +782,17 @@
           "The validated reservation is stored as Approved for laboratory processing without creating an additional academic approval decision. The selected block is held against conflicting reservations."
         ],
         "flowActor": [
-          "Faculty chooses the laboratory and the class's scheduled block.",
+          "Faculty chooses Physics or Circuits Laboratory, then selects Laboratory Activity.",
+          "Faculty completes Schedule & Room Availability using the assigned class, date, time, room and scheduled block.",
           "Faculty selects the required resources and quantities.",
           "Faculty confirms the activity details and submits the scheduled laboratory activity."
         ],
         "flowSystem": [
-          "System checks the signed-in Faculty role and the class's term schedule.",
+          "System checks the signed-in Faculty role and Laboratory Activity selection. Group or Student Only does not apply to Faculty.",
+          "System checks that the selected class belongs to this Faculty and that the block matches its assigned term schedule. It displays room availability and active reservation holds.",
           "System performs Select Resources / Equipment using the selected laboratory's catalogue and checks requested quantities.",
           "System validates the block and required request information.",
-          "System stores the validated reservation as Approved and makes it available to Head Laboratory / assigned Laboratory Staff for processing."
+          "System stores the validated reservation as Approved without an approval row, holds the block and sends it to the selected laboratory for Head Laboratory / assigned Laboratory Staff processing. The success state shows Approved and no academic reviewer."
         ],
         "exceptions": [
           "If a Class Representative or Dean attempts this submission, the system refuses it.",
@@ -815,7 +817,7 @@
         "useCaseName": "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
         "scenario": "A requester needs a laboratory room, equipment, or both, for a session.",
         "triggeringEvent": "The requester completes the reservation form and submits it.",
-        "briefDescription": "For both on-schedule non-laboratory and out-of-schedule requests, a Class Representative must select a Reservation Type: As a Group (GROUP) or As a Student Only (STUDENT_ONLY). The representative submits the request on behalf of students in the assigned section/class. Group requests identify selected existing class members; Student Only requests identify exactly one class student, who may be a classmate or the representative. The submitting account is not automatically the borrower, and ordinary students do not need login accounts. Schedule Type and Reservation Type are separate, allowing all four combinations. Assigned Faculty approves on-schedule non-laboratory requests. Out-of-schedule requests go to available Faculty or to the Dean when Faculty is unavailable, and the selected reviewer makes the final decision. A Faculty member's own out-of-schedule request goes directly to the Dean and does not require the Reservation Type selection required only for Class Representatives.",
+        "briefDescription": "The Class Representative request form has six steps: Choose Laboratory, Choose Request Type, Choose Schedule Type, Schedule & Room Availability, Equipment & Materials, and Review Information & Submit. Choose Request Type offers Group (GROUP) or Student Only (STUDENT_ONLY) for both schedule variants; it is part of this use case, not a separate use case. Group requests identify selected existing class members, while Student Only identifies exactly one selected class student, who may be a classmate or the representative. The submitting account is not automatically the borrower, and ordinary students do not need login accounts. Schedule Type, not Request Type, determines the approval route. The system previews that route in Step 3 and confirms it as a non-editable field in Step 6. On-schedule Class Representative requests go to assigned Faculty. Out-of-schedule requests go to assigned Faculty when available or directly to the Dean when that Faculty is unavailable; the chosen reviewer's decision is final. Faculty first chooses the laboratory and Non-Laboratory Activity, then selects On-Schedule or Out-of-Schedule before completing the schedule/room, equipment/materials and review steps. Faculty does not choose Group or Student Only. A validated Faculty on-schedule request needs no academic approval; a Faculty out-of-schedule request goes directly to the Dean.",
         "actors": "Class Representative, Faculty",
         "related": [
           "Choose Laboratory",
@@ -823,12 +825,11 @@
           "Approve / Reject Routed Request",
           "Cancel Laboratory Reservation",
           "Reschedule Laboratory Reservation",
-          "Select Resources / Equipment",
-          "Select Reservation Type"
+          "Select Resources / Equipment"
         ],
         "stakeholders": [
           "Class Representative: needs to submit an on-schedule non-laboratory request within the class's assigned schedule, or an out-of-schedule request, without a paper form.",
-          "Faculty: needs to request exceptional out-of-schedule use and review requests from the assigned Class Representative.",
+          "Faculty: needs to submit on-schedule non-laboratory or out-of-schedule requests and review requests from the assigned Class Representative.",
           "Dean: needs authority to decide out-of-schedule requests routed to the office, without acting as a requester.",
           "Head Laboratory: needs complete requests that identify the correct laboratory."
         ],
@@ -837,40 +838,34 @@
           "The laboratory schedule for the term has been recorded."
         ],
         "postconditions": [
-          "The request is stored as Pending and the selected block is held. Class Representative on-schedule requests go to assigned Faculty; out-of-schedule requests go to available Faculty or directly to Dean if Faculty is unavailable. Faculty out-of-schedule requests go directly to Dean. This use case does not submit scheduled Faculty laboratory activities."
+          "A Class Representative request is stored as Pending and the selected block is held. The success state shows Pending and the actual current reviewer: assigned Faculty for on-schedule requests, assigned Faculty for out-of-schedule requests when available, or Dean when that Faculty is unavailable. Faculty out-of-schedule requests go directly to Dean and remain Pending until the Dean decides. A validated Faculty on-schedule non-laboratory request is stored as Approved, holds the block and goes to the selected laboratory without an approval row or academic reviewer. Scheduled Faculty laboratory activities remain in Table 6."
         ],
         "flowActor": [
-          "Requester selects an authorized active subject/class, the laboratory and the intended block. The same section representative account is used across subjects.",
-          "Requester selects required resources and quantities.",
-          "Class Representative selects On-Schedule Non-Laboratory or Out-of-Schedule; Faculty selects Out-of-Schedule.",
-          "For an on-schedule non-laboratory request, Class Representative confirms the assigned class block and states the academic purpose.",
-          "For either schedule variant, Class Representative selects the required Reservation Type: As a Group or As a Student Only. Neither option is preselected.",
-          "For As a Group, Class Representative selects participating students from the assigned class. For As a Student Only, the representative selects exactly one existing class student, either a classmate or themselves. No student is preselected.",
-          "Requester reviews the information and submits."
+          "Step 1 — Choose Laboratory: requester selects Physics Laboratory or Circuits Laboratory. Faculty then selects Non-Laboratory Activity for this form; Laboratory Activity follows Table 6.",
+          "Step 2 — Choose Request Type: Class Representative selects Group or Student Only. Neither is preselected. This choice applies to both schedule variants; Faculty does not make it.",
+          "Step 3 — Choose Schedule Type: requester selects On-Schedule or Out-of-Schedule and reads the system-generated Approval Route preview. Faculty on-schedule non-laboratory requests show No academic approval required; Faculty out-of-schedule requests show Dean. Class Representative routing follows the assigned Faculty rule. The requester does not choose between Faculty and Dean.",
+          "Step 4 — Schedule & Room Availability: requester selects an authorized active class/subject, date, time, room and allowed block after reviewing fixed schedules, pending holds and vacant blocks. A Group request identifies participating students from that class; Student Only requires exactly one selected class student, who may be the representative or a classmate. For an on-schedule non-laboratory request, the Class Representative confirms the assigned class block and academic purpose.",
+          "Step 5 — Equipment & Materials: requester selects needed items or materials and requested quantities for the chosen laboratory.",
+          "Step 6 — Review Information & Submit: requester checks the full request, non-editable Approval Route and expected status, then selects Submit Request. Expected status is Pending for Class Representatives and Faculty out-of-schedule requests, or Approved with no academic reviewer for a valid Faculty on-schedule non-laboratory request."
         ],
         "flowSystem": [
-          "System checks that the requester's role permits the selected schedule type and requires a valid Reservation Type for Class Representatives. A missing or invalid type prevents submission; no record or hold is created.",
-          "System validates the selected class against the representative's active assignments and identifies the reviewer from that class's Faculty. It rejects unassigned classes rather than accepting a submitted Faculty ID or treating the Faculty member receiving the credentials as the reviewer for all classes. GROUP retains members of the selected class. STUDENT_ONLY records exactly one selected class student, not automatically the submitting representative, and ignores previous group-member input. Missing or out-of-class selections are rejected. requester_id remains the submitting Class Representative account.",
-          "System performs Select Resources / Equipment and validates item quantities.",
-          "System validates an on-schedule non-laboratory block against the Class Representative's class schedule, or validates an out-of-schedule block as vacant.",
-          "System stores reservation_type (GROUP or STUDENT_ONLY) with each Class Representative request, separately from request_basis / usage_type. It saves the request as Pending and holds the block. On-schedule Class Representative requests go to Faculty; out-of-schedule requests go to available Faculty or directly to the Dean if Faculty is unavailable. Faculty out-of-schedule requests go directly to the Dean."
+          "System keeps Group or Student Only separate from Schedule Type and requires a valid choice for Class Representatives. A missing or invalid choice prevents submission; no record or hold is created.",
+          "For Class Representatives, system validates the selected class against the representative's active assignments and identifies the reviewer from that class's Faculty. It rejects unassigned classes rather than accepting a submitted Faculty ID or treating the Faculty member receiving the credentials as the reviewer for all classes. GROUP retains members of the selected class. STUDENT_ONLY records exactly one selected class student, not automatically the submitting representative, and ignores previous group-member input. Missing or out-of-class selections are rejected. requester_id remains the submitting account. For Faculty, system validates the selected class against that Faculty member's active assignments; Group or Student Only and representative-specific student selection do not apply.",
+          "After Step 3, system previews the Approval Route below the Schedule Type choices: assigned Faculty for an on-schedule Class Representative request; assigned Faculty if available or directly Dean if unavailable for an out-of-schedule Class Representative request; no academic approval for a Faculty on-schedule non-laboratory request; Dean for a Faculty out-of-schedule request. The requester cannot select or change the reviewer.",
+          "System validates an on-schedule non-laboratory block against the selected class schedule or checks that an out-of-schedule block is vacant. It applies active holds when displaying availability.",
+          "System performs Select Resources / Equipment and validates item quantities for the selected laboratory.",
+          "Before submission, system rechecks the class, schedule, room, quantities and applicable approval route, including assigned Faculty availability for out-of-schedule Class Representative requests. The Step 6 Request Summary shows the non-editable route and expected status. It stores reservation_type (GROUP or STUDENT_ONLY) for Class Representatives separately from request_basis / usage_type. Valid Class Representative and Faculty out-of-schedule requests are saved as Pending with a held block and their actual Current Reviewer. A valid Faculty on-schedule non-laboratory request is saved as Approved with a held block, no approval row and no academic reviewer, and is sent to the selected laboratory. An assigned Faculty decision on a routed Class Representative request is final; there is no further Dean review."
         ],
         "exceptions": [
           "If the selected slot is already committed, the system reports the conflict and offers the remaining vacant blocks.",
           "If a requested resource quantity exceeds availability, the system flags it so the requester can adjust it.",
           "If required information is incomplete, including Reservation Type and the applicable selected class students for a Class Representative, the system requests corrections before submission. Neither a reservation nor a hold is created.",
           "If a Class Representative identifies the request as the class's scheduled laboratory activity, the system blocks that type and directs the class to its Faculty member.",
-          "If a Class Representative selects On-Schedule but the block is outside the class's assigned schedule, the system requires the request to be filed as Out-of-Schedule."
+          "If a requester selects On-Schedule but the block is outside the selected class's assigned schedule, the system requires the request to be filed as Out-of-Schedule. Faculty Laboratory Activity cannot bypass this check.",
+          "If assigned Faculty availability or the selected block changes before submission, the system rechecks the route and availability, updates the non-editable summary and requires the requester to review the change before saving."
         ],
         "diagramId": "submitcombined",
         "dependencies": [
-          {
-            "diagramId": "selecttype",
-            "name": "Select Reservation Type",
-            "type": "extend",
-            "condition": "Mandatory when the requester is a Class Representative, for both On-Schedule Non-Laboratory and Out-of-Schedule. The main use case also serves Faculty, for whom this step does not apply.",
-            "behavior": "Present As a Group / As a Student Only before submission, with neither option selected. Validate the Reservation Type and the selected class members for Group or exactly one selected class student for Student Only. Store GROUP or STUDENT_ONLY separately from Schedule Type. The submitting Class Representative and participating students remain separate identities."
-          },
           {
             "diagramId": "selectres",
             "name": "Select Resources / Equipment",
@@ -1080,7 +1075,7 @@
         "useCaseName": "Approve / Reject Routed Request",
         "scenario": "A submitted reservation awaits a decision from the appropriate authority.",
         "triggeringEvent": "Faculty or Dean opens a Pending reservation from their dashboard and selects Approve or Reject.",
-        "briefDescription": "Assigned Faculty reviews Class Representative requests when available, and the Faculty decision is final for either allowed schedule type. If the assigned Faculty is unavailable, an out-of-schedule Class Representative request may go directly to the Dean. Faculty rejection ends the approval route. The Dean makes the final decision on these directly routed requests and on Faculty members' own out-of-schedule requests. Regular scheduled Faculty laboratory activities require no additional academic approval. The Dean acts only as an approver and does not submit reservations.",
+        "briefDescription": "Assigned Faculty reviews Class Representative requests when available, and the Faculty decision is final for either allowed schedule type. If the assigned Faculty is unavailable, an out-of-schedule Class Representative request may go directly to the Dean. Faculty rejection ends the approval route. The Dean makes the final decision on these directly routed requests and on Faculty members' own out-of-schedule requests. Validated Faculty on-schedule laboratory and non-laboratory activities require no additional academic approval. The Dean acts only as an approver and does not submit reservations.",
         "actors": "Faculty, Dean",
         "related": [
           "Submit On-Schedule Non-Laboratory / Out-of-Schedule Request",
@@ -1548,7 +1543,7 @@
         "useCaseName": "Generate End-Term Report",
         "scenario": "Head Laboratory reviews recorded usage for a selected term in the Physics Laboratory Logs or Circuits Laboratory Logs reporting view.",
         "triggeringEvent": "Head Laboratory selects the laboratory and term and generates the Lab End-Term Report.",
-        "briefDescription": "The system generates a separate report for each laboratory, using completed Physics or Circuits usage records in D11 Laboratory Usage Logs as its only data source. These usage logs provide the recorded information for three summary tables: Average Equipment Use, Top 5 Equipment & Consumables, and Laboratory Frequency Usage. Recent Activity provides the supporting transaction log. Calculations use fixed formulas and do not use AI. Disposal records, non-transaction daily tasks and outstanding clearances are excluded, including from any appendix.",
+        "briefDescription": "The system generates a separate report for each laboratory, using completed Physics or Circuits usage records in D11 Laboratory Usage Logs as its only data source. These logs provide four summary tables: Average Equipment Use (requester share of an item's total use), Equipment Average Use (total use per existing unit), Top 5 Equipment & Consumables, and Laboratory Frequency Usage. Recent Activity remains the supporting transaction log and is not counted among the four summary tables. Calculations use fixed formulas and do not use AI. Disposal records, non-transaction daily tasks and outstanding clearances are excluded, including from any appendix.",
         "actors": "Head Laboratory",
         "related": [
           "Issue Equipment",
@@ -1564,22 +1559,23 @@
           "Head Laboratory is signed in."
         ],
         "postconditions": [
-          "The selected laboratory's report contains the three named summary tables and Recent Activity; Physics and Circuits data are not mixed. Every reported value can be checked against the original records and the report can be exported by Head Laboratory."
+          "The selected laboratory's report contains the four named summary tables and supporting Recent Activity; Physics and Circuits data are not mixed. Every reported value can be checked against the original records and the report can be exported by Head Laboratory."
         ],
         "flowActor": [
           "Head Laboratory opens Physics Laboratory Logs or Circuits Laboratory Logs for Lab End-Term reporting.",
-          "Head Laboratory selects the term and reviews the three summary tables and Recent Activity.",
+          "Head Laboratory selects the term and reviews the four summary tables and supporting Recent Activity.",
           "Head Laboratory exports the report for submission."
         ],
         "flowSystem": [
           "System retrieves completed usage logs only from D11 for the selected laboratory and term. The report uses the completed reservation and actual usage information recorded in those logs, without separate Reservation Summary, Borrowing Slip Data or Inventory Summary inputs. D3 Laboratory Schedule is not a report input. A reservation that never took place is not counted as laboratory use.",
-          "System builds Average Equipment Use with Item, Quantity Used, Total Available, Avg Use %, and Top Requester. Avg Use % = ROUND(Quantity Used / Total Available * 100, 2). The text joined using $O$5 in the previous spreadsheet is a display label, not part of the calculation. The usage logs must record Total Available and the source of that value for the report period. Missing values are reported as unavailable, not retrieved separately from inventory during report compilation. The system must not substitute another denominator without explanation or limit repeated-use percentages to 100%.",
+          "System builds Average Equipment Use with Equipment, # Use, Total Use, and Percentage (requester name and share). # Use is the named requester's recorded use of that item; Total Use is its recorded use across all requesters in the selected laboratory and term. Percentage = ROUND(Requester Item Use / Total Item Use * 100, 2). For TEODORO using an item 33 times out of 63 total uses, the display is TEODORO - 52.38%. The requester name is a display label, not part of the calculation.",
+          "System builds Equipment Average Use with Equipment, Existing Quantity, Total Use, and Equipment Average Use. Equipment Average Use = ROUND(Total Item Use / Existing Quantity, 2), with no percentage sign. For 63 total uses and 12 existing units, the result is 5.25 uses per unit. Existing Quantity and its report-period basis must be recorded in D11 usage logs; repeated copies of that stock snapshot must not be summed. Missing or inconsistent quantity values are flagged as unavailable rather than fetched separately from inventory during report compilation. This ratio can exceed one because equipment can be used repeatedly.",
           "System builds Top 5 Equipment & Consumables by ranking items by recorded Total Used within the same laboratory and term, showing Rank, Item, and Total Used. Consumables remain identified by their item type; Consumed is retained separately in the supporting log.",
           "System builds Laboratory Frequency Usage with Professor / Requester, Times Used, and Usage %. Times Used counts actual laboratory sessions, not hours or item rows. Usage % = ROUND(requester session count / total session count * 100, 2). Each session is counted once, even if it contains several item rows. For 4 and 5 sessions, the total is 9 and the shares are 44.44% and 55.56%.",
-          "System displays Recent Activity with Date, Laboratory / class reference, Professor / Requester, Item, Qty, Consumed, and Type. The report has no disposal, daily-task or outstanding-clearance appendix. Head Laboratory can export the same three summary tables and supporting log."
+          "System displays Recent Activity with Date, Laboratory / class reference, Professor / Requester, Item, Qty, Consumed, and Type. The report has no disposal, daily-task or outstanding-clearance appendix. Head Laboratory can export the same four summary tables and supporting log."
         ],
         "exceptions": [
-          "If no sessions exist, the system displays an empty report with zero session totals and no invented rankings. Undefined percentages, including those with a zero or missing denominator, appear as N/A rather than Infinity or a misleading percentage.",
+          "If no sessions exist, the system displays an empty report with zero session totals and no invented rankings. Undefined percentages or equipment-use averages, including those with a zero or missing denominator, appear as N/A rather than Infinity or a misleading value.",
           "If usage logs are incomplete or the report-period denominator is not available in those logs, the system identifies the missing data. It does not invent counts, percentages or Top Requester values.",
           "If the export fails, Head Laboratory is notified and may retry."
         ],
@@ -1664,6 +1660,7 @@
     { label:"2.3.6 Sequence Diagram", page:57, id:"sequence-diagrams", indent:1 },
     { label:"2.3.7 Deployment Diagram", page:62, id:"deployment-diagram", indent:1 },
     { label:"References", page:63, id:"references", indent:0 },
+    { label:"Appendix A - Detailed Entity-Relationship Diagrams", page:"—", id:"erd-appendix", indent:0 },
   ];
 
   /* Sidebar outline tree — built from DATA so it can never drift out of sync
@@ -1699,6 +1696,14 @@
       { id:"deployment-diagram", label:"2.3.7 Deployment Diagram" },
     ]},
     { id:"references", label:"References" },
+    { id:"erd-appendix", label:"Appendix A - Detailed ERDs", children:[
+      {id:"erd-detail-identity",label:"A1 - Accounts, Classes and Q&A"},
+      {id:"erd-detail-requests",label:"A2 - Reservations and Approvals"},
+      {id:"erd-detail-inventory",label:"A3 - Inventory and Disposal"},
+      {id:"erd-detail-borrowing",label:"A4 - Borrowing and Returns"},
+      {id:"erd-detail-schedule",label:"A5 - Laboratories and Schedules"},
+      {id:"erd-detail-administration",label:"A6 - Usage, Daily Tasks and Clearance"},
+    ] },
   ];
 </script>
 
@@ -1931,7 +1936,7 @@ function OverviewSection() {
           <li>Provide schedule and item availability checks, Group or Student Only reservations through a Class Representative account, and approval through Faculty or Dean accounts according to schedule type and Faculty availability.</li>
           <li>Link inventory, approved borrowing slips, issuance and return outcomes to retain borrower identities and records of actual consumable use.</li>
           <li>Allow Head Laboratory to identify accountable students and create, update and resolve clearance records, with each student's status visible to the relevant Class Representative.</li>
-          <li>Compile completed laboratory usage into Average Equipment Use, Top 5 Equipment &amp; Consumables, Laboratory Frequency Usage and Recent Activity for end-term review.</li>
+          <li>Compile completed laboratory usage into four summary tables—Average Equipment Use, Equipment Average Use, Top 5 Equipment &amp; Consumables, and Laboratory Frequency Usage—with supporting Recent Activity for end-term review.</li>
           <li>Provide a laboratory information chatbot that requires login and inventory recommendations for Head Laboratory. Both features must state when the available records are insufficient and must not change transactions automatically.</li>
         </ol>
         <h3 id="scope">1.3 Scope and Limitations</h3>
@@ -1939,10 +1944,10 @@ function OverviewSection() {
         <ol type="1" start={1} className="academic-numbered-list">
           <li><strong>Users and laboratories.</strong> The system covers the Physics and Circuits laboratories of NU Fairview. Its users are Class Representatives, Faculty, the Dean, Circuits Laboratory Staff, Physics Laboratory Staff and Head Laboratory, with access based on their responsibilities and laboratory assignments.</li>
           <li><strong>Account management.</strong> Head Laboratory manually creates and manages Faculty and Class Representative accounts. Faculty verifies the representative's name, student ID and section and distributes the credentials. Neither role self-registers. The Dean retains a pre-assigned account, while classmates' reservation requests are submitted through their Class Representative's account.</li>
-          <li><strong>Reservations and approvals.</strong> Class Representatives submit on-schedule or out-of-schedule requests for a selected group or individual student. On-schedule requests require assigned Faculty approval. Out-of-schedule requests go to available Faculty or directly to the Dean when Faculty is unavailable; the selected reviewer makes the final decision. Faculty requests for regular scheduled classes require no academic approval, while out-of-schedule requests require Dean approval. Availability checks and status tracking require login. The system does not provide a public kiosk or email approval without an account.</li>
+          <li><strong>Reservations and approvals.</strong> Class Representatives submit on-schedule or out-of-schedule requests for a selected group or individual student. On-schedule requests require assigned Faculty approval. Out-of-schedule requests go to available Faculty or directly to the Dean when Faculty is unavailable; the selected reviewer makes the final decision. Faculty chooses Laboratory Activity or Non-Laboratory Activity after choosing the laboratory. Laboratory Activity uses the assigned class schedule and needs no academic approval. Non-Laboratory Activity asks for On-Schedule or Out-of-Schedule: a validated on-schedule request needs no academic approval, while an out-of-schedule request requires Dean approval. Availability checks and status tracking require login. The system does not provide a public kiosk or email approval without an account.</li>
           <li><strong>Inventory and borrowing.</strong> Staff manage inventory, equipment issuance, returns and disposal within their assigned laboratory. Issuance requires the applicable final approval. Borrowing and return records identify the actual group or individual borrower and distinguish reusable equipment from consumed supplies.</li>
           <li><strong>Administration and clearance.</strong> Head Laboratory manages schedules, daily tasks, clearance and reporting across both laboratories. After reviewing a return issue, Head Laboratory identifies the accountable student and creates the clearance record. Class Representatives can view clearance status for students in their class but cannot request or issue clearance.</li>
-          <li><strong>Logs and reports.</strong> The system automatically records completed reservations and return outcomes in laboratory logs. End-term reports include Average Equipment Use, Top 5 Equipment &amp; Consumables, Laboratory Frequency Usage and Recent Activity. Average Use is calculated as quantity used divided by total available, multiplied by 100 and rounded to two decimal places. Frequency counts laboratory sessions per requester, not item rows. Disposal records, daily tasks, outstanding clearances and appendix content are excluded from these reports.</li>
+          <li><strong>Logs and reports.</strong> The system automatically records completed reservations and return outcomes in D11 Laboratory Usage Logs, the sole source of end-term reports. Reports contain four summary tables: Average Equipment Use, Equipment Average Use, Top 5 Equipment &amp; Consumables, and Laboratory Frequency Usage, with supporting Recent Activity. Average Equipment Use shows a requester's share of an item's total use as a percentage. Equipment Average Use divides total item use by the existing quantity recorded for the report period and is expressed as uses per unit. Both results are rounded to two decimal places. Frequency counts laboratory sessions per requester, not item rows. Disposal records, daily tasks, outstanding clearances and appendix content are excluded from these reports.</li>
           <li><strong>Laboratory inquiries.</strong> Class Representatives and Faculty may use the chatbot after logging in to obtain approved Physics and Circuits laboratory information, equipment information, current availability and operating hours. Schedule selection, reservation tracking and clearance remain on their respective pages.</li>
           <li><strong>Inventory forecasting.</strong> Head Laboratory may request next-month forecasts for either laboratory using existing stock and actual usage history. Forecasts estimate consumable needs and possible shortages of reusable equipment. Head Laboratory reviews these suggestions before making decisions. The results indicate when the available history is insufficient.</li>
         </ol>
@@ -1996,8 +2001,8 @@ function BacklogSection() {
     '02': 'Only Head Laboratory can create or manage Faculty and Class Representative accounts. The system validates required identity, role and section details and rejects duplicate accounts. Faculty verifies Class Representative details and receives credentials for handover. Self-registration is unavailable.',
     '03': 'Selecting Physics or Circuits displays only that laboratory’s schedule and resource availability. Occupied blocks cannot be selected as vacant blocks. Viewing availability does not create a booking.',
     '04A': 'Faculty requests matching their assigned class and term schedule pass availability checks and are saved as Approved without Faculty or Dean review. Conflicting or unavailable resources prevent submission.',
-    '04B': 'A Class Representative selects Group or Student Only and students from the assigned class. Student Only requires exactly one student. A valid on-schedule request is saved as Pending and routed to the assigned Faculty; submitter and borrowers are recorded separately.',
-    '04C': 'A valid out-of-schedule request holds a vacant block while Pending. Class Representative requests go to assigned Faculty when available, or directly to the Dean when that Faculty is unavailable. Faculty requests go to the Dean. The selected reviewer’s approval or rejection is final.',
+    '04B': 'A Class Representative selects Group or Student Only and students from the assigned class. Student Only requires exactly one student. Choosing On-Schedule previews the assigned Faculty route; the read-only review summary and success state show the assigned Faculty as reviewer and Pending status. Submitter and borrowers are recorded separately. Faculty selects Non-Laboratory Activity and On-Schedule, skips Group or Student Only, and completes the same schedule/room, equipment/materials and review stages. A valid request within the assigned class schedule is saved as Approved without an approval row or academic reviewer and sent to the selected laboratory. Selecting Laboratory Activity cannot bypass assigned-schedule validation.',
+    '04C': 'Choosing Out-of-Schedule previews automatic routing without a reviewer picker. A valid request holds a vacant block while Pending. Class Representative requests go to assigned Faculty when available, or directly to the Dean when that Faculty is unavailable. Faculty requests go to the Dean. The read-only review summary and success state show the resulting reviewer and Pending status. The selected reviewer’s decision is final.',
     '05': 'Only the submitting requester can cancel or reschedule an eligible reservation before the session. Cancellation releases the held block. Rescheduling rechecks availability and the applicable approval route; an invalid change preserves the existing reservation.',
     '06': 'Faculty can review only requests routed to them. Selecting Approve or Reject saves the final decision and updates the status shown to the requester. Rejection releases the hold; approval makes the reservation eligible for laboratory processing without further Dean approval.',
     '07': 'The Dean can review routed out-of-schedule Faculty requests and Class Representative requests whose assigned Faculty is unavailable. Selecting Approve or Reject saves the final decision and updates the status shown to the requester. Rejection releases the hold.',
@@ -2011,7 +2016,7 @@ function BacklogSection() {
     '14': 'Authorized users record the item, quantity, reason and hazardous-waste classification within the laboratory they are allowed to manage. Invalid quantities are rejected. Disposal records can still be tracked and excluded from Lab End-Term usage summaries.',
     '15': 'Head Laboratory can maintain schedules and daily tasks across both laboratories. The system rejects schedule conflicts and creates usage logs from completed reservation and return records without duplicate manual encoding. Daily tasks remain separate from usage logs.',
     '16': 'Dashboard totals reflect stored inventory, requests and usage within the laboratory the user is allowed to access. Refreshing the dashboard displays updated records. An empty dataset displays zero or an empty state rather than invented values.',
-    '17': 'For the selected term and laboratory, the report presents Average Equipment Use, Top 5 Equipment & Consumables, Laboratory Frequency Usage and Recent Activity from completed records. Use percentage equals quantity used / total available × 100, rounded to two decimals, with zero denominators handled. Frequency counts sessions rather than item rows. Disposal, daily tasks, outstanding clearances and appendix content are excluded.'
+    '17': 'For the selected term and laboratory, the report presents four summary tables: Average Equipment Use, Equipment Average Use, Top 5 Equipment & Consumables, and Laboratory Frequency Usage, with supporting Recent Activity, using D11 completed usage logs only. Requester item-use percentage equals requester item use / total item use × 100; Equipment Average Use equals total item use / recorded existing quantity, without a percentage sign. Both are rounded to two decimals; zero or missing denominators display N/A. Frequency counts sessions rather than item rows. Disposal, daily tasks, outstanding clearances and appendix content are excluded.'
   };
   const columns = [
     { key:"id", label:"ID", width:"44px" },
@@ -2120,8 +2125,8 @@ function UseCaseFullSection() {
       <SectionHeading level={3} kicker="2.1.4" title="Use Case Full Description" id="usecase-full" />
       <p>Log In provides shared system access for all six actors. Authentication is a precondition for protected functions. The full login specification and existing table numbers are retained.</p>
       <div className="lede">
-        <p>Tables 3 to 22 describe the twenty main use cases in Figure 2, with one table for each use case. Table 6 covers Faculty’s Submit Scheduled Laboratory Activity. Table 7 covers Submit On-Schedule Non-Laboratory / Out-of-Schedule Request and its two alternative flows. The eleven supporting use cases appear as included or extending behavior in their parent tables, covering all twelve diagram dependencies.</p><p>Select Reservation Type is mandatory for Class Representatives in both schedule variants. It conditionally extends the shared request use case, leaving the Faculty variant unchanged. Dashboard screens are interface views rather than standalone use cases or business events. Actor permissions and event names follow the same diagram mapping.</p>
-        <p>Schedule Type determines the approval route, while Reservation Type identifies Group or Student Only. Student Only requires exactly one selected student from the assigned class. The Class Representative submits on that student's behalf, so no additional student login is created.</p>
+        <p>Tables 3 to 22 describe the twenty main use cases in Figure 2, with one table for each use case. Table 6 covers Faculty’s Submit Scheduled Laboratory Activity. Table 7 covers Submit On-Schedule Non-Laboratory / Out-of-Schedule Request and its two alternative flows. The ten supporting use cases appear as included or extending behavior in their parent tables, covering the eleven diagram dependencies. Dashboard screens are interface views rather than standalone use cases or business events. Actor permissions and event names follow the same diagram mapping.</p>
+        <p>For Class Representatives, Group or Student Only is Step 2 within the request use case, not a separate use case. Schedule Type in Step 3 determines the system-generated approval route; the route appears again as a non-editable summary in Step 6. Student Only requires exactly one selected student from the assigned class. The submitting Class Representative and selected borrower remain separate, so no additional student login is created.</p>
       </div>
       {DATA.useCases.map(uc => <UseCaseSection key={uc.id} uc={uc} />)}
     </section>
@@ -2196,8 +2201,11 @@ function DfdSection({ onZoom }) {
         </div>
         <a className="figure-editor-link" href="assets/figures-v2/dfd-level2-compact/dfd-level2-compact.html">Open DFD Level 2 diagrams</a>
         <div className="lede approval-routing-reference">
-          <p>DFD Levels 0–2 use the labels On-Schedule Request and Out-of-Schedule Request for both requesting roles. A Faculty On-Schedule Request is a laboratory activity within the assigned class schedule and requires no additional academic approval. A Class Representative's on-schedule non-laboratory request requires approval from the selected class's Faculty.</p><p>Process 2.3 routes out-of-schedule Class Representative requests to assigned Faculty when available; the Faculty decision is final. It routes a request directly to the Dean only when that Faculty is unavailable. Faculty out-of-schedule requests go directly to the Dean. Group / Student Only applies only to Class Representatives. Any rejection ends routing and releases the hold.</p>
-          <p>Process 2.4 saves the selected Faculty or Dean reviewer's final decision. A request remains Pending only while awaiting that decision; Faculty approval does not lead to further Dean review. Process 4.2 retrieves only finally approved reservations for issuance, so Pending requests cannot proceed to Process 4.3. The existing Faculty/Dean, D2 approval-record and authorized-reservation flows represent these rules without additional arrows.</p>
+          <p>Process 2.0 supports the six-step Class Representative form: (1) Choose Laboratory, (2) Choose Request Type, (3) Choose Schedule Type, (4) Schedule &amp; Room Availability, (5) Equipment &amp; Materials, and (6) Review Information &amp; Submit. These form steps use four Level 2 subprocesses; they are not separate DFD processes.</p>
+          <p><strong>2.1 Retrieve Availability</strong> reads laboratory schedules, active reservation holds and item availability. <strong>2.2 Validate &amp; Record Reservation</strong> checks the laboratory, request and schedule types, authorized class, date, time, room/block, purpose, items and quantities. After choosing the class, Group records selected members and Student Only records exactly one selected class student. Final submission saves the request and applicable holds only if these checks pass. Viewing availability or completing an earlier form step creates no hold. Rescheduling preserves the saved Reservation Type and replaces the old hold only after the new details pass validation.</p>
+          <p><strong>2.3 Route and Process Approval</strong> automatically determines the reviewer from requester role, Schedule Type, the selected class and assigned Faculty availability. Step 3 explains the Approval Route rule; Step 6 shows the actual reviewer in a non-editable Approval Route field. The system rechecks the details and route on submission. Request Type means Group or Student Only and does not select the approver. Validated Request carries the checked requester/class, laboratory, request type, accountable students, schedule details, purpose, items and quantities. The form does not offer Faculty or Dean selection buttons.</p>
+          <p>DFD Levels 0–2 use the labels On-Schedule Request and Out-of-Schedule Request for both requesting roles. A Faculty On-Schedule Request may be a Laboratory Activity or a Non-Laboratory Activity within the assigned class schedule; neither requires additional academic approval. Faculty chooses the laboratory and activity kind first. Laboratory Activity proceeds directly to Schedule & Room Availability. Non-Laboratory Activity asks for On-Schedule or Out-of-Schedule before the same schedule/room, equipment/materials and review steps. These form steps fall under Processes 2.1 and 2.2; the existing On-Schedule Request and Out-of-Schedule Request data flows cover both Faculty paths. A Class Representative's on-schedule non-laboratory request requires approval from the selected class's Faculty.</p><p>Process 2.3 routes out-of-schedule Class Representative requests to assigned Faculty when available; the Faculty decision is final. It routes a request directly to the Dean only when that Faculty is unavailable. Faculty out-of-schedule requests go directly to the Dean. Group / Student Only applies only to Class Representatives. Any rejection ends routing and releases the hold.</p>
+          <p><strong>2.4 Update Reservation Status</strong> shows Pending and Current Reviewer after an approval-required request is saved, then saves the selected Faculty or Dean reviewer's final decision and provides the requester's own status and history. A request remains Pending only while awaiting that decision; Faculty approval does not lead to further Dean review. Validated Faculty on-schedule laboratory and non-laboratory activities are saved as Approved without an approval row or academic reviewer and are sent to the selected laboratory. Faculty out-of-schedule requests show Pending and Dean as Current Reviewer until the Dean decides. Process 4.2 retrieves only finally approved reservations for issuance, so Pending requests cannot proceed to Process 4.3. The existing Faculty/Dean, D2 approval-record and authorized-reservation flows represent these rules without additional arrows.</p>
         </div>
       </div>
       {level2Figures.map(figure => (
@@ -2222,19 +2230,37 @@ function ErdSection({ onZoom }) {
   return (
     <section id="erd" className="doc-section sub">
       <SectionHeading level={3} kicker="2.3.3" title="Entity-Relationship Diagram" id="erd" />
-      <Figure src="assets/erd/erd-a4-complete.png" caption="Figure 10: Entity–Relationship Diagram — Logical Draft" onZoom={onZoom} />
-      <div className="lede"><p><strong>Logical ERD draft — pending consultation and validation.</strong> The A4 portrait diagram connects eleven main DFD stores to 25 entities and 51 Primary Key (PK)–Foreign Key (FK) relationships. Each table appears once in a staggered five-column layout. Crow’s Foot symbols show the relationships, with separate connection points on each parent table leading to the matching Foreign Key rows. The data dictionary records optional relationships, uniqueness requirements and workflow rules.</p><p>Inventory Forecasting reads ITEM / inventory records, BORROWING, BORROWING_ITEM and RETURN_ENTRY, identifying each item through REQUEST_ITEM. Consumption is based on RETURN_ENTRY.qty_consumed. Estimates for reusable equipment use the timing of issuance and partial returns, rather than total borrowing counts. Forecasts are calculated when requested and require no additional table, key or relationship. Generating a forecast does not update inventory. Reservation revisions, recurring requests, completion of room-only reservations, clearance completion, stock holds saved as a single database transaction, and responsibility for the knowledge base still require consultation. The archived ERD and email approval tokens remain excluded.</p></div>
-      <p><a className="figure-editor-link" href="ERD-A4.html">Open A4 portrait ERD with hover tracing</a> <a className="figure-editor-link" href="assets/erd/erd-a4.pdf">Download A4 ERD draft</a> <a className="figure-editor-link" href="ERD.html">Landscape ERD and data dictionary</a></p>
+      <Figure src="assets/erd/erd-a4-complete.png" caption="Figure 10: Entity-Relationship Diagram — A4 Portrait, Logical Draft" onZoom={onZoom} />
+      <div className="lede"><p><strong>Logical ERD draft — pending consultation and validation.</strong> The schema retains 25 entities, 161 attributes and 51 Primary Key (PK)–Foreign Key (FK) relationships across eleven main DFD stores. Figure 10 presents the complete ERD in one A4 portrait image. Appendix A provides larger table definitions and cardinalities across six A4 detail pages for closer reading. Each full table appears once within the appendix. Repeated table names in its relationship rows identify existing tables and do not represent additional entities.</p><p>In Appendix A, each relationship has a separate Crow’s Foot connector row, linked to its Foreign Key by R01–R51. The left endpoint shows parents per child; the right endpoint shows children per parent. A1–A6 identify the parent and child detail pages, not DFD data stores. These detail pages supplement the complete portrait figure without merging tables or changing relationships. The data dictionary retains logical types, optional relationships, uniqueness requirements and workflow rules.</p><p>Inventory Forecasting reads ITEM / inventory records, BORROWING, BORROWING_ITEM and RETURN_ENTRY, identifying each item through REQUEST_ITEM. Consumption is based on RETURN_ENTRY.qty_consumed. Estimates for reusable equipment use the timing of issuance and partial returns, rather than total borrowing counts. Forecasts are calculated when requested and require no additional table, key or relationship. Generating a forecast does not update inventory. Reservation revisions, recurring requests, completion of room-only reservations, clearance completion, stock holds saved as a single database transaction, and responsibility for the knowledge base still require consultation. The archived ERD and email approval tokens remain excluded.</p></div>
+      <p><a className="figure-editor-link" href="ERD-A4.html">Open complete A4 portrait ERD</a> <a className="figure-editor-link" href="assets/erd/erd-a4.pdf">Download complete A4 portrait PDF</a> <a className="figure-editor-link" href="ERD-PRINT.html">Open readable A4 detail pages</a> <a className="figure-editor-link" href="assets/erd/erd-a4-readable.pdf">Download overview and six A4 detail pages</a> <a className="figure-editor-link" href="#erd-appendix">Appendix A — Complete ERD details</a> <a className="figure-editor-link" href="ERD.html">Landscape ERD and data dictionary</a></p>
       <p>RESERVATION.reservation_type records GROUP or STUDENT_ONLY and is required for every Class Representative reservation. Schedule Type is stored separately in REQUEST_REVISION.request_basis / usage_type. One active representative account per section may link to multiple CLASS_GROUP subject/class records. The requester selects an authorized active class, and its faculty_id determines the Faculty reviewer. The Faculty member who delivered the account credentials does not determine this routing.</p><p>The backend must enforce one active representative per section across active class assignments and validate the selected class, term, section and schedule together. REQUEST_MEMBER records selected class members or the single selected student for Student Only. RESERVATION.requester_id identifies the submitting Class Representative separately from the participating students. Faculty requests retain their existing workflow.</p>
     </section>
   );
+}
+
+function ErdAppendix({ onZoom }) {
+  const pages=[
+    {id:'identity',title:'Accounts, Classes and Q&A'},
+    {id:'requests',title:'Reservations and Approvals'},
+    {id:'inventory',title:'Inventory and Disposal'},
+    {id:'borrowing',title:'Borrowing and Returns'},
+    {id:'schedule',title:'Laboratories and Schedules'},
+    {id:'administration',title:'Usage, Daily Tasks and Clearance'},
+  ];
+  return <section id="erd-appendix" className="doc-section">
+    <SectionHeading level={3} title="Appendix A - Detailed Entity-Relationship Diagrams" id="erd-appendix" />
+    {pages.map((page,i)=><section key={page.id} id={'erd-detail-'+page.id} className="doc-section sub erd-detail-page" data-sync-page-break={i>0?'true':undefined}>
+      {i>0 && <h4 className="erd-detail-heading">{'Appendix A'+(i+1)+' - '+page.title}</h4>}
+      <Figure src={'assets/erd/erd-print-'+page.id+'.png'} caption={'Figure A'+(i+1)+': '+page.title+' — Complete Tables and Cardinalities'} onZoom={onZoom} />
+    </section>)}
+  </section>;
 }
 
 function ActivityDiagramsSection({ onZoom }) {
   return (
     <section id="activity-diagrams" className="doc-section sub">
       <SectionHeading level={3} kicker="2.3.4" title="Activity Diagrams" id="activity-diagrams" />
-      <div className="lede"><p>Figures 11 to 15 present one Activity Diagram for each main DFD process, including its Level 2 subprocesses. In Figure 12, Class Representatives must select Group or Student Only before validation for either schedule type. These are alternative paths: only one is followed before they merge. The merge continues with the selected path and does not perform AND Synchronization, which waits for parallel activities. Decision nodes show the possible workflow outcomes. Activity Diagrams show control flow, while DFDs show data flow. Figure 16 places each actor's actions in a separate lane of the Swimlane Diagram.</p></div>
+      <div className="lede"><p>Figures 11 to 15 present one Activity Diagram for each main DFD process, including its Level 2 subprocesses. Figure 12 shows the six reservation form steps, followed by validation, saving the request and applicable holds, and displaying the status and reviewer. Class Representatives choose Group or Student Only for either Schedule Type; Faculty skips this choice. Faculty first chooses Laboratory Activity or Non-Laboratory Activity. Laboratory Activity uses the assigned class schedule; Non-Laboratory Activity asks for Schedule Type. Both share the schedule/room, equipment/materials and review stages. Valid Faculty on-schedule requests require no academic approval, while Faculty out-of-schedule requests require Dean approval. The selected class in Step 4 determines the eligible students and assigned Faculty. Step 3 explains the routing rule, while Step 6 displays the actual non-editable Approval Route. Rescheduling retains the saved Reservation Type. The Group, Student Only and Faculty paths are alternatives: only one is followed before the OR Join continues. This is not AND Synchronization, which waits for parallel activities. Availability, cancellation, tracking and reviewer actions remain separate operations. Activity Diagrams show control flow, while DFDs show data flow. Figure 16 places each actor's actions in a separate lane of the Swimlane Diagram.</p></div>
       {ACTIVITY_FIGURES.map((f,i)=>(
         <section id={f.id} key={f.id} className="doc-section sub" data-sync-page-break={i>0 ? 'true' : undefined}>
           <SectionHeading level={4} title={f.title} id={f.id} />
@@ -2249,7 +2275,7 @@ function SwimlaneDiagramSection({ onZoom }) {
   return (
     <section id="swimlane-diagram" className="doc-section sub">
       <SectionHeading level={3} kicker="2.3.5" title="Swimlane Diagram" id="swimlane-diagram" />
-      <div className="lede"><p>Figure 16 organizes the workflow into six actor lanes, including the Dean. Head Laboratory may review inventory forecasts. Class Representatives select Group or Student Only, and the alternative routes meet at OR Join nodes. Head Laboratory identifies accountable students before creating clearance; Class Representatives can only view these records. Figures 11–15 provide the detailed workflows.</p></div>
+      <div className="lede"><p>Figure 16 organizes the workflow into six actor lanes, including the Dean. Head Laboratory first creates the Faculty account and provides its credentials to the Faculty. The Faculty then sends the verified Class Representative's name, Student ID, and section to Head Laboratory. Head Laboratory creates the Class Representative account and returns its credentials to the Faculty, who hands them to the Class Representative. Faculty and Class Representatives log in with their issued credentials and begin their reservation workflows. Head Laboratory maintains schedules and daily tasks and may review inventory forecasts through a separate operations branch; requester login does not lead to these actions.</p><p>After the optional laboratory Q&amp;A, the Class Representative chooses Physics or Circuits Laboratory, then Group or Student Only. These request-type alternatives meet at an OR Join before Schedule Type is selected. The requester reads the automatic Approval Route preview, chooses an authorized class and slot, selects the eligible students and items, and reviews the details and non-editable route before submitting. Group includes selected class members; Student Only includes exactly one selected class student. The earlier laboratory choice is retained throughout the request.</p><p>Faculty first chooses Physics or Circuits Laboratory, then Laboratory Activity or Non-Laboratory Activity. Laboratory Activity proceeds to Schedule &amp; Room Availability using the assigned class schedule. Non-Laboratory Activity asks for On-Schedule or Out-of-Schedule before joining the same schedule/room, equipment/materials and review steps. The OR Join combines these alternative form paths; it does not wait for both. A valid Laboratory Activity or on-schedule non-laboratory request is saved as Approved without an approval row or academic reviewer and goes to the selected laboratory. An out-of-schedule Faculty request is saved as Pending and sent to the Dean for a final decision. Faculty cannot use the Laboratory Activity choice to bypass assigned-schedule validation.</p><p>A valid Class Representative submission creates a Pending request and identifies its Current Reviewer. The submission fork separates the status display from reviewer processing, so the Class Representative can view the Pending request while approval is outstanding. On-schedule requests go to assigned Faculty. Out-of-schedule requests go to that Faculty when available or directly to the Dean when unavailable. These are automatic routing rules, not choices of reviewer. The selected reviewer makes the final decision; Faculty approval does not lead to further Dean review.</p><p>Final approval updates the requester's status and sends the approved request to the selected laboratory's processing queue as independent outputs. Staff checking and preparation do not wait for the requester to open the status page. The Selected Lab decisions read the saved laboratory; they do not ask the requester to choose it again. A Flow Final on a status-view branch ends only that view, not the reservation. Rejection ends approval routing. Head Laboratory identifies accountable students before creating clearance; Class Representatives can only view these records. Figures 11–15 provide the detailed workflows.</p></div>
       <Figure src="assets/system-diagrams/swimlane-system.png" caption="Figure 16: Whole-System Swimlane Diagram" onZoom={onZoom} editorHref="System-Diagrams.html#activity-system" />
     </section>
   );
@@ -2496,6 +2522,7 @@ function App() {
             <SequenceDiagramSection onZoom={setLightbox} />
             <DeploymentDiagramSection onZoom={setLightbox} />
             <section id="references" className="doc-section"><SectionHeading title="References" id="references" />{(window.FinalTermReferences || []).map((reference,i)=><p key={i}>{reference}</p>)}</section>
+            <ErdAppendix onZoom={setLightbox} />
             <Footer />
           </div>
         </main>

@@ -2,12 +2,12 @@
  * Final-term integration: pinned to the final-term document, never the original.
  * Deploy this file in a separate Apps Script project; local edits do not update /exec. */
 const TARGET_ID = '1UfFa6G0eWenSY_KjokZoOHqrQ2ajKGVgIwU56dkjpzY';
-const SYNC_BUILD = '2026-09-23-final-term-black-text';
+const SYNC_BUILD = '2026-09-26-readable-erd-appendix';
 const DOC_FONT_SIZE = 11;
 // Migration-only match for older copies; never used as the current project title.
 const OLD_TITLE = 'SOMADA: A Web-Based Laboratory Management System';
 const SECTION_ORDER = ['overview','methodology','requirements','backlog','events',
-  'usecase-diagrams','usecase-full','gap-analysis','system-analysis','context-diagram','dfd','erd','activity-diagrams','swimlane-diagram','sequence-diagrams','deployment-diagram','references'];
+  'usecase-diagrams','usecase-full','gap-analysis','system-analysis','context-diagram','dfd','erd','activity-diagrams','swimlane-diagram','sequence-diagrams','deployment-diagram','references','erd-appendix'];
 const SECTION_NAMES = {
   overview:'project context', methodology:'methodology', requirements:'requirements analysis',
   backlog:'product backlog', events:'event tables', 'usecase-diagrams':'use case diagrams',
@@ -15,11 +15,13 @@ const SECTION_NAMES = {
   'context-diagram':'context diagram', dfd:'data flow diagrams', erd:'entity-relationship diagram',
   'activity-diagrams':'activity diagrams', 'swimlane-diagram':'swimlane diagram',
   'system-analysis':'system analysis and design', 'sequence-diagrams':'sequence diagram',
-  'deployment-diagram':'deployment diagram', references:'references'
+  'deployment-diagram':'deployment diagram', references:'references',
+  'erd-appendix':'appendix a - detailed entity-relationship diagrams'
 };
 // Only these new, explicitly selected sections may be created if absent.
 const NEW_SECTIONS = {'activity-diagrams':'2.3.4 Activity Diagrams','swimlane-diagram':'2.3.5 Swimlane Diagram',
-  'sequence-diagrams':'2.3.6 Sequence Diagram','deployment-diagram':'2.3.7 Deployment Diagram'};
+  'sequence-diagrams':'2.3.6 Sequence Diagram','deployment-diagram':'2.3.7 Deployment Diagram',
+  'erd-appendix':'Appendix A - Detailed Entity-Relationship Diagrams'};
 
 // Run once in the Apps Script editor, authorize, then copy the key from the execution log.
 function setupSync() {
@@ -34,7 +36,7 @@ function setupSync() {
 }
 
 function doGet() {
-  return page_('Final-term Google Docs connection', 'Build: ' + SYNC_BUILD + '. Target document: ' + TARGET_ID + '. After running setupSync and authorizing this deployment, return to Docs.html and use Update Google Docs. Supports 14 selectable sections, including Sequence and Deployment diagrams. References are preserved.', null);
+  return page_('Final-term Google Docs connection', 'Build: ' + SYNC_BUILD + '. Target document: ' + TARGET_ID + '. After running setupSync and authorizing this deployment, return to Docs.html and use Update Google Docs. Supports 15 selectable sections, including the readable ERD appendix. References are preserved.', null);
 }
 
 function doPost(event) {
@@ -236,11 +238,16 @@ function planSections_(body,payload) {
       if(indexes[next] || !NEW_SECTIONS[next]) throw new Error('Cannot uniquely locate the end of '+SECTION_NAMES[section.id]+'.');
     }
     if(!indexes[section.id] && NEW_SECTIONS[section.id]) {
+      if(section.id==='erd-appendix') {
+        if(!indexes.references || indexes.references.length!==1) throw new Error('Cannot safely locate References before the ERD appendix.');
+        return{id:section.id,start:body.getNumChildren(),end:body.getNumChildren(),create:true};
+      }
       if(!indexes.erd || indexes.erd.length!==1 || indexes.erd[0]>=end) throw new Error('Cannot safely locate ERD before the new diagram section.');
       return{id:section.id,start:end,end,create:true};
     }
     if(!indexes[section.id]||indexes[section.id].length!==1) throw new Error('Cannot uniquely locate '+SECTION_NAMES[section.id]+' in the first document tab.');
     const start=indexes[section.id][0];
+    if(section.id==='erd-appendix' && (!indexes.references || indexes.references.length!==1 || start<=indexes.references[0])) throw new Error('The ERD appendix must follow References.');
     if(NEW_SECTIONS[section.id] && (!indexes.erd || indexes.erd.length!==1 || start<=indexes.erd[0])) throw new Error('Unexpected new diagram section order.');
     if(end<=start) throw new Error('Unexpected section order.');
     return{id:section.id,start,end};

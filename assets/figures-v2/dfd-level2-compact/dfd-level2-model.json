@@ -167,7 +167,7 @@
     "steps": [
       "Retrieve Availability",
       "Validate & Record Reservation",
-      "Route Approval Decision",
+      "Route and Process Approval",
       "Update Reservation Status"
     ],
     "internal": [
@@ -185,7 +185,18 @@
         "label": "Validated Request",
         "payloadFields": [
           "reservation_type",
-          "student_ids"
+          "student_ids",
+          "requester_id",
+          "group_id",
+          "lab_id",
+          "block_id",
+          "starts_at",
+          "ends_at",
+          "request_basis",
+          "usage_type",
+          "item_id",
+          "qty_requested",
+          "purpose"
         ],
         "kind": "internal"
       },

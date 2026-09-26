@@ -2,6 +2,27 @@
 
 Status: draft for consultation, not an approved or deployed physical schema.
 
+## Readable A4 booklet - current documentation edition
+
+The main document uses `erd-a4-complete.png` as Figure 10, showing the complete ERD in A4 portrait. The separate readable booklet begins with `erd-print-overview.png`, which lists all 25 entities by module and shows selected transaction relationships only; that overview is explicitly not the complete ERD. Appendix A contains six detail images, A1-A6, with all 161 attributes and all 51 FK relationships. The canonical model, keys, nullability, uniqueness and cardinalities are unchanged. No tables have been merged.
+
+`ERD-PRINT.html` displays the overview plus the six A4 detail pages. Each full table appears once. Relationship rows are independent miniature ERD reference pairs with both Crow's Foot endpoints and numeric cardinalities. Repeated parent and child names in these rows refer to existing tables, not additional entities. Left cardinality means parents per child; right means children per parent. R01-R51 match the FK tags in the full definitions. A1-A6 show where the parent and child definitions are located, independent of the paper's overall page numbering.
+
+| Detail | Full definitions |
+|---|---|
+| A1 | STUDENT, USER_ACCOUNT, CLASS_GROUP, GROUP_MEMBER, CHAT_EXCHANGE, KNOWLEDGE_ARTICLE |
+| A2 | RESERVATION, REQUEST_REVISION, APPROVAL, REQUEST_ITEM, REQUEST_MEMBER |
+| A3 | ITEM_CATEGORY, ITEM, STOCK_MOVEMENT, DISPOSAL |
+| A4 | BORROWING, BORROWING_ITEM, BORROWING_MEMBER, RETURN_ENTRY |
+| A5 | TERM, LABORATORY, SCHEDULE_BLOCK |
+| A6 | USAGE_LOG, DAILY_TASK, CLEARANCE |
+
+The print canvas is 760 x 1094 units. Full attributes use 16-unit text and cardinality numbers use 14-unit text, approximately 9.5 pt and 8.3 pt respectively when the images are printed at the main document's 230 mm height. The standalone booklet uses 8 mm A4 margins and is larger still. Each relationship has its own connector row; unrelated paths do not overlap or share a segment. Hover or keyboard focus highlights the pair and the full tables present on that page. All cross-page codes remain visible in static PNG and PDF copies.
+
+Sources: `print-model.js` assigns pages; `print-render.js` reads the unchanged canonical `model.js`. Run `node integrations/erd/check-print.cjs --render --preview`. The checker validates table and field coverage, all 51 exact FK pairs and cardinalities, 102 detailed endpoints, page references, text bounds and hover/focus. Final PDF: `output/pdf/erd-a4-readable.pdf`, also published at `assets/erd/erd-a4-readable.pdf` for the website. The one-page portrait and landscape versions remain available for on-screen tracing.
+
+For Google Docs, select both ERD and Appendix A when updating this edition. The local Apps Script adds the new appendix section after References; redeploy `integrations/google-docs/Code.gs` before using that option. No remote document is updated by the renderer.
+
 ## Additional A4 portrait version
 
 `ERD-A4.html` is a separate, container-free A4 layout using the same canonical model. The existing landscape artwork and Documentation figure remain available and are not overwritten. Its exports are `erd-a4-complete.svg`, `erd-a4-complete.png` and `erd-a4.pdf` in this directory.

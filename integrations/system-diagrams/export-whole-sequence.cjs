@@ -39,7 +39,32 @@ const server=http.createServer((req,res)=>{
   fs.writeFileSync(base+'.svg',output.svg);fs.writeFileSync(base+'.png',Buffer.from(output.png,'base64'));
   console.log('Exported page '+index,await diagram.getAttribute('viewBox'));
   }
-  await page.pdf({path:path.join(root,'assets/system-diagrams/sequence-whole.pdf'),preferCSSPageSize:true,printBackground:true});
+  const out=path.join(root,'output/pdf');fs.mkdirSync(out,{recursive:true});
+  const pdfPath=path.join(out,'sequence-whole.pdf');
+  await page.pdf({path:pdfPath,preferCSSPageSize:true,printBackground:true});
+  fs.copyFileSync(pdfPath,path.join(root,'assets/system-diagrams/sequence-whole.pdf'));
+  if(process.argv.includes('--pdf-preview')){
+   const rendered=await page.evaluate(async()=>{
+    const pdfjs=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.mjs');
+    pdfjs.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.mjs';
+    const bytes=new Uint8Array(await(await fetch('output/pdf/sequence-whole.pdf')).arrayBuffer());
+    const doc=await pdfjs.getDocument({data:bytes}).promise,images=[];
+    for(let i=1;i<=doc.numPages;i++){
+     const page=await doc.getPage(i),box=page.getViewport({scale:1}),view=page.getViewport({scale:2}),canvas=document.createElement('canvas');
+     canvas.width=Math.ceil(view.width);canvas.height=Math.ceil(view.height);
+     await page.render({canvasContext:canvas.getContext('2d'),viewport:view}).promise;
+     images.push({width:box.width,height:box.height,png:canvas.toDataURL('image/png').split(',')[1]});
+    }
+    return images;
+   });
+   assert.equal(rendered.length,2,'Two-page sequence PDF');
+   const qa=path.join(root,'tmp/pdfs');fs.mkdirSync(qa,{recursive:true});
+   rendered.forEach((image,i)=>{
+    assert(Math.abs(image.width-595.28)<1&&Math.abs(image.height-841.89)<1,'A4 portrait sequence page');
+    fs.writeFileSync(path.join(qa,'sequence-whole-'+(i+1)+'-a4-qa.png'),Buffer.from(image.png,'base64'));
+   });
+   console.log('PASS: actual two-page PDF rendered; both pages are A4 portrait.');
+  }
   console.log('Exported two-page whole-system sequence PDF; retained five detailed diagrams.');
  }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});

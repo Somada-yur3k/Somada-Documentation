@@ -47,7 +47,7 @@ add({id:'p2',title:'Reservations, Availability and Approvals',source:'p2',actors
   opt('Class Rep: on-schedule or available Faculty',[call('faculty','system','Approve / reject routed request'),self('Validate assigned Faculty; decision is final'),...db('Save final Approved or Rejected','Decision saved',['d2'],true),signal('requester','Notify final decision'),reply('system','faculty','Decision confirmed')]),
   opt('Out-of-schedule: Faculty requester or Faculty unavailable',[call('dean','system','Approve / reject eligible request'),self('Validate direct Dean route; decision is final'),...db('Save final Approved or Rejected','Decision saved',['d2'],true),signal('requester','Notify final decision'),reply('system','dean','Decision confirmed')])
  ],
- note:'Class Representative selects GROUP or STUDENT_ONLY for selected classmates: GROUP retains selected class members; STUDENT_ONLY requires one selected class student. The submitting account is not automatically the borrower. Both schedule variants require the choice. Class Rep on-schedule requests go to Faculty. Out-of-schedule requests go to available Faculty, or directly to Dean if Faculty is unavailable. The selected reviewer makes the final decision; no Faculty-to-Dean escalation follows. Faculty out-of-schedule requests go to Dean; Faculty scheduled activities need no academic approval. Rejection releases the hold.'});
+ note:'Class Representative selects GROUP or STUDENT_ONLY for selected classmates: GROUP retains selected class members; STUDENT_ONLY requires one selected class student. The submitting account is not automatically the borrower. Both schedule variants require the choice. Class Rep on-schedule requests go to Faculty. Out-of-schedule requests go to available Faculty, or directly to Dean if Faculty is unavailable. The selected reviewer makes the final decision; no Faculty-to-Dean escalation follows. Faculty chooses Laboratory Activity or Non-Laboratory Activity after the laboratory. Laboratory Activity uses the assigned class schedule; Non-Laboratory Activity asks for Schedule Type. Both validated on-schedule Faculty modes are Approved without an approval row; Faculty out-of-schedule requests are Pending for Dean. Rejection releases the hold.'});
 
 add({id:'p3',title:'Laboratory Questions',source:'p3',actors:['Class Representative','Faculty'],uses:['askq'],processes:['p3.1','p3.2','p3.3','p3.4'],stores:['d4','d8','d9'],
  participants:[{id:'actor',kind:'actor',label:'Class Rep. /\nFaculty',roles:['Class Representative','Faculty']},{id:'system',kind:'system',label:'Laboratory\nQ&A System'},{id:'db',kind:'database',label:'Database\nD4, D8, D9'}],
@@ -78,20 +78,20 @@ add({id:'p4',title:'Equipment and Borrowing Management',source:'p4',actors:['Hea
  ],
  note:'Staff operate only within their assigned laboratory; only Head Lab requests forecasts. Forecast uses actual consumable use or concurrent reusable-equipment demand, not summed borrowing counts. Show history period and generation date. Recommendations are read-only: no stock update, forecast table or automatic purchase. Returns generate completed usage evidence; issuance requires final approval.'});
 
-add({id:'p5',title:'Laboratory Administration and Reporting',source:'p5',actors:['Head Laboratory','Class Representative'],uses:['procclear','clearstatus','mgmlogs','endterm'],processes:['p5.1','p5.2','p5.3','p5.4','p5.5'],stores:['d2','d3','d4','d5','d6','d7'],
- participants:[{id:'head',kind:'actor',label:'Head Lab',roles:['Head Laboratory']},{id:'rep',kind:'actor',label:'Class\nRepresentative',roles:['Class Representative']},{id:'system',kind:'system',label:'Laboratory\nWeb System'},{id:'db',kind:'database',label:'Database\nD2-D7'}],
+add({id:'p5',title:'Laboratory Administration and Reporting',source:'p5',actors:['Head Laboratory','Class Representative'],uses:['procclear','clearstatus','mgmlogs','endterm'],processes:['p5.1','p5.2','p5.3','p5.4','p5.5'],stores:['d2','d3','d5','d6','d7','d11'],
+ participants:[{id:'head',kind:'actor',label:'Head Lab',roles:['Head Laboratory']},{id:'rep',kind:'actor',label:'Class\nRepresentative',roles:['Class Representative']},{id:'system',kind:'system',label:'Laboratory\nWeb System'},{id:'db',kind:'database',label:'Database\nD2/3/5/6/7/11'}],
  precondition:'Head identifies the responsible student before creating clearance. Class Rep only views own-class clearance status.',
  steps:[alt(
   branch('Head administration: schedule / daily task / clearance',[call('head','system','Submit action; identify student for clearance'),...db('Validate applicable details; save action','Update result',['d2','d3','d5','d6','d7'],true),reply('system','head','Schedule / task / clearance result')]),
   branch('Class Rep. views class student clearance',[call('rep','system','View student clearance status'),...db('Read scoped clearance','Clearance status',['d6']),reply('system','rep','Display student clearance status')]),
   branch('Head views / exports end-term report',[call('head','system','Open term logs'),par(
-   branch('Completed usage',[...db('Read completed sessions','Usage evidence',['d2','d3'])]),branch('Inventory evidence',[...db('Read item quantities','Item evidence',['d4','d5'])])
+   branch('Completed usage',[...db('Read completed D11 sessions','Usage evidence',['d11'])]),branch('Recorded item evidence',[...db('Read D11 item use and quantity','Item evidence',['d11'])])
   ),alt(
-   branch('Completed records found',[self('Compute usage, top 5 and session shares'),reply('system','head','Summaries / Recent Activity; optional export')]),
+   branch('Completed records found',[self('Compute item shares, use/unit, top 5, sessions'),reply('system','head','Four tables / Recent Activity; optional export')]),
    branch('No completed records',[reply('system','head','No records for selected term')])
   )])
  )],
- note:'End-term reporting includes Average Equipment Use, Top 5 Equipment & Consumables, Laboratory Frequency Usage and Recent Activity. Daily tasks, disposal, outstanding clearances and appendix are excluded.'});
+ note:'End-term reporting uses D11 only and includes four tables: Average Equipment Use, Equipment Average Use, Top 5 Equipment & Consumables, and Laboratory Frequency Usage, with supporting Recent Activity. Daily tasks, disposal, outstanding clearances and appendix are excluded.'});
 
 root.SystemSequenceModels=diagrams;
 if(typeof module!=='undefined')module.exports=diagrams;

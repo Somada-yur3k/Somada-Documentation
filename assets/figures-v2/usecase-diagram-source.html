@@ -116,7 +116,6 @@ const SUPPORT_UC = [
   {id:'checkitem',   x:960, cy:1325, label:['Ask Equipment','Information /','Availability']},
   {id:'headinfo',  x:960, cy:1420, label:['Ask Circuits / Physics','Laboratory Information']},
   {id:'checkhours',  x:960, cy:1610, label:['Check Operating','Hours']},
-  {id:'selecttype',  x:960, cy:750, label:['Select Reservation','Type']},
   {id:'forecast', x:960, cy:1740, label:['Generate Inventory','Forecast']}
 ];
 
@@ -131,7 +130,6 @@ const RELATIONSHIPS = [
   {from:'checkitem',   to:'askq',        type:'extend'},
   {from:'headinfo',  to:'askq',        type:'extend'},
   {from:'checkhours',  to:'askq',        type:'extend'},
-  {from:'selecttype',  to:'submitcombined', type:'extend', condition:'Class Representative: required for both schedule variants'},
   {from:'forecast', to:'mgminv', type:'extend', condition:'Head Lab requests a next-month forecast'}
 ];
 
@@ -148,7 +146,7 @@ BASE_UC.filter(u=>u.column==='left').forEach((u,i)=>{u.x=450;u.cy=300+i*118;});
 BASE_UC.filter(u=>u.column==='right').forEach((u,i)=>{u.x=1150;u.cy=400+i*160;});
 BASE_UC.find(u=>u.id==='login').x=800;
 BASE_UC.find(u=>u.id==='login').cy=210;
-SUPPORT_UC.forEach(u=>{u.x=800;u.cy=({addeq:340,updateeq:458,deleteeq:576,searcheq:694,selectres:788,recordblc:980,checkitem:1100,headinfo:1230,checkhours:1454,selecttype:884,forecast:1568})[u.id];});
+SUPPORT_UC.forEach(u=>{u.x=800;u.cy=({addeq:340,updateeq:458,deleteeq:576,searcheq:694,selectres:788,recordblc:980,checkitem:1100,headinfo:1230,checkhours:1454,forecast:1568})[u.id];});
 // Reserve an upper supporting-use-case row for the Head-only forecast.
 BASE_UC.filter(u=>u.id!=='login').forEach(u=>u.cy+=140);
 SUPPORT_UC.forEach(u=>{u.cy=u.id==='forecast'?340:u.cy+140;});
@@ -156,7 +154,6 @@ ACTORS.find(a=>a.id==='faculty').cy=950;
 ACTORS.find(a=>a.id==='dean').cy=1470;
 BASE_UC.forEach(u=>{if(u.column==='left')u.x=470;if(u.column==='right')u.x=1130;});
 const shortLabels={
-  selecttype:['Select Reservation','Type','Class Rep. required'],
   submitcombined:['Submit Request:','On-Schedule Non-Lab','or Out-of-Schedule'],
   reschedres:['Reschedule','Laboratory','Reservation'],
   issueacct:['Manage Class Rep. /','Faculty Accounts'],
@@ -319,9 +316,9 @@ BASE_UC.concat(SUPPORT_UC).filter(u=>!u.diagramHidden).forEach(useCase => {
     stroke:'#111', 'stroke-width':2
   }));
   group.appendChild(textEl(useCase.x, useCase.cy+5, useCase.label, {
-    'font-size':useCase.id==='selecttype'?16:support?18:20,
+    'font-size':support?18:20,
     fill:'#101828', 'font-weight':support ? '500' : '600',
-    'font-family':'Arial,Helvetica,sans-serif', lineHeight:useCase.id==='selecttype'?17:support?19:21
+    'font-family':'Arial,Helvetica,sans-serif', lineHeight:support?19:21
   }));
   useCaseLayer.appendChild(group);
 });

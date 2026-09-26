@@ -1,5 +1,13 @@
 # Entity–Relationship Diagram (ERD)
 
+## Readable print edition
+
+The schema is unchanged: 25 tables, 161 attributes and 51 PK-FK relationships. The main document uses the complete A4 portrait ERD, with larger definitions and cardinalities in Appendix A across six A4 detail pages. Each full table appears once within the appendix. R01-R51 identify the FK pairs; A1-A6 identify the parent and child detail pages. Repeated names in relationship reference rows are not additional entities.
+
+- [Readable A4 viewer](ERD-PRINT.html)
+- [Overview and six A4 detail pages (PDF)](assets/erd/erd-a4-readable.pdf)
+- [Main documentation and Appendix A](Docs.html#erd)
+
 ## Entity Data Dictionary
 
 ## D1 — User Accounts

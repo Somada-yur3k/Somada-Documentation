@@ -11,7 +11,8 @@
     ['gap-analysis', 'Gap Analysis'], ['context-diagram', 'Context Diagram'],
     ['dfd', 'Data Flow Diagrams (Levels 1 and 2)'], ['erd', 'Entity-Relationship Diagram'],
     ['activity-diagrams', 'Activity Diagrams (5 images)'], ['swimlane-diagram', 'Swimlane Diagram (1 image)'],
-    ['sequence-diagrams', 'Sequence Diagrams (5 images)'], ['deployment-diagram', 'Deployment Diagram (1 image)']
+    ['sequence-diagrams', 'Sequence Diagrams (5 images)'], ['deployment-diagram', 'Deployment Diagram (1 image)'],
+    ['erd-appendix', 'Appendix A - Detailed ERDs (6 A4 images)']
   ];
   let dialog;
   let busy = false;

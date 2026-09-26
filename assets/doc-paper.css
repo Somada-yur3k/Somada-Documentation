@@ -52,4 +52,9 @@
 .a4-document img[src*="sequence-whole-"]{max-height:218mm !important;}
 .a4-document .doc-figure:has(img[src*="erd-complete.png"]){margin:4pt 0 !important;}
 .a4-document img[src*="erd-complete.png"]{max-height:235mm !important;}
+.a4-document .doc-figure:has(img[src*="erd-a4-complete.png"]){margin:4pt 0 !important;}
+.a4-document img[src*="erd-a4-complete.png"]{max-height:235mm !important;}
+.a4-document .doc-figure:has(img[src*="erd-print-"]){margin:4pt 0 !important;}
+.a4-document img[src*="erd-print-"]{max-height:230mm !important;}
+.a4-document .erd-detail-heading{margin:0 0 4pt !important;font-size:12pt !important;}
 .a4-document .anchor-link,.a4-document .zoom-hint,.a4-document .figure-editor-link,.a4-document .entity-note,.a4-document .entity-grid,.a4-document .doc-footer{display:none !important;}
